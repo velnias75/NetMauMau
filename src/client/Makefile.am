@@ -4,9 +4,7 @@ lib_LTLIBRARIES = libnetmaumauclient.la
 
 noinst_HEADERS = clientcardfactory.h interceptederrorexception.h
 
-pkginclude_HEADERS = abstractclient.h clientconnection.h timeoutexception.h
-
-libnetmaumauclient_la_CPPFLAGS = -I$(top_srcdir)/src/common
+libnetmaumauclient_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include
 libnetmaumauclient_la_SOURCES = abstractclient.cpp clientconnection.cpp clientcardfactory.cpp \
 	interceptederrorexception.cpp timeoutexception.cpp
 libnetmaumauclient_la_LDFLAGS = -nodefaultlibs -nostartfiles \

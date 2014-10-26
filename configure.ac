@@ -93,5 +93,5 @@ AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_FILES([doc/client.dox])
 
-AC_OUTPUT([Makefile src/Makefile src/common/Makefile src/engine/Makefile src/server/Makefile \
-  src/client/Makefile src/test/Makefile doc/Makefile])
+AC_OUTPUT([Makefile src/include/Makefile src/Makefile src/common/Makefile src/engine/Makefile 
+  src/server/Makefile src/client/Makefile src/test/Makefile doc/Makefile])

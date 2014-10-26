@@ -1,1 +1,1 @@
-SUBDIRS = common engine server client test
+SUBDIRS = include common engine server client test

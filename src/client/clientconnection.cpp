@@ -82,13 +82,11 @@ throw(NetMauMau::Common::Exception::SocketException) {
 								   dot != std::string::npos && spc < dot;
 
 		if(isServerHello && maj) {
-			std::istringstream is(rHello.substr(spc + 1, dot));
-			is >> *maj;
+			(std::istringstream(rHello.substr(spc + 1, dot))) >> *maj;
 		}
 
 		if(isServerHello && min) {
-			std::istringstream is(rHello.substr(dot + 1));
-			is >> *min;
+			(std::istringstream(rHello.substr(dot + 1))) >> *min;
 		}
 
 		return (isServerHello && rHello.substr(0, std::strlen(PACKAGE_NAME)) == PACKAGE_NAME);

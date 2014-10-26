@@ -38,8 +38,7 @@
 using namespace NetMauMau::Client;
 
 AbstractClient::AbstractClient(const std::string &pName, const std::string &server, uint16_t port) :
-	m_connection(pName, server, port),
-	m_pName(pName), m_cards(), m_openCard(0L) {}
+	m_connection(pName, server, port), m_pName(pName), m_cards(), m_openCard(0L) {}
 
 AbstractClient::~AbstractClient() {
 	for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(m_cards.begin());
@@ -102,8 +101,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 
 					m_connection >> msg;
 
-					std::istringstream is(msg);
-					is >> cturn;
+					(std::istringstream(msg)) >> cturn;
 
 					turn(cturn);
 
@@ -121,10 +119,8 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 						std::string cntS;
 						m_connection >> cntS;
 
-						std::istringstream is(cntS);
 						std::size_t cnt;
-
-						is >> cnt;
+						(std::istringstream(cntS)) >> cnt;
 
 						STAT stat = { msg, cnt };
 						cstats.push_back(stat);
@@ -165,8 +161,8 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					m_connection >> msg;
 					NetMauMau::Common::ICard *ic = (NetMauMau::Client::CardFactory(msg)).create();
 
-					if(ic->getValue() == NetMauMau::Common::ICard::JACK ||
-							ic->getValue() == NetMauMau::Common::ICard::EIGHT) {
+					if(ic->getRank() == NetMauMau::Common::ICard::JACK ||
+							ic->getRank() == NetMauMau::Common::ICard::EIGHT) {
 						initialCard(ic);
 						initCardShown = true;
 					}
@@ -264,9 +260,8 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					m_connection >> player >> msg;
 					m_connection >> msg;
 
-					std::istringstream is(msg);
 					std::size_t count;
-					is >> count;
+					(std::istringstream(msg)) >> count;
 
 					playerPicksCard(player, count);
 

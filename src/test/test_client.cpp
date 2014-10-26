@@ -97,8 +97,7 @@ int main(int argc, const char **argv) {
 	const std::string::size_type p = server.find(':');
 
 	if(p != std::string::npos) {
-		std::istringstream is(server.substr(p + 1));
-		is >> port;
+		(std::istringstream(server.substr(p + 1))) >> port;
 		server = server.substr(0, p);
 
 		if(server.empty()) server = "localhost";

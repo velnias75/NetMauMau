@@ -29,24 +29,24 @@ public:
 	StdCardFactory();
 	~StdCardFactory();
 
-	virtual _NOUNUSED Common::ICard *create(Common::ICard::SUIT s, Common::ICard::VALUE v) const;
+	virtual _NOUNUSED Common::ICard *create(Common::ICard::SUIT s, Common::ICard::RANK r) const;
 
 private:
 	class StdCard : public Common::ICard {
 		DISALLOW_COPY_AND_ASSIGN(StdCard)
 	public:
-		StdCard(ICard::SUIT f, ICard::VALUE v);
+		StdCard(ICard::SUIT f, ICard::RANK r);
 		virtual ~StdCard();
 
 		virtual SUIT getSuit() const _PURE;
-		virtual VALUE getValue() const _PURE;
+		virtual RANK getRank() const _PURE;
 		virtual std::size_t getPoints() const _PURE;
 
 		virtual std::string description(bool ansi) const;
 
 	private:
 		const ICard::SUIT m_suit;
-		const ICard::VALUE m_value;
+		const ICard::RANK m_rank;
 	};
 };
 

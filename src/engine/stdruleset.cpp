@@ -41,22 +41,21 @@ bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 						   const NetMauMau::Common::ICard *uncoveredCard,
 						   const NetMauMau::Common::ICard *playedCard) {
 
-	const bool accepted = uncoveredCard ? (playedCard->getValue() ==
-										   NetMauMau::Common::ICard::JACK &&
-										   uncoveredCard->getValue() !=
+	const bool accepted = uncoveredCard ? (playedCard->getRank() == NetMauMau::Common::ICard::JACK
+										   && uncoveredCard->getRank() !=
 										   NetMauMau::Common::ICard::JACK) ||
 						  ((((isJackMode() && getJackSuit() == playedCard->getSuit()) ||
 							 (!isJackMode() && (uncoveredCard->getSuit() == playedCard->getSuit() ||
-									 (uncoveredCard->getValue() == playedCard->getValue()))))) &&
-						   !(playedCard->getValue() == NetMauMau::Common::ICard::JACK &&
-							 uncoveredCard->getValue() == NetMauMau::Common::ICard::JACK)) : true;
+									 (uncoveredCard->getRank() == playedCard->getRank()))))) &&
+						   !(playedCard->getRank() == NetMauMau::Common::ICard::JACK &&
+							 uncoveredCard->getRank() == NetMauMau::Common::ICard::JACK)) : true;
 
-	m_hasToSuspend = accepted && playedCard->getValue() == NetMauMau::Common::ICard::EIGHT;
+	m_hasToSuspend = accepted && playedCard->getRank() == NetMauMau::Common::ICard::EIGHT;
 	m_hasSuspended = false;
 
-	if(accepted && playedCard->getValue() == NetMauMau::Common::ICard::SEVEN) {
+	if(accepted && playedCard->getRank() == NetMauMau::Common::ICard::SEVEN) {
 		m_takeCardCount += 2;
-	} else if(accepted && playedCard->getValue() == NetMauMau::Common::ICard::JACK) {
+	} else if(accepted && playedCard->getRank() == NetMauMau::Common::ICard::JACK) {
 		m_jackSuit = player->getJackChoice(uncoveredCard ? uncoveredCard : playedCard, playedCard);
 		m_jackMode = true;
 	}
@@ -73,7 +72,7 @@ void StdRuleSet::hasSuspended() {
 }
 
 std::size_t StdRuleSet::takeCards(const NetMauMau::Common::ICard *playedCard) const {
-	return (playedCard && playedCard->getValue() == NetMauMau::Common::ICard::SEVEN) ? 0 :
+	return (playedCard && playedCard->getRank() == NetMauMau::Common::ICard::SEVEN) ? 0 :
 		   m_takeCardCount;
 }
 

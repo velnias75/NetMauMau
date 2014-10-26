@@ -33,24 +33,24 @@ public:
 	virtual ~CardFactory();
 
 	virtual _NOUNUSED Common::ICard *create(Common::ICard::SUIT s = Common::ICard::HEARTS,
-											Common::ICard::VALUE v = Common::ICard::ACE) const;
+											Common::ICard::RANK r = Common::ICard::ACE) const;
 
 private:
 	class Card : public Common::ICard {
 		DISALLOW_COPY_AND_ASSIGN(Card)
 	public:
-		Card(Common::ICard::SUIT s, ICard::VALUE v, const std::string &desc);
+		Card(Common::ICard::SUIT s, ICard::RANK r, const std::string &desc);
 		virtual ~Card();
 
 		virtual std::string description(bool ansi = false) const;
 		virtual std::size_t getPoints() const _PURE;
 
 		virtual SUIT getSuit() const _PURE;
-		virtual VALUE getValue() const _PURE;
+		virtual RANK getRank() const _PURE;
 
 	private:
 		Common::ICard::SUIT m_suit;
-		Common::ICard::VALUE m_value;
+		Common::ICard::RANK m_rank;
 		std::string m_desc;
 	};
 

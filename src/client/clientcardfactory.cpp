@@ -28,37 +28,37 @@ CardFactory::CardFactory(const std::string &cardDesc) : ICardFactory(), m_cardDe
 CardFactory::~CardFactory() {}
 
 NetMauMau::Common::ICard *CardFactory::create(NetMauMau::Common::ICard::SUIT,
-		NetMauMau::Common::ICard::VALUE) const {
+		NetMauMau::Common::ICard::RANK) const {
 
 	NetMauMau::Common::ICard::SUIT suit = NetMauMau::Common::ICard::HEARTS;
-	NetMauMau::Common::ICard::VALUE value = NetMauMau::Common::ICard::ACE;
+	NetMauMau::Common::ICard::RANK rank = NetMauMau::Common::ICard::ACE;
 
-	if(NetMauMau::Common::parseCardDesc(m_cardDesc, &suit, &value)) {
-		return new Card(suit, value, m_cardDesc);
+	if(NetMauMau::Common::parseCardDesc(m_cardDesc, &suit, &rank)) {
+		return new Card(suit, rank, m_cardDesc);
 	} else {
 		return 0L;
 	}
 }
 
-CardFactory::Card::Card(NetMauMau::Common::ICard::SUIT s, NetMauMau::Common::ICard::VALUE v,
-						const std::string &desc) : m_suit(s), m_value(v), m_desc(desc) {}
+CardFactory::Card::Card(NetMauMau::Common::ICard::SUIT s, NetMauMau::Common::ICard::RANK v,
+						const std::string &desc) : m_suit(s), m_rank(v), m_desc(desc) {}
 
 CardFactory::Card::~Card() {}
 
 std::size_t CardFactory::Card::getPoints() const {
-	return NetMauMau::Common::getCardPoints(m_value);
+	return NetMauMau::Common::getCardPoints(m_rank);
 }
 
 std::string CardFactory::Card::description(bool ansi) const {
-	return ansi ? NetMauMau::Common::createCardDesc(m_suit, m_value, ansi) : m_desc;
+	return ansi ? NetMauMau::Common::createCardDesc(m_suit, m_rank, ansi) : m_desc;
 }
 
 NetMauMau::Common::ICard::SUIT CardFactory::Card::getSuit() const {
 	return m_suit;
 }
 
-NetMauMau::Common::ICard::VALUE CardFactory::Card::getValue() const {
-	return m_value;
+NetMauMau::Common::ICard::RANK CardFactory::Card::getRank() const {
+	return m_rank;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

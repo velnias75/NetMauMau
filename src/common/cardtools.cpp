@@ -97,7 +97,7 @@ NetMauMau::Common::ICard::SUIT NetMauMau::Common::symbolToSuit(const std::string
 	return ICard::HEARTS;
 }
 
-std::size_t NetMauMau::Common::getCardPoints(ICard::VALUE v) {
+std::size_t NetMauMau::Common::getCardPoints(ICard::RANK v) {
 
 	switch(v) {
 	case ICard::SEVEN:
@@ -125,39 +125,38 @@ std::size_t NetMauMau::Common::getCardPoints(ICard::VALUE v) {
 }
 
 bool NetMauMau::Common::parseCardDesc(const std::string &desc, ICard::SUIT *suit,
-									  ICard::VALUE *value) {
+									  ICard::RANK *rank) {
 
 	const std::string::size_type p = desc.find(' ');
 
 	if(p == std::string::npos) return false;
 
 	const std::string s(desc.substr(0, p));
-	const std::string v(desc.substr(p + 1));
+	const std::string r(desc.substr(p + 1));
 
 	*suit = symbolToSuit(s);
 
-	std::istringstream is(v);
 	unsigned int iVal;
-	is >> iVal;
+	(std::istringstream(r)) >> iVal;
 
-	if(::isdigit(v[0]) && iVal) {
-		*value = static_cast<ICard::VALUE>(iVal);
+	if(::isdigit(r[0]) && iVal) {
+		*rank = static_cast<ICard::RANK>(iVal);
 	} else {
-		switch(v[0]) {
+		switch(r[0]) {
 		case 'J':
-			*value = ICard::JACK;
+			*rank = ICard::JACK;
 			break;
 
 		case 'Q':
-			*value = ICard::QUEEN;
+			*rank = ICard::QUEEN;
 			break;
 
 		case 'K':
-			*value = ICard::KING;
+			*rank = ICard::KING;
 			break;
 
 		case 'A':
-			*value = ICard::ACE;
+			*rank = ICard::ACE;
 			break;
 		}
 	}
@@ -165,7 +164,7 @@ bool NetMauMau::Common::parseCardDesc(const std::string &desc, ICard::SUIT *suit
 	return true;
 }
 
-std::string NetMauMau::Common::createCardDesc(ICard::SUIT s, ICard::VALUE v, bool ansi) {
+std::string NetMauMau::Common::createCardDesc(ICard::SUIT s, ICard::RANK v, bool ansi) {
 
 	std::string d = suitToSymbol(s, ansi);
 	d.append(1, ' ');

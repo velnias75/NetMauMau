@@ -57,12 +57,12 @@ public:
 				   QUEEN,
 				   KING,
 				   ACE
-				 } VALUE;
+				 } RANK;
 
 	virtual ~ICard() {}
 
 	virtual SUIT getSuit() const = 0;
-	virtual VALUE getValue() const = 0;
+	virtual RANK getRank() const = 0;
 	virtual std::size_t getPoints() const = 0;
 
 	virtual std::string description(bool ansi = false) const = 0;

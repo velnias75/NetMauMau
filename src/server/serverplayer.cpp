@@ -72,14 +72,14 @@ NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *un
 NetMauMau::Common::ICard *Player::findCard(const std::string &offeredCard) const {
 
 	NetMauMau::Common::ICard::SUIT s = NetMauMau::Common::ICard::HEARTS;
-	NetMauMau::Common::ICard::VALUE v = NetMauMau::Common::ICard::ACE;
+	NetMauMau::Common::ICard::RANK r = NetMauMau::Common::ICard::ACE;
 
-	if(NetMauMau::Common::parseCardDesc(offeredCard, &s, &v)) {
+	if(NetMauMau::Common::parseCardDesc(offeredCard, &s, &r)) {
 		const std::vector<NetMauMau::Common::ICard *> &pc(getPlayerCards());
 
 		for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(pc.begin());
 				i != pc.end(); ++i) {
-			if((*i)->getSuit() == s && (*i)->getValue() == v) return *i;
+			if((*i)->getSuit() == s && (*i)->getRank() == r) return *i;
 		}
 	}
 
@@ -107,8 +107,7 @@ std::size_t Player::getCardCount() const {
 	std::size_t cc = 0;
 
 	try {
-		std::istringstream is(m_connection.read(m_sockfd));
-		is >> cc;
+		(std::istringstream(m_connection.read(m_sockfd))) >> cc;
 	} catch(const NetMauMau::Common::Exception::SocketException &) {}
 
 	return cc;

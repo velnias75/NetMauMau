@@ -48,12 +48,12 @@ inline T genRandom(T ubound) {
 
 _EXPORT const std::string *getSuitSymbols() _CONST;
 _EXPORT std::string ansiSuit(const std::string &suit);
-_EXPORT ICard::SUIT symbolToSuit(const std::string &sym);
+_EXPORT ICard::SUIT symbolToSuit(const std::string &symbol);
 _EXPORT std::string suitToSymbol(ICard::SUIT suit, bool ansi, bool endansi = false);
 _EXPORT _NOUNUSED bool parseCardDesc(const std::string &desc, ICard::SUIT *suit,
-									 ICard::VALUE *value);
-_EXPORT std::string createCardDesc(ICard::SUIT s, ICard::VALUE v, bool ansi);
-_EXPORT std::size_t getCardPoints(ICard::VALUE v) _CONST;
+									 ICard::RANK *rank);
+_EXPORT std::string createCardDesc(ICard::SUIT suite, ICard::RANK rank, bool ansi);
+_EXPORT std::size_t getCardPoints(ICard::RANK rank) _CONST;
 
 }
 

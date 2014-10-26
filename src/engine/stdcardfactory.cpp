@@ -26,11 +26,11 @@ StdCardFactory::StdCardFactory() {}
 
 StdCardFactory::~StdCardFactory() {}
 
-Common::ICard *StdCardFactory::create(Common::ICard::SUIT f, Common::ICard::VALUE v) const {
-	return new StdCard(f, v);
+Common::ICard *StdCardFactory::create(Common::ICard::SUIT s, Common::ICard::RANK r) const {
+	return new StdCard(s, r);
 }
 
-StdCardFactory::StdCard::StdCard(ICard::SUIT f, ICard::VALUE v) : ICard(), m_suit(f), m_value(v) {}
+StdCardFactory::StdCard::StdCard(ICard::SUIT s, ICard::RANK r) : ICard(), m_suit(s), m_rank(r) {}
 
 StdCardFactory::StdCard::~StdCard() {}
 
@@ -38,16 +38,16 @@ Common::ICard::SUIT StdCardFactory::StdCard::getSuit() const {
 	return m_suit;
 }
 
-Common::ICard::VALUE StdCardFactory::StdCard::getValue() const {
-	return m_value;
+Common::ICard::RANK StdCardFactory::StdCard::getRank() const {
+	return m_rank;
 }
 
 std::size_t StdCardFactory::StdCard::getPoints() const {
-	return Common::getCardPoints(m_value);
+	return Common::getCardPoints(m_rank);
 }
 
 std::string StdCardFactory::StdCard::description(bool ansi) const {
-	return Common::createCardDesc(m_suit, m_value, ansi);
+	return Common::createCardDesc(m_suit, m_rank, ansi);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

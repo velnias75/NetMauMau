@@ -90,25 +90,9 @@ Talon::~Talon() {
 	}
 }
 
-bool Talon::empty() const {
-	return m_cardStack.empty();
-}
-
-Common::ICard *Talon::top() const {
-	return m_cardStack.top();
-}
-
-void Talon::pop() {
-	m_cardStack.pop();
-}
-
 Common::ICard *Talon::uncoverCard() {
 	m_uncovered.push(top());
 	pop();
-	return m_uncovered.top();
-}
-
-Common::ICard *Talon::getUncoveredCard() const {
 	return m_uncovered.top();
 }
 
@@ -140,10 +124,6 @@ Common::ICard *Talon::takeCard() {
 	Common::ICard *c = top();
 	pop();
 	return c;
-}
-
-void Talon::playCard(Common::ICard *card) {
-	m_uncovered.push(card);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

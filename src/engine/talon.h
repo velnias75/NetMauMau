@@ -40,14 +40,28 @@ public:
 	Talon();
 	~Talon();
 
-	bool empty() const _PURE;
-	Common::ICard *top() const _PURE;
-	void pop();
+	inline bool empty() const {
+		return m_cardStack.empty();
+	}
+
+	inline Common::ICard *top() const {
+		return m_cardStack.top();
+	}
+
+	inline void pop() {
+		m_cardStack.pop();
+	}
 
 	Common::ICard *uncoverCard();
-	Common::ICard *getUncoveredCard() const _PURE;
 
-	void playCard(Common::ICard *card);
+	inline Common::ICard *getUncoveredCard() const {
+		return m_uncovered.top();
+	}
+
+	inline void playCard(Common::ICard *card) {
+		m_uncovered.push(card);
+	}
+
 	Common::ICard *takeCard();
 
 private:

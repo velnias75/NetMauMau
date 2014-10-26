@@ -219,14 +219,6 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	return *this;
 }
 
-const Connection::PLAYERINFOS &Connection::getPlayers() const {
-	return getRegisteredPlayers();
-}
-
-void Connection::setCapabilities(const Connection::CAPABILITIES &caps) {
-	m_caps = caps;
-}
-
 void Connection::intercept() {
 
 	timeval tv = { 0, 600 };

@@ -60,9 +60,15 @@ public:
 
 	bool addPlayer(Player::IPlayer *player);
 
-	bool hasPlayers() const _PURE;
+	inline bool hasPlayers() const {
+		return m_players.size() > 1;
+	}
+
 	void reversePlayers();
-	std::size_t getPlayerCount() const _PURE;
+
+	inline std::size_t getPlayerCount() const {
+		return m_players.size();
+	}
 
 	bool distributeCards();
 	bool nextTurn();
@@ -75,7 +81,10 @@ private:
 	void calcScore(Player::IPlayer *p);
 	PLAYERS::iterator find(const std::string &name);
 	PLAYERS::iterator removePlayer(Player::IPlayer *player);
-	void removePlayers();
+
+	inline void removePlayers() {
+		m_players.clear();
+	}
 
 private:
 	Event::IEventHandler &m_eventHandler;

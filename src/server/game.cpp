@@ -98,8 +98,4 @@ void Game::reset() {
 	}
 }
 
-std::size_t Game::getPlayerCount() const {
-	return m_engine.getPlayerCount();
-}
-
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

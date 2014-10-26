@@ -50,7 +50,10 @@ public:
 	~Game();
 
 	COLLECT_STATE collectPlayers(std::size_t minPlayers, Player::IPlayer *player);
-	std::size_t getPlayerCount() const _PURE;
+
+	inline std::size_t getPlayerCount() const {
+		return m_engine.getPlayerCount();
+	}
 
 	void start();
 

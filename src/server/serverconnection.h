@@ -45,13 +45,18 @@ public:
 
 	int wait(timeval *tv = NULL) const;
 
-	const PLAYERINFOS &getPlayers() const _CONST;
+	inline const PLAYERINFOS &getPlayers() const {
+		return getRegisteredPlayers();
+	}
 
 	Connection &operator<<(const std::string &msg) throw(Common::Exception::SocketException);
 	Connection &operator>>(std::string &msg) throw(Common::Exception::SocketException);
 
 	ACCEPT_STATE accept(INFO &v, bool refuse = false) throw(Common::Exception::SocketException);
-	void setCapabilities(const CAPABILITIES &caps);
+
+	inline void setCapabilities(const CAPABILITIES &caps) {
+		m_caps = caps;
+	}
 
 protected:
 	virtual bool wire(int sockfd, const struct sockaddr *addr, socklen_t addrlen) const;

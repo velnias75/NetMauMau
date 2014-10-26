@@ -114,10 +114,6 @@ bool Engine::addPlayer(Player::IPlayer *player) {
 	return false;
 }
 
-void Engine::removePlayers() {
-	m_players.clear();
-}
-
 Engine::PLAYERS::iterator Engine::removePlayer(Player::IPlayer *player) {
 
 	const PLAYERS::iterator &f(std::find(m_players.begin(), m_players.end(), player));
@@ -125,10 +121,6 @@ Engine::PLAYERS::iterator Engine::removePlayer(Player::IPlayer *player) {
 	if(f != m_players.end()) return m_players.erase(f);
 
 	return f;
-}
-
-std::size_t Engine::getPlayerCount() const {
-	return m_players.size();
 }
 
 bool Engine::distributeCards() {
@@ -167,10 +159,6 @@ bool Engine::distributeCards() {
 	}
 
 	return false;
-}
-
-bool Engine::hasPlayers() const {
-	return m_players.size() > 1;
 }
 
 void Engine::reversePlayers() {

@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libnetmaumaucommon.la
 
-noinst_HEADERS = icardfactory.h iplayer.h stdplayer.h basiclogger.h logger.h
+noinst_HEADERS = icardfactory.h iplayer.h stdplayer.h basiclogger.h logger.h random_gen.h
 
 libnetmaumaucommon_la_CXXFLAGS = -I$(top_srcdir)/src/include
 libnetmaumaucommon_la_SOURCES = abstractsocket.cpp abstractconnection.cpp socketexception.cpp \

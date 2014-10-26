@@ -22,6 +22,7 @@
 #include "stdplayer.h"
 
 #include "cardtools.h"
+#include "random_gen.h"
 
 namespace {
 

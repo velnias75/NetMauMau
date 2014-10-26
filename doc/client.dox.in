@@ -812,6 +812,7 @@ EXCLUDE                = "@abs_top_srcdir@/src/client/interceptederrorexception.
                          "@abs_top_srcdir@/src/common/iplayer.h" \
                          "@abs_top_srcdir@/src/common/stdplayer.h" \
                          "@abs_top_srcdir@/src/common/basiclogger.h" \
+                         "@abs_top_srcdir@/src/common/random_gen.h" \
                          "@abs_top_srcdir@/src/common/logger.h"
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or

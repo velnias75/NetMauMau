@@ -21,7 +21,7 @@
 
 #include "talon.h"
 
-#include "cardtools.h"
+#include "random_gen.h"
 #include "stdcardfactory.h"
 
 using namespace NetMauMau;

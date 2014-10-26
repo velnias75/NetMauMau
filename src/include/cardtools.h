@@ -26,10 +26,6 @@
 #ifndef NETMAUMAU_CARDTOOLS_H
 #define NETMAUMAU_CARDTOOLS_H
 
-#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
-#endif
-
 #include <cstdlib>
 
 #include "icard.h"
@@ -43,22 +39,6 @@ namespace NetMauMau {
  * @c #include @c "cardtools.h" to use the tool functions.
  */
 namespace Common {
-
-/**
- * @brief Generates a random number
- *
- * @tparam T type of the number
- * @param ubound upper bound
- * @return T the random number
- */
-template<typename T>
-inline T genRandom(T ubound) {
-#if HAVE_ARC4RANDOM_UNIFORM
-	return ubound > 0 ? ::arc4random_uniform(ubound) : 0;
-#else
-	return ubound > 0 ? (std::rand() % ubound) : 0;
-#endif
-}
 
 /**
  * @brief Get an array of the four @c SUIT symbols

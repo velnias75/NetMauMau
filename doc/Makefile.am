@@ -1,3 +1,5 @@
+EXTRA_DIST = DoxygenLayout.xml
+
 if GENDOX
 
 noinst_DATA = client-dox.stamp

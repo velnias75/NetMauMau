@@ -18,7 +18,8 @@
  */
 
 /**
- * @file clientconnection.h
+ * @file
+ * @brief Handles the connection from the client to a server
  * @author Heiko Schäfer <heiko@rangun.de>
  */
 
@@ -36,7 +37,7 @@ namespace NetMauMau {
 namespace Client {
 
 /**
- * @brief tbw
+ * @brief Handles the connection from the client to a server
  */
 class _EXPORT Connection : public Common::AbstractConnection {
 	DISALLOW_COPY_AND_ASSIGN(Connection)

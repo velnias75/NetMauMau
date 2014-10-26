@@ -18,7 +18,8 @@
  */
 
 /**
- * @file icard.h
+ * @file
+ * @brief Describes a playing card
  * @author Heiko Schäfer <heiko@rangun.de>
  */
 
@@ -35,13 +36,13 @@ namespace Common {
 
 /**
  * @interface ICard
- * @brief tbw
+ * @brief Describes a playing card
  */
 class ICard {
 	DISALLOW_COPY_AND_ASSIGN(ICard)
 public:
 	/**
-	 * @brief tbw
+	 * @brief The suit of the card
 	 */
 	typedef enum { DIAMONDS, ///< &diams;
 				   HEARTS, ///< &hearts;
@@ -49,22 +50,48 @@ public:
 				   CLUBS ///< &clubs;
 				 } SUIT;
 
-	typedef enum { SEVEN = 7,
-				   EIGHT = 8,
-				   NINE = 9,
-				   TEN = 10,
-				   JACK,
-				   QUEEN,
-				   KING,
-				   ACE
+	/**
+	 * @brief The rank of the card
+	 */
+	typedef enum { SEVEN = 7, ///< 7
+				   EIGHT = 8, ///< 8
+				   NINE = 9, ///< 9
+				   TEN = 10, ///< 10
+				   JACK, ///< Jack
+				   QUEEN, ///< Queen
+				   KING, ///< King
+				   ACE ///< Ace
 				 } RANK;
 
 	virtual ~ICard() {}
 
+	/**
+	 * @brief Gets the suit of the card
+	 *
+	 * @return NetMauMau::Common::ICard::SUIT the suit of the card
+	 */
 	virtual SUIT getSuit() const = 0;
+
+	/**
+	 * @brief Gets the rank of the card
+	 *
+	 * @return NetMauMau::Common::ICard::RANK the rank of the card
+	 */
 	virtual RANK getRank() const = 0;
+
+	/**
+	 * @brief Gets the points of the card
+	 *
+	 * @return std::size_t the points of the card
+	 */
 	virtual std::size_t getPoints() const = 0;
 
+	/**
+	 * @brief Returns the textual description of the card
+	 * @see NetMauMau::Common::parseCardDesc
+	 * @param ansi @c true if ANSI color code should be used, @c false otherwise
+	 * @return std::string the textual description of the card
+	 */
 	virtual std::string description(bool ansi = false) const = 0;
 
 protected:

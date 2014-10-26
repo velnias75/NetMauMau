@@ -18,7 +18,7 @@
  */
 
 /**
- * @file abstractsocket.h
+ * @file
  * @author Heiko Schäfer <heiko@rangun.de>
  */
 
@@ -35,14 +35,8 @@
 
 struct sockaddr;
 
-/**
- * @brief tbw
- */
 namespace NetMauMau {
 
-/**
- * @brief tbw
- */
 namespace Common {
 
 /**

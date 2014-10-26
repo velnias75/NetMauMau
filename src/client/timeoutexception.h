@@ -18,7 +18,7 @@
  */
 
 /**
- * @file timeoutexception.h
+ * @file
  * @author Heiko Schäfer <heiko@rangun.de>
  */
 
@@ -32,12 +32,12 @@ namespace NetMauMau {
 namespace Client {
 
 /**
- * @brief tbw
+ * @brief Exceptions thrown by clients
  */
 namespace Exception {
 
 /**
- * @brief tbw
+ * @brief A connection timed out
  */
 class _EXPORT TimeoutException : public Common::Exception::SocketException {
 	TimeoutException &operator=(const TimeoutException &);

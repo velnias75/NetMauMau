@@ -18,7 +18,7 @@
  */
 
 /**
- * @file abstractconnection.h
+ * @file
  * @author Heiko Schäfer <heiko@rangun.de>
  */
 
@@ -42,7 +42,9 @@ namespace NetMauMau {
 namespace Common {
 
 /**
- * @brief tbw
+ * @brief Abstract connection class
+ *
+ * Handles all registred users.
  */
 class _EXPORT AbstractConnection : public AbstractSocket {
 	DISALLOW_COPY_AND_ASSIGN(AbstractConnection)
@@ -64,7 +66,7 @@ public:
 	typedef std::vector<NAMESOCKFD> PLAYERINFOS;
 
 	/**
-	 * @brief tbw
+	 * @brief Key/value map of the server capabilities
 	 */
 	typedef std::map<std::string, std::string> CAPABILITIES;
 

@@ -28,7 +28,7 @@ class ICardFactory {
 public:
 	virtual ~ICardFactory() {}
 
-	virtual ICard *create(ICard::SUITE suite, ICard::VALUE value) const = 0;
+	virtual Common::ICard *create(Common::ICard::SUIT suit, Common::ICard::VALUE value) const = 0;
 
 protected:
 	ICardFactory() {}

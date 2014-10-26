@@ -17,6 +17,11 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file icard.h
+ * @author Heiko Schäfer <heiko@rangun.de>
+ */
+
 #ifndef NETMAUMAU_ICARD_H
 #define NETMAUMAU_ICARD_H
 
@@ -26,10 +31,24 @@
 
 namespace NetMauMau {
 
+namespace Common {
+
+/**
+ * @interface ICard
+ * @brief tbw
+ */
 class ICard {
 	DISALLOW_COPY_AND_ASSIGN(ICard)
 public:
-	typedef enum { DIAMOND, HEART, SPADE, CLUB } SUITE;
+	/**
+	 * @brief tbw
+	 */
+	typedef enum { DIAMONDS, ///< &diams;
+				   HEARTS, ///< &hearts;
+				   SPADES, ///< &spades;
+				   CLUBS ///< &clubs;
+				 } SUIT;
+
 	typedef enum { SEVEN = 7,
 				   EIGHT = 8,
 				   NINE = 9,
@@ -42,7 +61,7 @@ public:
 
 	virtual ~ICard() {}
 
-	virtual SUITE getSuite() const = 0;
+	virtual SUIT getSuit() const = 0;
 	virtual VALUE getValue() const = 0;
 	virtual std::size_t getPoints() const = 0;
 
@@ -51,6 +70,8 @@ public:
 protected:
 	ICard() {}
 };
+
+}
 
 }
 

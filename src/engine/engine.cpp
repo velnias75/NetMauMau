@@ -142,7 +142,7 @@ bool Engine::distributeCards() {
 
 			Player::IPlayer *p = *pi;
 
-			std::vector<ICard *> cards;
+			std::vector<Common::ICard *> cards;
 			cards.reserve(5);
 
 			for(std::size_t i = 0; i < 5; ++i) {
@@ -196,7 +196,7 @@ bool Engine::nextTurn() {
 
 		if(m_nextMessage) m_eventHandler.nextPlayer(player);
 
-		const ICard *uc = m_talon->getUncoveredCard();
+		const Common::ICard *uc = m_talon->getUncoveredCard();
 
 		if(!m_initialChecked) {
 			m_ruleset->checkInitial(player, uc);
@@ -206,9 +206,9 @@ bool Engine::nextTurn() {
 		m_eventHandler.stats(m_players);
 
 		const bool csuspend = m_ruleset->hasToSuspend();
-		const ICard::SUITE js = m_ruleset->getJackSuite();
+		const Common::ICard::SUIT js = m_ruleset->getJackSuit();
 
-		ICard *pc = !csuspend ? player->requestCard(uc, m_jackMode ? &js : 0L) : 0L;
+		Common::ICard *pc = !csuspend ? player->requestCard(uc, m_jackMode ? &js : 0L) : 0L;
 
 		bool won = false;
 
@@ -248,7 +248,7 @@ bool Engine::nextTurn() {
 
 				m_eventHandler.cardRejected(player, uc, pc);
 
-				const ICard::SUITE js = m_ruleset->getJackSuite();
+				const Common::ICard::SUIT js = m_ruleset->getJackSuit();
 
 				if(!(pc = player->requestCard(uc, m_jackMode ? &js : 0L))) {
 
@@ -285,7 +285,7 @@ bool Engine::nextTurn() {
 				m_eventHandler.playerPlaysCard(player, pc, uc);
 
 				if((m_jackMode = m_ruleset->isJackMode())) {
-					m_eventHandler.playerChooseJackSuite(player, m_ruleset->getJackSuite());
+					m_eventHandler.playerChooseJackSuit(player, m_ruleset->getJackSuit());
 				}
 
 				if(won) {
@@ -295,7 +295,8 @@ bool Engine::nextTurn() {
 					std::advance(f, m_nxtPlayer);
 					PLAYERS::iterator nxt = m_players.erase(f);
 
-					m_nxtPlayer = nxt != m_players.end() ? std::distance(m_players.begin(), nxt) : 0;
+					m_nxtPlayer = nxt != m_players.end() ? std::distance(m_players.begin(), nxt)
+								  : 0;
 
 					if(!hasPlayers()) {
 						m_eventHandler.playerLost(m_players[m_nxtPlayer], m_turn);

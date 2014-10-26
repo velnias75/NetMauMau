@@ -38,14 +38,15 @@ public:
 	virtual std::string getName() const = 0;
 	virtual int getSerial() const = 0;
 
-	virtual void receiveCard(ICard *card) = 0;
-	virtual void receiveCardSet(const std::vector<ICard *> &cards) = 0;
+	virtual void receiveCard(Common::ICard *card) = 0;
+	virtual void receiveCardSet(const std::vector<Common::ICard *> &cards) = 0;
 
-	virtual ICard *requestCard(const ICard *uncoveredCard, const ICard::SUITE *jackSuite) const = 0;
-	virtual ICard::SUITE getJackChoice(const ICard *uncoveredCard,
-									   const ICard *playedCard) const = 0;
+	virtual Common::ICard *requestCard(const Common::ICard *uncoveredCard,
+									   const Common::ICard::SUIT *jackSuit) const = 0;
+	virtual Common::ICard::SUIT getJackChoice(const Common::ICard *uncoveredCard,
+			const Common::ICard *playedCard) const = 0;
 
-	virtual bool cardAccepted(const ICard *playedCard) = 0;
+	virtual bool cardAccepted(const Common::ICard *playedCard) = 0;
 
 	virtual REASON getNoCardReason() const = 0;
 

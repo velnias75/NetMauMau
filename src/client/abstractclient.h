@@ -17,6 +17,11 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file abstractclient.h
+ * @author Heiko Schäfer <heiko@rangun.de>
+ */
+
 #ifndef NETMAUMAU_ABSTRACTCLIENT_H
 #define NETMAUMAU_ABSTRACTCLIENT_H
 
@@ -27,62 +32,223 @@
 
 namespace NetMauMau {
 
+/**
+ * @brief tbw
+ */
 namespace Client {
 
+/**
+ * @brief tbw
+ */
 class _EXPORT AbstractClient {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClient)
 public:
 	virtual ~AbstractClient();
 
-	void play(struct timeval *timeout = 0L) throw(Common::Exception::SocketException);
-	Connection::CAPABILITIES capabilities(struct timeval *timeout = 0L)
+	/**
+	 * @brief ...
+	 *
+	 * @param timeout ...
+	 */
+	void play(timeval *timeout = 0L) throw(Common::Exception::SocketException);
+
+	/**
+	 * @brief ...
+	 *
+	 * @param timeout ...
+	 * @return NetMauMau::Common::AbstractConnection::CAPABILITIES
+	 */
+	Connection::CAPABILITIES capabilities(timeval *timeout = 0L)
 	throw(Common::Exception::SocketException);
 
 protected:
+	/**
+	 * @brief tbw
+	 */
 	typedef struct {
-		std::string playerName;
-		std::size_t cardCount;
+		std::string playerName; ///< tbw
+		std::size_t cardCount; ///< tbw
 	} STAT;
 
+	/**
+	 * @brief tbw
+	 */
 	typedef std::vector<STAT> STATS;
-	typedef std::vector<ICard *> CARDS;
 
-	AbstractClient(const std::string &pName, const std::string &server, uint16_t port);
+	/**
+	 * @brief tbw
+	 */
+	typedef std::vector<Common::ICard *> CARDS;
 
+	/**
+	 * @brief ...
+	 *
+	 * @param pName ...
+	 * @param server ...
+	 * @param port ...
+	 */
+	AbstractClient(const std::string &player, const std::string &server, uint16_t port);
+
+	/**
+	 * @brief ...
+	 *
+	 * @return std::string
+	 */
 	std::string getPlayerName() const;
 
+	/**
+	 * @brief ...
+	 *
+	 * @param msg ...
+	 */
 	virtual void message(const std::string &msg) = 0;
+
+	/**
+	 * @brief ...
+	 *
+	 * @param msg ...
+	 */
 	virtual void error(const std::string &msg) = 0;
+
+	/**
+	 * @brief ...
+	 *
+	 * @param turn ...
+	 */
 	virtual void turn(std::size_t turn) const = 0;
+
+	/**
+	 * @brief ...
+	 *
+	 * @param stats ...
+	 */
 	virtual void stats(const STATS &stats) const = 0;
+
+	/**
+	 * @brief ...
+	 */
 	virtual void gameOver() const = 0;
 
-	virtual ICard *playCard(const CARDS &cards) const = 0;
-	virtual ICard::SUITE getJackSuiteChoice() const = 0;
+	/**
+	 * @brief ...
+	 *
+	 * @param cards ...
+	 * @return NetMauMau::Common::ICard*
+	 */
+	virtual Common::ICard *playCard(const CARDS &cards) const = 0;
 
+	/**
+	 * @brief ...
+	 *
+	 * @return NetMauMau::Common::ICard::SUIT
+	 */
+	virtual Common::ICard::SUIT getJackSuitChoice() const = 0;
+
+	/**
+	 * @brief ...
+	 *
+	 * @param player ...
+	 */
 	virtual void playerJoined(const std::string &player) const = 0;
+
+	/**
+	 * @brief ...
+	 *
+	 * @param player ...
+	 */
 	virtual void playerRejected(const std::string &player) const = 0;
+
+	/**
+	 * @brief ...
+	 *
+	 * @param player ...
+	 */
 	virtual void playerSuspends(const std::string &player) const = 0;
-	virtual void playedCard(const std::string &player, const ICard *card) const = 0;
+
+	/**
+	 * @brief ...
+	 *
+	 * @param player ...
+	 * @param card ...
+	 */
+	virtual void playedCard(const std::string &player, const Common::ICard *card) const = 0;
+
+	/**
+	 * @brief ...
+	 *
+	 * @param player ...
+	 * @param turn ...
+	 */
 	virtual void playerWins(const std::string &player, std::size_t turn) const = 0;
-	virtual void playerPicksCard(const std::string &player, const ICard *card) const = 0;
+
+	/**
+	 * @brief ...
+	 *
+	 * @param player ...
+	 * @param card ...
+	 */
+	virtual void playerPicksCard(const std::string &player, const Common::ICard *card) const = 0;
+
+	/**
+	 * @brief ...
+	 *
+	 * @param player ...
+	 * @param count ...
+	 */
 	virtual void playerPicksCard(const std::string &player, std::size_t count) const = 0;
+
+	/**
+	 * @brief ...
+	 *
+	 * @param player ...
+	 */
 	virtual void nextPlayer(const std::string &player) const = 0;
 
+	/**
+	 * @brief ...
+	 *
+	 * @param cards ...
+	 */
 	virtual void cardSet(const CARDS &cards) const = 0;
-	virtual void initialCard(const ICard *card) const = 0;
-	virtual void openCard(const ICard *card, const std::string &jackSuite) const = 0;
-	virtual void cardRejected(const std::string &player, const ICard *card) const = 0;
-	virtual void jackSuite(const std::string &suite) = 0;
+
+	/**
+	 * @brief ...
+	 *
+	 * @param card ...
+	 */
+	virtual void initialCard(const Common::ICard *card) const = 0;
+
+	/**
+	 * @brief ...
+	 *
+	 * @param card ...
+	 * @param jackSuit ...
+	 */
+	virtual void openCard(const Common::ICard *card, const std::string &jackSuit) const = 0;
+
+	/**
+	 * @brief ...
+	 *
+	 * @param player ...
+	 * @param card ...
+	 */
+	virtual void cardRejected(const std::string &player, const Common::ICard *card) const = 0;
+
+	/**
+	 * @brief ...
+	 *
+	 * @param suit ...
+	 */
+	virtual void jackSuit(Common::ICard::SUIT suit) = 0;
 
 private:
-	CARDS getCards(const std::vector<NetMauMau::ICard *>::const_iterator &first) const;
+	CARDS getCards(const std::vector<Common::ICard *>::const_iterator &first) const;
 
 private:
 	Connection m_connection;
 	std::string m_pName;
-	std::vector<ICard *> m_cards;
-	ICard *m_openCard;
+	std::vector<Common::ICard *> m_cards;
+	Common::ICard *m_openCard;
 };
 
 }

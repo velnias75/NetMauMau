@@ -33,41 +33,40 @@ const std::string ANSI_DFT;
 
 #pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
 #pragma GCC diagnostic push
-const std::string SUITES[] = { "\u2666", "\u2665", "\u2660", "\u2663" };
+const std::string SUIT[] = { "\u2666", "\u2665", "\u2660", "\u2663" };
 #pragma GCC diagnostic pop
 
 }
 
-const std::string *NetMauMau::Common::getSuiteSymbols() {
-	return SUITES;
+const std::string *NetMauMau::Common::getSuitSymbols() {
+	return SUIT;
 }
 
-std::string NetMauMau::Common::suiteToSymbol(NetMauMau::ICard::SUITE suite, bool ansi,
-		bool endansi) {
+std::string NetMauMau::Common::suitToSymbol(ICard::SUIT suit, bool ansi, bool endansi) {
 
 	std::string d;
 	d.reserve(50);
 
-	switch(suite) {
-	case ICard::DIAMOND:
+	switch(suit) {
+	case ICard::DIAMONDS:
 		if(ansi) d.append(ANSI_RED);
 
 		d.append("\u2666");
 		break;
 
-	case ICard::HEART:
+	case ICard::HEARTS:
 		if(ansi) d.append(ANSI_RED);
 
 		d.append("\u2665");
 		break;
 
-	case ICard::SPADE:
+	case ICard::SPADES:
 		if(ansi) d.append(ANSI_DFT);
 
 		d.append("\u2660");
 		break;
 
-	case ICard::CLUB:
+	case ICard::CLUBS:
 		if(ansi) d.append(ANSI_DFT);
 
 		d.append("\u2663");
@@ -83,19 +82,19 @@ std::string NetMauMau::Common::suiteToSymbol(NetMauMau::ICard::SUITE suite, bool
 	return d;
 }
 
-NetMauMau::ICard::SUITE NetMauMau::Common::symbolToSuite(const std::string &sym) {
+NetMauMau::Common::ICard::SUIT NetMauMau::Common::symbolToSuit(const std::string &sym) {
 
 	if(sym == "\u2666") {
-		return NetMauMau::ICard::DIAMOND;
+		return ICard::DIAMONDS;
 	} else if(sym == "\u2665") {
-		return NetMauMau::ICard::HEART;
+		return ICard::HEARTS;
 	} else if(sym == "\u2660") {
-		return NetMauMau::ICard::SPADE;
+		return ICard::SPADES;
 	} else if(sym == "\u2663") {
-		return NetMauMau::ICard::CLUB;
+		return ICard::CLUBS;
 	}
 
-	return NetMauMau::ICard::HEART;
+	return ICard::HEARTS;
 }
 
 std::size_t NetMauMau::Common::getCardPoints(ICard::VALUE v) {
@@ -125,8 +124,8 @@ std::size_t NetMauMau::Common::getCardPoints(ICard::VALUE v) {
 	return 0;
 }
 
-bool NetMauMau::Common::parseCardDesc(const std::string &desc, NetMauMau::ICard::SUITE *suite,
-									  NetMauMau::ICard::VALUE *value) {
+bool NetMauMau::Common::parseCardDesc(const std::string &desc, ICard::SUIT *suit,
+									  ICard::VALUE *value) {
 
 	const std::string::size_type p = desc.find(' ');
 
@@ -135,30 +134,30 @@ bool NetMauMau::Common::parseCardDesc(const std::string &desc, NetMauMau::ICard:
 	const std::string s(desc.substr(0, p));
 	const std::string v(desc.substr(p + 1));
 
-	*suite = symbolToSuite(s);
+	*suit = symbolToSuit(s);
 
 	std::istringstream is(v);
 	unsigned int iVal;
 	is >> iVal;
 
 	if(::isdigit(v[0]) && iVal) {
-		*value = static_cast<NetMauMau::ICard::VALUE>(iVal);
+		*value = static_cast<ICard::VALUE>(iVal);
 	} else {
 		switch(v[0]) {
 		case 'J':
-			*value = NetMauMau::ICard::JACK;
+			*value = ICard::JACK;
 			break;
 
 		case 'Q':
-			*value = NetMauMau::ICard::QUEEN;
+			*value = ICard::QUEEN;
 			break;
 
 		case 'K':
-			*value = NetMauMau::ICard::KING;
+			*value = ICard::KING;
 			break;
 
 		case 'A':
-			*value = NetMauMau::ICard::ACE;
+			*value = ICard::ACE;
 			break;
 		}
 	}
@@ -166,9 +165,9 @@ bool NetMauMau::Common::parseCardDesc(const std::string &desc, NetMauMau::ICard:
 	return true;
 }
 
-std::string NetMauMau::Common::createCardDesc(ICard::SUITE s, ICard::VALUE v, bool ansi) {
+std::string NetMauMau::Common::createCardDesc(ICard::SUIT s, ICard::VALUE v, bool ansi) {
 
-	std::string d = suiteToSymbol(s, ansi);
+	std::string d = suitToSymbol(s, ansi);
 	d.append(1, ' ');
 
 	switch(v) {
@@ -205,8 +204,8 @@ std::string NetMauMau::Common::createCardDesc(ICard::SUITE s, ICard::VALUE v, bo
 
 }
 
-std::string NetMauMau::Common::ansiSuite(const std::string &suite) {
-	return suiteToSymbol(symbolToSuite(suite), true, true);
+std::string NetMauMau::Common::ansiSuit(const std::string &suit) {
+	return suitToSymbol(symbolToSuit(suit), true, true);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

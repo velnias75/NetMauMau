@@ -24,7 +24,7 @@
 using namespace NetMauMau::RuleSet;
 
 StdRuleSet::StdRuleSet() : IRuleSet(), m_hasToSuspend(false), m_hasSuspended(false),
-	m_takeCardCount(0), m_jackMode(false), m_jackSuite(NetMauMau::ICard::HEART) {}
+	m_takeCardCount(0), m_jackMode(false), m_jackSuit(NetMauMau::Common::ICard::HEARTS) {}
 
 StdRuleSet::~StdRuleSet() {}
 
@@ -33,30 +33,31 @@ std::size_t StdRuleSet::getMaxPlayers() const {
 }
 
 void StdRuleSet::checkInitial(const NetMauMau::Player::IPlayer *player,
-							  const NetMauMau::ICard *playedCard) {
+							  const NetMauMau::Common::ICard *playedCard) {
 	checkCard(player, 0L, playedCard);
 }
 
 bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
-						   const NetMauMau::ICard *uncoveredCard,
-						   const NetMauMau::ICard *playedCard) {
+						   const NetMauMau::Common::ICard *uncoveredCard,
+						   const NetMauMau::Common::ICard *playedCard) {
 
-	const bool accepted = uncoveredCard ? (playedCard->getValue() == NetMauMau::ICard::JACK &&
-										   uncoveredCard->getValue() != NetMauMau::ICard::JACK) ||
-						  ((((isJackMode() && getJackSuite() == playedCard->getSuite()) ||
-							 (!isJackMode() &&
-							  (uncoveredCard->getSuite() == playedCard->getSuite() ||
-							   (uncoveredCard->getValue() == playedCard->getValue()))))) &&
-						   !(playedCard->getValue() == NetMauMau::ICard::JACK &&
-							 uncoveredCard->getValue() == NetMauMau::ICard::JACK)) : true;
+	const bool accepted = uncoveredCard ? (playedCard->getValue() ==
+										   NetMauMau::Common::ICard::JACK &&
+										   uncoveredCard->getValue() !=
+										   NetMauMau::Common::ICard::JACK) ||
+						  ((((isJackMode() && getJackSuit() == playedCard->getSuit()) ||
+							 (!isJackMode() && (uncoveredCard->getSuit() == playedCard->getSuit() ||
+									 (uncoveredCard->getValue() == playedCard->getValue()))))) &&
+						   !(playedCard->getValue() == NetMauMau::Common::ICard::JACK &&
+							 uncoveredCard->getValue() == NetMauMau::Common::ICard::JACK)) : true;
 
-	m_hasToSuspend = accepted && playedCard->getValue() == NetMauMau::ICard::EIGHT;
+	m_hasToSuspend = accepted && playedCard->getValue() == NetMauMau::Common::ICard::EIGHT;
 	m_hasSuspended = false;
 
-	if(accepted && playedCard->getValue() == NetMauMau::ICard::SEVEN) {
+	if(accepted && playedCard->getValue() == NetMauMau::Common::ICard::SEVEN) {
 		m_takeCardCount += 2;
-	} else if(accepted && playedCard->getValue() == NetMauMau::ICard::JACK) {
-		m_jackSuite = player->getJackChoice(uncoveredCard ? uncoveredCard : playedCard, playedCard);
+	} else if(accepted && playedCard->getValue() == NetMauMau::Common::ICard::JACK) {
+		m_jackSuit = player->getJackChoice(uncoveredCard ? uncoveredCard : playedCard, playedCard);
 		m_jackMode = true;
 	}
 
@@ -71,8 +72,9 @@ void StdRuleSet::hasSuspended() {
 	m_hasSuspended = true;
 }
 
-std::size_t StdRuleSet::takeCards(const ICard *playedCard) const {
-	return (playedCard && playedCard->getValue() == NetMauMau::ICard::SEVEN) ? 0 : m_takeCardCount;
+std::size_t StdRuleSet::takeCards(const NetMauMau::Common::ICard *playedCard) const {
+	return (playedCard && playedCard->getValue() == NetMauMau::Common::ICard::SEVEN) ? 0 :
+		   m_takeCardCount;
 }
 
 void StdRuleSet::hasTakenCards() {
@@ -91,8 +93,8 @@ void StdRuleSet::setJackModeOff() {
 	m_jackMode = false;
 }
 
-NetMauMau::ICard::SUITE StdRuleSet::getJackSuite() const {
-	return m_jackSuite;
+NetMauMau::Common::ICard::SUIT StdRuleSet::getJackSuit() const {
+	return m_jackSuit;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

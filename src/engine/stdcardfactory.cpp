@@ -26,20 +26,19 @@ StdCardFactory::StdCardFactory() {}
 
 StdCardFactory::~StdCardFactory() {}
 
-ICard *StdCardFactory::create(ICard::SUITE f, ICard::VALUE v) const {
+Common::ICard *StdCardFactory::create(Common::ICard::SUIT f, Common::ICard::VALUE v) const {
 	return new StdCard(f, v);
 }
 
-StdCardFactory::StdCard::StdCard(ICard::SUITE f, ICard::VALUE v) : ICard(), m_suite(f),
-	m_value(v) {}
+StdCardFactory::StdCard::StdCard(ICard::SUIT f, ICard::VALUE v) : ICard(), m_suit(f), m_value(v) {}
 
 StdCardFactory::StdCard::~StdCard() {}
 
-ICard::SUITE StdCardFactory::StdCard::getSuite() const {
-	return m_suite;
+Common::ICard::SUIT StdCardFactory::StdCard::getSuit() const {
+	return m_suit;
 }
 
-ICard::VALUE StdCardFactory::StdCard::getValue() const {
+Common::ICard::VALUE StdCardFactory::StdCard::getValue() const {
 	return m_value;
 }
 
@@ -48,7 +47,7 @@ std::size_t StdCardFactory::StdCard::getPoints() const {
 }
 
 std::string StdCardFactory::StdCard::description(bool ansi) const {
-	return Common::createCardDesc(m_suite, m_value, ansi);
+	return Common::createCardDesc(m_suit, m_value, ansi);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

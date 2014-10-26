@@ -32,25 +32,25 @@ public:
 	CardFactory(const std::string &cardDesc);
 	virtual ~CardFactory();
 
-	virtual _NOUNUSED ICard *create(ICard::SUITE s = ICard::HEART,
-									ICard::VALUE v = ICard::ACE) const;
+	virtual _NOUNUSED Common::ICard *create(Common::ICard::SUIT s = Common::ICard::HEARTS,
+											Common::ICard::VALUE v = Common::ICard::ACE) const;
 
 private:
-	class Card : public ICard {
+	class Card : public Common::ICard {
 		DISALLOW_COPY_AND_ASSIGN(Card)
 	public:
-		Card(ICard::SUITE s, ICard::VALUE v, const std::string &desc);
+		Card(Common::ICard::SUIT s, ICard::VALUE v, const std::string &desc);
 		virtual ~Card();
 
 		virtual std::string description(bool ansi = false) const;
 		virtual std::size_t getPoints() const _PURE;
 
-		virtual SUITE getSuite() const _PURE;
+		virtual SUIT getSuit() const _PURE;
 		virtual VALUE getValue() const _PURE;
 
 	private:
-		ICard::SUITE m_suite;
-		ICard::VALUE m_value;
+		Common::ICard::SUIT m_suit;
+		Common::ICard::VALUE m_value;
 		std::string m_desc;
 	};
 

@@ -17,6 +17,11 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file abstractsocket.h
+ * @author Heiko Schäfer <heiko@rangun.de>
+ */
+
 #ifndef NETMAUMAU_SOCKET_H
 #define NETMAUMAU_SOCKET_H
 
@@ -30,10 +35,19 @@
 
 struct sockaddr;
 
+/**
+ * @brief tbw
+ */
 namespace NetMauMau {
 
+/**
+ * @brief tbw
+ */
 namespace Common {
 
+/**
+ * @brief tbw
+ */
 class _EXPORT AbstractSocket {
 	DISALLOW_COPY_AND_ASSIGN(AbstractSocket)
 public:

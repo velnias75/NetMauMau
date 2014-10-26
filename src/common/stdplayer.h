@@ -35,13 +35,15 @@ public:
 	virtual std::string getName() const;
 	virtual int getSerial() const _CONST;
 
-	virtual void receiveCard(ICard *card);
-	virtual void receiveCardSet(const std::vector<ICard *> &cards);
+	virtual void receiveCard(Common::ICard *card);
+	virtual void receiveCardSet(const std::vector<Common::ICard *> &cards);
 
-	virtual ICard *requestCard(const ICard *uncoveredCard, const ICard::SUITE *jackSuite) const;
-	virtual ICard::SUITE getJackChoice(const ICard *uncoveredCard, const ICard *playedCard) const;
+	virtual Common::ICard *requestCard(const Common::ICard *uncoveredCard,
+									   const Common::ICard::SUIT *jackSuit) const;
+	virtual Common::ICard::SUIT getJackChoice(const Common::ICard *uncoveredCard,
+			const Common::ICard *playedCard) const;
 
-	virtual bool cardAccepted(const ICard *playedCard);
+	virtual bool cardAccepted(const Common::ICard *playedCard);
 
 	virtual REASON getNoCardReason() const _PURE;
 
@@ -53,15 +55,15 @@ public:
 	static void resetJackState();
 
 protected:
-	const std::vector<ICard *> &getPlayerCards() const _CONST;
+	const std::vector<Common::ICard *> &getPlayerCards() const _CONST;
 
 private:
-	ICard *findBestCard(const NetMauMau::ICard *uc, const NetMauMau::ICard::SUITE *js,
-						bool noJack) const;
+	Common::ICard *findBestCard(const Common::ICard *uc, const Common::ICard::SUIT *js,
+								bool noJack) const;
 
 private:
 	std::string m_name;
-	mutable std::vector<ICard *> m_cards;
+	mutable std::vector<Common::ICard *> m_cards;
 	static bool m_jackPlayed;
 };
 

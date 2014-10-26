@@ -17,6 +17,11 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file socketexception.h
+ * @author Heiko Schäfer <heiko@rangun.de>
+ */
+
 #ifndef NETMAUMAU_SOCKETEXCEPTION_H
 #define NETMAUMAU_SOCKETEXCEPTION_H
 
@@ -29,8 +34,14 @@ namespace NetMauMau {
 
 namespace Common {
 
+/**
+ * @brief tbw
+ */
 namespace Exception {
 
+/**
+ * @brief tbw
+ */
 class _EXPORT SocketException : public std::exception {
 	SocketException &operator=(const SocketException &);
 public:

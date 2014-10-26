@@ -35,18 +35,18 @@ class IRuleSet {
 public:
 	virtual ~IRuleSet() {}
 
-	virtual void checkInitial(const Player::IPlayer *player, const ICard *playedCard) = 0;
-	virtual bool checkCard(const Player::IPlayer *player, const ICard *uncoveredCard,
-						   const ICard *playedCard) = 0;
+	virtual void checkInitial(const Player::IPlayer *player, const Common::ICard *playedCard) = 0;
+	virtual bool checkCard(const Player::IPlayer *player, const Common::ICard *uncoveredCard,
+						   const Common::ICard *playedCard) = 0;
 
 	virtual bool hasToSuspend() const = 0;
 	virtual void hasSuspended() = 0;
-	virtual std::size_t takeCards(const ICard *playedCard) const = 0;;
+	virtual std::size_t takeCards(const Common::ICard *playedCard) const = 0;;
 	virtual void hasTakenCards() = 0;
 	virtual bool suspendIfNoMatchingCard() const = 0;
 
 	virtual bool isJackMode() const = 0;
-	virtual ICard::SUITE getJackSuite() const = 0;
+	virtual Common::ICard::SUIT getJackSuit() const = 0;
 	virtual void setJackModeOff() = 0;
 
 	virtual std::size_t getMaxPlayers() const = 0;

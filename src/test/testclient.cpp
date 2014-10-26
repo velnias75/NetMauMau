@@ -86,7 +86,7 @@ void TestClient::stats(const STATS &stats) const {
 	if(mau) std::cout << "\a";
 }
 
-NetMauMau::ICard *TestClient::playCard(const CARDS &cards) const {
+NetMauMau::Common::ICard *TestClient::playCard(const CARDS &cards) const {
 
 	std::size_t pos;
 
@@ -97,8 +97,8 @@ NetMauMau::ICard *TestClient::playCard(const CARDS &cards) const {
 		std::cout << "Choose card:" << std::endl;
 		std::cout << "0) Suspend turn" << std::endl;
 
-		for(std::vector<NetMauMau::ICard *>::const_iterator i(cards.begin()); i != cards.end();
-				++i, ++pos) {
+		for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(cards.begin());
+				i != cards.end(); ++i, ++pos) {
 			std::cout << (pos + 1) << ") " << (*i)->description(true) << std::endl;
 		}
 
@@ -112,7 +112,7 @@ NetMauMau::ICard *TestClient::playCard(const CARDS &cards) const {
 	return 0L;
 }
 
-NetMauMau::ICard::SUITE TestClient::getJackSuiteChoice() const {
+NetMauMau::Common::ICard::SUIT TestClient::getJackSuitChoice() const {
 
 	std::size_t pos;
 
@@ -120,11 +120,11 @@ NetMauMau::ICard::SUITE TestClient::getJackSuiteChoice() const {
 
 		pos = 0;
 
-		std::cout << "Choose suite:" << std::endl;
+		std::cout << "Choose suit:" << std::endl;
 
 		for(std::size_t i = 0; i < 4; ++i, ++pos) {
 			std::cout << (pos + 1) << ") "
-					  << NetMauMau::Common::ansiSuite(NetMauMau::Common::getSuiteSymbols()[i])
+					  << NetMauMau::Common::ansiSuit(NetMauMau::Common::getSuitSymbols()[i])
 					  << std::endl;
 		}
 
@@ -133,7 +133,7 @@ NetMauMau::ICard::SUITE TestClient::getJackSuiteChoice() const {
 
 	} while(pos < 1 || pos > 4);
 
-	return NetMauMau::Common::symbolToSuite(NetMauMau::Common::getSuiteSymbols()[pos - 1]);
+	return NetMauMau::Common::symbolToSuit(NetMauMau::Common::getSuitSymbols()[pos - 1]);
 }
 
 void TestClient::playerJoined(const std::string &player) const {
@@ -148,7 +148,7 @@ void TestClient::playerSuspends(const std::string &player) const {
 	std::cout << BOLD_P_ON << player << BOLD_OFF << " suspends" << std::endl;
 }
 
-void TestClient::playedCard(const std::string &player, const NetMauMau::ICard *card) const {
+void TestClient::playedCard(const std::string &player, const NetMauMau::Common::ICard *card) const {
 	std::cout << BOLD_P_ON << player << BOLD_OFF << " plays card: " << card->description(true)
 			  << std::endl;
 }
@@ -165,31 +165,34 @@ void TestClient::cardSet(const CARDS &cards) const {
 	}
 }
 
-void TestClient::initialCard(const NetMauMau::ICard *card) const {
+void TestClient::initialCard(const NetMauMau::Common::ICard *card) const {
 	std::cout << "Initial card is " << card->description(true) << std::endl;
 }
 
-void TestClient::openCard(const NetMauMau::ICard *card, const std::string &jackSuite) const {
+void TestClient::openCard(const NetMauMau::Common::ICard *card, const std::string &jackSuit) const {
 
 	std::cout << "Open card: " << card->description(true);
 
-	if(!jackSuite.empty()) {
-		std::cout << " (current Jack suite " << NetMauMau::Common::ansiSuite(jackSuite) << ")";
+	if(!jackSuit.empty()) {
+		std::cout << " (current Jack suit " << NetMauMau::Common::ansiSuit(jackSuit) << ")";
 	}
 
 	std::cout << std::endl;
 }
 
-void TestClient::cardRejected(const std::string &player, const NetMauMau::ICard *card) const {
+void TestClient::cardRejected(const std::string &player,
+							  const NetMauMau::Common::ICard *card) const {
 	std::cout << BOLD_P_ON << player << BOLD_OFF << "'s card " << card->description(true)
 			  << " is REJECTED" << std::endl;
 }
 
-void TestClient::jackSuite(const std::string &suite) {
-	std::cout << "Suite chosen by Jack is " << NetMauMau::Common::ansiSuite(suite) << std::endl;
+void TestClient::jackSuit(NetMauMau::Common::ICard::SUIT suit) {
+	std::cout << "Suit chosen by Jack is " << NetMauMau::Common::suitToSymbol(suit, true, true)
+			  << std::endl;
 }
 
-void TestClient::playerPicksCard(const std::string &player, const NetMauMau::ICard *card) const {
+void TestClient::playerPicksCard(const std::string &player,
+								 const NetMauMau::Common::ICard *card) const {
 
 	std::cout << BOLD_P_ON << player << BOLD_OFF << " picks up a card";
 

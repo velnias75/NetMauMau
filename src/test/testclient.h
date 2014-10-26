@@ -35,23 +35,25 @@ protected:
 	virtual void stats(const STATS &stats) const;
 	virtual void gameOver() const;
 
-	virtual NetMauMau::ICard *playCard(const CARDS &cards) const;
-	virtual NetMauMau::ICard::SUITE getJackSuiteChoice() const;
+	virtual NetMauMau::Common::ICard *playCard(const CARDS &cards) const;
+	virtual NetMauMau::Common::ICard::SUIT getJackSuitChoice() const;
 
 	virtual void playerJoined(const std::string &player) const;
 	virtual void playerRejected(const std::string &player) const;
 	virtual void playerSuspends(const std::string &player) const;
-	virtual void playedCard(const std::string &player, const NetMauMau::ICard *card) const;
+	virtual void playedCard(const std::string &player, const NetMauMau::Common::ICard *card) const;
 	virtual void playerWins(const std::string &player, std::size_t turn) const;
-	virtual void playerPicksCard(const std::string &player, const NetMauMau::ICard *card) const;
+	virtual void playerPicksCard(const std::string &player,
+								 const NetMauMau::Common::ICard *card) const;
 	virtual void playerPicksCard(const std::string &player, std::size_t count) const;
 	virtual void nextPlayer(const std::string &player) const;
 
 	virtual void cardSet(const CARDS &cards) const;
-	virtual void initialCard(const NetMauMau::ICard *card) const;
-	virtual void openCard(const NetMauMau::ICard *card, const std::string &jackSuite) const;
-	virtual void cardRejected(const std::string &player, const NetMauMau::ICard *card) const;
-	virtual void jackSuite(const std::string &suite);
+	virtual void initialCard(const NetMauMau::Common::ICard *card) const;
+	virtual void openCard(const NetMauMau::Common::ICard *card, const std::string &jackSuit) const;
+	virtual void cardRejected(const std::string &player,
+							  const NetMauMau::Common::ICard *card) const;
+	virtual void jackSuit(NetMauMau::Common::ICard::SUIT suit);
 };
 
 #endif /* NETMAUMAU_TESTCLIENT_H */

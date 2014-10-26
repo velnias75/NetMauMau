@@ -35,25 +35,26 @@ int Player::getSerial() const {
 	return m_sockfd;
 }
 
-void Player::receiveCard(NetMauMau::ICard *card) {
-	receiveCardSet(std::vector<NetMauMau::ICard *>(1, card));
+void Player::receiveCard(NetMauMau::Common::ICard *card) {
+	receiveCardSet(std::vector<NetMauMau::Common::ICard *>(1, card));
 }
 
-void Player::receiveCardSet(const std::vector<NetMauMau::ICard *> &cards) {
+void Player::receiveCardSet(const std::vector<NetMauMau::Common::ICard *> &cards) {
 
 	NetMauMau::Player::StdPlayer::receiveCardSet(cards);
 
 	m_connection.write(m_sockfd, "GETCARDS");
 
-	for(std::vector<NetMauMau::ICard *>::const_iterator i(cards.begin()); i != cards.end(); ++i) {
+	for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(cards.begin());
+			i != cards.end(); ++i) {
 		m_connection.write(m_sockfd, (*i)->description());
 	}
 
 	m_connection.write(m_sockfd, "CARDSGOT");
 }
 
-NetMauMau::ICard *Player::requestCard(const NetMauMau::ICard *uncoveredCard,
-									  const NetMauMau::ICard::SUITE *) const {
+NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *uncoveredCard,
+		const NetMauMau::Common::ICard::SUIT *) const {
 
 	m_connection.write(m_sockfd, "OPENCARD");
 	m_connection.write(m_sockfd, uncoveredCard->description());;
@@ -68,23 +69,24 @@ NetMauMau::ICard *Player::requestCard(const NetMauMau::ICard *uncoveredCard,
 	return findCard(offeredCard);
 }
 
-NetMauMau::ICard *Player::findCard(const std::string &offeredCard) const {
+NetMauMau::Common::ICard *Player::findCard(const std::string &offeredCard) const {
 
-	NetMauMau::ICard::SUITE s = NetMauMau::ICard::HEART;
-	NetMauMau::ICard::VALUE v = NetMauMau::ICard::ACE;
+	NetMauMau::Common::ICard::SUIT s = NetMauMau::Common::ICard::HEARTS;
+	NetMauMau::Common::ICard::VALUE v = NetMauMau::Common::ICard::ACE;
 
 	if(NetMauMau::Common::parseCardDesc(offeredCard, &s, &v)) {
-		const std::vector<NetMauMau::ICard *> &pc(getPlayerCards());
+		const std::vector<NetMauMau::Common::ICard *> &pc(getPlayerCards());
 
-		for(std::vector<NetMauMau::ICard *>::const_iterator i(pc.begin()); i != pc.end(); ++i) {
-			if((*i)->getSuite() == s && (*i)->getValue() == v) return *i;
+		for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(pc.begin());
+				i != pc.end(); ++i) {
+			if((*i)->getSuit() == s && (*i)->getValue() == v) return *i;
 		}
 	}
 
 	return 0L;
 }
 
-bool Player::cardAccepted(const NetMauMau::ICard *playedCard) {
+bool Player::cardAccepted(const NetMauMau::Common::ICard *playedCard) {
 
 	NetMauMau::Player::StdPlayer::cardAccepted(playedCard);
 
@@ -112,10 +114,10 @@ std::size_t Player::getCardCount() const {
 	return cc;
 }
 
-NetMauMau::ICard::SUITE Player::getJackChoice(const NetMauMau::ICard *,
-		const NetMauMau::ICard *) const {
+NetMauMau::Common::ICard::SUIT Player::getJackChoice(const NetMauMau::Common::ICard *,
+		const NetMauMau::Common::ICard *) const {
 	m_connection.write(m_sockfd, "JACKCHOICE");
-	return NetMauMau::Common::symbolToSuite(m_connection.read(m_sockfd));
+	return NetMauMau::Common::symbolToSuit(m_connection.read(m_sockfd));
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

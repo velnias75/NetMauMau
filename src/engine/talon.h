@@ -27,8 +27,11 @@
 
 namespace NetMauMau {
 
-class ICard;
 class ICardFactory;
+
+namespace Common {
+class ICard;
+}
 
 class Talon {
 	DISALLOW_COPY_AND_ASSIGN(Talon)
@@ -38,21 +41,21 @@ public:
 	~Talon();
 
 	bool empty() const _PURE;
-	ICard *top() const _PURE;
+	Common::ICard *top() const _PURE;
 	void pop();
 
-	ICard *uncoverCard();
-	ICard *getUncoveredCard() const _PURE;
+	Common::ICard *uncoverCard();
+	Common::ICard *getUncoveredCard() const _PURE;
 
-	void playCard(ICard *card);
-	ICard *takeCard();
-
-private:
-	std::vector<ICard *> createCards() const;
+	void playCard(Common::ICard *card);
+	Common::ICard *takeCard();
 
 private:
-	std::stack<ICard *, std::vector<ICard *> > m_cardStack;
-	std::stack<ICard *, std::vector<ICard *> > m_uncovered;
+	std::vector<Common::ICard *> createCards() const;
+
+private:
+	std::stack<Common::ICard *, std::vector<Common::ICard *> > m_cardStack;
+	std::stack<Common::ICard *, std::vector<Common::ICard *> > m_uncovered;
 };
 
 }

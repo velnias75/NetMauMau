@@ -42,8 +42,8 @@ AbstractClient::AbstractClient(const std::string &pName, const std::string &serv
 	m_pName(pName), m_cards(), m_openCard(0L) {}
 
 AbstractClient::~AbstractClient() {
-	for(std::vector<NetMauMau::ICard *>::const_iterator i(m_cards.begin()); i != m_cards.end();
-			++i) {
+	for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(m_cards.begin());
+			i != m_cards.end(); ++i) {
 		delete *i;
 	}
 
@@ -55,11 +55,12 @@ std::string AbstractClient::getPlayerName() const {
 }
 
 AbstractClient::CARDS
-AbstractClient::getCards(const std::vector<NetMauMau::ICard *>::const_iterator &first) const {
+AbstractClient::getCards(const std::vector<NetMauMau::Common::ICard *>::const_iterator
+						 &first) const {
 
 	CARDS cards;
 
-	for(std::vector<NetMauMau::ICard *>::const_iterator i(first); i != m_cards.end(); ++i) {
+	for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(first); i != m_cards.end(); ++i) {
 		cards.push_back(*i);
 	}
 
@@ -72,15 +73,14 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	return m_connection.capabilities();
 }
 
-void AbstractClient::play(struct timeval *timeout)
-throw(NetMauMau::Common::Exception::SocketException) {
+void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::SocketException) {
 
 	m_connection.setTimeout(timeout);
 	m_connection.connect();
 
-	NetMauMau::ICard *lastPlayedCard = 0L;
+	NetMauMau::Common::ICard *lastPlayedCard = 0L;
 	bool initCardShown = false;
-	std::string msg, cjackSuite;
+	std::string msg, cjackSuit;
 	std::size_t cturn = 0;
 
 	while(true) {
@@ -151,7 +151,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 					m_connection >> msg;
 
 					const bool initialCards = m_cards.empty();
-					const std::vector<NetMauMau::ICard *>::const_iterator &e(m_cards.end());
+					const std::vector<NetMauMau::Common::ICard *>::const_iterator &e(m_cards.end());
 
 					while(msg != "CARDSGOT") {
 						m_cards.push_back((NetMauMau::Client::CardFactory(msg)).create());
@@ -163,10 +163,10 @@ throw(NetMauMau::Common::Exception::SocketException) {
 				} else if(msg == "INITIALCARD") {
 
 					m_connection >> msg;
-					NetMauMau::ICard *ic = (NetMauMau::Client::CardFactory(msg)).create();
+					NetMauMau::Common::ICard *ic = (NetMauMau::Client::CardFactory(msg)).create();
 
-					if(ic->getValue() == NetMauMau::ICard::JACK ||
-							ic->getValue() == NetMauMau::ICard::EIGHT) {
+					if(ic->getValue() == NetMauMau::Common::ICard::JACK ||
+							ic->getValue() == NetMauMau::Common::ICard::EIGHT) {
 						initialCard(ic);
 						initCardShown = true;
 					}
@@ -180,7 +180,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 					m_openCard = (NetMauMau::Client::CardFactory(msg)).create();
 
 					if(!initCardShown) {
-						openCard(m_openCard, cjackSuite);
+						openCard(m_openCard, cjackSuit);
 					} else {
 						initCardShown = false;
 					}
@@ -203,8 +203,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 					m_connection >> msg;
 
 					if(lastPlayedCard) {
-						const std::vector<NetMauMau::ICard *>::iterator &f(std::find(m_cards.begin(),
-								m_cards.end(), lastPlayedCard));
+						const std::vector<NetMauMau::Common::ICard *>::iterator
+						&f(std::find(m_cards.begin(), m_cards.end(), lastPlayedCard));
 
 						if(f != m_cards.end()) {
 							delete *f;
@@ -217,7 +217,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 					std::string player;
 					m_connection >> player >> msg;
 
-					NetMauMau::ICard *c = (NetMauMau::Client::CardFactory(msg)).create();
+					NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(msg)).create();
 					cardRejected(player, c);
 					delete c;
 
@@ -232,18 +232,18 @@ throw(NetMauMau::Common::Exception::SocketException) {
 					std::string player;
 					m_connection >> player >> msg;
 
-					NetMauMau::ICard *c = (NetMauMau::Client::CardFactory(msg)).create();
+					NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(msg)).create();
 					playedCard(player, c);
 					delete c;
 
-					cjackSuite.clear();
+					cjackSuit.clear();
 
-				} else if(msg == "JACKSUITE") {
+				} else if(msg == "JACKSUIT") {
 					m_connection >> msg;
-					cjackSuite = msg;
-					jackSuite(cjackSuite);
+					cjackSuit = msg;
+					jackSuit(NetMauMau::Common::symbolToSuit(cjackSuit));
 				} else if(msg == "JACKCHOICE") {
-					m_connection << NetMauMau::Common::suiteToSymbol(getJackSuiteChoice(), false);
+					m_connection << NetMauMau::Common::suitToSymbol(getJackSuitChoice(), false);
 				} else if(msg == "PLAYERPICKSCARD") {
 
 					std::string player, extra;
@@ -251,11 +251,11 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 					if(extra == "CARDTAKEN") {
 						m_connection >> msg;
-						NetMauMau::ICard *c = (NetMauMau::Client::CardFactory(msg)).create();
+						NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(msg)).create();
 						playerPicksCard(player, c);
 						delete c;
 					} else {
-						playerPicksCard(player, static_cast<NetMauMau::ICard *>(0L));
+						playerPicksCard(player, static_cast<NetMauMau::Common::ICard *>(0L));
 					}
 
 				} else if(msg == "PLAYERPICKSCARDS") {

@@ -28,8 +28,11 @@
 namespace NetMauMau {
 
 class ICardFactory;
-class ICard;
 class Talon;
+
+namespace Common {
+class ICard;
+}
 
 namespace Event {
 class IEventHandler;

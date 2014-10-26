@@ -46,19 +46,21 @@ public:
 
 	virtual int getSerial() const _PURE;
 
-	virtual void receiveCard(ICard *card);
-	virtual void receiveCardSet(const std::vector<ICard *> &cards);
+	virtual void receiveCard(Common::ICard *card);
+	virtual void receiveCardSet(const std::vector<Common::ICard *> &cards);
 
-	virtual ICard *requestCard(const ICard *uncoveredCard, const ICard::SUITE *jackSuite) const;
+	virtual Common::ICard *requestCard(const Common::ICard *uncoveredCard,
+									   const Common::ICard::SUIT *jackSuit) const;
 	virtual REASON getNoCardReason() const _CONST;
-	virtual bool cardAccepted(const ICard *playedCard);
+	virtual bool cardAccepted(const Common::ICard *playedCard);
 
 	virtual std::size_t getCardCount() const;
 
-	virtual ICard::SUITE getJackChoice(const ICard *uncoveredCard, const ICard *playedCard) const;
+	virtual Common::ICard::SUIT getJackChoice(const Common::ICard *uncoveredCard,
+			const Common::ICard *playedCard) const;
 
 private:
-	_NOUNUSED ICard *findCard(const std::string &offeredCard) const;
+	_NOUNUSED Common::ICard *findCard(const std::string &offeredCard) const;
 
 private:
 	Connection &m_connection;

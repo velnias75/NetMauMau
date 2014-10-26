@@ -50,20 +50,20 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 
 void TestEventHandler::cardsDistributed(const NetMauMau::Player::IPlayer *player,
-										const std::vector<NetMauMau::ICard *> &cards)
+										const std::vector<NetMauMau::Common::ICard *> &cards)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << "Distributing cards to player \"" << player->getName() << "\"" << std::endl;
 
-	std::vector<NetMauMau::ICard *>::const_iterator i(cards.begin());
-	const std::vector<NetMauMau::ICard *>::const_iterator &e(cards.end());
+	std::vector<NetMauMau::Common::ICard *>::const_iterator i(cards.begin());
+	const std::vector<NetMauMau::Common::ICard *>::const_iterator &e(cards.end());
 
 	for(; i != e; ++i) {
 		std::cerr << "\tgets " << (*i)->description(true) << std::endl;
 	}
 }
 
-void TestEventHandler::initialCard(const NetMauMau::ICard *initialCard)
+void TestEventHandler::initialCard(const NetMauMau::Common::ICard *initialCard)
 throw(NetMauMau::Common::Exception::SocketException) {
 	std::cerr << "Uncovered card: " << initialCard->description(true) << std::endl;
 }
@@ -74,7 +74,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 
 void TestEventHandler::playerPicksCard(const NetMauMau::Player::IPlayer *player,
-									   const NetMauMau::ICard */*card*/)
+									   const NetMauMau::Common::ICard */*card*/)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\ttakes a card from talon!\t("
@@ -90,7 +90,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 
 void TestEventHandler::playerSuspends(const NetMauMau::Player::IPlayer *player,
-									  const NetMauMau::ICard *dueCard)
+									  const NetMauMau::Common::ICard *dueCard)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	if(!dueCard) {
@@ -98,13 +98,14 @@ throw(NetMauMau::Common::Exception::SocketException) {
 				  << player->getCardCount() << ")" << std::endl;
 	} else {
 		std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\tsuspends this turn due to "
-				  << dueCard->description(true)  << "\t(" << player->getCardCount() << ")" << std::endl;
+				  << dueCard->description(true)  << "\t(" << player->getCardCount() << ")"
+				  << std::endl;
 	}
 }
 
 void TestEventHandler::playerPlaysCard(const NetMauMau::Player::IPlayer *player,
-									   const NetMauMau::ICard *playedCard,
-									   const NetMauMau::ICard *unvoredCard)
+									   const NetMauMau::Common::ICard *playedCard,
+									   const NetMauMau::Common::ICard *unvoredCard)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\tplays "
@@ -112,11 +113,12 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			  << "\t\t(" << player->getCardCount() << ")" << std::endl;
 }
 
-void TestEventHandler::playerChooseJackSuite(const NetMauMau::Player::IPlayer *player,
-		NetMauMau::ICard::SUITE suite) throw(NetMauMau::Common::Exception::SocketException) {
+void TestEventHandler::playerChooseJackSuit(const NetMauMau::Player::IPlayer *player,
+		NetMauMau::Common::ICard::SUIT suit)
+throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\thas chosen "
-			  << NetMauMau::Common::suiteToSymbol(suite, true, true) << std::endl;
+			  << NetMauMau::Common::suitToSymbol(suit, true, true) << std::endl;
 }
 
 void TestEventHandler::playerWins(const NetMauMau::Player::IPlayer *player, std::size_t turn)

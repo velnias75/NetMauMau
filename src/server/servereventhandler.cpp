@@ -95,7 +95,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 }
 
-void EventHandler::initialCard(const NetMauMau::ICard *initialCard)
+void EventHandler::initialCard(const NetMauMau::Common::ICard *initialCard)
 throw(NetMauMau::Common::Exception::SocketException) {
 	m_connection << "INITIALCARD" << initialCard->description();
 }
@@ -141,14 +141,15 @@ void EventHandler::playerWins(const NetMauMau::Player::IPlayer *player,
 }
 
 void EventHandler::playerPlaysCard(const NetMauMau::Player::IPlayer *player,
-								   const NetMauMau::ICard *playedCard,
-								   const NetMauMau::ICard *)
+								   const NetMauMau::Common::ICard *playedCard,
+								   const NetMauMau::Common::ICard *)
 throw(NetMauMau::Common::Exception::SocketException) {
 	m_connection << "PLAYEDCARD" << player->getName() << playedCard->description();
 }
 
-void EventHandler::cardRejected(NetMauMau::Player::IPlayer *player, const NetMauMau::ICard *,
-								const NetMauMau::ICard *playedCard)
+void EventHandler::cardRejected(NetMauMau::Player::IPlayer *player,
+								const NetMauMau::Common::ICard *,
+								const NetMauMau::Common::ICard *playedCard)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	for(Connection::PLAYERINFOS::const_iterator i(m_connection.getPlayers().begin());
@@ -163,13 +164,13 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 
 void EventHandler::playerSuspends(const NetMauMau::Player::IPlayer *player,
-								  const NetMauMau::ICard *)
+								  const NetMauMau::Common::ICard *)
 throw(NetMauMau::Common::Exception::SocketException) {
 	m_connection << "SUSPENDS" << player->getName();
 }
 
 void EventHandler::playerPicksCard(const NetMauMau::Player::IPlayer *player,
-								   const NetMauMau::ICard *card)
+								   const NetMauMau::Common::ICard *card)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	for(Connection::PLAYERINFOS::const_iterator i(m_connection.getPlayers().begin());
@@ -194,9 +195,10 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	m_connection << "PLAYERPICKSCARDS" << player->getName() << "TAKECOUNT" << os.str();
 }
 
-void EventHandler::playerChooseJackSuite(const NetMauMau::Player::IPlayer *,
-		NetMauMau::ICard::SUITE suite) throw(NetMauMau::Common::Exception::SocketException) {
-	m_connection << "JACKSUITE" << NetMauMau::Common::suiteToSymbol(suite, false);
+void EventHandler::playerChooseJackSuit(const NetMauMau::Player::IPlayer *,
+										NetMauMau::Common::ICard::SUIT suit)
+throw(NetMauMau::Common::Exception::SocketException) {
+	m_connection << "JACKSUIT" << NetMauMau::Common::suitToSymbol(suit, false);
 }
 
 void EventHandler::nextPlayer(const NetMauMau::Player::IPlayer *player)

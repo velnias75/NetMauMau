@@ -32,18 +32,18 @@ public:
 	StdRuleSet();
 	virtual ~StdRuleSet();
 
-	virtual void checkInitial(const Player::IPlayer *player, const ICard *playedCard);
-	virtual bool checkCard(const Player::IPlayer *player, const ICard *uncoveredCard,
-						   const ICard *playedCard);
+	virtual void checkInitial(const Player::IPlayer *player, const Common::ICard *playedCard);
+	virtual bool checkCard(const Player::IPlayer *player, const Common::ICard *uncoveredCard,
+						   const Common::ICard *playedCard);
 
 	virtual bool hasToSuspend() const _PURE;
 	virtual void hasSuspended();
 	virtual bool suspendIfNoMatchingCard() const _CONST;
-	virtual std::size_t takeCards(const ICard *playedCard) const;
+	virtual std::size_t takeCards(const Common::ICard *playedCard) const;
 	virtual void hasTakenCards();
 
 	virtual bool isJackMode() const _PURE;
-	virtual ICard::SUITE getJackSuite() const _PURE;
+	virtual Common::ICard::SUIT getJackSuit() const _PURE;
 	virtual void setJackModeOff();
 
 	virtual std::size_t getMaxPlayers() const _CONST;
@@ -53,7 +53,7 @@ private:
 	mutable bool m_hasSuspended;
 	std::size_t m_takeCardCount;
 	bool m_jackMode;
-	ICard::SUITE m_jackSuite;
+	Common::ICard::SUIT m_jackSuit;
 };
 
 }

@@ -17,6 +17,11 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file clientconnection.h
+ * @author Heiko Schäfer <heiko@rangun.de>
+ */
+
 #ifndef NETMAUMAU_CLIENTCONNECTION_H
 #define NETMAUMAU_CLIENTCONNECTION_H
 
@@ -30,6 +35,9 @@ namespace NetMauMau {
 
 namespace Client {
 
+/**
+ * @brief tbw
+ */
 class _EXPORT Connection : public Common::AbstractConnection {
 	DISALLOW_COPY_AND_ASSIGN(Connection)
 public:

@@ -17,6 +17,11 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file abstractconnection.h
+ * @author Heiko Schäfer <heiko@rangun.de>
+ */
+
 #ifndef NETMAUMAU_ABSTRACTCONNECTION_H
 #define NETMAUMAU_ABSTRACTCONNECTION_H
 
@@ -36,6 +41,9 @@ namespace NetMauMau {
 
 namespace Common {
 
+/**
+ * @brief tbw
+ */
 class _EXPORT AbstractConnection : public AbstractSocket {
 	DISALLOW_COPY_AND_ASSIGN(AbstractConnection)
 public:
@@ -54,6 +62,10 @@ public:
 	} NAMESOCKFD;
 
 	typedef std::vector<NAMESOCKFD> PLAYERINFOS;
+
+	/**
+	 * @brief tbw
+	 */
 	typedef std::map<std::string, std::string> CAPABILITIES;
 
 	virtual ~AbstractConnection();
@@ -62,7 +74,6 @@ public:
 	void removePlayer(int sockfd);
 
 	void reset();
-
 
 protected:
 	AbstractConnection(const char *server, uint16_t port);

@@ -17,6 +17,11 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file cardtools.h
+ * @author Heiko Schäfer <heiko@rangun.de>
+ */
+
 #ifndef NETMAUMAU_CARDTOOLS_H
 #define NETMAUMAU_CARDTOOLS_H
 
@@ -41,13 +46,13 @@ inline T genRandom(T ubound) {
 #endif
 }
 
-_EXPORT const std::string *getSuiteSymbols() _CONST;
-_EXPORT std::string ansiSuite(const std::string &suite);
-_EXPORT ICard::SUITE symbolToSuite(const std::string &sym);
-_EXPORT std::string suiteToSymbol(ICard::SUITE suite, bool ansi, bool endansi = false);
-_EXPORT _NOUNUSED bool parseCardDesc(const std::string &desc, NetMauMau::ICard::SUITE *suite,
-									 NetMauMau::ICard::VALUE *value);
-_EXPORT std::string createCardDesc(ICard::SUITE s, ICard::VALUE v, bool ansi);
+_EXPORT const std::string *getSuitSymbols() _CONST;
+_EXPORT std::string ansiSuit(const std::string &suit);
+_EXPORT ICard::SUIT symbolToSuit(const std::string &sym);
+_EXPORT std::string suitToSymbol(ICard::SUIT suit, bool ansi, bool endansi = false);
+_EXPORT _NOUNUSED bool parseCardDesc(const std::string &desc, ICard::SUIT *suit,
+									 ICard::VALUE *value);
+_EXPORT std::string createCardDesc(ICard::SUIT s, ICard::VALUE v, bool ansi);
 _EXPORT std::size_t getCardPoints(ICard::VALUE v) _CONST;
 
 }

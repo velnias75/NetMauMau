@@ -7,6 +7,7 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_HEADERS([config.h])
 LT_INIT
+LT_LANG([Windows Resource])
 
 AC_DEFINE_UNQUOTED([BUILD_DATE], [`date +%s`], [the build date in Unix time])
 AC_DEFINE_UNQUOTED([BUILD_NODE], ["`uname -n`"], [the build node])
@@ -25,10 +26,19 @@ AC_ARG_ENABLE([client], [AS_HELP_STRING([--disable-client], [disables build of c
   [ AM_CONDITIONAL([ENABLE_CLIENT], [ test x$enable_client = xyes ]) ],
   [ AM_CONDITIONAL([ENABLE_CLIENT], [ true ]) ])
 
+AC_ARG_ENABLE([apidoc], [AS_HELP_STRING([--disable-apidoc], [disables generation of API docs])],
+  [ AM_CONDITIONAL([GENDOX], [ test x$enable_apidoc = xyes ]) ],
+  [ AM_CONDITIONAL([GENDOX], [ true ]) ])
+
 PKG_PROG_PKG_CONFIG([0.22])
 
 # Checks for programs.
 AC_PROG_CXX
+AC_CHECK_PROGS([DOXYGEN], [doxygen])
+
+if test -z "$ac_cv_prog_DOXYGEN"; then
+  AM_CONDITIONAL([GENDOX], [ false ])
+fi
 
 # Checks for libraries.
 PKG_CHECK_MODULES([POPT], [popt >= 1.10]);
@@ -80,5 +90,8 @@ AC_SUBST([CPPFLAGS])
 AC_SUBST([NO_RTTI_FLAGS])
 
 AC_CONFIG_MACRO_DIR([m4])
+
+AC_CONFIG_FILES([doc/client.dox])
+
 AC_OUTPUT([Makefile src/Makefile src/common/Makefile src/engine/Makefile src/server/Makefile \
-  src/client/Makefile src/test/Makefile])
+  src/client/Makefile src/test/Makefile doc/Makefile])

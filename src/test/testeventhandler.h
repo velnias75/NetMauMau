@@ -32,26 +32,26 @@ public:
 	throw(NetMauMau::Common::Exception::SocketException);
 
 	virtual void cardsDistributed(const NetMauMau::Player::IPlayer *player,
-								  const std::vector<NetMauMau::ICard *> &cards)
+								  const std::vector<NetMauMau::Common::ICard *> &cards)
 	throw(NetMauMau::Common::Exception::SocketException);
-	virtual void initialCard(const NetMauMau::ICard *initialCard)
+	virtual void initialCard(const NetMauMau::Common::ICard *initialCard)
 	throw(NetMauMau::Common::Exception::SocketException);
 	virtual void cardsAlreadyDistributed() throw(NetMauMau::Common::Exception::SocketException);
 
 	virtual void playerPicksCard(const NetMauMau::Player::IPlayer *player,
-								 const NetMauMau::ICard *card)
+								 const NetMauMau::Common::ICard *card)
 	throw(NetMauMau::Common::Exception::SocketException);
 	virtual void playerPicksCards(const NetMauMau::Player::IPlayer *player, std::size_t cardCount)
 	throw(NetMauMau::Common::Exception::SocketException);
 	virtual void playerSuspends(const NetMauMau::Player::IPlayer *player,
-								const NetMauMau::ICard *dueCard)
+								const NetMauMau::Common::ICard *dueCard)
 	throw(NetMauMau::Common::Exception::SocketException);
 	virtual void playerPlaysCard(const NetMauMau::Player::IPlayer *player,
-								 const NetMauMau::ICard *playedCard,
-								 const NetMauMau::ICard *unvoredCard)
+								 const NetMauMau::Common::ICard *playedCard,
+								 const NetMauMau::Common::ICard *unvoredCard)
 	throw(NetMauMau::Common::Exception::SocketException);
-	virtual void playerChooseJackSuite(const NetMauMau::Player::IPlayer *player,
-									   NetMauMau::ICard::SUITE suite)
+	virtual void playerChooseJackSuit(const NetMauMau::Player::IPlayer *player,
+									  NetMauMau::Common::ICard::SUIT suit)
 	throw(NetMauMau::Common::Exception::SocketException);
 	virtual void playerWins(const NetMauMau::Player::IPlayer *player,
 							std::size_t turn) throw(NetMauMau::Common::Exception::SocketException);

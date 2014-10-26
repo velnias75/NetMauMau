@@ -17,6 +17,11 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file timeoutexception.h
+ * @author Heiko Schäfer <heiko@rangun.de>
+ */
+
 #ifndef NETMAUMAU_TIMEOUTEXCEPTION_H
 #define NETMAUMAU_TIMEOUTEXCEPTION_H
 
@@ -26,8 +31,14 @@ namespace NetMauMau {
 
 namespace Client {
 
+/**
+ * @brief tbw
+ */
 namespace Exception {
 
+/**
+ * @brief tbw
+ */
 class _EXPORT TimeoutException : public Common::Exception::SocketException {
 	TimeoutException &operator=(const TimeoutException &);
 public:

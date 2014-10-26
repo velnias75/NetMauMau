@@ -72,7 +72,7 @@ bool Game::addPlayer(NetMauMau::Player::IPlayer *player) {
 	}
 }
 
-void Game::start() {
+void Game::start() throw(NetMauMau::Common::Exception::SocketException) {
 
 	const std::size_t minPlayers = m_engine.getPlayerCount();
 
@@ -87,7 +87,7 @@ void Game::start() {
 	reset();
 }
 
-void Game::reset() {
+void Game::reset() throw(NetMauMau::Common::Exception::SocketException) {
 
 	m_engine.reset();
 	m_aiPlayer.resetJackState();

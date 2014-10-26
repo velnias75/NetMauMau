@@ -50,7 +50,7 @@ public:
 	virtual void connect() throw(Exception::SocketException);
 
 	std::string read(int fd, std::size_t len = 1024) throw(Exception::SocketException);
-	void write(int fd, const std::string &msg) const throw(Exception::SocketException);
+	static void write(int fd, const std::string &msg) throw(Exception::SocketException);
 
 	static void setInterrupted();
 
@@ -62,7 +62,7 @@ protected:
 	virtual void intercept() _CONST;
 
 	std::size_t recv(void *buf, std::size_t len, int fd) throw(Exception::SocketException);
-	void send(const void *buf, std::size_t len, int fd) const throw(Exception::SocketException);
+	static void send(const void *buf, std::size_t len, int fd) throw(Exception::SocketException);
 
 	inline int getSocketFD() const {
 		return m_sfd;

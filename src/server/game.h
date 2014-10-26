@@ -55,11 +55,11 @@ public:
 		return m_engine.getPlayerCount();
 	}
 
-	void start();
+	void start() throw(Common::Exception::SocketException);
 
 private:
 	bool addPlayer(Player::IPlayer *player);
-	void reset();
+	void reset() throw(Common::Exception::SocketException);
 
 private:
 	Engine m_engine;

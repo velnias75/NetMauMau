@@ -147,7 +147,7 @@ void Connection::connect() throw(NetMauMau::Common::Exception::SocketException) 
 
 			send(os.str().c_str(), os.str().length(), getSocketFD());
 
-			char name[4];
+			char name[4] = { 0 };
 			recv(name, 4, getSocketFD());
 
 			if(!strncmp(name, "NAME", 4)) {

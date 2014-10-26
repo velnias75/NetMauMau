@@ -100,7 +100,7 @@ Player::IPlayer::REASON Player::getNoCardReason() const {
 	return NetMauMau::Player::IPlayer::SUSPEND;
 }
 
-std::size_t Player::getCardCount() const {
+std::size_t Player::getCardCount() const throw(NetMauMau::Common::Exception::SocketException) {
 
 	m_connection.write(m_sockfd, "CARDCOUNT");
 

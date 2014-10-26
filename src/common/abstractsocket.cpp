@@ -203,7 +203,7 @@ std::string AbstractSocket::read(int fd, std::size_t len) throw(Exception::Socke
 }
 
 void AbstractSocket::send(const void *buf, std::size_t len,
-						  int fd) const throw(Exception::SocketException) {
+						  int fd) throw(Exception::SocketException) {
 
 	const char *bufP = static_cast<const char *>(buf);
 	ssize_t slen;
@@ -217,8 +217,7 @@ void AbstractSocket::send(const void *buf, std::size_t len,
 	if(slen == -1) throw Exception::SocketException(std::strerror(errno), fd);
 }
 
-void AbstractSocket::write(int fd,
-						   const std::string &msg) const throw(Exception::SocketException) {
+void AbstractSocket::write(int fd, const std::string &msg) throw(Exception::SocketException) {
 	std::string v(msg);
 	v.append(1, 0);
 	send(v.c_str(), v.length(), fd);

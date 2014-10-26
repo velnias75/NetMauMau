@@ -23,7 +23,7 @@
 #include <vector>
 #include <string>
 
-#include "linkercontrol.h"
+#include "socketexception.h"
 
 namespace NetMauMau {
 
@@ -58,7 +58,7 @@ public:
 	Engine(Event::IEventHandler &eventHandler, RuleSet::IRuleSet *ruleset, bool nextMessage = true);
 	~Engine();
 
-	bool addPlayer(Player::IPlayer *player);
+	bool addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketException);
 
 	inline bool hasPlayers() const {
 		return m_players.size() > 1;
@@ -70,10 +70,10 @@ public:
 		return m_players.size();
 	}
 
-	bool distributeCards();
+	bool distributeCards() throw(Common::Exception::SocketException);
 	bool nextTurn();
 
-	void message(const std::string &msg);
+	void message(const std::string &msg) throw(Common::Exception::SocketException);
 
 	void reset();
 

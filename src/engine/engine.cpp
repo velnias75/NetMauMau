@@ -81,7 +81,7 @@ Engine::PLAYERS::iterator Engine::find(const std::string &name) {
 	return m_players.end();
 }
 
-bool Engine::addPlayer(Player::IPlayer *player) {
+bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketException) {
 
 	if(m_state == ACCEPT_PLAYERS) {
 
@@ -123,7 +123,7 @@ Engine::PLAYERS::iterator Engine::removePlayer(Player::IPlayer *player) {
 	return f;
 }
 
-bool Engine::distributeCards() {
+bool Engine::distributeCards() throw(Common::Exception::SocketException) {
 
 	if(m_state == NOCARDS || m_state == ACCEPT_PLAYERS) {
 
@@ -165,7 +165,7 @@ void Engine::reversePlayers() {
 	std::reverse(m_players.begin(), m_players.end());
 }
 
-void Engine::message(const std::string &msg) {
+void Engine::message(const std::string &msg) throw(Common::Exception::SocketException) {
 	m_eventHandler.message(msg);
 }
 

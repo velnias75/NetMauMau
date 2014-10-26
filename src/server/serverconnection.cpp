@@ -219,7 +219,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	return *this;
 }
 
-void Connection::intercept() {
+void Connection::intercept() throw(NetMauMau::Common::Exception::SocketException) {
 
 	timeval tv = { 0, 600 };
 

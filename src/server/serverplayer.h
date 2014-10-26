@@ -29,6 +29,7 @@
 #endif
 
 #include "stdplayer.h"
+#include "socketexception.h"
 
 namespace NetMauMau {
 
@@ -54,7 +55,7 @@ public:
 	virtual REASON getNoCardReason() const _CONST;
 	virtual bool cardAccepted(const Common::ICard *playedCard);
 
-	virtual std::size_t getCardCount() const;
+	virtual std::size_t getCardCount() const throw(Common::Exception::SocketException);
 
 	virtual Common::ICard::SUIT getJackChoice(const Common::ICard *uncoveredCard,
 			const Common::ICard *playedCard) const;

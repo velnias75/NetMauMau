@@ -63,3 +63,8 @@ src/server/.libs
 src/server/nmm-server
 src/test/test_client
 src/test/test_netmaumau
+doc/client-dox.stamp
+doc/client.dox
+doc/client.dox.warnings
+doc/html
+

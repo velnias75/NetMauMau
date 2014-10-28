@@ -34,6 +34,7 @@ public:
 
 	virtual std::string getName() const;
 	virtual int getSerial() const _CONST;
+	virtual bool isAIPlayer() const _CONST;
 
 	virtual void receiveCard(Common::ICard *card);
 	virtual void receiveCardSet(const std::vector<Common::ICard *> &cards);

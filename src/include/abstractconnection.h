@@ -75,6 +75,8 @@ public:
 	std::string getPlayerName(int sockfd) const;
 	void removePlayer(int sockfd);
 
+	void addAIPlayers(const std::vector<std::string> &aiPlayers);
+
 	void reset();
 
 protected:
@@ -82,9 +84,11 @@ protected:
 
 	void registerPlayer(const NAMESOCKFD &nfd);
 	const PLAYERINFOS &getRegisteredPlayers() const _CONST;
+	const std::vector<std::string> &getAIPlayers() const _CONST;
 
 private:
 	PLAYERINFOS m_registeredPlayers;
+	std::vector<std::string> m_aiPlayers;
 };
 
 }

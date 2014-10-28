@@ -99,6 +99,31 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 #pragma GCC diagnostic pop
 
+Connection::PLAYERLIST Connection::playerList()
+throw(NetMauMau::Common::Exception::SocketException) {
+
+	PLAYERLIST plv;
+
+	if(hello()) {
+
+		send("PLAYERLIST", 10, getSocketFD());
+
+		std::string pl;
+		*this >> pl;
+
+		while(pl != "PLAYERLISTEND") {
+			plv.push_back(pl);
+			*this >> pl;
+		}
+
+	} else {
+		throw NetMauMau::Common::Exception::SocketException("Unable to get player list",
+				getSocketFD());
+	}
+
+	return plv;
+}
+
 Connection::CAPABILITIES Connection::capabilities()
 throw(NetMauMau::Common::Exception::SocketException) {
 

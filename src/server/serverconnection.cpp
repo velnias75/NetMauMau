@@ -131,7 +131,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 			const std::string rHello = read(cfd);
 
-			if(rHello != "CAP") {
+			if(rHello != "CAP" && rHello != "PLAYERLIST") {
 
 				const std::string::size_type spc = rHello.find(' ');
 				const std::string::size_type dot = rHello.find('.');
@@ -168,6 +168,31 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 					shutdown(cfd, SHUT_RDWR);
 					close(cfd);
 				}
+
+			} else if(rHello == "PLAYERLIST") {
+
+				const PLAYERINFOS &pi(getRegisteredPlayers());
+
+				for(PLAYERINFOS::const_iterator i(pi.begin()); i != pi.end(); ++i) {
+					std::string piz(i->name);
+					piz.append(1, 0);
+					send(piz.c_str(), piz.length(), cfd);
+				}
+
+				for(std::vector<std::string>::const_iterator i(getAIPlayers().begin());
+						i != getAIPlayers().end(); ++i) {
+					std::string piz(*i);
+					piz.append(1, 0);
+					send(piz.c_str(), piz.length(), cfd);
+				}
+
+				send("PLAYERLISTEND\0", 14, cfd);
+
+				shutdown(cfd, SHUT_RDWR);
+				close(cfd);
+
+				accepted = PLAYERLIST;
+
 			} else {
 
 				std::ostringstream oscap;

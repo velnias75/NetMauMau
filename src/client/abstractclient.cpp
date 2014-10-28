@@ -72,6 +72,12 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	return m_connection.capabilities();
 }
 
+Connection::PLAYERLIST AbstractClient::playerList(timeval *timeout)
+throw(NetMauMau::Common::Exception::SocketException) {
+	m_connection.setTimeout(timeout);
+	return m_connection.playerList();
+}
+
 void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::SocketException) {
 
 	m_connection.setTimeout(timeout);

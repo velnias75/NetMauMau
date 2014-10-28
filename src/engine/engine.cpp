@@ -90,6 +90,14 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 		if(f == m_players.end() && m_players.size() <= m_ruleset->getMaxPlayers()) {
 
 			m_players.push_back(player);
+
+			if(player->isAIPlayer()) {
+
+				Common::AbstractConnection *con = m_eventHandler.getConnection();
+
+				if(con) con->addAIPlayers(std::vector<std::string>(1, player->getName()));
+			}
+
 			m_eventHandler.playerAdded(player);
 
 			return true;

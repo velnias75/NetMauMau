@@ -104,6 +104,10 @@ int StdPlayer::getSerial() const {
 	return -1;
 }
 
+bool StdPlayer::isAIPlayer() const {
+	return true;
+}
+
 void StdPlayer::receiveCard(NetMauMau::Common::ICard *card) {
 	m_cards.push_back(card);
 }

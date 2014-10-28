@@ -42,11 +42,14 @@ namespace Client {
 class _EXPORT Connection : public Common::AbstractConnection {
 	DISALLOW_COPY_AND_ASSIGN(Connection)
 public:
+	typedef std::vector<std::string> PLAYERLIST;
+
 	Connection(const std::string &pName, const std::string &server, uint16_t port = SERVER_PORT);
 	virtual ~Connection();
 
 	virtual void connect() throw(Common::Exception::SocketException);
 	CAPABILITIES capabilities() throw(NetMauMau::Common::Exception::SocketException);
+	PLAYERLIST playerList() throw(Common::Exception::SocketException);
 
 	void setTimeout(struct timeval *timeout);
 
@@ -62,7 +65,7 @@ private:
 
 private:
 	std::string m_pName;
-	struct timeval *m_timeout;
+	timeval *m_timeout;
 };
 
 }

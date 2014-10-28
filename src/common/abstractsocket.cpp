@@ -69,8 +69,8 @@ using namespace NetMauMau::Common;
 
 bool AbstractSocket::m_interrupt = false;
 
-AbstractSocket::AbstractSocket(const char *server, uint16_t port) : m_server(server), m_port(port),
-	m_sfd(-1), m_wireError() {}
+AbstractSocket::AbstractSocket(const char *server, uint16_t port) : m_server(server ? server : ""),
+	m_port(port), m_sfd(-1), m_wireError() {}
 
 AbstractSocket::~AbstractSocket() {
 	if(m_sfd != -1) close(m_sfd);
@@ -106,7 +106,8 @@ void AbstractSocket::connect() throw(Exception::SocketException) {
 	hints.ai_addr = NULL;
 	hints.ai_next = NULL;
 
-	if((s = getaddrinfo(m_server, portS.str().c_str(), &hints, &result)) != 0) {
+	if((s = getaddrinfo(m_server.empty() ? 0L : m_server.c_str(), portS.str().c_str(), &hints,
+						&result)) != 0) {
 		throw(Exception::SocketException(gai_strerror(s), m_sfd));
 	}
 

@@ -64,6 +64,13 @@ public:
 	/// @copydoc Connection::CAPABILITIES
 	typedef Connection::CAPABILITIES CAPABILITIES;
 
+	typedef Connection::PLAYERLIST PLAYERLIST;
+
+	/**
+	 * @brief A vector of @c Common::ICard pointers
+	 */
+	typedef std::vector<Common::ICard *> CARDS;
+
 	virtual ~AbstractClient();
 
 	/**
@@ -89,6 +96,9 @@ public:
 	CAPABILITIES capabilities(timeval *timeout = NULL)
 	throw(NetMauMau::Common::Exception::SocketException);
 
+	PLAYERLIST playerList(timeval *timeout = NULL)
+	throw(NetMauMau::Common::Exception::SocketException);
+
 protected:
 	/**
 	 * @brief Statistics entry about the other player's card count
@@ -103,11 +113,6 @@ protected:
 	 * @see STAT
 	 */
 	typedef std::vector<STAT> STATS;
-
-	/**
-	 * @brief A vector of @c Common::ICard pointers
-	 */
-	typedef std::vector<Common::ICard *> CARDS;
 
 	/**
 	 * @brief Creates an @c AbstractClient instance
@@ -253,9 +258,10 @@ protected:
 	virtual void nextPlayer(const std::string &player) const = 0;
 
 	/**
-	 * @brief The initial card set distributed to the player
+	 * @brief The card set distributed to the player, or if the
+	 * player picked up cards off the talon
 	 *
-	 * @param cards the initial card set distributed to the player
+	 * @param cards the card set given to the player
 	 */
 	virtual void cardSet(const CARDS &cards) const = 0;
 

@@ -36,7 +36,7 @@ namespace Server {
 class Connection : public Common::AbstractConnection {
 	DISALLOW_COPY_AND_ASSIGN(Connection)
 public:
-	typedef enum { NONE, PLAY, CAP, REFUSED } ACCEPT_STATE;
+	typedef enum { NONE, PLAY, CAP, REFUSED, PLAYERLIST } ACCEPT_STATE;
 
 	Connection(uint16_t port = SERVER_PORT, const char *server = NULL);
 	virtual ~Connection();

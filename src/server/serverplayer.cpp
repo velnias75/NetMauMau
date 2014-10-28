@@ -35,6 +35,10 @@ int Player::getSerial() const {
 	return m_sockfd;
 }
 
+bool Player::isAIPlayer() const {
+	return false;
+}
+
 void Player::receiveCard(NetMauMau::Common::ICard *card) {
 	receiveCardSet(std::vector<NetMauMau::Common::ICard *>(1, card));
 }

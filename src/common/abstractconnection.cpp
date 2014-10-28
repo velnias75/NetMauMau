@@ -95,6 +95,14 @@ void AbstractConnection::removePlayer(int sockfd) {
 	if(f != m_registeredPlayers.end()) m_registeredPlayers.erase(f);
 }
 
+void AbstractConnection::addAIPlayers(const std::vector<std::string> &aiPlayers) {
+	m_aiPlayers.insert(m_aiPlayers.end(), aiPlayers.begin(), aiPlayers.end());
+}
+
+const std::vector<std::string> &AbstractConnection::getAIPlayers() const {
+	return m_aiPlayers;
+}
+
 void AbstractConnection::reset() {
 
 	for(PLAYERINFOS::const_iterator i(m_registeredPlayers.begin()); i != m_registeredPlayers.end();
@@ -103,6 +111,7 @@ void AbstractConnection::reset() {
 	}
 
 	m_registeredPlayers.clear();
+	m_aiPlayers.clear();
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

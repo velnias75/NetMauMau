@@ -70,7 +70,7 @@ protected:
 
 private:
 	static bool m_interrupt;
-	const char *m_server;
+	std::string m_server;
 	uint16_t m_port;
 	int m_sfd;
 	std::string m_wireError;

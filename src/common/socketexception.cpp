@@ -21,8 +21,8 @@
 
 using namespace NetMauMau::Common::Exception;
 
-SocketException::SocketException(const std::string &msg, int sockfd) throw() : std::exception(),
-	m_msg(msg), m_sockfd(sockfd) {}
+SocketException::SocketException(const std::string &msg, int sfd) throw() : std::exception(),
+	m_msg(msg), m_sockfd(sfd) {}
 
 SocketException::SocketException(const SocketException &o) throw() : m_msg(o.m_msg),
 	m_sockfd(o.m_sockfd) {}

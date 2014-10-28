@@ -164,10 +164,10 @@ void Connection::connect() throw(NetMauMau::Common::Exception::SocketException) 
 				throw NetMauMau::Common::Exception::SocketException("Remote server rejected " \
 						"the connection", getSocketFD());
 			} else if((status[0] == 'V' && status[1] == 'M')) {
-				std::ostringstream os;
-				os << "Client (version " << SERVER_VERSION_MAJOR << "." << SERVER_VERSION_MINOR
-				   << ") not supported. Server is too old: " << maj << '.' << min;
-				throw NetMauMau::Common::Exception::SocketException(os.str(), getSocketFD());
+				std::ostringstream oscver;
+				oscver << "Client (version " << SERVER_VERSION_MAJOR << "." << SERVER_VERSION_MINOR
+					   << ") not supported. Server is too old: " << maj << '.' << min;
+				throw NetMauMau::Common::Exception::SocketException(oscver.str(), getSocketFD());
 			}
 
 		} else {
@@ -196,8 +196,7 @@ bool Connection::wire(int sockfd, const struct sockaddr *addr, socklen_t addrlen
 }
 
 std::string Connection::wireError(const std::string &err) const {
-	return std::string("could not connect") + (!err.empty() ? ": " : "")
-		   + (!err.empty() ? err : "");
+	return std::string(!err.empty() ? err : "could not connect");
 }
 
 Connection &Connection::operator>>(std::string &msg)

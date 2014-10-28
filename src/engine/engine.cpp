@@ -236,9 +236,9 @@ bool Engine::nextTurn() {
 
 				m_eventHandler.cardRejected(player, uc, pc);
 
-				const Common::ICard::SUIT js = m_ruleset->getJackSuit();
+				const Common::ICard::SUIT js2 = m_ruleset->getJackSuit();
 
-				if(!(pc = player->requestCard(uc, m_jackMode ? &js : 0L))) {
+				if(!(pc = player->requestCard(uc, m_jackMode ? &js2 : 0L))) {
 
 					bool decidedSuspend = false;
 

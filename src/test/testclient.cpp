@@ -68,15 +68,15 @@ void TestClient::gameOver() const {
 	std::cout << "Game over!" << std::endl;
 }
 
-void TestClient::turn(std::size_t turn) const {
-	std::cout << "Turn #" << turn << std::endl;
+void TestClient::turn(std::size_t t) const {
+	std::cout << "Turn #" << t << std::endl;
 }
 
-void TestClient::stats(const STATS &stats) const {
+void TestClient::stats(const STATS &s) const {
 
 	bool mau = false;
 
-	for(STATS::const_iterator i(stats.begin()); i != stats.end(); ++i) {
+	for(STATS::const_iterator i(s.begin()); i != s.end(); ++i) {
 		mau = i->cardCount == 1;
 		std::cout << BOLD_P_ON << i->playerName << BOLD_OFF << " has " <<
 				  (mau ? BOLD_ON : "") << i->cardCount << (mau ? BOLD_OFF : "")
@@ -153,9 +153,9 @@ void TestClient::playedCard(const std::string &player, const NetMauMau::Common::
 			  << std::endl;
 }
 
-void TestClient::playerWins(const std::string &player, std::size_t turn) const {
+void TestClient::playerWins(const std::string &player, std::size_t t) const {
 	std::cout << BOLD_P_ON << player << BOLD_OFF << BLUE_ON << " wins in turn #"
-			  << turn << " :-)" << BLUE_OFF << std::endl;
+			  << t << " :-)" << BLUE_OFF << std::endl;
 }
 
 void TestClient::cardSet(const CARDS &cards) const {
@@ -169,12 +169,12 @@ void TestClient::initialCard(const NetMauMau::Common::ICard *card) const {
 	std::cout << "Initial card is " << card->description(true) << std::endl;
 }
 
-void TestClient::openCard(const NetMauMau::Common::ICard *card, const std::string &jackSuit) const {
+void TestClient::openCard(const NetMauMau::Common::ICard *card, const std::string &js) const {
 
 	std::cout << "Open card: " << card->description(true);
 
-	if(!jackSuit.empty()) {
-		std::cout << " (current Jack suit " << NetMauMau::Common::ansiSuit(jackSuit) << ")";
+	if(!js.empty()) {
+		std::cout << " (current Jack suit " << NetMauMau::Common::ansiSuit(js) << ")";
 	}
 
 	std::cout << std::endl;

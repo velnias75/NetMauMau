@@ -95,14 +95,14 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 }
 
-void EventHandler::initialCard(const NetMauMau::Common::ICard *initialCard)
+void EventHandler::initialCard(const NetMauMau::Common::ICard *ic)
 throw(NetMauMau::Common::Exception::SocketException) {
-	m_connection << "INITIALCARD" << initialCard->description();
+	m_connection << "INITIALCARD" << ic->description();
 }
 
-void EventHandler::turn(std::size_t turn) throw(NetMauMau::Common::Exception::SocketException) {
+void EventHandler::turn(std::size_t t) throw(NetMauMau::Common::Exception::SocketException) {
 	std::ostringstream ts;
-	ts << turn;
+	ts << t;
 	m_connection << "TURN" << ts.str();
 }
 

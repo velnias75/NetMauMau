@@ -61,6 +61,9 @@ namespace Client {
 class _EXPORT AbstractClient {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClient)
 public:
+	/// @copydoc Connection::CAPABILITIES
+	typedef Connection::CAPABILITIES CAPABILITIES;
+
 	virtual ~AbstractClient();
 
 	/**
@@ -81,9 +84,9 @@ public:
 	 * @throw Common::Exception::SocketException if the connection failed
 	 * @throw Client::Exception::TimeoutException if the connection attempt timed out
 	 *
-	 * @return NetMauMau::Client::Connection::CAPABILITIES the server capabilities
+	 * @return CAPABILITIES the server capabilities
 	 */
-	Connection::CAPABILITIES capabilities(timeval *timeout = NULL)
+	CAPABILITIES capabilities(timeval *timeout = NULL)
 	throw(NetMauMau::Common::Exception::SocketException);
 
 protected:

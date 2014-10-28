@@ -63,9 +63,9 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 }
 
-void TestEventHandler::initialCard(const NetMauMau::Common::ICard *initialCard)
+void TestEventHandler::initialCard(const NetMauMau::Common::ICard *ic)
 throw(NetMauMau::Common::Exception::SocketException) {
-	std::cerr << "Uncovered card: " << initialCard->description(true) << std::endl;
+	std::cerr << "Uncovered card: " << ic->description(true) << std::endl;
 }
 
 void TestEventHandler::cardsAlreadyDistributed()
@@ -121,11 +121,11 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			  << NetMauMau::Common::suitToSymbol(suit, true, true) << std::endl;
 }
 
-void TestEventHandler::playerWins(const NetMauMau::Player::IPlayer *player, std::size_t turn)
+void TestEventHandler::playerWins(const NetMauMau::Player::IPlayer *player, std::size_t t)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\t" << BLUE_ON << "wins in turn #"
-			  << turn << " :-)" << BLUE_OFF << std::endl;
+			  << t << " :-)" << BLUE_OFF << std::endl;
 }
 
 void TestEventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std::size_t)

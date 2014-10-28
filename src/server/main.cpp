@@ -197,11 +197,11 @@ int getIPForIF(char *addr = NULL, size_t len = 0, const char *iface = NULL) {
 	return -1;
 }
 
-int getUser(uid_t *uid, const char *user) {
+int getUser(uid_t *uid, const char *usr) {
 
 	errno = 0;
 
-	struct passwd *u = getpwnam(user);
+	struct passwd *u = getpwnam(usr);
 
 	if(u) {
 		*uid = u->pw_uid;
@@ -215,14 +215,14 @@ int getUser(uid_t *uid, const char *user) {
 	return -1;
 }
 
-int dropPrivileges(const char *user, const char *group) {
+int dropPrivileges(const char *usr, const char *group) {
 
 	if(!getuid()) {
 
 		uid_t uid;
 		gid_t gid;
 
-		if(!getUser(&uid, user) && !getGroup(&gid, group)) {
+		if(!getUser(&uid, usr) && !getGroup(&gid, group)) {
 			if(!setegid(gid) && !seteuid(uid)) {
 				return 0;
 			} else {
@@ -372,7 +372,7 @@ int main(int argc, const char **argv) {
 
 			std::ostringstream mpos;
 			mpos << (aiOpponent ? 1 : minPlayers);
-			caps.insert(std::make_pair("MIN_PLAYERS", mpos.str()));
+			caps.insert(std::make_pair("MAX_PLAYERS", mpos.str()));
 
 			std::ostringstream cpos;
 			cpos << game.getPlayerCount() - (aiOpponent ? 1 : 0);

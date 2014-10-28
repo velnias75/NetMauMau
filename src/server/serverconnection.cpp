@@ -170,15 +170,15 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 				}
 			} else {
 
-				std::ostringstream os;
+				std::ostringstream oscap;
 
 				for(CAPABILITIES::const_iterator i(m_caps.begin()); i != m_caps.end(); ++i) {
-					os << i->first << '=' << i->second << '\0';
+					oscap << i->first << '=' << i->second << '\0';
 				}
 
-				os << "CAPEND" << '\0';
+				oscap << "CAPEND" << '\0';
 
-				send(os.str().c_str(), os.str().length(), cfd);
+				send(oscap.str().c_str(), oscap.str().length(), cfd);
 
 				shutdown(cfd, SHUT_RDWR);
 				close(cfd);

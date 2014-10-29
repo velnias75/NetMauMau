@@ -17,14 +17,6 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
-#endif
-
-#ifdef HAVE_SYS_SOCKET_H
-#include <sys/socket.h>
-#endif
-
 #include <algorithm>
 #include <sstream>
 
@@ -38,7 +30,8 @@
 using namespace NetMauMau::Client;
 
 AbstractClient::AbstractClient(const std::string &pName, const std::string &server, uint16_t port) :
-	m_connection(pName, server, port), m_pName(pName), m_cards(), m_openCard(0L) {}
+	m_connection(pName, server, port), m_pName(pName), m_cards(), m_openCard(0L),
+	m_disconnectNow(false) {}
 
 AbstractClient::~AbstractClient() {
 	for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(m_cards.begin());
@@ -47,10 +40,17 @@ AbstractClient::~AbstractClient() {
 	}
 
 	delete m_openCard;
+
+	m_connection.setInterrupted(false);
 }
 
 std::string AbstractClient::getPlayerName() const {
 	return m_pName;
+}
+
+void AbstractClient::disconnect() {
+	m_disconnectNow = true;
+	m_connection.setInterrupted();
 }
 
 AbstractClient::CARDS
@@ -88,22 +88,22 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 	std::string msg, cjackSuit;
 	std::size_t cturn = 0;
 
-	while(true) {
+	while(!m_disconnectNow) {
 
 		try {
 
 			m_connection >> msg;
 
-			if(!msg.empty()) {
+			if(!m_disconnectNow && !msg.empty()) {
 
-				if(msg == "MESSAGE") {
+				if(!m_disconnectNow && msg == "MESSAGE") {
 					m_connection >> msg;
 					message(msg);
-				} else if(msg == "ERROR") {
+				} else if(!m_disconnectNow && msg == "ERROR") {
 					m_connection >> msg;
 					error(msg);
 					break;
-				} else if(msg == "TURN") {
+				} else if(!m_disconnectNow && msg == "TURN") {
 
 					m_connection >> msg;
 
@@ -111,10 +111,10 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 
 					turn(cturn);
 
-				} else if(msg == "NEXTPLAYER") {
+				} else if(!m_disconnectNow && msg == "NEXTPLAYER") {
 					m_connection >> msg;
 					nextPlayer(msg);
-				} else if(msg == "STATS") {
+				} else if(!m_disconnectNow && msg == "STATS") {
 
 					m_connection >> msg;
 
@@ -136,19 +136,19 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 
 					stats(cstats);
 
-				} else if(msg == "PLAYERJOINED") {
+				} else if(!m_disconnectNow && msg == "PLAYERJOINED") {
 					m_connection >> msg;
 					playerJoined(msg);
-				} else if(msg == "PLAYERREJECTED") {
+				} else if(!m_disconnectNow && msg == "PLAYERREJECTED") {
 					m_connection >> msg;
 					playerRejected(msg);
 					break;
-				} else if(msg == "PLAYERWINS") {
+				} else if(!m_disconnectNow && msg == "PLAYERWINS") {
 					m_connection >> msg;
 					playerWins(msg, cturn);
 					gameOver();
 					break;
-				} else if(msg == "GETCARDS") {
+				} else if(!m_disconnectNow && msg == "GETCARDS") {
 
 					m_connection >> msg;
 
@@ -162,7 +162,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 
 					cardSet(getCards(initialCards ? m_cards.begin() : e));
 
-				} else if(msg == "INITIALCARD") {
+				} else if(!m_disconnectNow && msg == "INITIALCARD") {
 
 					m_connection >> msg;
 					NetMauMau::Common::ICard *ic = (NetMauMau::Client::CardFactory(msg)).create();
@@ -175,7 +175,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 
 					delete ic;
 
-				} else if(msg == "OPENCARD") {
+				} else if(!m_disconnectNow && msg == "OPENCARD") {
 
 					m_connection >> msg;
 					delete m_openCard;
@@ -187,7 +187,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 						initCardShown = false;
 					}
 
-				} else if(msg == "PLAYCARD") {
+				} else if(!m_disconnectNow && msg == "PLAYCARD") {
 
 					lastPlayedCard = playCard(getCards(m_cards.begin()));
 
@@ -197,10 +197,10 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 						m_connection << "SUSPEND";
 					}
 
-				} else if(msg == "SUSPENDS") {
+				} else if(!m_disconnectNow && msg == "SUSPENDS") {
 					m_connection >> msg;
 					playerSuspends(msg);
-				} else if(msg == "CARDACCEPTED") {
+				} else if(!m_disconnectNow && msg == "CARDACCEPTED") {
 
 					m_connection >> msg;
 
@@ -214,7 +214,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 						}
 					}
 
-				} else if(msg == "CARDREJECTED") {
+				} else if(!m_disconnectNow && msg == "CARDREJECTED") {
 
 					std::string player;
 					m_connection >> player >> msg;
@@ -223,13 +223,13 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					cardRejected(player, c);
 					delete c;
 
-				} else if(msg == "CARDCOUNT") {
+				} else if(!m_disconnectNow && msg == "CARDCOUNT") {
 
 					std::ostringstream os;
 					os << m_cards.size();
 					m_connection << os.str();
 
-				} else if(msg == "PLAYEDCARD") {
+				} else if(!m_disconnectNow && msg == "PLAYEDCARD") {
 
 					std::string player;
 					m_connection >> player >> msg;
@@ -240,13 +240,13 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 
 					cjackSuit.clear();
 
-				} else if(msg == "JACKSUIT") {
+				} else if(!m_disconnectNow && msg == "JACKSUIT") {
 					m_connection >> msg;
 					cjackSuit = msg;
 					jackSuit(NetMauMau::Common::symbolToSuit(cjackSuit));
-				} else if(msg == "JACKCHOICE") {
+				} else if(!m_disconnectNow && msg == "JACKCHOICE") {
 					m_connection << NetMauMau::Common::suitToSymbol(getJackSuitChoice(), false);
-				} else if(msg == "PLAYERPICKSCARD") {
+				} else if(!m_disconnectNow && msg == "PLAYERPICKSCARD") {
 
 					std::string player, extra;
 					m_connection >> player >> extra;
@@ -260,7 +260,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 						playerPicksCard(player, static_cast<NetMauMau::Common::ICard *>(0L));
 					}
 
-				} else if(msg == "PLAYERPICKSCARDS") {
+				} else if(!m_disconnectNow && msg == "PLAYERPICKSCARDS") {
 
 					std::string player;
 					m_connection >> player >> msg;
@@ -271,10 +271,10 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 
 					playerPicksCard(player, count);
 
-				} else if(msg == "BYE") {
+				} else if(!m_disconnectNow && msg == "BYE") {
 					gameOver();
 					break;
-				} else {
+				} else if(!m_disconnectNow) {
 					logDebug(__PRETTY_FUNCTION__ << ": " << msg);
 				}
 			}
@@ -284,6 +284,8 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 			break;
 		}
 	}
+
+	m_disconnectNow = false;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

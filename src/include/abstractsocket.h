@@ -31,9 +31,10 @@
 #include <ws2tcpip.h>
 #endif
 
-#include "socketexception.h"
+#include <sys/types.h>
+#include <sys/socket.h>
 
-struct sockaddr;
+#include "socketexception.h"
 
 namespace NetMauMau {
 
@@ -52,7 +53,7 @@ public:
 	std::string read(int fd, std::size_t len = 1024) throw(Exception::SocketException);
 	static void write(int fd, const std::string &msg) throw(Exception::SocketException);
 
-	static void setInterrupted();
+	static void setInterrupted(bool b = true);
 
 protected:
 	AbstractSocket(const char *server, uint16_t port);

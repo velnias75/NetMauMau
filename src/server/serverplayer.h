@@ -20,14 +20,6 @@
 #ifndef NETMAUMAU_SERVERPLAYER_H
 #define NETMAUMAU_SERVERPLAYER_H
 
-#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
-#endif
-
-#ifdef HAVE_SYS_SOCKET_H
-#include <sys/socket.h>
-#endif
-
 #include "stdplayer.h"
 #include "socketexception.h"
 

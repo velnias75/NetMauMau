@@ -71,6 +71,20 @@ public:
 	 */
 	typedef std::vector<Common::ICard *> CARDS;
 
+	/**
+	* @brief Statistics entry about the other player's card count
+	*/
+	typedef struct {
+		std::string playerName; ///< the player's name
+		std::size_t cardCount; ///< the player's card count
+	} STAT;
+
+	/**
+	 * @brief A vector with statistics about the other player's card count
+	 * @see STAT
+	 */
+	typedef std::vector<STAT> STATS;
+
 	virtual ~AbstractClient();
 
 	/**
@@ -82,6 +96,8 @@ public:
 	 * @throw Client::Exception::TimeoutException if the connection attempt timed out
 	 */
 	void play(timeval *timeout = NULL) throw(NetMauMau::Common::Exception::SocketException);
+
+	void disconnect();
 
 	/**
 	 * @brief Returns the server capabilities
@@ -100,20 +116,6 @@ public:
 	throw(NetMauMau::Common::Exception::SocketException);
 
 protected:
-	/**
-	 * @brief Statistics entry about the other player's card count
-	 */
-	typedef struct {
-		std::string playerName; ///< the player's name
-		std::size_t cardCount; ///< the player's card count
-	} STAT;
-
-	/**
-	 * @brief A vector with statistics about the other player's card count
-	 * @see STAT
-	 */
-	typedef std::vector<STAT> STATS;
-
 	/**
 	 * @brief Creates an @c AbstractClient instance
 	 *
@@ -311,6 +313,7 @@ private:
 	std::string m_pName;
 	std::vector<Common::ICard *> m_cards;
 	Common::ICard *m_openCard;
+	bool m_disconnectNow;
 };
 
 }

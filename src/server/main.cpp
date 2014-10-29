@@ -42,10 +42,6 @@
 #define HOST_NAME_MAX 64
 #endif
 
-#ifdef HAVE_SYS_SOCKET_H
-#include <sys/socket.h>
-#endif
-
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
 #endif

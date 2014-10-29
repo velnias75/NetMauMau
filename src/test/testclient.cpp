@@ -17,14 +17,6 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
-#endif
-
-#ifdef HAVE_SYS_SOCKET_H
-#include <sys/socket.h>
-#endif
-
 #include <iostream>
 
 #include "testclient.h"

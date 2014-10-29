@@ -29,12 +29,6 @@
 #include <unistd.h>
 #endif
 
-#include <sys/types.h>
-
-#ifdef HAVE_SYS_SOCKET_H
-#include <sys/socket.h>
-#endif
-
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
 #endif
@@ -226,8 +220,8 @@ void AbstractSocket::write(int fd, const std::string &msg) throw(Exception::Sock
 
 void AbstractSocket::intercept() {}
 
-void AbstractSocket::setInterrupted() {
-	m_interrupt = true;
+void AbstractSocket::setInterrupted(bool b) {
+	m_interrupt = b;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

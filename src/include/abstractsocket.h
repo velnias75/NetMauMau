@@ -29,10 +29,10 @@
 
 #ifdef _WIN32
 #include <ws2tcpip.h>
-#endif
-
+#else
 #include <sys/types.h>
 #include <sys/socket.h>
+#endif
 
 #include "socketexception.h"
 

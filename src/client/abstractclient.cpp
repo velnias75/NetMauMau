@@ -27,6 +27,20 @@
 #include "cardtools.h"
 #include "logger.h"
 
+namespace {
+
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+struct cardEquals : public std::binary_function < NetMauMau::Common::ICard *,
+		NetMauMau::Common::ICard *, bool > {
+	bool operator()(const NetMauMau::Common::ICard *x, const NetMauMau::Common::ICard *y) const {
+		return x->description() == y->description();
+	}
+};
+#pragma GCC diagnostic pop
+
+}
+
 using namespace NetMauMau::Client;
 
 AbstractClient::AbstractClient(const std::string &pName, const std::string &server, uint16_t port) :
@@ -206,9 +220,11 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 
 					if(lastPlayedCard) {
 						const std::vector<NetMauMau::Common::ICard *>::iterator
-						&f(std::find(m_cards.begin(), m_cards.end(), lastPlayedCard));
+						&f(std::find_if(m_cards.begin(), m_cards.end(), std::bind2nd(cardEquals(),
+										lastPlayedCard)));
 
 						if(f != m_cards.end()) {
+							cardAccepted(*f);
 							delete *f;
 							m_cards.erase(f);
 						}
@@ -286,6 +302,11 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 	}
 
 	m_disconnectNow = false;
+}
+
+uint32_t AbstractClient::getClientProtocolVersion() {
+	return (static_cast<uint16_t>(SERVER_VERSION_MAJOR) << 16u) |
+		   static_cast<uint16_t>(SERVER_VERSION_MINOR);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

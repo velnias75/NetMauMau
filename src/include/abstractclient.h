@@ -115,6 +115,8 @@ public:
 	PLAYERLIST playerList(timeval *timeout = NULL)
 	throw(NetMauMau::Common::Exception::SocketException);
 
+	static uint32_t getClientProtocolVersion() _CONST;
+
 protected:
 	/**
 	 * @brief Creates an @c AbstractClient instance
@@ -295,6 +297,8 @@ protected:
 	 * @param card the rejected card
 	 */
 	virtual void cardRejected(const std::string &player, const Common::ICard *card) const = 0;
+
+	virtual void cardAccepted(const Common::ICard *card) const = 0;
 
 	/**
 	 * @brief The server announces a Jack suit

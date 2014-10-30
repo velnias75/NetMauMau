@@ -53,6 +53,7 @@ protected:
 	virtual void openCard(const NetMauMau::Common::ICard *card, const std::string &jackSuit) const;
 	virtual void cardRejected(const std::string &player,
 							  const NetMauMau::Common::ICard *card) const;
+	virtual void cardAccepted(const NetMauMau::Common::ICard *card) const _CONST;
 	virtual void jackSuit(NetMauMau::Common::ICard::SUIT suit);
 };
 

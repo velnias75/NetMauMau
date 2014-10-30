@@ -178,6 +178,8 @@ void TestClient::cardRejected(const std::string &player,
 			  << " is REJECTED" << std::endl;
 }
 
+void TestClient::cardAccepted(const NetMauMau::Common::ICard *) const {}
+
 void TestClient::jackSuit(NetMauMau::Common::ICard::SUIT suit) {
 	std::cout << "Suit chosen by Jack is " << NetMauMau::Common::suitToSymbol(suit, true, true)
 			  << std::endl;

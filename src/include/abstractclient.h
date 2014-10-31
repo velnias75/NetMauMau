@@ -64,6 +64,7 @@ public:
 	/// @copydoc Connection::CAPABILITIES
 	typedef Connection::CAPABILITIES CAPABILITIES;
 
+	/// @copydoc Connection::PLAYERLIST
 	typedef Connection::PLAYERLIST PLAYERLIST;
 
 	/**
@@ -97,7 +98,15 @@ public:
 	 */
 	void play(timeval *timeout = NULL) throw(NetMauMau::Common::Exception::SocketException);
 
+	/**
+	 * @brief Disconnects the client from the server
+	 */
 	void disconnect();
+
+	/**
+	 * @name Server query methods
+	 * @{
+	 */
 
 	/**
 	 * @brief Returns the server capabilities
@@ -112,10 +121,33 @@ public:
 	CAPABILITIES capabilities(timeval *timeout = NULL)
 	throw(NetMauMau::Common::Exception::SocketException);
 
+	/**
+	 * @brief Returns the list of currently registered player names
+	 *
+	 * @param timeout the time to wait for a connection, if @c NULL there will be no timeout
+	 * @return NetMauMau::Client::AbstractClient::PLAYERLIST
+	 * the list of currently registered player names
+	 */
 	PLAYERLIST playerList(timeval *timeout = NULL)
 	throw(NetMauMau::Common::Exception::SocketException);
 
+	/**
+	 * @brief Returns the version of the client's understood protocol version
+	 *
+	 * @note The value contains the major version in bits 0-15 and the minor version in bits 16-31
+	 *
+	 * @return uint32_t the protocol version
+	 */
 	static uint32_t getClientProtocolVersion() _CONST;
+
+	/**
+	 * @brief Gets the player's name
+	 *
+	 * @return std::string the player's name
+	 */
+	std::string getPlayerName() const;
+
+	/// @}
 
 protected:
 	/**
@@ -130,13 +162,6 @@ protected:
 	 * @param port the server port to connect to
 	 */
 	AbstractClient(const std::string &player, const std::string &server, uint16_t port);
-
-	/**
-	 * @brief Gets the player's name
-	 *
-	 * @return std::string the player's name
-	 */
-	std::string getPlayerName() const;
 
 	/**
 	 * @name Server requests
@@ -298,6 +323,11 @@ protected:
 	 */
 	virtual void cardRejected(const std::string &player, const Common::ICard *card) const = 0;
 
+	/**
+	 * @brief The player's played card got accepted
+	 *
+	 * @param card the accepted card
+	 */
 	virtual void cardAccepted(const Common::ICard *card) const = 0;
 
 	/**

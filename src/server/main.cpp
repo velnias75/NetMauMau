@@ -361,6 +361,8 @@ int main(int argc, const char **argv) {
 			Server::Connection::CAPABILITIES caps;
 			caps.insert(std::make_pair("SERVER_VERSION", PACKAGE_VERSION));
 			caps.insert(std::make_pair("AI_OPPONENT", aiOpponent ? "true" : "false"));
+			
+			if(aiOpponent) caps.insert(std::make_pair("AI_NAME", aiName));
 
 			std::ostringstream mvos;
 			mvos << MIN_MAJOR << '.' << MIN_MINOR;

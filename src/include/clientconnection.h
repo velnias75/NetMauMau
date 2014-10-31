@@ -42,6 +42,9 @@ namespace Client {
 class _EXPORT Connection : public Common::AbstractConnection {
 	DISALLOW_COPY_AND_ASSIGN(Connection)
 public:
+	/**
+	 * @brief List of currently registered player names
+	 */
 	typedef std::vector<std::string> PLAYERLIST;
 
 	Connection(const std::string &pName, const std::string &server, uint16_t port = SERVER_PORT);

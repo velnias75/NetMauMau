@@ -78,7 +78,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 void EventHandler::error(const std::string &msg, const std::vector<std::string> &except)
 throw(NetMauMau::Common::Exception::SocketException) {
-	message_internal("ERROR", "ERROR: " + msg, except);
+	message_internal("ERROR", msg, except);
 	logError(msg);
 }
 

@@ -34,6 +34,8 @@
 #endif
 
 #include "clientconnection.h"
+
+#include "abstractclient.h"
 #include "timeoutexception.h"
 #include "interceptederrorexception.h"
 
@@ -156,8 +158,7 @@ void Connection::connect() throw(NetMauMau::Common::Exception::SocketException) 
 	if(hello(&maj, &min)) {
 
 		uint32_t sver = (maj << 16u) | min;
-		uint32_t mver = (static_cast<uint16_t>(SERVER_VERSION_MAJOR) << 16u) |
-						static_cast<uint16_t>(SERVER_VERSION_MINOR);
+		uint32_t mver = AbstractClient::getClientProtocolVersion();
 
 		if(mver >= sver) {
 
@@ -229,7 +230,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	msg = str;
 
 	if(msg.empty()) {
-		throw Exception::InterceptedErrorException("ERROR: Lost connection to server",
+		throw Exception::InterceptedErrorException("Lost connection to server",
 				getSocketFD());
 	} else if(msg == "ERROR") {
 

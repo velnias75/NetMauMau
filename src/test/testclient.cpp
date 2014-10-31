@@ -53,7 +53,7 @@ void TestClient::message(const std::string &msg) {
 }
 
 void TestClient::error(const std::string &msg) {
-	message(BOLD_ON + RED_ON + msg + RED_OFF + BOLD_OFF);
+	message(BOLD_ON + RED_ON + "ERROR: " + msg + RED_OFF + BOLD_OFF);
 }
 
 void TestClient::gameOver() const {

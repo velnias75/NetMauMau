@@ -35,6 +35,7 @@
       <interfaces title=""/>
       <publicslots title=""/>
       <signals title=""/>
+	  <membergroups visible="yes"/>
       <publicmethods title=""/>
       <publicstaticmethods title=""/>
       <publicattributes title=""/>
@@ -60,7 +61,6 @@
       <privatestaticattributes title=""/>
       <friends title=""/>
       <related title="" subtitle=""/>
-      <membergroups visible="yes"/>
     </memberdecl>
     <memberdef>
       <inlineclasses title=""/>

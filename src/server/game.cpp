@@ -21,6 +21,10 @@
 #include "logger.h"
 #include "abstractconnection.h"
 
+namespace {
+const char *GAMEREADY = "Ready for new game...";
+}
+
 using namespace NetMauMau::Server;
 
 Game::Game(NetMauMau::Event::IEventHandler &evtHdlr, bool aiPlayer, const std::string &aiName) :
@@ -33,7 +37,7 @@ Game::Game(NetMauMau::Event::IEventHandler &evtHdlr, bool aiPlayer, const std::s
 		m_engine.addPlayer(&m_aiPlayer);
 	}
 
-	logInfo("Ready for new game...");
+	logInfo(GAMEREADY);
 }
 
 Game::~Game() {
@@ -99,7 +103,7 @@ void Game::reset() throw(NetMauMau::Common::Exception::SocketException) {
 		m_engine.addPlayer(&m_aiPlayer);
 	}
 
-	logInfo("Ready for new game...");
+	logInfo(GAMEREADY);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

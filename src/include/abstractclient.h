@@ -55,8 +55,9 @@ namespace Client {
  * } catch(const NetMauMau::Common::Exception::SocketException &e) {
  * 	// your error handling
  * }
- *
  * @endcode
+ *
+ * @note All data is transferred as UTF-8 encoded byte strings
  */
 class _EXPORT AbstractClient {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClient)
@@ -132,9 +133,12 @@ public:
 	throw(NetMauMau::Common::Exception::SocketException);
 
 	/**
-	 * @brief Returns the version of the client's understood protocol version
+	 * @brief Returns the version of the client's implemented protocol version
 	 *
-	 * @note The value contains the major version in bits 0-15 and the minor version in bits 16-31
+	 * You can retrieve major and minor version as following: @code
+	 * uint16_t major = static_cast<uint16_t>(AbstractClient::getClientProtocolVersion() >> 16);
+	 * uint16_t minor = static_cast<uint16_t>(AbstractClient::getClientProtocolVersion());
+	 * @endcode
 	 *
 	 * @return uint32_t the protocol version
 	 */

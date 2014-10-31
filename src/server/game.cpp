@@ -32,6 +32,8 @@ Game::Game(NetMauMau::Event::IEventHandler &evtHdlr, bool aiPlayer, const std::s
 		logInfo("Adding AI player \"" << m_aiPlayer.getName() << "\"");
 		m_engine.addPlayer(&m_aiPlayer);
 	}
+
+	logInfo("Ready for new game...");
 }
 
 Game::~Game() {
@@ -96,6 +98,8 @@ void Game::reset() throw(NetMauMau::Common::Exception::SocketException) {
 		m_aiPlayer.reset();
 		m_engine.addPlayer(&m_aiPlayer);
 	}
+
+	logInfo("Ready for new game...");
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

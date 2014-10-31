@@ -153,7 +153,8 @@ bool Engine::distributeCards() throw(Common::Exception::SocketException) {
 
 		}
 
-		m_eventHandler.initialCard(m_talon->uncoverCard());
+		m_turn = 1;
+		m_curTurn = 0;
 		m_state = PLAYING;
 
 		return true;
@@ -183,6 +184,9 @@ bool Engine::nextTurn() {
 
 		if(m_curTurn != m_turn) {
 			m_eventHandler.turn(m_turn);
+
+			if(m_turn == 1) m_eventHandler.initialCard(m_talon->uncoverCard());
+
 			m_curTurn = m_turn;
 		}
 

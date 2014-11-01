@@ -8,8 +8,7 @@ Setting up the build environment
 
 After checkout run autoreconf -ifv to set up the build environment.
 
-./configure
-make
+./configure && make
 
 builds the projects and
 

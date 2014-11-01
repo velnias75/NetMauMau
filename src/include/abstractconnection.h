@@ -51,6 +51,7 @@ class _EXPORT AbstractConnection : public AbstractSocket {
 public:
 	typedef struct _EXPORT _info {
 		_info();
+		~_info();
 		int sockfd;
 		std::string  name;
 		std::string  host;

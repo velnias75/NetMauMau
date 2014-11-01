@@ -201,7 +201,7 @@ void AbstractSocket::send(const void *buf, std::size_t len,
 						  int fd) throw(Exception::SocketException) {
 
 	const char *bufP = static_cast<const char *>(buf);
-	ssize_t slen;
+	ssize_t slen = 0;
 	std::size_t total = 0;
 
 	while(total < len && (slen = ::send(fd, bufP, len, MSG_NOSIGNAL)) > 0) {

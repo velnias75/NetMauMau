@@ -2,7 +2,8 @@ Source: netmaumau
 Section: games
 Priority: optional
 Maintainer: Heiko Schäfer <heiko@rangun.de>
-Build-Depends: cdbs, debhelper (>= 9), dh-autoreconf, autotools-dev, pkg-config, libpopt-dev (>= 1.10), doxygen, graphviz
+Build-Depends: cdbs, debhelper (>= 9), dh-autoreconf, autotools-dev, pkg-config, 
+ libpopt-dev (>= 1.10), doxygen, graphviz
 Standards-Version: 3.9.2
 Homepage: https://github.com/velnias75/NetMauMau/
 Vcs-Git: git@github.com:velnias75/NetMauMau.git
@@ -36,7 +37,8 @@ Package: netmaumau-dev
 Architecture: any
 Priority: optional
 Section: devel
-Depends: ${misc:Depends}
+Depends: netmaumau-server (= ${binary:Version}), libnetmaumauclient0 (= ${binary:Version}), 
+ ${misc:Depends}
 Description: A server for the popular card game Mau Mau - developer files
  Several players can connect and play against each other.
 

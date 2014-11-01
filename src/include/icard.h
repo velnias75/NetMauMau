@@ -38,7 +38,7 @@ namespace Common {
  * @interface ICard
  * @brief Describes a playing card
  */
-class ICard {
+class _EXPORT ICard {
 	DISALLOW_COPY_AND_ASSIGN(ICard)
 public:
 	/**

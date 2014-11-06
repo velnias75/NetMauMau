@@ -238,12 +238,9 @@ bool Engine::nextTurn() {
 
 			while(pc && !(cc = m_ruleset->checkCard(player, uc, pc))) {
 
-				if(!cc && player->isAIPlayer()) {
-					logDebug("BUG: AI player played a card which got rejected!");
-					break;
-				}
+				const bool aiSusp = (!cc && player->isAIPlayer());
 
-				if(suspend) {
+				if(suspend || aiSusp) {
 					m_eventHandler.playerSuspends(player);
 					break;
 				}
@@ -252,7 +249,7 @@ bool Engine::nextTurn() {
 
 				const Common::ICard::SUIT js2 = m_ruleset->getJackSuit();
 
-				if(!(pc = player->requestCard(uc, m_jackMode ? &js2 : 0L))) {
+				if((!(pc = player->requestCard(uc, m_jackMode ? &js2 : 0L)))) {
 
 					bool decidedSuspend = false;
 

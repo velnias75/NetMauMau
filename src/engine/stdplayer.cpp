@@ -237,8 +237,6 @@ NetMauMau::Common::ICard *StdPlayer::requestCard(const NetMauMau::Common::ICard 
 			uc->getRank() == NetMauMau::Common::ICard::JACK) {
 		bestCard = findBestCard(uc, js, true);
 
-	} else if(!bestCard) {
-		return 0L;
 	}
 
 	return bestCard;

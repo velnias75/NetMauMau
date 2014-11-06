@@ -36,6 +36,8 @@
 
 #include "serverconnection.h"
 
+#include "logger.h"
+
 using namespace NetMauMau::Server;
 
 Connection::Connection(uint16_t port, const char *server) : AbstractConnection(server, port),
@@ -152,13 +154,28 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						send("OK", 2, cfd);
 						accepted = PLAY;
 					} else {
-						send(cver <= maxver ? "NO" : "VM", 2, cfd);
+
+						try {
+							send(cver <= maxver ? "NO" : "VM", 2, cfd);
+						} catch(const NetMauMau::Common::Exception::SocketException &e) {
+							logDebug("Sending " << (cver <= maxver ? "NO" : "VM")
+									 << " to client failed: " << e.what());
+						}
+
 						shutdown(cfd, SHUT_RDWR);
 						close(cfd);
 						accepted = REFUSED;
 					}
 				} else {
-					send("NO", 2, cfd);
+					logDebug("HELLO failed: " << rHello.substr(0, std::strlen(PACKAGE_NAME))
+							 << " != " << hello);
+
+					try {
+						send("NO", 2, cfd);
+					} catch(const NetMauMau::Common::Exception::SocketException &e) {
+						logDebug("Sending NO to client failed: " << e.what());
+					}
+
 					shutdown(cfd, SHUT_RDWR);
 					close(cfd);
 				}

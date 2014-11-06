@@ -31,6 +31,7 @@
 #include "engine.h"
 
 #include "talon.h"
+#include "logger.h"
 #include "iplayer.h"
 #include "stdruleset.h"
 #include "ieventhandler.h"
@@ -236,6 +237,11 @@ bool Engine::nextTurn() {
 			bool cc;
 
 			while(pc && !(cc = m_ruleset->checkCard(player, uc, pc))) {
+
+				if(!cc && player->isAIPlayer()) {
+					logDebug("BUG: AI player played a card which got rejected!");
+					break;
+				}
 
 				if(suspend) {
 					m_eventHandler.playerSuspends(player);

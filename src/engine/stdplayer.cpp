@@ -238,11 +238,7 @@ NetMauMau::Common::ICard *StdPlayer::requestCard(const NetMauMau::Common::ICard 
 		bestCard = findBestCard(uc, js, true);
 
 	} else if(!bestCard) {
-
-		const std::vector<NetMauMau::Common::ICard *>::iterator &f(std::find_if(m_cards.begin(),
-				m_cards.end(), std::bind2nd(isSuit(), js ? *js : uc->getSuit())));
-
-		if(f != m_cards.end()) bestCard = *f;
+		return 0L;
 	}
 
 	return bestCard;

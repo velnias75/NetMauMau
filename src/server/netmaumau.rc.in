@@ -1,0 +1,53 @@
+/*
+ * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ *
+ * This file is part of NetMauMau.
+ *
+ * NetMauMau is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * NetMauMau is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+IDI_ICON1               ICON    DISCARDABLE     "@top_srcdir@/netmaumau.ico"
+
+1 VERSIONINFO
+ FILEVERSION 0,0,0,0
+ PRODUCTVERSION 0,0,0,0
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+			VALUE "CompanyName", "Heiko Schäfer"
+            VALUE "FileDescription", "NetMauMau server"
+			VALUE "FileVersion", "@PACKAGE_VERSION@"
+			VALUE "InternalName", "@PACKAGE_TARNAME@"
+            VALUE "LegalCopyright", "© 2014 Heiko Schäfer"
+            VALUE "OriginalFilename", "nmm-sever.exe"
+			VALUE "ProductName", "@PACKAGE_STRING@ server"
+			VALUE "ProductVersion", "@PACKAGE_VERSION@"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END

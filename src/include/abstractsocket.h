@@ -53,7 +53,7 @@ public:
 	std::string read(int fd, std::size_t len = 1024) throw(Exception::SocketException);
 	static void write(int fd, const std::string &msg) throw(Exception::SocketException);
 
-	static void setInterrupted(bool b = true);
+	_EXPORT static void setInterrupted(bool b = true);
 
 protected:
 	AbstractSocket(const char *server, uint16_t port);

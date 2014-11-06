@@ -40,6 +40,12 @@ if test -z "$ac_cv_prog_DOXYGEN"; then
   AM_CONDITIONAL([GENDOX], [ false ])
 fi
 
+if test -z "$ac_cv_prog_RC"; then
+  AM_CONDITIONAL([RC], [ false ])
+else
+  AM_CONDITIONAL([RC], [ true ])
+fi
+
 # Checks for libraries.
 PKG_CHECK_MODULES([POPT], [popt >= 1.10]);
 
@@ -91,7 +97,7 @@ AC_SUBST([NO_RTTI_FLAGS])
 
 AC_CONFIG_MACRO_DIR([m4])
 
-AC_CONFIG_FILES([doc/client.dox])
+AC_CONFIG_FILES([src/server/netmaumau.rc doc/client.dox])
 
 AC_OUTPUT([Makefile src/include/Makefile src/Makefile src/common/Makefile src/engine/Makefile 
   src/server/Makefile src/client/Makefile src/test/Makefile doc/Makefile])

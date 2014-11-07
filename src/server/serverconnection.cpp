@@ -76,7 +76,8 @@ void Connection::connect() throw(NetMauMau::Common::Exception::SocketException) 
 	AbstractConnection::connect();
 
 	if(listen(getSocketFD(), SOMAXCONN)) {
-		throw NetMauMau::Common::Exception::SocketException(std::strerror(errno), getSocketFD());
+		throw NetMauMau::Common::Exception::SocketException(std::strerror(errno), getSocketFD(),
+				errno);
 	}
 }
 
@@ -226,7 +227,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 			shutdown(cfd, SHUT_RDWR);
 			close(cfd);
 
-			throw NetMauMau::Common::Exception::SocketException(gai_strerror(err));
+			throw NetMauMau::Common::Exception::SocketException(gai_strerror(err), -1, errno);
 		}
 	}
 

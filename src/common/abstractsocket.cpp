@@ -102,7 +102,7 @@ void AbstractSocket::connect() throw(Exception::SocketException) {
 
 	if((s = getaddrinfo(m_server.empty() ? 0L : m_server.c_str(), portS.str().c_str(), &hints,
 						&result)) != 0) {
-		throw(Exception::SocketException(gai_strerror(s), m_sfd));
+		throw(Exception::SocketException(gai_strerror(s), m_sfd, errno));
 	}
 
 	for(rp = result; rp != NULL; rp = rp->ai_next) {
@@ -179,7 +179,7 @@ again:
 			goto again;
 		}
 
-		throw Exception::SocketException(std::strerror(errno), fd);
+		throw Exception::SocketException(std::strerror(errno), fd, errno);
 	}
 
 	return total;
@@ -209,7 +209,7 @@ void AbstractSocket::send(const void *buf, std::size_t len,
 		total += slen;
 	}
 
-	if(slen == -1) throw Exception::SocketException(std::strerror(errno), fd);
+	if(slen == -1) throw Exception::SocketException(std::strerror(errno), fd, errno);
 }
 
 void AbstractSocket::write(int fd, const std::string &msg) throw(Exception::SocketException) {

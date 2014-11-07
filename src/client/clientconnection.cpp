@@ -88,7 +88,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		return (isServerHello && rHello.substr(0, std::strlen(PACKAGE_NAME)) == PACKAGE_NAME);
 
 	} else if(pret == -1) {
-		throw NetMauMau::Common::Exception::SocketException(strerror(errno), getSocketFD());
+		throw NetMauMau::Common::Exception::SocketException(strerror(errno), getSocketFD(), errno);
 	} else {
 		throw Exception::TimeoutException("Timeout while connecting to server", getSocketFD());
 	}

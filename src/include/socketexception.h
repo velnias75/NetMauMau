@@ -46,7 +46,7 @@ class _EXPORT SocketException : public std::exception {
 	SocketException &operator=(const SocketException &);
 public:
 	SocketException(const SocketException &o) throw();
-	SocketException(const std::string &msg, int sockfd = -1) throw();
+	SocketException(const std::string &msg, int sockfd = -1, int err = 0) throw();
 	virtual ~SocketException() throw();
 
 	/**
@@ -63,9 +63,12 @@ public:
 	 */
 	int sockfd() const throw() _PURE;
 
+	int errno() const throw() _PURE;
+
 private:
-	std::string m_msg;
-	int m_sockfd;
+	const std::string m_msg;
+	const int m_sockfd;
+	const int m_errno;
 };
 
 }

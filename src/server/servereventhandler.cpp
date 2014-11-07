@@ -62,8 +62,12 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			i != m_connection.getPlayers().end(); ++i) {
 
 		if(std::find(except.begin(), except.end(), i->name) == except.end()) {
-			m_connection.write(i->sockfd, type);
-			m_connection.write(i->sockfd, msg);
+			try {
+				m_connection.write(i->sockfd, type);
+				m_connection.write(i->sockfd, msg);
+			} catch(const NetMauMau::Common::Exception::SocketException &) {
+				logError("Couldn't send \"" << type << "\" to \"" << i->name << "\"");
+			}
 		}
 	}
 }

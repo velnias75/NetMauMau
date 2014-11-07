@@ -234,7 +234,7 @@ bool Engine::nextTurn() {
 				}
 			}
 
-			bool cc;
+			bool cc = false;
 
 			while(pc && !(cc = m_ruleset->checkCard(player, uc, pc))) {
 
@@ -318,14 +318,27 @@ bool Engine::nextTurn() {
 		Common::AbstractConnection *con = m_eventHandler.getConnection();
 
 		if(con) {
+
 			const std::string &pName(con->getPlayerName(e.sockfd()));
 
 			std::vector<std::string> ex(1, pName);
 			const PLAYERS::iterator &f(find(pName));
 			std::ostringstream os;
 
-			os << "Lost connection to player \"" << pName << "\"";
-			m_eventHandler.error(os.str(), ex);
+			if(!pName.empty()) {
+
+				os << "Lost connection to player \"" << pName << "\"";
+
+				try {
+					m_eventHandler.error(os.str(), ex);
+				} catch(const Common::Exception::SocketException &) {}
+
+			} else {
+				try {
+					m_eventHandler.error("Lost connection to a player", ex);
+				} catch(const Common::Exception::SocketException &) {}
+			}
+
 			con->removePlayer(e.sockfd());
 
 			shutdown(e.sockfd(), SHUT_RDWR);

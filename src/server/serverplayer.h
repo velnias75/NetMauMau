@@ -41,17 +41,20 @@ public:
 	virtual bool isAIPlayer() const _CONST;
 
 	virtual void receiveCard(Common::ICard *card);
-	virtual void receiveCardSet(const std::vector<Common::ICard *> &cards);
+	virtual void receiveCardSet(const std::vector<Common::ICard *> &cards)
+	throw(Common::Exception::SocketException);
 
 	virtual Common::ICard *requestCard(const Common::ICard *uncoveredCard,
 									   const Common::ICard::SUIT *jackSuit) const;
 	virtual REASON getNoCardReason() const _CONST;
-	virtual bool cardAccepted(const Common::ICard *playedCard);
+	virtual bool cardAccepted(const Common::ICard *playedCard)
+	throw(NetMauMau::Common::Exception::SocketException) ;
 
 	virtual std::size_t getCardCount() const throw(Common::Exception::SocketException);
 
 	virtual Common::ICard::SUIT getJackChoice(const Common::ICard *uncoveredCard,
-			const Common::ICard *playedCard) const;
+			const Common::ICard *playedCard) const
+	throw(NetMauMau::Common::Exception::SocketException);
 
 private:
 	_NOUNUSED Common::ICard *findCard(const std::string &offeredCard) const;

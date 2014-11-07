@@ -20,6 +20,8 @@
 #include <sstream>
 
 #include "serverplayer.h"
+
+#include "serverplayerexception.h"
 #include "serverconnection.h"
 #include "cardtools.h"
 #include "engine.h"
@@ -43,34 +45,46 @@ void Player::receiveCard(NetMauMau::Common::ICard *card) {
 	receiveCardSet(std::vector<NetMauMau::Common::ICard *>(1, card));
 }
 
-void Player::receiveCardSet(const std::vector<NetMauMau::Common::ICard *> &cards) {
+void Player::receiveCardSet(const std::vector<NetMauMau::Common::ICard *> &cards)
+throw(NetMauMau::Common::Exception::SocketException) {
 
 	NetMauMau::Player::StdPlayer::receiveCardSet(cards);
 
-	m_connection.write(m_sockfd, "GETCARDS");
+	try {
+		m_connection.write(m_sockfd, "GETCARDS");
 
-	for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(cards.begin());
-			i != cards.end(); ++i) {
-		m_connection.write(m_sockfd, (*i)->description());
+		for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(cards.begin());
+				i != cards.end(); ++i) {
+			m_connection.write(m_sockfd, (*i)->description());
+		}
+
+		m_connection.write(m_sockfd, "CARDSGOT");
+
+	} catch(const NetMauMau::Common::Exception::SocketException &) {
+		throw Exception::ServerPlayerException(__FUNCTION__);
 	}
-
-	m_connection.write(m_sockfd, "CARDSGOT");
 }
 
 NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *uncoveredCard,
 		const NetMauMau::Common::ICard::SUIT *) const {
 
-	m_connection.write(m_sockfd, "OPENCARD");
-	m_connection.write(m_sockfd, uncoveredCard->description());;
-	m_connection.write(m_sockfd, "PLAYCARD");
+	try {
 
-	const std::string offeredCard = m_connection.read(m_sockfd);
+		m_connection.write(m_sockfd, "OPENCARD");
+		m_connection.write(m_sockfd, uncoveredCard->description());;
+		m_connection.write(m_sockfd, "PLAYCARD");
 
-	if(offeredCard == "SUSPEND") {
-		return 0L;
+		const std::string offeredCard = m_connection.read(m_sockfd);
+
+		if(offeredCard == "SUSPEND") {
+			return 0L;
+		}
+
+		return findCard(offeredCard);
+
+	} catch(const NetMauMau::Common::Exception::SocketException &e) {
+		throw Exception::ServerPlayerException(__FUNCTION__);
 	}
-
-	return findCard(offeredCard);
 }
 
 NetMauMau::Common::ICard *Player::findCard(const std::string &offeredCard) const {
@@ -90,14 +104,21 @@ NetMauMau::Common::ICard *Player::findCard(const std::string &offeredCard) const
 	return 0L;
 }
 
-bool Player::cardAccepted(const NetMauMau::Common::ICard *playedCard) {
+bool Player::cardAccepted(const NetMauMau::Common::ICard *playedCard)
+throw(NetMauMau::Common::Exception::SocketException) {
 
 	NetMauMau::Player::StdPlayer::cardAccepted(playedCard);
 
-	m_connection.write(m_sockfd, "CARDACCEPTED");
-	m_connection.write(m_sockfd, playedCard->description());
+	try {
 
-	return !getCardCount();
+		m_connection.write(m_sockfd, "CARDACCEPTED");
+		m_connection.write(m_sockfd, playedCard->description());
+
+		return !getCardCount();
+
+	} catch(const NetMauMau::Common::Exception::SocketException &) {
+		throw Exception::ServerPlayerException(__FUNCTION__);
+	}
 }
 
 Player::IPlayer::REASON Player::getNoCardReason() const {
@@ -106,21 +127,28 @@ Player::IPlayer::REASON Player::getNoCardReason() const {
 
 std::size_t Player::getCardCount() const throw(NetMauMau::Common::Exception::SocketException) {
 
-	m_connection.write(m_sockfd, "CARDCOUNT");
-
 	std::size_t cc = 0;
 
 	try {
+		m_connection.write(m_sockfd, "CARDCOUNT");
 		(std::istringstream(m_connection.read(m_sockfd))) >> cc;
-	} catch(const NetMauMau::Common::Exception::SocketException &) {}
+	} catch(const NetMauMau::Common::Exception::SocketException &) {
+		throw Exception::ServerPlayerException(__FUNCTION__);
+	}
 
 	return cc;
 }
 
 NetMauMau::Common::ICard::SUIT Player::getJackChoice(const NetMauMau::Common::ICard *,
-		const NetMauMau::Common::ICard *) const {
-	m_connection.write(m_sockfd, "JACKCHOICE");
-	return NetMauMau::Common::symbolToSuit(m_connection.read(m_sockfd));
+		const NetMauMau::Common::ICard *) const
+throw(NetMauMau::Common::Exception::SocketException) {
+
+	try {
+		m_connection.write(m_sockfd, "JACKCHOICE");
+		return NetMauMau::Common::symbolToSuit(m_connection.read(m_sockfd));
+	} catch(const NetMauMau::Common::Exception::SocketException &) {
+		throw Exception::ServerPlayerException(__FUNCTION__);
+	}
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

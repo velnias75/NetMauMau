@@ -63,7 +63,7 @@ public:
 	 */
 	int sockfd() const throw() _PURE;
 
-	int errno() const throw() _PURE;
+	int error() const throw() _PURE;
 
 private:
 	const std::string m_msg;

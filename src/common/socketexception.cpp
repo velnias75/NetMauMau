@@ -37,7 +37,7 @@ int SocketException::sockfd() const throw() {
 	return m_sockfd;
 }
 
-int SocketException::errno() const throw() {
+int SocketException::error() const throw() {
 	return m_errno;
 }
 

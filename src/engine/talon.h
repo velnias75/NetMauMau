@@ -28,6 +28,7 @@
 namespace NetMauMau {
 
 class ICardFactory;
+class ITalonChange;
 
 namespace Common {
 class ICard;
@@ -37,7 +38,7 @@ class Talon {
 	DISALLOW_COPY_AND_ASSIGN(Talon)
 public:
 
-	Talon();
+	Talon(const ITalonChange *tchg);
 	~Talon();
 
 	inline bool empty() const {
@@ -68,6 +69,7 @@ private:
 	std::vector<Common::ICard *> createCards() const;
 
 private:
+	const ITalonChange *m_talonChangeListener;
 	std::stack<Common::ICard *, std::vector<Common::ICard *> > m_cardStack;
 	std::stack<Common::ICard *, std::vector<Common::ICard *> > m_uncovered;
 };

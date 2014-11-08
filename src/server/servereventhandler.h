@@ -54,6 +54,8 @@ public:
 
 	virtual void initialCard(const Common::ICard *initialCard)
 	throw(Common::Exception::SocketException);
+	virtual void uncoveredCard(const Common::ICard *uncovedCard)
+	throw(Common::Exception::SocketException);
 
 	virtual void stats(const Engine::PLAYERS &m_players) throw(Common::Exception::SocketException);
 	virtual void turn(std::size_t turn) throw(Common::Exception::SocketException);

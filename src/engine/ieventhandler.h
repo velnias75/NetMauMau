@@ -66,6 +66,8 @@ public:
 	throw(Common::Exception::SocketException) = 0;
 	virtual void initialCard(const Common::ICard *initialCard)
 	throw(Common::Exception::SocketException) = 0;
+	virtual void uncoveredCard(const Common::ICard *uncovedCard)
+	throw(Common::Exception::SocketException) = 0;
 	virtual void cardsAlreadyDistributed() throw(Common::Exception::SocketException) = 0;
 
 	virtual void turn(std::size_t turn) throw(Common::Exception::SocketException) = 0;

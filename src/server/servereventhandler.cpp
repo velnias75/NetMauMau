@@ -104,6 +104,12 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	m_connection << "INITIALCARD" << ic->description();
 }
 
+void EventHandler::uncoveredCard(const NetMauMau::Common::ICard *uc)
+throw(NetMauMau::Common::Exception::SocketException) {
+	m_connection << "OPENCARD";
+	m_connection << uc->description();
+}
+
 void EventHandler::turn(std::size_t t) throw(NetMauMau::Common::Exception::SocketException) {
 	std::ostringstream ts;
 	ts << t;

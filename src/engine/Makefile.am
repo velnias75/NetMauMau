@@ -1,7 +1,7 @@
 noinst_LTLIBRARIES = libeventhandler.la libengine_private.la libengine.la
 
 noinst_HEADERS = talon.h engine.h stdcardfactory.h defaulteventhandler.h ieventhandler.h \
-	stdruleset.h iruleset.h stdplayer.h
+	stdruleset.h iruleset.h stdplayer.h italonchange.h
 
 libeventhandler_la_CXXFLAGS = -fno-exceptions -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include
 libeventhandler_la_SOURCES = defaulteventhandler.cpp

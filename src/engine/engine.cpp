@@ -40,7 +40,7 @@
 using namespace NetMauMau;
 
 Engine::Engine(Event::IEventHandler &eventHandler, bool nextMessage) : m_eventHandler(eventHandler),
-	m_state(ACCEPT_PLAYERS), m_talon(new Talon()), m_ruleset(new RuleSet::StdRuleSet()),
+	m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)), m_ruleset(new RuleSet::StdRuleSet()),
 	m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_delRuleSet(true), m_jackMode(false),
 	m_initialChecked(false), m_nextMessage(nextMessage) {
 	m_players.reserve(5);
@@ -48,7 +48,7 @@ Engine::Engine(Event::IEventHandler &eventHandler, bool nextMessage) : m_eventHa
 }
 
 Engine::Engine(Event::IEventHandler &eventHandler, RuleSet::IRuleSet *ruleset, bool nextMessage) :
-	m_eventHandler(eventHandler), m_state(ACCEPT_PLAYERS), m_talon(new Talon()),
+	m_eventHandler(eventHandler), m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)),
 	m_ruleset(ruleset), m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_delRuleSet(false),
 	m_jackMode(false), m_initialChecked(false), m_nextMessage(nextMessage) {
 	m_players.reserve(5);
@@ -353,12 +353,16 @@ bool Engine::nextTurn() {
 	return true;
 }
 
+void Engine::uncoveredCard(const Common::ICard *top) const {
+	m_eventHandler.uncoveredCard(top);
+}
+
 void Engine::reset() {
 
 	m_state = ACCEPT_PLAYERS;
 
 	delete m_talon;
-	m_talon = new Talon();
+	m_talon = new Talon(this);
 
 	m_eventHandler.reset();
 	removePlayers();

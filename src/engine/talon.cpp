@@ -22,11 +22,13 @@
 #include "talon.h"
 
 #include "random_gen.h"
+#include "italonchange.h"
 #include "stdcardfactory.h"
 
 using namespace NetMauMau;
 
-Talon::Talon() : m_cardStack(createCards()), m_uncovered() {}
+Talon::Talon(const ITalonChange *tchg) : m_talonChangeListener(tchg), m_cardStack(createCards()),
+	m_uncovered() {}
 
 std::vector<Common::ICard *> Talon::createCards() const {
 
@@ -93,6 +95,7 @@ Talon::~Talon() {
 Common::ICard *Talon::uncoverCard() {
 	m_uncovered.push(top());
 	pop();
+	m_talonChangeListener->uncoveredCard(m_uncovered.top());
 	return m_uncovered.top();
 }
 
@@ -119,6 +122,7 @@ Common::ICard *Talon::takeCard() {
 		}
 
 		m_uncovered.push(uc);
+		m_talonChangeListener->uncoveredCard(m_uncovered.top());
 	}
 
 	Common::ICard *c = top();

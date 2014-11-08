@@ -24,6 +24,7 @@
 #include <string>
 
 #include "socketexception.h"
+#include "italonchange.h"
 
 namespace NetMauMau {
 
@@ -46,7 +47,7 @@ namespace RuleSet {
 class IRuleSet;
 }
 
-class _EXPORT Engine {
+class _EXPORT Engine : protected ITalonChange {
 	DISALLOW_COPY_AND_ASSIGN(Engine)
 
 	typedef enum { ACCEPT_PLAYERS, NOCARDS, PLAYING, FINISHED } STATE;
@@ -77,8 +78,12 @@ public:
 
 	void reset();
 
+protected:
+	virtual void uncoveredCard(const Common::ICard *top) const;
+
 private:
 	void calcScore(Player::IPlayer *p);
+
 	PLAYERS::iterator find(const std::string &name);
 	PLAYERS::iterator removePlayer(Player::IPlayer *player);
 

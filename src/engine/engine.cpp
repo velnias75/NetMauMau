@@ -365,6 +365,7 @@ void Engine::reset() {
 	m_talon = new Talon(this);
 
 	m_eventHandler.reset();
+	m_ruleset->reset();
 	removePlayers();
 
 	m_nxtPlayer = 0,

@@ -103,4 +103,12 @@ NetMauMau::Common::ICard::SUIT StdRuleSet::getJackSuit() const {
 	return m_jackSuit;
 }
 
+void StdRuleSet::reset() {
+	m_hasToSuspend = false;
+	m_hasSuspended = false;
+	m_takeCardCount = 0;
+	m_jackMode = false;
+	m_jackSuit = NetMauMau::Common::ICard::HEARTS;
+}
+
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

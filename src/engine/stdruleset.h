@@ -34,7 +34,7 @@ public:
 
 	virtual void checkInitial(const Player::IPlayer *player, const Common::ICard *playedCard);
 	virtual bool checkCard(const Player::IPlayer *player, const Common::ICard *uncoveredCard,
-						   const Common::ICard *playedCard);
+						   const Common::ICard *playedCard, bool ai);
 
 	virtual bool hasToSuspend() const _PURE;
 	virtual void hasSuspended();

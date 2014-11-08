@@ -34,12 +34,12 @@ std::size_t StdRuleSet::getMaxPlayers() const {
 
 void StdRuleSet::checkInitial(const NetMauMau::Player::IPlayer *player,
 							  const NetMauMau::Common::ICard *playedCard) {
-	checkCard(player, 0L, playedCard);
+	checkCard(player, 0L, playedCard, false);
 }
 
 bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 						   const NetMauMau::Common::ICard *uncoveredCard,
-						   const NetMauMau::Common::ICard *playedCard) {
+						   const NetMauMau::Common::ICard *playedCard, bool ai) {
 
 	const bool accepted = uncoveredCard ? (playedCard->getRank() == NetMauMau::Common::ICard::JACK
 										   && uncoveredCard->getRank() !=
@@ -56,7 +56,14 @@ bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 	if(accepted && playedCard->getRank() == NetMauMau::Common::ICard::SEVEN) {
 		m_takeCardCount += 2;
 	} else if(accepted && playedCard->getRank() == NetMauMau::Common::ICard::JACK) {
-		m_jackSuit = player->getJackChoice(uncoveredCard ? uncoveredCard : playedCard, playedCard);
+
+		if(!(ai && !player->isAIPlayer() && player->getCardCount() == 1)) {
+			m_jackSuit = player->getJackChoice(uncoveredCard ? uncoveredCard :
+											   playedCard, playedCard);
+		} else {
+			m_jackSuit = NetMauMau::Common::ICard::HEARTS;
+		}
+
 		m_jackMode = true;
 	}
 

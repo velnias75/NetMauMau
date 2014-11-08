@@ -236,7 +236,7 @@ bool Engine::nextTurn() {
 
 			bool cc = false;
 
-			while(pc && !(cc = m_ruleset->checkCard(player, uc, pc))) {
+			while(pc && !(cc = m_ruleset->checkCard(player, uc, pc, !m_nextMessage))) {
 
 				const bool aiSusp = (!cc && player->isAIPlayer());
 

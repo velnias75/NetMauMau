@@ -278,7 +278,7 @@ int main(int argc, const char **argv) {
 
 			logger("");
 			std::strftime(dateOut, sizeof(dateOut), "%Y", std::localtime(&t));
-			logger("Copyright © " << dateOut << " Heiko Schäfer <" << PACKAGE_BUGREPORT
+			logger("Copyright \u00a9 " << dateOut << " Heiko Sch\u00e4fer <" << PACKAGE_BUGREPORT
 				   << ">");
 
 #ifdef PACKAGE_URL

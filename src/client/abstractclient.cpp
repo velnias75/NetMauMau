@@ -68,14 +68,16 @@ void AbstractClient::disconnect() {
 }
 
 AbstractClient::CARDS
-AbstractClient::getCards(const std::vector<NetMauMau::Common::ICard *>::const_iterator
-						 &first) const {
+AbstractClient::getCards(const std::vector<NetMauMau::Common::ICard *>::size_type cnt) const {
 
 	CARDS cards;
 
-	for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(first); i != m_cards.end(); ++i) {
-		cards.push_back(*i);
-	}
+	cards.reserve(m_cards.size());
+
+	std::vector<NetMauMau::Common::ICard *>::const_iterator i(m_cards.begin());
+	std::advance(i, cnt);
+
+	cards.insert(cards.end(), i, m_cards.end());
 
 	return cards;
 }
@@ -166,15 +168,15 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 
 					m_connection >> msg;
 
-					const bool initialCards = m_cards.empty();
-					const std::vector<NetMauMau::Common::ICard *>::const_iterator &e(m_cards.end());
+					const std::vector<NetMauMau::Common::ICard *>::size_type cnt =
+						m_cards.empty() ? 0 : m_cards.size();
 
 					while(msg != "CARDSGOT") {
 						m_cards.push_back((NetMauMau::Client::CardFactory(msg)).create());
 						m_connection >> msg;
 					}
 
-					cardSet(getCards(initialCards ? m_cards.begin() : e));
+					cardSet(getCards(cnt));
 
 				} else if(!m_disconnectNow && msg == "INITIALCARD") {
 
@@ -203,7 +205,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 
 				} else if(!m_disconnectNow && msg == "PLAYCARD") {
 
-					lastPlayedCard = playCard(getCards(m_cards.begin()));
+					lastPlayedCard = playCard(getCards());
 
 					if(lastPlayedCard) {
 						m_connection << lastPlayedCard->description();

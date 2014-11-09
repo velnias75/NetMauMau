@@ -344,7 +344,7 @@ protected:
 	// @}
 
 private:
-	CARDS getCards(const std::vector<Common::ICard *>::const_iterator &first) const;
+	CARDS getCards(const std::vector<Common::ICard *>::size_type cnt = 0) const;
 
 private:
 	Connection m_connection;

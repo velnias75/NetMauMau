@@ -101,7 +101,7 @@ const std::vector<std::string> &AbstractConnection::getAIPlayers() const {
 	return m_aiPlayers;
 }
 
-void AbstractConnection::reset() {
+void AbstractConnection::reset() throw() {
 
 	for(PLAYERINFOS::const_iterator i(m_registeredPlayers.begin()); i != m_registeredPlayers.end();
 			++i) {

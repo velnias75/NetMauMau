@@ -216,6 +216,8 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 						m_connection << "SUSPEND";
 					}
 
+				} else if(!m_disconnectNow && !msg.compare(0, 8, "SUSPEND ")) {
+					enableSuspend(!msg.compare(8, std::string::npos, "ON"));
 				} else if(!m_disconnectNow && msg == "SUSPENDS") {
 					m_connection >> msg;
 					playerSuspends(msg);
@@ -296,7 +298,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					gameOver();
 					break;
 				} else if(!m_disconnectNow) {
-					logDebug(__PRETTY_FUNCTION__ << ": " << msg);
+					logDebug("Client library: " << __PRETTY_FUNCTION__ << ": " << msg);
 				}
 			}
 

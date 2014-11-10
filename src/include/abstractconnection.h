@@ -78,7 +78,7 @@ public:
 
 	void addAIPlayers(const std::vector<std::string> &aiPlayers);
 
-	void reset();
+	void reset() throw();
 
 protected:
 	AbstractConnection(const char *server, uint16_t port);

@@ -353,11 +353,20 @@ bool Engine::nextTurn() {
 	return true;
 }
 
-void Engine::uncoveredCard(const Common::ICard *top) const {
+void Engine::uncoveredCard(const Common::ICard *top) const
+throw(Common::Exception::SocketException) {
 	m_eventHandler.uncoveredCard(top);
 }
 
-void Engine::reset() {
+void Engine::talonEmpty(bool empty) const throw() {
+	try {
+		m_eventHandler.talonEmpty(empty);
+	} catch(const Common::Exception::SocketException &e) {
+		logDebug(__PRETTY_FUNCTION__ << ": failed to handle event \'talonEmpty\': " << e.what());
+	}
+}
+
+void Engine::reset() throw() {
 
 	m_state = ACCEPT_PLAYERS;
 

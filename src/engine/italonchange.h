@@ -31,6 +31,7 @@ public:
 	virtual ~ITalonChange() {}
 
 	virtual void uncoveredCard(const NetMauMau::Common::ICard *top) const = 0;
+	virtual void talonEmpty(bool empty) const throw() = 0;
 
 protected:
 	ITalonChange() {}

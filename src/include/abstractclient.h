@@ -290,6 +290,8 @@ protected:
 	 */
 	virtual void nextPlayer(const std::string &player) const = 0;
 
+	virtual void enableSuspend(bool enable) const = 0;
+
 	/**
 	 * @brief The card set distributed to the player, or if the
 	 * player picked up cards off the talon

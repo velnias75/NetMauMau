@@ -49,6 +49,7 @@ protected:
 	virtual void nextPlayer(const std::string &player) const;
 
 	virtual void cardSet(const CARDS &cards) const;
+	virtual void enableSuspend(bool enable) const _CONST;
 	virtual void initialCard(const NetMauMau::Common::ICard *card) const;
 	virtual void openCard(const NetMauMau::Common::ICard *card, const std::string &jackSuit) const;
 	virtual void cardRejected(const std::string &player,

@@ -48,7 +48,7 @@ public:
 
 	virtual std::size_t getMaxPlayers() const _CONST;
 
-	virtual void reset();
+	virtual void reset() throw();
 
 private:
 	bool m_hasToSuspend;

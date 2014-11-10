@@ -40,7 +40,7 @@ public:
 
 	virtual Connection *getConnection() const _PURE;
 	virtual bool shutdown() const _PURE;
-	virtual void reset();
+	virtual void reset() throw();
 
 	virtual void message(const std::string &msg, const std::vector<std::string> &except)
 	throw(Common::Exception::SocketException);
@@ -56,6 +56,7 @@ public:
 	throw(Common::Exception::SocketException);
 	virtual void uncoveredCard(const Common::ICard *uncovedCard)
 	throw(Common::Exception::SocketException);
+	virtual void talonEmpty(bool empty) throw(Common::Exception::SocketException);
 
 	virtual void stats(const Engine::PLAYERS &m_players) throw(Common::Exception::SocketException);
 	virtual void turn(std::size_t turn) throw(Common::Exception::SocketException);

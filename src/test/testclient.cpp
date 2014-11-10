@@ -157,6 +157,8 @@ void TestClient::cardSet(const CARDS &cards) const {
 	}
 }
 
+void TestClient::enableSuspend(bool) const {}
+
 void TestClient::initialCard(const NetMauMau::Common::ICard *card) const {
 	std::cout << "Initial card is " << card->description(true) << std::endl;
 }

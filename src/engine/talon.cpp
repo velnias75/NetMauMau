@@ -27,10 +27,12 @@
 
 using namespace NetMauMau;
 
-Talon::Talon(const ITalonChange *tchg) : m_talonChangeListener(tchg), m_cardStack(createCards()),
-	m_uncovered() {}
+Talon::Talon(const ITalonChange *tchg) throw() : m_talonChangeListener(tchg),
+	m_cardStack(createCards()), m_uncovered() {
+	m_talonChangeListener->talonEmpty(false);
+}
 
-std::vector<Common::ICard *> Talon::createCards() const {
+std::vector<Common::ICard *> Talon::createCards() const throw() {
 
 	StdCardFactory cardFactory;
 
@@ -81,9 +83,9 @@ std::vector<Common::ICard *> Talon::createCards() const {
 
 Talon::~Talon() {
 
-	while(!m_cardStack.empty()) {
-		delete m_cardStack.top();
-		m_cardStack.pop();
+	while(!empty()) {
+		delete top();
+		pop();
 	}
 
 	while(!m_uncovered.empty()) {
@@ -97,6 +99,11 @@ Common::ICard *Talon::uncoverCard() {
 	pop();
 	m_talonChangeListener->uncoveredCard(m_uncovered.top());
 	return m_uncovered.top();
+}
+
+void Talon::playCard(Common::ICard *card) {
+	m_uncovered.push(card);
+	m_talonChangeListener->talonEmpty(false);
 }
 
 Common::ICard *Talon::takeCard() {
@@ -119,6 +126,7 @@ Common::ICard *Talon::takeCard() {
 
 		for(std::vector<Common::ICard *>::const_iterator i(cards.begin()); i != cards.end(); ++i) {
 			m_cardStack.push(*i);
+			m_talonChangeListener->talonEmpty(false);
 		}
 
 		m_uncovered.push(uc);
@@ -130,6 +138,8 @@ Common::ICard *Talon::takeCard() {
 		pop();
 		return c;
 	}
+
+	m_talonChangeListener->talonEmpty(true);
 
 	return 0;
 }

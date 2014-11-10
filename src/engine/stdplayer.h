@@ -51,9 +51,9 @@ public:
 	virtual std::size_t getCardCount() const _PURE;
 	virtual std::size_t getPoints() const;
 
-	virtual void reset();
+	virtual void reset() throw();
 
-	static void resetJackState();
+	static void resetJackState() throw();
 
 protected:
 	const std::vector<Common::ICard *> &getPlayerCards() const _CONST;

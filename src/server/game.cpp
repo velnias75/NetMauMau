@@ -93,14 +93,19 @@ void Game::start() throw(NetMauMau::Common::Exception::SocketException) {
 	reset();
 }
 
-void Game::reset() throw(NetMauMau::Common::Exception::SocketException) {
+void Game::reset() throw() {
 
 	m_engine.reset();
 	m_aiPlayer.resetJackState();
 
 	if(m_aiOpponent) {
 		m_aiPlayer.reset();
-		m_engine.addPlayer(&m_aiPlayer);
+
+		try {
+			m_engine.addPlayer(&m_aiPlayer);
+		} catch(const NetMauMau::Common::Exception::SocketException &e) {
+			logDebug(__PRETTY_FUNCTION__ << ": failed to add AI player: " << e.what());
+		}
 	}
 
 	logInfo(GAMEREADY);

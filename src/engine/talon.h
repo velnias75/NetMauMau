@@ -38,7 +38,7 @@ class Talon {
 	DISALLOW_COPY_AND_ASSIGN(Talon)
 public:
 
-	Talon(const ITalonChange *tchg);
+	Talon(const ITalonChange *tchg) throw();
 	~Talon();
 
 	inline bool empty() const {
@@ -59,14 +59,12 @@ public:
 		return m_uncovered.top();
 	}
 
-	inline void playCard(Common::ICard *card) {
-		m_uncovered.push(card);
-	}
+	void playCard(Common::ICard *card);
 
 	Common::ICard *takeCard();
 
 private:
-	std::vector<Common::ICard *> createCards() const;
+	std::vector<Common::ICard *> createCards() const throw();
 
 private:
 	const ITalonChange *m_talonChangeListener;

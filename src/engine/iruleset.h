@@ -51,7 +51,7 @@ public:
 
 	virtual std::size_t getMaxPlayers() const = 0;
 
-	virtual void reset() = 0;
+	virtual void reset() throw() = 0;
 
 protected:
 	IRuleSet() {}

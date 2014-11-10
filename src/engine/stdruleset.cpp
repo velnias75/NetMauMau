@@ -103,7 +103,7 @@ NetMauMau::Common::ICard::SUIT StdRuleSet::getJackSuit() const {
 	return m_jackSuit;
 }
 
-void StdRuleSet::reset() {
+void StdRuleSet::reset() throw() {
 	m_hasToSuspend = false;
 	m_hasSuspended = false;
 	m_takeCardCount = 0;

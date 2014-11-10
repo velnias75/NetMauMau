@@ -55,7 +55,7 @@ public:
 
 private:
 	bool addPlayer(Player::IPlayer *player);
-	void reset() throw(Common::Exception::SocketException);
+	void reset() throw();
 
 private:
 	Engine m_engine;

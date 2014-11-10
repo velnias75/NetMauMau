@@ -88,11 +88,11 @@ StdPlayer::~StdPlayer() {
 	}
 }
 
-void StdPlayer::reset() {
+void StdPlayer::reset() throw() {
 	m_cards.clear();
 }
 
-void StdPlayer::resetJackState() {
+void StdPlayer::resetJackState() throw() {
 	m_jackPlayed = false;
 }
 

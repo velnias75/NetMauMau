@@ -48,7 +48,7 @@ void EventHandler::setInterrupted() {
 	Connection::setInterrupted();
 }
 
-void EventHandler::reset() {
+void EventHandler::reset() throw() {
 	m_lastMsg.clear();
 	m_connection.reset();
 	m_interrupt = false;
@@ -108,6 +108,10 @@ void EventHandler::uncoveredCard(const NetMauMau::Common::ICard *uc)
 throw(NetMauMau::Common::Exception::SocketException) {
 	m_connection << "OPENCARD";
 	m_connection << uc->description();
+}
+
+void EventHandler::talonEmpty(bool empty) throw(NetMauMau::Common::Exception::SocketException) {
+	m_connection << std::string("SUSPEND ").append(empty ? "OFF" : "ON");
 }
 
 void EventHandler::turn(std::size_t t) throw(NetMauMau::Common::Exception::SocketException) {

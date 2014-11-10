@@ -34,7 +34,7 @@ public:
 
 	virtual Common::AbstractConnection *getConnection() const _CONST;
 	virtual bool shutdown() const _CONST;
-	virtual void reset() _CONST;
+	virtual void reset() throw() _CONST;
 
 	virtual void message(const std::string &msg, const std::vector<std::string> &except)
 	throw(Common::Exception::SocketException) _CONST;
@@ -56,6 +56,7 @@ public:
 	throw(Common::Exception::SocketException) _CONST;
 	virtual void uncoveredCard(const Common::ICard *uncovedCard)
 	throw(Common::Exception::SocketException) _CONST;
+	virtual void talonEmpty(bool empty) throw(Common::Exception::SocketException) _CONST;
 	virtual void cardsAlreadyDistributed() throw(Common::Exception::SocketException) _CONST;
 
 	virtual void turn(std::size_t turn) throw(Common::Exception::SocketException) _CONST;

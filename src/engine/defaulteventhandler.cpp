@@ -62,6 +62,8 @@ throw(NetMauMau::Common::Exception::SocketException) {}
 void DefaultEventHandler::uncoveredCard(const NetMauMau::Common::ICard *)
 throw(NetMauMau::Common::Exception::SocketException) {}
 
+void DefaultEventHandler::talonEmpty(bool) throw(NetMauMau::Common::Exception::SocketException) {}
+
 void DefaultEventHandler::cardsAlreadyDistributed()
 throw(NetMauMau::Common::Exception::SocketException) {}
 

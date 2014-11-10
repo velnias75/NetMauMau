@@ -76,10 +76,12 @@ public:
 
 	void message(const std::string &msg) throw(Common::Exception::SocketException);
 
-	void reset();
+	void reset() throw();
 
 protected:
-	virtual void uncoveredCard(const Common::ICard *top) const;
+	virtual void uncoveredCard(const Common::ICard *top) const
+	throw(Common::Exception::SocketException);
+	virtual void talonEmpty(bool empty) const throw();
 
 private:
 	void calcScore(Player::IPlayer *p);
@@ -87,7 +89,7 @@ private:
 	PLAYERS::iterator find(const std::string &name);
 	PLAYERS::iterator removePlayer(Player::IPlayer *player);
 
-	inline void removePlayers() {
+	inline void removePlayers() throw() {
 		m_players.clear();
 	}
 

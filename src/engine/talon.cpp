@@ -125,9 +125,13 @@ Common::ICard *Talon::takeCard() {
 		m_talonChangeListener->uncoveredCard(m_uncovered.top());
 	}
 
-	Common::ICard *c = top();
-	pop();
-	return c;
+	if(!empty()) {
+		Common::ICard *c = top();
+		pop();
+		return c;
+	}
+
+	return 0;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

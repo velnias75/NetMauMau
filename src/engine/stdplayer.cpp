@@ -109,11 +109,15 @@ bool StdPlayer::isAIPlayer() const {
 }
 
 void StdPlayer::receiveCard(NetMauMau::Common::ICard *card) {
-	m_cards.push_back(card);
+	if(card) m_cards.push_back(card);
 }
 
 void StdPlayer::receiveCardSet(const std::vector<NetMauMau::Common::ICard *> &cards) {
 	m_cards.insert(m_cards.end(), cards.begin(), cards.end());
+	shuffleCards();
+}
+
+void StdPlayer::shuffleCards() {
 	std::random_shuffle(m_cards.begin(), m_cards.end(), NetMauMau::Common::
 						genRandom<std::vector<NetMauMau::Common::ICard *>::difference_type>);
 }

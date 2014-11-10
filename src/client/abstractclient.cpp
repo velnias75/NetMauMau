@@ -72,12 +72,15 @@ AbstractClient::getCards(const std::vector<NetMauMau::Common::ICard *>::size_typ
 
 	CARDS cards;
 
-	cards.reserve(m_cards.size());
+	if(!m_cards.empty()) {
 
-	std::vector<NetMauMau::Common::ICard *>::const_iterator i(m_cards.begin());
-	std::advance(i, cnt);
+		cards.reserve(m_cards.size());
 
-	cards.insert(cards.end(), i, m_cards.end());
+		std::vector<NetMauMau::Common::ICard *>::const_iterator i(m_cards.begin());
+		std::advance(i, cnt);
+
+		cards.insert(cards.end(), i, m_cards.end());
+	}
 
 	return cards;
 }

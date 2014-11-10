@@ -4,6 +4,7 @@
 *.la
 .kdev4
 .svn
+core
 Makefile.in
 aclocal.m4
 autom4te.cache

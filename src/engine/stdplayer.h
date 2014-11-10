@@ -58,6 +58,8 @@ public:
 protected:
 	const std::vector<Common::ICard *> &getPlayerCards() const _CONST;
 
+	virtual void shuffleCards();
+
 private:
 	Common::ICard *findBestCard(const Common::ICard *uc, const Common::ICard::SUIT *js,
 								bool noJack) const;

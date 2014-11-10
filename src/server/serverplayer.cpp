@@ -42,7 +42,7 @@ bool Player::isAIPlayer() const {
 }
 
 void Player::receiveCard(NetMauMau::Common::ICard *card) {
-	receiveCardSet(std::vector<NetMauMau::Common::ICard *>(1, card));
+	if(card) receiveCardSet(std::vector<NetMauMau::Common::ICard *>(1, card));
 }
 
 void Player::receiveCardSet(const std::vector<NetMauMau::Common::ICard *> &cards)
@@ -64,6 +64,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		throw Exception::ServerPlayerException(__FUNCTION__);
 	}
 }
+
+void Player::shuffleCards() {}
 
 NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *uncoveredCard,
 		const NetMauMau::Common::ICard::SUIT *) const {

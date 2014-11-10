@@ -56,6 +56,9 @@ public:
 			const Common::ICard *playedCard) const
 	throw(NetMauMau::Common::Exception::SocketException);
 
+protected:
+	virtual void shuffleCards() _CONST;
+
 private:
 	_NOUNUSED Common::ICard *findCard(const std::string &offeredCard) const;
 

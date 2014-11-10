@@ -121,7 +121,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			  << NetMauMau::Common::suitToSymbol(suit, true, true) << std::endl;
 }
 
-void TestEventHandler::playerWins(const NetMauMau::Player::IPlayer *player, std::size_t t)
+void TestEventHandler::playerWins(const NetMauMau::Player::IPlayer *player, std::size_t t, bool)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\t" << BLUE_ON << "wins in turn #"

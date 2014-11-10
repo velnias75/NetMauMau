@@ -43,6 +43,7 @@ protected:
 	virtual void playerSuspends(const std::string &player) const;
 	virtual void playedCard(const std::string &player, const NetMauMau::Common::ICard *card) const;
 	virtual void playerWins(const std::string &player, std::size_t turn) const;
+	virtual void playerLost(const std::string &player, std::size_t turn) const _CONST;
 	virtual void playerPicksCard(const std::string &player,
 								 const NetMauMau::Common::ICard *card) const;
 	virtual void playerPicksCard(const std::string &player, std::size_t count) const;

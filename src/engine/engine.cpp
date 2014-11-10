@@ -42,7 +42,7 @@ using namespace NetMauMau;
 Engine::Engine(Event::IEventHandler &eventHandler, bool nextMessage) : m_eventHandler(eventHandler),
 	m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)), m_ruleset(new RuleSet::StdRuleSet()),
 	m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_delRuleSet(true), m_jackMode(false),
-	m_initialChecked(false), m_nextMessage(nextMessage) {
+	m_initialChecked(false), m_nextMessage(nextMessage), m_ultimate(false) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
 }
@@ -50,7 +50,7 @@ Engine::Engine(Event::IEventHandler &eventHandler, bool nextMessage) : m_eventHa
 Engine::Engine(Event::IEventHandler &eventHandler, RuleSet::IRuleSet *ruleset, bool nextMessage) :
 	m_eventHandler(eventHandler), m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)),
 	m_ruleset(ruleset), m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_delRuleSet(false),
-	m_jackMode(false), m_initialChecked(false), m_nextMessage(nextMessage) {
+	m_jackMode(false), m_initialChecked(false), m_nextMessage(nextMessage), m_ultimate(false) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
 }
@@ -288,7 +288,7 @@ bool Engine::nextTurn() {
 				}
 
 				if(won) {
-					m_eventHandler.playerWins(player, m_turn);
+					m_eventHandler.playerWins(player, m_turn, m_ultimate);
 
 					PLAYERS::iterator f(m_players.begin());
 					std::advance(f, m_nxtPlayer);

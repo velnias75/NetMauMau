@@ -59,6 +59,10 @@ public:
 	Engine(Event::IEventHandler &eventHandler, RuleSet::IRuleSet *ruleset, bool nextMessage = true);
 	~Engine();
 
+	inline void setUltimate(bool ultimate) {
+		m_ultimate = ultimate;
+	}
+
 	bool addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketException);
 
 	inline bool hasPlayers() const {
@@ -109,6 +113,7 @@ private:
 	bool m_jackMode;
 	bool m_initialChecked;
 	bool m_nextMessage;
+	bool m_ultimate;
 };
 
 }

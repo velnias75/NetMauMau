@@ -149,9 +149,23 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 }
 
-void EventHandler::playerWins(const NetMauMau::Player::IPlayer *player,
-							  std::size_t) throw(NetMauMau::Common::Exception::SocketException) {
-	m_connection << "PLAYERWINS" << player->getName();
+void EventHandler::playerWins(const NetMauMau::Player::IPlayer *player, std::size_t,
+							  bool ultimate) throw(NetMauMau::Common::Exception::SocketException) {
+
+	std::string pw("PLAYERWINS");
+
+	if(ultimate) pw.append(1, '+');
+
+	m_connection << pw << player->getName();
+}
+
+void EventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std::size_t t)
+throw(NetMauMau::Common::Exception::SocketException) {
+
+	std::ostringstream os;
+	os << t;
+
+	m_connection << "PLAYERLOST" << player->getName() << os.str();
 }
 
 void EventHandler::playerPlaysCard(const NetMauMau::Player::IPlayer *player,

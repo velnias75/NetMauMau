@@ -90,7 +90,7 @@ throw(NetMauMau::Common::Exception::SocketException) {}
 void DefaultEventHandler::playerChooseJackSuit(const NetMauMau::Player::IPlayer *,
 		NetMauMau::Common::ICard::SUIT) throw(NetMauMau::Common::Exception::SocketException) {}
 
-void DefaultEventHandler::playerWins(const NetMauMau::Player::IPlayer *, std::size_t)
+void DefaultEventHandler::playerWins(const NetMauMau::Player::IPlayer *, std::size_t, bool)
 throw(NetMauMau::Common::Exception::SocketException) {}
 
 void DefaultEventHandler::playerLost(const NetMauMau::Player::IPlayer *, std::size_t)

@@ -66,6 +66,7 @@
 
 namespace {
 
+bool ultimate = false;
 std::size_t minPlayers = 1;
 uint16_t port = SERVER_PORT;
 
@@ -89,6 +90,7 @@ poptOption poptOptions[] = {
 		"players", 'p', POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &minPlayers,
 		'p', "Set amount of players", "AMOUNT"
 	},
+	{ "ultimate", 'u', POPT_ARG_VAL, &ultimate, true, "Play until last player wins", NULL },
 	{
 		"ai-name", 'A', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &aiName, 0,
 		"Set the name of the AI player", "NAME"
@@ -330,7 +332,6 @@ int main(int argc, const char **argv) {
 
 	logInfo("Welcome to " << PACKAGE_STRING);
 
-
 #ifndef _WIN32
 	struct sigaction sa;
 
@@ -351,6 +352,8 @@ int main(int argc, const char **argv) {
 		const bool aiOpponent = minPlayers <= 1;
 		Server::Connection con(port, *host ? host : NULL);
 
+		if(ultimate && !aiOpponent) logInfo("Running in ultimate mode");
+
 		try {
 
 			con.connect();
@@ -361,6 +364,7 @@ int main(int argc, const char **argv) {
 			Server::Connection::CAPABILITIES caps;
 			caps.insert(std::make_pair("SERVER_VERSION", PACKAGE_VERSION));
 			caps.insert(std::make_pair("AI_OPPONENT", aiOpponent ? "true" : "false"));
+			caps.insert(std::make_pair("ULTIMATE", ultimate ? "true" : "false"));
 
 			if(aiOpponent) caps.insert(std::make_pair("AI_NAME", aiName));
 
@@ -404,7 +408,7 @@ int main(int argc, const char **argv) {
 							if(cs == Server::Game::ACCEPTED_READY) {
 
 								refuse = true;
-								game.start();
+								game.start(ultimate);
 								updatePlayerCap(caps, game.getPlayerCount(), con, aiOpponent);
 								refuse = false;
 							}
@@ -412,7 +416,6 @@ int main(int argc, const char **argv) {
 						} else {
 							logger("refused");
 						}
-
 					}
 				}
 			}

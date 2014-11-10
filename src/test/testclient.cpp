@@ -150,6 +150,8 @@ void TestClient::playerWins(const std::string &player, std::size_t t) const {
 			  << t << " :-)" << BLUE_OFF << std::endl;
 }
 
+void TestClient::playerLost(const std::string &, std::size_t) const {}
+
 void TestClient::cardSet(const CARDS &cards) const {
 	for(CARDS::const_iterator i(cards.begin()); i != cards.end(); ++i) {
 		std::cout << BOLD_P_ON << getPlayerName() << BOLD_OFF << " gets card: "

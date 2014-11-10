@@ -78,15 +78,16 @@ bool Game::addPlayer(NetMauMau::Player::IPlayer *player) {
 	}
 }
 
-void Game::start() throw(NetMauMau::Common::Exception::SocketException) {
+void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketException) {
 
 	const std::size_t minPlayers = m_engine.getPlayerCount();
 
 	if(m_aiOpponent) m_engine.reversePlayers();
 
 	m_engine.distributeCards();
+	m_engine.setUltimate(ultimate);
 
-	while(m_engine.getPlayerCount() == minPlayers) {
+	while(ultimate ? m_engine.getPlayerCount() >= 2 : m_engine.getPlayerCount() == minPlayers) {
 		if(!m_engine.nextTurn()) break;
 	}
 

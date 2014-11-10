@@ -75,8 +75,8 @@ public:
 	throw(Common::Exception::SocketException) _CONST;
 	virtual void playerChooseJackSuit(const Player::IPlayer *player, Common::ICard::SUIT suit)
 	throw(Common::Exception::SocketException) _CONST;
-	virtual void playerWins(const Player::IPlayer *player,
-							std::size_t turn) throw(Common::Exception::SocketException) _CONST;
+	virtual void playerWins(const Player::IPlayer *player, std::size_t turn,
+							bool ultimate) throw(Common::Exception::SocketException) _CONST;
 	virtual void playerLost(const Player::IPlayer *player,
 							std::size_t turn) throw(Common::Exception::SocketException) _CONST;
 	virtual void nextPlayer(const Player::IPlayer *player)

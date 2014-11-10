@@ -51,7 +51,7 @@ public:
 		return m_engine.getPlayerCount();
 	}
 
-	void start() throw(Common::Exception::SocketException);
+	void start(bool ultimate = false) throw(Common::Exception::SocketException);
 
 private:
 	bool addPlayer(Player::IPlayer *player);

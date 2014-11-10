@@ -53,8 +53,8 @@ public:
 	virtual void playerChooseJackSuit(const NetMauMau::Player::IPlayer *player,
 									  NetMauMau::Common::ICard::SUIT suit)
 	throw(NetMauMau::Common::Exception::SocketException);
-	virtual void playerWins(const NetMauMau::Player::IPlayer *player,
-							std::size_t turn) throw(NetMauMau::Common::Exception::SocketException);
+	virtual void playerWins(const NetMauMau::Player::IPlayer *player, std::size_t turn,
+							bool ultimate) throw(NetMauMau::Common::Exception::SocketException);
 	virtual void playerLost(const NetMauMau::Player::IPlayer *player,
 							std::size_t turn) throw(NetMauMau::Common::Exception::SocketException);
 };

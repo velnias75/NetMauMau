@@ -265,6 +265,8 @@ protected:
 	 */
 	virtual void playerWins(const std::string &player, std::size_t turn) const = 0;
 
+	virtual void playerLost(const std::string &player, std::size_t turn) const = 0;
+
 	/**
 	 * @brief A player picks up a card
 	 *

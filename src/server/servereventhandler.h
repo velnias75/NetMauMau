@@ -61,8 +61,10 @@ public:
 	virtual void stats(const Engine::PLAYERS &m_players) throw(Common::Exception::SocketException);
 	virtual void turn(std::size_t turn) throw(Common::Exception::SocketException);
 
-	virtual void playerWins(const Player::IPlayer *player,
-							std::size_t turn) throw(Common::Exception::SocketException);
+	virtual void playerWins(const Player::IPlayer *player, std::size_t turn,
+							bool ultimate) throw(Common::Exception::SocketException);
+	virtual void playerLost(const Player::IPlayer *player, std::size_t turn)
+	throw(Common::Exception::SocketException);
 	virtual void playerPlaysCard(const Player::IPlayer *player, const Common::ICard *playedCard,
 								 const Common::ICard *uncoveredCard)
 	throw(Common::Exception::SocketException);

@@ -90,7 +90,7 @@ poptOption poptOptions[] = {
 		"players", 'p', POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &minPlayers,
 		'p', "Set amount of players", "AMOUNT"
 	},
-	{ "ultimate", 'u', POPT_ARG_VAL, &ultimate, true, "Play until last player wins", NULL },
+	{ "ultimate", 'u', POPT_ARG_NONE, NULL, 'u', "Play until last player wins", NULL },
 	{
 		"ai-name", 'A', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &aiName, 0,
 		"Set the name of the AI player", "NAME"
@@ -303,6 +303,10 @@ int main(int argc, const char **argv) {
 			minPlayers = std::min<std::size_t>(minPlayers, 5);
 			break;
 
+		case 'u':
+			ultimate = true;
+			break;
+
 		case 'I':
 #if !WIN32
 			if(interface[0] == '?') {
@@ -351,6 +355,8 @@ int main(int argc, const char **argv) {
 
 		const bool aiOpponent = minPlayers <= 1;
 		Server::Connection con(port, *host ? host : NULL);
+	
+		ultimate = minPlayers > 2 ? ultimate : false;
 
 		if(ultimate && !aiOpponent) logInfo("Running in ultimate mode");
 

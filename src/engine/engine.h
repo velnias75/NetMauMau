@@ -71,7 +71,7 @@ public:
 
 	void reversePlayers();
 
-	inline std::size_t getPlayerCount() const {
+	inline std::size_t getPlayerCount() const throw() {
 		return m_players.size();
 	}
 

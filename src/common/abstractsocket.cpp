@@ -74,7 +74,7 @@ void AbstractSocket::connect() throw(Exception::SocketException) {
 
 #ifdef _WIN32
 
-	if(wsaErr != 0) throw(Exception::SocketException("WSAStartup failed"));
+	if(wsaErr != 0) throw Exception::SocketException("WSAStartup failed");
 
 #endif
 
@@ -102,7 +102,7 @@ void AbstractSocket::connect() throw(Exception::SocketException) {
 
 	if((s = getaddrinfo(m_server.empty() ? 0L : m_server.c_str(), portS.str().c_str(), &hints,
 						&result)) != 0) {
-		throw(Exception::SocketException(gai_strerror(s), m_sfd, errno));
+		throw Exception::SocketException(gai_strerror(s), m_sfd, errno);
 	}
 
 	for(rp = result; rp != NULL; rp = rp->ai_next) {
@@ -124,7 +124,7 @@ void AbstractSocket::connect() throw(Exception::SocketException) {
 
 	if(rp == NULL) {
 		m_sfd = -1;
-		throw(Exception::SocketException(wireError(m_wireError)));
+		throw Exception::SocketException(wireError(m_wireError));
 	}
 
 }

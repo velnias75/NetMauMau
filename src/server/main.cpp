@@ -355,7 +355,7 @@ int main(int argc, const char **argv) {
 
 		const bool aiOpponent = minPlayers <= 1;
 		Server::Connection con(port, *host ? host : NULL);
-	
+
 		ultimate = minPlayers > 2 ? ultimate : false;
 
 		if(ultimate && !aiOpponent) logInfo("Running in ultimate mode");
@@ -393,34 +393,43 @@ int main(int argc, const char **argv) {
 				if(con.wait() > 0) {
 
 					Server::Connection::INFO info;
-					Server::Connection::ACCEPT_STATE state;
+					Server::Connection::ACCEPT_STATE state = Server::Connection::NONE;
 
-					if(!interrupt && (state = con.accept(info, refuse)) ==
-							Server::Connection::PLAY) {
+					if(!interrupt) {
 
-						logInfo("Connection from " << info.host << ":" << info.port << " as \""
-								<< info.name << "\" (" << info.maj << "." << info.min << ") "
-								<< NetMauMau::Common::Logger::nonl());
+						try {
+							state = con.accept(info, refuse);
+						} catch(const Common::Exception::SocketException &e) {
+							logDebug("Client accept failed: " << e.what());
+							state = Server::Connection::NONE;
+						}
 
-						Server::Game::COLLECT_STATE cs =
-							game.collectPlayers(minPlayers, new Server::Player(info.name,
-												info.sockfd, con));
+						if(state == Server::Connection::PLAY) {
 
-						if(cs == Server::Game::ACCEPTED || cs == Server::Game::ACCEPTED_READY) {
+							logInfo("Connection from " << info.host << ":" << info.port << " as \""
+									<< info.name << "\" (" << info.maj << "." << info.min << ") "
+									<< NetMauMau::Common::Logger::nonl());
 
-							logger("accepted");
-							updatePlayerCap(caps, game.getPlayerCount(), con, aiOpponent);
+							Server::Game::COLLECT_STATE cs =
+								game.collectPlayers(minPlayers, new Server::Player(info.name,
+													info.sockfd, con));
 
-							if(cs == Server::Game::ACCEPTED_READY) {
+							if(cs == Server::Game::ACCEPTED || cs == Server::Game::ACCEPTED_READY) {
 
-								refuse = true;
-								game.start(ultimate);
+								logger("accepted");
 								updatePlayerCap(caps, game.getPlayerCount(), con, aiOpponent);
-								refuse = false;
-							}
 
-						} else {
-							logger("refused");
+								if(cs == Server::Game::ACCEPTED_READY) {
+
+									refuse = true;
+									game.start(ultimate);
+									updatePlayerCap(caps, game.getPlayerCount(), con, aiOpponent);
+									refuse = false;
+								}
+
+							} else {
+								logger("refused");
+							}
 						}
 					}
 				}

@@ -317,6 +317,7 @@ bool Engine::nextTurn() {
 	} catch(const Common::Exception::SocketException &e) {
 
 		Common::AbstractConnection *con = m_eventHandler.getConnection();
+		bool lostWatchingPlayer = false;
 
 		if(con) {
 
@@ -326,17 +327,29 @@ bool Engine::nextTurn() {
 			const PLAYERS::iterator &f(find(pName));
 			std::ostringstream os;
 
-			if(!pName.empty()) {
+			lostWatchingPlayer = !pName.empty() && f == m_players.end();
 
-				os << "Lost connection to player \"" << pName << "\"";
+			if(!lostWatchingPlayer) {
+				if(!pName.empty()) {
 
-				try {
-					m_eventHandler.error(os.str(), ex);
-				} catch(const Common::Exception::SocketException &) {}
+					os << "Lost connection to player \"" << pName << "\"";
 
+					try {
+						m_eventHandler.error(os.str(), ex);
+					} catch(const Common::Exception::SocketException &) {}
+
+				} else {
+					try {
+						m_eventHandler.error("Lost connection to a player", ex);
+					} catch(const Common::Exception::SocketException &) {}
+				}
 			} else {
 				try {
-					m_eventHandler.error("Lost connection to a player", ex);
+
+					std::ostringstream watcher;
+					watcher << pName << " is no more watching us";
+					m_eventHandler.message(watcher.str());
+
 				} catch(const Common::Exception::SocketException &) {}
 			}
 
@@ -348,7 +361,8 @@ bool Engine::nextTurn() {
 			if(f != m_players.end()) removePlayer(*f);
 		}
 
-		m_state = FINISHED;
+		if(!lostWatchingPlayer) m_state = FINISHED;
+
 	}
 
 	return true;

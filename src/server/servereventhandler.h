@@ -39,6 +39,7 @@ public:
 	virtual ~EventHandler();
 
 	virtual Connection *getConnection() const _PURE;
+	virtual void gameOver() throw(Common::Exception::SocketException);
 	virtual bool shutdown() const _PURE;
 	virtual void reset() throw();
 

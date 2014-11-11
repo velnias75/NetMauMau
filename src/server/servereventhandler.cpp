@@ -39,6 +39,10 @@ Connection *EventHandler::getConnection() const {
 	return &m_connection;
 }
 
+void EventHandler::gameOver() throw(NetMauMau::Common::Exception::SocketException) {
+	m_connection << "BYE";
+}
+
 bool EventHandler::shutdown() const {
 	return m_interrupt;
 }
@@ -159,13 +163,9 @@ void EventHandler::playerWins(const NetMauMau::Player::IPlayer *player, std::siz
 	m_connection << pw << player->getName();
 }
 
-void EventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std::size_t t)
+void EventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std::size_t)
 throw(NetMauMau::Common::Exception::SocketException) {
-
-	std::ostringstream os;
-	os << t;
-
-	m_connection << "PLAYERLOST" << player->getName() << os.str();
+	m_connection << "PLAYERLOST" << player->getName();
 }
 
 void EventHandler::playerPlaysCard(const NetMauMau::Player::IPlayer *player,

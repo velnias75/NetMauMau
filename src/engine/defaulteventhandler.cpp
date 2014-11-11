@@ -29,6 +29,8 @@ NetMauMau::Common::AbstractConnection *DefaultEventHandler::getConnection() cons
 	return 0L;
 }
 
+void DefaultEventHandler::gameOver() throw(NetMauMau::Common::Exception::SocketException) {}
+
 bool DefaultEventHandler::shutdown() const {
 	return false;
 }

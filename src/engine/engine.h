@@ -80,6 +80,7 @@ public:
 
 	void message(const std::string &msg) throw(Common::Exception::SocketException);
 
+	void gameOver() throw();
 	void reset() throw();
 
 protected:

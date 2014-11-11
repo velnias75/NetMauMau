@@ -167,7 +167,6 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					const bool ultimate = msg.length() > 10 && msg[10] == '+';
 
 					m_connection >> msg;
-
 					playerWins(msg, cturn);
 
 					if(!ultimate) {
@@ -176,15 +175,8 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					}
 
 				} else if(!m_disconnectNow && msg.substr(0, 10) == "PLAYERLOST") {
-
-					std::string trn;
-					std::size_t t;
-
-					m_connection >> msg >> trn;
-					(std::istringstream(trn)) >> t;
-
-					playerLost(msg, t);
-
+					m_connection >> msg;
+					playerLost(msg, cturn);
 				} else if(!m_disconnectNow && msg == "GETCARDS") {
 
 					m_connection >> msg;

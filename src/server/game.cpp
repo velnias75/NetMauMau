@@ -91,6 +91,8 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 		if(!m_engine.nextTurn()) break;
 	}
 
+	if(ultimate && !m_aiOpponent) m_engine.gameOver();
+
 	reset();
 }
 

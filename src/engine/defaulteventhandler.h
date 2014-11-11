@@ -33,6 +33,7 @@ public:
 	virtual ~DefaultEventHandler();
 
 	virtual Common::AbstractConnection *getConnection() const _CONST;
+	virtual void gameOver() throw(Common::Exception::SocketException) _CONST;
 	virtual bool shutdown() const _CONST;
 	virtual void reset() throw() _CONST;
 

@@ -288,7 +288,6 @@ bool Engine::nextTurn() {
 				}
 
 				if(won) {
-					m_eventHandler.playerWins(player, m_turn, m_ultimate);
 
 					PLAYERS::iterator f(m_players.begin());
 					std::advance(f, m_nxtPlayer);
@@ -301,6 +300,8 @@ bool Engine::nextTurn() {
 						m_eventHandler.playerLost(m_players[m_nxtPlayer], m_turn);
 						m_state = FINISHED;
 					}
+
+					m_eventHandler.playerWins(player, m_turn, m_ultimate);
 				}
 			}
 
@@ -363,6 +364,14 @@ void Engine::talonEmpty(bool empty) const throw() {
 		m_eventHandler.talonEmpty(empty);
 	} catch(const Common::Exception::SocketException &e) {
 		logDebug(__PRETTY_FUNCTION__ << ": failed to handle event \'talonEmpty\': " << e.what());
+	}
+}
+
+void Engine::gameOver() throw() {
+	try {
+		m_eventHandler.gameOver();
+	} catch(const Common::Exception::SocketException &e) {
+		logDebug(__PRETTY_FUNCTION__ << ": failed to handle event \'gameOver\': " << e.what());
 	}
 }
 

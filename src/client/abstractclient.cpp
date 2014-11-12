@@ -326,4 +326,8 @@ uint32_t AbstractClient::getClientProtocolVersion() {
 		   static_cast<uint16_t>(SERVER_VERSION_MINOR);
 }
 
+uint16_t AbstractClient::getDefaultPort() {
+	return SERVER_PORT;
+}
+
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

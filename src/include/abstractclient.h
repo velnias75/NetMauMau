@@ -144,6 +144,8 @@ public:
 	 */
 	static uint32_t getClientProtocolVersion() _CONST;
 
+	static uint16_t getDefaultPort() _CONST;
+
 	/**
 	 * @brief Gets the player's name
 	 *

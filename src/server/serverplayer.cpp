@@ -89,6 +89,8 @@ NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *un
 
 		if(offeredCard == "SUSPEND") {
 			return 0L;
+		} else if(offeredCard == "ILLEGAL CARD") {
+			return NetMauMau::Common::getIllegalCard();
 		}
 
 		return findCard(offeredCard);

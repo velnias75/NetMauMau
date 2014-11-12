@@ -107,6 +107,8 @@ _EXPORT std::string createCardDesc(NetMauMau::Common::ICard::SUIT suite,
  */
 _EXPORT std::size_t getCardPoints(NetMauMau::Common::ICard::RANK rank) _CONST;
 
+_EXPORT NetMauMau::Common::ICard *getIllegalCard() _CONST;
+
 }
 
 }

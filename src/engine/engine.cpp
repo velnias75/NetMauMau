@@ -225,13 +225,20 @@ bool Engine::nextTurn() {
 				m_ruleset->hasTakenCards();
 			}
 
+sevenRule:
+
 			if(!pc) {
+
 				player->receiveCard(pc = m_talon->takeCard());
 
 				if(player->getNoCardReason() == Player::IPlayer::SUSPEND) {
 					m_eventHandler.playerSuspends(player);
 					pc = 0L;
 				}
+
+			} else if(pc->getSuit() == Common::ICard::SUIT_ILLEGAL) {
+				pc = player->requestCard(uc, m_jackMode ? &js : 0L);
+				goto sevenRule;
 			}
 
 			bool cc = false;

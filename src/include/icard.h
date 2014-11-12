@@ -47,7 +47,8 @@ public:
 	typedef enum { DIAMONDS, ///< &diams;
 				   HEARTS, ///< &hearts;
 				   SPADES, ///< &spades;
-				   CLUBS ///< &clubs;
+				   CLUBS, ///< &clubs;
+				   SUIT_ILLEGAL ///< used to send a surely not accepted card
 				 } SUIT;
 
 	/**
@@ -60,7 +61,8 @@ public:
 				   JACK, ///< Jack
 				   QUEEN, ///< Queen
 				   KING, ///< King
-				   ACE ///< Ace
+				   ACE, ///< Ace
+				   RANK_ILLEGAL ///< used to send a surely not accepted card
 				 } RANK;
 
 	virtual ~ICard() {}

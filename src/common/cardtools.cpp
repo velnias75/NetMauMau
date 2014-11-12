@@ -36,6 +36,30 @@ const std::string ANSI_DFT;
 const std::string SUIT[] = { "\u2666", "\u2665", "\u2660", "\u2663" };
 #pragma GCC diagnostic pop
 
+class _ICARD : public NetMauMau::Common::ICard {
+	DISALLOW_COPY_AND_ASSIGN(_ICARD)
+public:
+	_ICARD() : ICard() {}
+	virtual ~_ICARD() {}
+
+	virtual SUIT getSuit() const {
+		return SUIT_ILLEGAL;
+	}
+
+	virtual RANK getRank() const {
+		return RANK_ILLEGAL;
+	}
+
+	virtual std::size_t getPoints() const {
+		return 0;
+	}
+
+	virtual std::string description(bool) const {
+		return "ILLEGAL CARD";
+	}
+
+} ILLEGAL_CARD;
+
 }
 
 const std::string *NetMauMau::Common::getSuitSymbols() {
@@ -71,6 +95,10 @@ std::string NetMauMau::Common::suitToSymbol(ICard::SUIT suit, bool ansi, bool en
 
 		d.append("\u2663");
 		break;
+
+	case ICard::SUIT_ILLEGAL:
+		d.append("X");
+		break;
 	}
 
 #ifndef DISABLE_ANSI
@@ -92,6 +120,8 @@ NetMauMau::Common::ICard::SUIT NetMauMau::Common::symbolToSuit(const std::string
 		return ICard::SPADES;
 	} else if(sym == "\u2663") {
 		return ICard::CLUBS;
+	} else if(sym == "X") {
+		return ICard::SUIT_ILLEGAL;
 	}
 
 	return ICard::HEARTS;
@@ -119,13 +149,26 @@ std::size_t NetMauMau::Common::getCardPoints(ICard::RANK v) {
 
 	case ICard::JACK:
 		return 20;
+
+	default:
+		return 0;
 	}
 
 	return 0;
 }
 
+NetMauMau::Common::ICard *NetMauMau::Common::getIllegalCard() {
+	return &ILLEGAL_CARD;
+}
+
 bool NetMauMau::Common::parseCardDesc(const std::string &desc, ICard::SUIT *suit,
 									  ICard::RANK *rank) {
+
+	if(desc == "ILLEGAL CARD") {
+		*suit = ICard::SUIT_ILLEGAL;
+		*rank = ICard::RANK_ILLEGAL;
+		return true;
+	}
 
 	const std::string::size_type p = desc.find(' ');
 

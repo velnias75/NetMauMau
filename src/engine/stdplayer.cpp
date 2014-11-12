@@ -77,7 +77,7 @@ using namespace NetMauMau::Player;
 
 bool StdPlayer::m_jackPlayed = false;
 
-StdPlayer::StdPlayer(const std::string &name) : m_name(name), m_cards() {
+StdPlayer::StdPlayer(const std::string &name) : m_name(name), m_cards(), m_cardsTaken(false) {
 	m_cards.reserve(32);
 }
 
@@ -89,6 +89,7 @@ StdPlayer::~StdPlayer() {
 }
 
 void StdPlayer::reset() throw() {
+	m_cardsTaken = false;
 	m_cards.clear();
 }
 
@@ -145,8 +146,12 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 		&f(std::find_if(myCards.begin(), e,
 						std::bind2nd(isRank(), NetMauMau::Common::ICard::SEVEN)));
 
-		if(f != e) bestCard = *f;
-
+		if(f != e) {
+			bestCard = *f;
+		} else if(!m_cardsTaken) {
+			bestCard = NetMauMau::Common::getIllegalCard();
+			m_cardsTaken = true;
+		}
 	}
 
 	if(!bestCard) {
@@ -284,6 +289,8 @@ bool StdPlayer::cardAccepted(const NetMauMau::Common::ICard *playedCard) {
 		std::random_shuffle(m_cards.begin(), m_cards.end(), NetMauMau::Common::
 							genRandom<std::vector<NetMauMau::Common::ICard *>::difference_type>);
 	}
+
+	m_cardsTaken = false;
 
 	return m_cards.empty();
 }

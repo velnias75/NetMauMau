@@ -67,6 +67,8 @@ private:
 private:
 	std::string m_name;
 	mutable std::vector<Common::ICard *> m_cards;
+	mutable bool m_cardsTaken;
+
 	static bool m_jackPlayed;
 };
 

@@ -48,6 +48,7 @@ AbstractClient::AbstractClient(const std::string &pName, const std::string &serv
 	m_disconnectNow(false) {}
 
 AbstractClient::~AbstractClient() {
+
 	for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(m_cards.begin());
 			i != m_cards.end(); ++i) {
 		delete *i;

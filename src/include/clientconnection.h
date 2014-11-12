@@ -28,10 +28,6 @@
 
 #include "abstractconnection.h"
 
-#ifndef SERVER_PORT
-#define SERVER_PORT 8899
-#endif
-
 namespace NetMauMau {
 
 namespace Client {
@@ -47,7 +43,7 @@ public:
 	 */
 	typedef std::vector<std::string> PLAYERLIST;
 
-	Connection(const std::string &pName, const std::string &server, uint16_t port = SERVER_PORT);
+	Connection(const std::string &pName, const std::string &server, uint16_t port);
 	virtual ~Connection();
 
 	virtual void connect() throw(Common::Exception::SocketException);

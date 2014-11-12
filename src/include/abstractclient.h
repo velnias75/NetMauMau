@@ -28,6 +28,9 @@
  * NetMauMau::Client::AbstractClient. @n Useful functions you'll find in NetMauMau::Common.
  *
  * Link your client against @c -lnetmaumauclient and @c -lnetmaumaucommon
+ *
+ * You can grab the latest source code at https://github.com/velnias75/NetMauMau\n
+ * A proof of concept Qt client can be found at https://github.com/velnias75/NetMauMau-Qt-Client
  */
 
 #ifndef NETMAUMAU_ABSTRACTCLIENT_H
@@ -56,6 +59,11 @@ namespace Client {
  * 	// your error handling
  * }
  * @endcode
+ *
+ * The client translates the server commands into calls of pure virtual functions,
+ * which the client has to implement and to react accordingly.
+ *
+ * A proof of concept Qt client can be found at https://github.com/velnias75/NetMauMau-Qt-Client
  *
  * @note All data is transferred as UTF-8 encoded byte strings
  */
@@ -144,6 +152,11 @@ public:
 	 */
 	static uint32_t getClientProtocolVersion() _CONST;
 
+	/**
+	 * @brief Gets the default port of the server
+	 *
+	 * @return uint16_t the default port of the server
+	 */
 	static uint16_t getDefaultPort() _CONST;
 
 	/**
@@ -177,9 +190,16 @@ protected:
 	/**
 	 * @brief The server requests a card to play
 	 *
+	 * @note If the client send an <em>illegal card</em> the client will be requsted to
+	 * choose a card again. Before the client will receive the amount of extra cards
+	 * to take by played out SEVEN rank cards.
+	 *
+	 * @see Common::getIllegalCard
+	 *
 	 * @param cards the player's cards
 	 * @return NetMauMau::Common::ICard* the card the player wants to play
-	 * or @c NULL if the player cannot play a card and/or suspends the turn
+	 * or @c NULL if the player cannot play a card and/or suspends the turn or
+	 * the <em>illegal card</em>
 	 */
 	virtual Common::ICard *playCard(const CARDS &cards) const = 0;
 
@@ -267,6 +287,12 @@ protected:
 	 */
 	virtual void playerWins(const std::string &player, std::size_t turn) const = 0;
 
+	/**
+	 * @brief A player has lost the game
+	 *
+	 * @param player the player's name
+	 * @param turn the number of the turn the player has lost
+	 */
 	virtual void playerLost(const std::string &player, std::size_t turn) const = 0;
 
 	/**
@@ -294,6 +320,15 @@ protected:
 	 */
 	virtual void nextPlayer(const std::string &player) const = 0;
 
+	/**
+	 * @brief Notes if suspending and taking a card possible
+	 *
+	 * If there are no more cards on the talon, except the open card, suspending and
+	 * taking card a is not possible
+	 *
+	 * @param enable @c true if it is possible to take a card, @c false otherwise
+	 * @return void
+	 */
 	virtual void enableSuspend(bool enable) const = 0;
 
 	/**

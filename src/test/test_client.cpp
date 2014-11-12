@@ -85,7 +85,7 @@ int main(int argc, const char **argv) {
 
 	poptFreeContext(pctx);
 
-	uint16_t port = SERVER_PORT;
+	uint16_t port = TestClient::getDefaultPort();
 	const std::string::size_type p = server.find(':');
 
 	if(p != std::string::npos) {

@@ -107,6 +107,13 @@ _EXPORT std::string createCardDesc(NetMauMau::Common::ICard::SUIT suite,
  */
 _EXPORT std::size_t getCardPoints(NetMauMau::Common::ICard::RANK rank) _CONST;
 
+/**
+ * @brief Gets an <em>illegal card</em> card to trigger special actions
+ *
+ * @see NetMauMau::Client::AbstractClient::playCard()
+ *
+ * @return NetMauMau::Common::ICard* an <em>illegal card</em> card
+ */
 _EXPORT NetMauMau::Common::ICard *getIllegalCard() _CONST;
 
 }

@@ -37,6 +37,13 @@ struct cardEquals : public std::binary_function < NetMauMau::Common::ICard *,
 		return x->description() == y->description();
 	}
 };
+
+struct cardEqualsDescription : public std::binary_function < NetMauMau::Common::ICard *,
+		std::string, bool > {
+	bool operator()(const NetMauMau::Common::ICard *c, const std::string &d) const {
+		return c->description() == d;
+	}
+};
 #pragma GCC diagnostic pop
 
 }
@@ -219,7 +226,24 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 
 				} else if(!m_disconnectNow && msg == "PLAYCARD") {
 
-					lastPlayedCard = playCard(getCards());
+					const AbstractClient::CARDS &myCards(getCards());
+					AbstractClient::CARDS possCards;
+
+					possCards.reserve(myCards.size());
+
+					m_connection >> msg;
+
+					while(msg != "PLAYCARDEND") {
+
+						const AbstractClient::CARDS::const_iterator &f(std::find_if(myCards.begin(),
+								myCards.end(), std::bind2nd(cardEqualsDescription(), msg)));
+
+						if(f != myCards.end()) possCards.push_back(*f);
+
+						m_connection >> msg;
+					}
+
+					lastPlayedCard = playCard(possCards);
 
 					if(lastPlayedCard) {
 						m_connection << lastPlayedCard->description();

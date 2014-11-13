@@ -37,18 +37,24 @@ void StdRuleSet::checkInitial(const NetMauMau::Player::IPlayer *player,
 	checkCard(player, 0L, playedCard, false);
 }
 
+bool StdRuleSet::checkCard(const NetMauMau::Common::ICard *uncoveredCard,
+						   const NetMauMau::Common::ICard *playedCard) const {
+
+	return uncoveredCard ? (playedCard->getRank() == NetMauMau::Common::ICard::JACK
+							&& uncoveredCard->getRank() !=
+							NetMauMau::Common::ICard::JACK) ||
+		   ((((isJackMode() && getJackSuit() == playedCard->getSuit()) ||
+			  (!isJackMode() && (uncoveredCard->getSuit() == playedCard->getSuit() ||
+								 (uncoveredCard->getRank() == playedCard->getRank()))))) &&
+			!(playedCard->getRank() == NetMauMau::Common::ICard::JACK &&
+			  uncoveredCard->getRank() == NetMauMau::Common::ICard::JACK)) : true;
+}
+
 bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 						   const NetMauMau::Common::ICard *uncoveredCard,
 						   const NetMauMau::Common::ICard *playedCard, bool ai) {
 
-	const bool accepted = uncoveredCard ? (playedCard->getRank() == NetMauMau::Common::ICard::JACK
-										   && uncoveredCard->getRank() !=
-										   NetMauMau::Common::ICard::JACK) ||
-						  ((((isJackMode() && getJackSuit() == playedCard->getSuit()) ||
-							 (!isJackMode() && (uncoveredCard->getSuit() == playedCard->getSuit() ||
-									 (uncoveredCard->getRank() == playedCard->getRank()))))) &&
-						   !(playedCard->getRank() == NetMauMau::Common::ICard::JACK &&
-							 uncoveredCard->getRank() == NetMauMau::Common::ICard::JACK)) : true;
+	const bool accepted = checkCard(uncoveredCard, playedCard);
 
 	m_hasToSuspend = accepted && playedCard->getRank() == NetMauMau::Common::ICard::EIGHT;
 	m_hasSuspended = false;
@@ -57,7 +63,7 @@ bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 		m_takeCardCount += 2;
 	} else if(accepted && playedCard->getRank() == NetMauMau::Common::ICard::JACK) {
 
-		if(!(ai && !player->isAIPlayer() && player->getCardCount() == 1)) {
+		if(!(ai && (!player->isAIPlayer() && player->getCardCount() == 1))) {
 			m_jackSuit = player->getJackChoice(uncoveredCard ? uncoveredCard :
 											   playedCard, playedCard);
 		} else {

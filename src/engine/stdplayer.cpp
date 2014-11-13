@@ -77,7 +77,8 @@ using namespace NetMauMau::Player;
 
 bool StdPlayer::m_jackPlayed = false;
 
-StdPlayer::StdPlayer(const std::string &name) : m_name(name), m_cards(), m_cardsTaken(false) {
+StdPlayer::StdPlayer(const std::string &name) : m_name(name), m_cards(), m_cardsTaken(false),
+	m_ruleset(0) {
 	m_cards.reserve(32);
 }
 
@@ -107,6 +108,14 @@ int StdPlayer::getSerial() const {
 
 bool StdPlayer::isAIPlayer() const {
 	return true;
+}
+
+void StdPlayer::setRuleSet(const NetMauMau::RuleSet::IRuleSet *ruleset) {
+	m_ruleset = ruleset;
+}
+
+const NetMauMau::RuleSet::IRuleSet *StdPlayer::getRuleSet() const {
+	return m_ruleset;
 }
 
 void StdPlayer::receiveCard(NetMauMau::Common::ICard *card) {

@@ -26,6 +26,10 @@
 
 namespace NetMauMau {
 
+namespace RuleSet {
+class IRuleSet;
+}
+
 namespace Player {
 
 class IPlayer {
@@ -38,6 +42,8 @@ public:
 	virtual std::string getName() const = 0;
 	virtual int getSerial() const = 0;
 	virtual bool isAIPlayer() const = 0;
+
+	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset) = 0;
 
 	virtual void receiveCard(Common::ICard *card) = 0;
 	virtual void receiveCardSet(const std::vector<Common::ICard *> &cards) = 0;

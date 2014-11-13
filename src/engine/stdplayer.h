@@ -36,6 +36,8 @@ public:
 	virtual int getSerial() const _CONST;
 	virtual bool isAIPlayer() const _CONST;
 
+	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset);
+
 	virtual void receiveCard(Common::ICard *card);
 	virtual void receiveCardSet(const std::vector<Common::ICard *> &cards);
 
@@ -57,6 +59,7 @@ public:
 
 protected:
 	const std::vector<Common::ICard *> &getPlayerCards() const _CONST;
+	const RuleSet::IRuleSet *getRuleSet() const _PURE;
 
 	virtual void shuffleCards();
 
@@ -68,6 +71,7 @@ private:
 	std::string m_name;
 	mutable std::vector<Common::ICard *> m_cards;
 	mutable bool m_cardsTaken;
+	const RuleSet::IRuleSet *m_ruleset;
 
 	static bool m_jackPlayed;
 };

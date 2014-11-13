@@ -24,6 +24,7 @@
 #include "serverplayerexception.h"
 #include "serverconnection.h"
 #include "cardtools.h"
+#include "iruleset.h"
 #include "engine.h"
 
 using namespace NetMauMau::Server;
@@ -44,11 +45,7 @@ bool Player::isAIPlayer() const {
 void Player::receiveCard(NetMauMau::Common::ICard *card) {
 
 	try {
-
-		if(card) {
-			receiveCardSet(std::vector<NetMauMau::Common::ICard *>(1, card));
-		}
-
+		if(card) receiveCardSet(std::vector<NetMauMau::Common::ICard *>(1, card));
 	} catch(const NetMauMau::Common::Exception::SocketException &) {
 		throw Exception::ServerPlayerException(__FUNCTION__);
 	}
@@ -84,6 +81,15 @@ NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *un
 		m_connection.write(m_sockfd, "OPENCARD");
 		m_connection.write(m_sockfd, uncoveredCard->description());;
 		m_connection.write(m_sockfd, "PLAYCARD");
+
+		for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(getPlayerCards().begin());
+				i != getPlayerCards().end(); ++i) {
+			if(getRuleSet()->checkCard(*i, uncoveredCard)) {
+				m_connection.write(m_sockfd, (*i)->description());
+			}
+		}
+
+		m_connection.write(m_sockfd, "PLAYCARDEND");
 
 		const std::string offeredCard = m_connection.read(m_sockfd);
 

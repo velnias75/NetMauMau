@@ -42,7 +42,7 @@ using namespace NetMauMau;
 Engine::Engine(Event::IEventHandler &eventHandler, bool nextMessage) : m_eventHandler(eventHandler),
 	m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)), m_ruleset(new RuleSet::StdRuleSet()),
 	m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_delRuleSet(true), m_jackMode(false),
-	m_initialChecked(false), m_nextMessage(nextMessage), m_ultimate(false) {
+	m_initialChecked(false), m_nextMessage(nextMessage), m_ultimate(false), m_initialJack(false) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
 }
@@ -50,7 +50,8 @@ Engine::Engine(Event::IEventHandler &eventHandler, bool nextMessage) : m_eventHa
 Engine::Engine(Event::IEventHandler &eventHandler, RuleSet::IRuleSet *ruleset, bool nextMessage) :
 	m_eventHandler(eventHandler), m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)),
 	m_ruleset(ruleset), m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_delRuleSet(false),
-	m_jackMode(false), m_initialChecked(false), m_nextMessage(nextMessage), m_ultimate(false) {
+	m_jackMode(false), m_initialChecked(false), m_nextMessage(nextMessage), m_ultimate(false),
+	m_initialJack(false) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
 }
@@ -199,6 +200,7 @@ bool Engine::nextTurn() {
 
 		if(!m_initialChecked) {
 			m_ruleset->checkInitial(player, uc);
+			m_initialJack = m_ruleset->isJackMode();
 			m_initialChecked = true;
 		}
 
@@ -207,7 +209,10 @@ bool Engine::nextTurn() {
 		const bool csuspend = m_ruleset->hasToSuspend();
 		const Common::ICard::SUIT js = m_ruleset->getJackSuit();
 
-		Common::ICard *pc = !csuspend ? player->requestCard(uc, m_jackMode ? &js : 0L) : 0L;
+		Common::ICard *pc = !csuspend ? player->requestCard(uc, (m_jackMode || m_initialJack)
+							? &js : 0L) : 0L;
+
+		m_initialJack = false;
 
 		bool won = false;
 
@@ -414,6 +419,7 @@ void Engine::reset() throw() {
 	m_curTurn = 0;
 	m_jackMode = false;
 	m_initialChecked = false;
+	m_initialJack = false;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

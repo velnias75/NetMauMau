@@ -40,20 +40,20 @@ void StdRuleSet::checkInitial(const NetMauMau::Player::IPlayer *player,
 bool StdRuleSet::checkCard(const NetMauMau::Common::ICard *uncoveredCard,
 						   const NetMauMau::Common::ICard *playedCard) const {
 
-	return uncoveredCard ? (playedCard->getRank() == NetMauMau::Common::ICard::JACK
-							&& uncoveredCard->getRank() != NetMauMau::Common::ICard::JACK) ||
+	return (playedCard->getRank() == NetMauMau::Common::ICard::JACK
+			&& uncoveredCard->getRank() != NetMauMau::Common::ICard::JACK) ||
 		   ((((isJackMode() && getJackSuit() == playedCard->getSuit()) ||
 			  (!isJackMode() && (uncoveredCard->getSuit() == playedCard->getSuit() ||
 								 (uncoveredCard->getRank() == playedCard->getRank()))))) &&
 			!(playedCard->getRank() == NetMauMau::Common::ICard::JACK &&
-			  uncoveredCard->getRank() == NetMauMau::Common::ICard::JACK)) : true;
+			  uncoveredCard->getRank() == NetMauMau::Common::ICard::JACK));
 }
 
 bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 						   const NetMauMau::Common::ICard *uncoveredCard,
 						   const NetMauMau::Common::ICard *playedCard, bool ai) {
 
-	const bool accepted = checkCard(uncoveredCard, playedCard);
+	const bool accepted = uncoveredCard ? checkCard(uncoveredCard, playedCard) : true;
 
 	m_hasToSuspend = accepted && playedCard->getRank() == NetMauMau::Common::ICard::EIGHT;
 	m_hasSuspended = false;

@@ -115,6 +115,7 @@ private:
 	bool m_initialChecked;
 	bool m_nextMessage;
 	bool m_ultimate;
+	bool m_initialJack;
 };
 
 }

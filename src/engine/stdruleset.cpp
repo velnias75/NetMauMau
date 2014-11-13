@@ -41,8 +41,7 @@ bool StdRuleSet::checkCard(const NetMauMau::Common::ICard *uncoveredCard,
 						   const NetMauMau::Common::ICard *playedCard) const {
 
 	return uncoveredCard ? (playedCard->getRank() == NetMauMau::Common::ICard::JACK
-							&& uncoveredCard->getRank() !=
-							NetMauMau::Common::ICard::JACK) ||
+							&& uncoveredCard->getRank() != NetMauMau::Common::ICard::JACK) ||
 		   ((((isJackMode() && getJackSuit() == playedCard->getSuit()) ||
 			  (!isJackMode() && (uncoveredCard->getSuit() == playedCard->getSuit() ||
 								 (uncoveredCard->getRank() == playedCard->getRank()))))) &&

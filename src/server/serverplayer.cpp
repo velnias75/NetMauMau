@@ -74,7 +74,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 void Player::shuffleCards() {}
 
 NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *uncoveredCard,
-		const NetMauMau::Common::ICard::SUIT *) const {
+		const NetMauMau::Common::ICard::SUIT *s) const {
 
 	try {
 
@@ -84,7 +84,14 @@ NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *un
 
 		for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(getPlayerCards().begin());
 				i != getPlayerCards().end(); ++i) {
-			if(getRuleSet()->checkCard(*i, uncoveredCard)) {
+
+			if(s && (*i)->getSuit() != *s) continue;
+
+			const bool accepted = getRuleSet()->checkCard(*i, uncoveredCard);
+			const bool jack = (*i)->getRank() == NetMauMau::Common::ICard::JACK &&
+							  uncoveredCard->getRank() != NetMauMau::Common::ICard::JACK;
+
+			if(accepted || jack) {
 				m_connection.write(m_sockfd, (*i)->description());
 			}
 		}

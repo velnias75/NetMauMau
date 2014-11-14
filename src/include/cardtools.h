@@ -147,6 +147,26 @@ _EXPORT bool cardEqual(const NetMauMau::Common::ICard *x, const NetMauMau::Commo
 _EXPORT bool cardLess(const NetMauMau::Common::ICard *x, const NetMauMau::Common::ICard *y);
 
 /**
+ * @brief Checks if the a card is of @c SUIT
+ *
+ * @param card the card to check
+ * @param suit the @c SUIT to check for
+ *
+ * @return bool @c true if the card is of @c SUIT
+ */
+_EXPORT bool isSuit(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::SUIT suit);
+
+/**
+ * @brief Checks if the a card is of @c RANK
+ *
+ * @param card the card to check
+ * @param rank the @c RANK to check for
+ *
+ * @return bool @c true if the card is of @c RANK
+ */
+_EXPORT bool isRank(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::RANK rank);
+
+/**
  * @brief Gets an <em>illegal card</em> card to trigger special actions
  *
  * @see NetMauMau::Client::AbstractClient::playCard()

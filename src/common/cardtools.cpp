@@ -157,6 +157,71 @@ std::size_t NetMauMau::Common::getCardPoints(ICard::RANK v) {
 	return 0;
 }
 
+unsigned int NetMauMau::Common::suitOrderPosition(NetMauMau::Common::ICard::SUIT s) {
+
+	switch(s) {
+	case NetMauMau::Common::ICard::CLUBS:
+		return 0;
+
+	case NetMauMau::Common::ICard::SPADES:
+		return 1;
+
+	case NetMauMau::Common::ICard::HEARTS:
+		return 2;
+
+	case NetMauMau::Common::ICard::DIAMONDS:
+		return 3;
+
+	default:
+		return 4;
+	}
+}
+
+unsigned int NetMauMau::Common::rankOrderPosition(NetMauMau::Common::ICard::RANK r) {
+
+	switch(r) {
+	case NetMauMau::Common::ICard::SEVEN:
+		return 0;
+
+	case NetMauMau::Common::ICard::EIGHT:
+		return 1;
+
+	case NetMauMau::Common::ICard::NINE:
+		return 2;
+
+	case NetMauMau::Common::ICard::TEN:
+		return 3;
+
+	case NetMauMau::Common::ICard::QUEEN:
+		return 4;
+
+	case NetMauMau::Common::ICard::KING:
+		return 5;
+
+	case NetMauMau::Common::ICard::ACE:
+		return 6;
+
+	case NetMauMau::Common::ICard::JACK:
+		return 7;
+
+	default:
+		return 8;
+	}
+}
+
+bool NetMauMau::Common::cardEqual(const NetMauMau::Common::ICard *x,
+								  const NetMauMau::Common::ICard *y) {
+	return x->description() == y->description();
+}
+
+bool NetMauMau::Common::cardLess(const NetMauMau::Common::ICard *x,
+								 const NetMauMau::Common::ICard *y) {
+
+	return x->getSuit() == y->getSuit() ?
+		   rankOrderPosition(x->getRank()) < rankOrderPosition(y->getRank()) :
+		   suitOrderPosition(x->getSuit()) < suitOrderPosition(y->getSuit());
+}
+
 NetMauMau::Common::ICard *NetMauMau::Common::getIllegalCard() {
 	return &ILLEGAL_CARD;
 }

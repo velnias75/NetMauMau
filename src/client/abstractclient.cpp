@@ -31,13 +31,6 @@ namespace {
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-struct cardEquals : public std::binary_function < NetMauMau::Common::ICard *,
-		NetMauMau::Common::ICard *, bool > {
-	bool operator()(const NetMauMau::Common::ICard *x, const NetMauMau::Common::ICard *y) const {
-		return x->description() == y->description();
-	}
-};
-
 struct cardEqualsDescription : public std::binary_function < NetMauMau::Common::ICard *,
 		std::string, bool > {
 	bool operator()(const NetMauMau::Common::ICard *c, const std::string &d) const {
@@ -262,8 +255,9 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 
 					if(lastPlayedCard) {
 						const std::vector<NetMauMau::Common::ICard *>::iterator
-						&f(std::find_if(m_cards.begin(), m_cards.end(), std::bind2nd(cardEquals(),
-										lastPlayedCard)));
+						&f(std::find_if(m_cards.begin(), m_cards.end(),
+										std::bind2nd(std::ptr_fun(NetMauMau::Common::cardEqual),
+													 lastPlayedCard)));
 
 						if(f != m_cards.end()) {
 							cardAccepted(*f);

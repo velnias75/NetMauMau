@@ -196,7 +196,7 @@ protected:
 	 *
 	 * @see Common::getIllegalCard
 	 *
-	 * @param cards the player's cards
+	 * @param cards playable cards, which will get accepted by the server
 	 * @return NetMauMau::Common::ICard* the card the player wants to play
 	 * or @c NULL if the player cannot play a card and/or suspends the turn or
 	 * the <em>illegal card</em>

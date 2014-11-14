@@ -108,6 +108,45 @@ _EXPORT std::string createCardDesc(NetMauMau::Common::ICard::SUIT suite,
 _EXPORT std::size_t getCardPoints(NetMauMau::Common::ICard::RANK rank) _CONST;
 
 /**
+ * @brief Gets an ordinal number for a @c SUIT
+ *
+ * The ordinals follow the Skat and Doppelkopf order\n
+ * See here: http://i-p-c-s.org/faq/suit-ranking.php
+ *
+ * @param suit the @c SUIT to get the ordinal for
+ * @return unsigned int ordinal number for a @c SUIT
+ */
+_EXPORT unsigned int suitOrderPosition(NetMauMau::Common::ICard::SUIT suit) _CONST;
+
+/**
+ * @brief Gets an ordinal number for a @c RANK
+ *
+ * @param rank the @c RANK to get the ordinal for
+ * @return unsigned int ordinal number for a @c RANK
+ */
+_EXPORT unsigned int rankOrderPosition(NetMauMau::Common::ICard::RANK rank) _CONST;
+
+/**
+ * @brief Checks if two cards are equal
+ *
+ * @param x a card
+ * @param y a card
+ *
+ * @return bool @c true if the cards are equal, @c false otherwise
+ */
+_EXPORT bool cardEqual(const NetMauMau::Common::ICard *x, const NetMauMau::Common::ICard *y);
+
+/**
+ * @brief Checks if a card comes before another
+ *
+ * @param x a card
+ * @param y a card
+ *
+ * @return bool @c true if @c x comes before @c y, @c false otherwise
+ */
+_EXPORT bool cardLess(const NetMauMau::Common::ICard *x, const NetMauMau::Common::ICard *y);
+
+/**
  * @brief Gets an <em>illegal card</em> card to trigger special actions
  *
  * @see NetMauMau::Client::AbstractClient::playCard()

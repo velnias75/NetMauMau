@@ -54,6 +54,8 @@ public:
 			const Common::ICard *playedCard) const = 0;
 
 	virtual bool cardAccepted(const Common::ICard *playedCard) = 0;
+	virtual void cardPlayed(Common::ICard *playedCard) = 0;
+	virtual void talonShuffled() = 0;
 
 	virtual REASON getNoCardReason() const = 0;
 

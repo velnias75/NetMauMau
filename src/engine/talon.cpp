@@ -104,6 +104,7 @@ Common::ICard *Talon::uncoverCard() {
 void Talon::playCard(Common::ICard *card) {
 	m_uncovered.push(card);
 	m_talonChangeListener->talonEmpty(false);
+	m_talonChangeListener->cardPlayed(card);
 }
 
 Common::ICard *Talon::takeCard() {
@@ -123,6 +124,8 @@ Common::ICard *Talon::takeCard() {
 
 		std::random_shuffle(cards.begin(), cards.end(),
 							Common::genRandom<std::vector<Common::ICard *>::difference_type>);
+
+		m_talonChangeListener->shuffled();
 
 		for(std::vector<Common::ICard *>::const_iterator i(cards.begin()); i != cards.end(); ++i) {
 			m_cardStack.push(*i);

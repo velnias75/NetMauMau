@@ -20,6 +20,8 @@
 #ifndef NETMAUMAU_ITALONCHANGE_H
 #define NETMAUMAU_ITALONCHANGE_H
 
+#include "linkercontrol.h"
+
 namespace NetMauMau {
 
 namespace Common {
@@ -27,11 +29,14 @@ class ICard;
 }
 
 class ITalonChange {
+	DISALLOW_COPY_AND_ASSIGN(ITalonChange)
 public:
 	virtual ~ITalonChange() {}
 
+	virtual void cardPlayed(Common::ICard *card) const = 0;
 	virtual void uncoveredCard(const NetMauMau::Common::ICard *top) const = 0;
 	virtual void talonEmpty(bool empty) const throw() = 0;
+	virtual void shuffled() const = 0;
 
 protected:
 	ITalonChange() {}

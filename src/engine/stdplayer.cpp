@@ -33,26 +33,12 @@ const NetMauMau::Common::ICard::SUIT SUIT[4] = {
 	NetMauMau::Common::ICard::CLUBS
 };
 
-typedef struct _suitCount {
-	bool operator<(const _suitCount &sc) const {
-		return !(count < sc.count);
-	}
-
-	bool operator==(NetMauMau::Common::ICard::SUIT s) const {
-		return suit == s;
-	}
-
-	NetMauMau::Common::ICard::SUIT suit;
-	std::vector<NetMauMau::Common::ICard *>::difference_type count;
-} SUITCOUNT;
-
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
 struct cardGreater : std::binary_function < NetMauMau::Common::ICard *, NetMauMau::Common::ICard *,
 		bool > {
 	bool operator()(const NetMauMau::Common::ICard *x, NetMauMau::Common::ICard *y) const {
-		return (NetMauMau::Common::getCardPoints(x->getRank()) <
-				NetMauMau::Common::getCardPoints(y->getRank()));
+		return !NetMauMau::Common::cardLess(x, y);
 	}
 };
 
@@ -132,6 +118,19 @@ void StdPlayer::shuffleCards() {
 						genRandom<std::vector<NetMauMau::Common::ICard *>::difference_type>);
 }
 
+void StdPlayer::countSuits(SUITCOUNT *suitCount,
+						   const std::vector<NetMauMau::Common::ICard *> &myCards) const {
+
+	for(std::size_t i = 0; i < 4; ++i) {
+		SUITCOUNT sc = { SUIT[i], std::count_if(myCards.begin(), myCards.end(),
+												std::bind2nd(isSuit(), SUIT[i]))
+					   };
+		suitCount[i] = sc;
+	}
+
+	std::sort(suitCount, suitCount + 4);
+}
+
 NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard *uc,
 		const NetMauMau::Common::ICard::SUIT *js, bool noJack) const {
 
@@ -174,16 +173,9 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 	}
 
 	if(!bestCard) {
+
 		SUITCOUNT suitCount[4];
-
-		for(std::size_t i = 0; i < 4; ++i) {
-			SUITCOUNT sc = { SUIT[i], std::count_if(myCards.begin(), myCards.end(),
-													std::bind2nd(isSuit(), SUIT[i]))
-						   };
-			suitCount[i] = sc;
-		}
-
-		std::sort(suitCount, suitCount + 4);
+		countSuits(suitCount, myCards);
 
 		for(std::size_t i = 0; i < 4; ++i) {
 
@@ -274,12 +266,20 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICard *uncoveredCard,
 		return bc->getSuit();
 	}
 
+	SUITCOUNT poSuitCount[4];
+	countSuits(poSuitCount, m_playedOutCards);
+
+	if(poSuitCount[0].count) {
+		return poSuitCount[0].suit;
+	}
+
 	NetMauMau::Common::ICard::SUIT s;
 
 	while(((s = SUIT[NetMauMau::Common::genRandom<std::size_t>(4)]) == uncoveredCard->getSuit()
 			|| s == playedCard->getSuit()));
 
 	return s;
+
 }
 
 IPlayer::REASON StdPlayer::getNoCardReason() const {
@@ -301,6 +301,14 @@ bool StdPlayer::cardAccepted(const NetMauMau::Common::ICard *playedCard) {
 	m_cardsTaken = false;
 
 	return m_cards.empty();
+}
+
+void StdPlayer::cardPlayed(NetMauMau::Common::ICard *playedCard) {
+	m_playedOutCards.push_back(playedCard);
+}
+
+void StdPlayer::talonShuffled() {
+	m_playedOutCards.clear();
 }
 
 std::size_t StdPlayer::getCardCount() const {

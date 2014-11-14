@@ -395,6 +395,18 @@ void Engine::talonEmpty(bool empty) const throw() {
 	}
 }
 
+void Engine::cardPlayed(Common::ICard *card) const {
+	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
+		(*i)->cardPlayed(card);
+	}
+}
+
+void Engine::shuffled() const {
+	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
+		(*i)->talonShuffled();
+	}
+}
+
 void Engine::gameOver() throw() {
 	try {
 		m_eventHandler.gameOver();

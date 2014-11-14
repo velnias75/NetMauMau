@@ -20,6 +20,8 @@
 #ifndef NETMAUMAU_STDPLAYER_H
 #define NETMAUMAU_STDPLAYER_H
 
+#include <algorithm>
+
 #include "iplayer.h"
 
 namespace NetMauMau {
@@ -47,6 +49,8 @@ public:
 			const Common::ICard *playedCard) const;
 
 	virtual bool cardAccepted(const Common::ICard *playedCard);
+	virtual void cardPlayed(Common::ICard *playedCard);
+	virtual void talonShuffled();
 
 	virtual REASON getNoCardReason() const _PURE;
 
@@ -64,6 +68,22 @@ protected:
 	virtual void shuffleCards();
 
 private:
+	typedef struct _suitCount {
+		bool operator<(const _suitCount &sc) const {
+			return !(count < sc.count);
+		}
+
+		bool operator==(NetMauMau::Common::ICard::SUIT s) const {
+			return suit == s;
+		}
+
+		NetMauMau::Common::ICard::SUIT suit;
+		std::vector<NetMauMau::Common::ICard *>::difference_type count;
+	} SUITCOUNT;
+
+	void countSuits(SUITCOUNT *suitCount,
+					const std::vector<NetMauMau::Common::ICard *> &myCards) const;
+
 	Common::ICard *findBestCard(const Common::ICard *uc, const Common::ICard::SUIT *js,
 								bool noJack) const;
 
@@ -72,6 +92,7 @@ private:
 	mutable std::vector<Common::ICard *> m_cards;
 	mutable bool m_cardsTaken;
 	const RuleSet::IRuleSet *m_ruleset;
+	std::vector<Common::ICard *> m_playedOutCards;
 
 	static bool m_jackPlayed;
 };

@@ -57,7 +57,8 @@ public:
 
 	Engine(Event::IEventHandler &eventHandler, bool nextMessage = true);
 	Engine(Event::IEventHandler &eventHandler, RuleSet::IRuleSet *ruleset, bool nextMessage = true);
-	~Engine();
+
+	virtual ~Engine();
 
 	inline void setUltimate(bool ultimate) {
 		m_ultimate = ultimate;
@@ -87,6 +88,8 @@ protected:
 	virtual void uncoveredCard(const Common::ICard *top) const
 	throw(Common::Exception::SocketException);
 	virtual void talonEmpty(bool empty) const throw();
+	virtual void cardPlayed(Common::ICard *card) const;
+	virtual void shuffled() const;
 
 private:
 	void calcScore(Player::IPlayer *p);

@@ -18,11 +18,13 @@
  */
 
 #include <algorithm>
+#include <cstring>
 
 #include "stdplayer.h"
 
 #include "cardtools.h"
 #include "random_gen.h"
+#include "stdcardfactory.h"
 
 namespace {
 
@@ -121,14 +123,19 @@ void StdPlayer::shuffleCards() {
 void StdPlayer::countSuits(SUITCOUNT *suitCount,
 						   const std::vector<NetMauMau::Common::ICard *> &myCards) const {
 
+	std::memset(suitCount, 0, sizeof(SUITCOUNT) * 4);
+
+	const bool noCards = myCards.empty();
+
 	for(std::size_t i = 0; i < 4; ++i) {
-		SUITCOUNT sc = { SUIT[i], std::count_if(myCards.begin(), myCards.end(),
-												std::bind2nd(isSuit(), SUIT[i]))
+		SUITCOUNT sc = { SUIT[i], noCards ? 0 : std::count_if(myCards.begin(), myCards.end(),
+						 std::bind2nd(isSuit(), SUIT[i]))
 					   };
+
 		suitCount[i] = sc;
 	}
 
-	std::sort(suitCount, suitCount + 4);
+	if(!noCards) std::sort(suitCount, suitCount + 4);
 }
 
 NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard *uc,
@@ -267,7 +274,25 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICard *uncoveredCard,
 	}
 
 	SUITCOUNT poSuitCount[4];
-	countSuits(poSuitCount, m_playedOutCards);
+	std::vector<NetMauMau::Common::ICard *> pcVec;
+
+	pcVec.reserve(m_playedOutCards.size());
+
+	for(std::set<std::string>::const_iterator i(m_playedOutCards.begin());
+			i != m_playedOutCards.end(); ++i) {
+
+		NetMauMau::Common::ICard::SUIT s;
+		NetMauMau::Common::ICard::RANK r;
+
+		if(NetMauMau::Common::parseCardDesc(*i, &s, &r)) {
+			pcVec.push_back(NetMauMau::StdCardFactory().create(s, r));
+		}
+	}
+
+	countSuits(poSuitCount, pcVec);
+
+	for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(pcVec.begin()); i != pcVec.end();
+			++i) delete *i;
 
 	if(poSuitCount[0].count) {
 		return poSuitCount[0].suit;
@@ -304,7 +329,7 @@ bool StdPlayer::cardAccepted(const NetMauMau::Common::ICard *playedCard) {
 }
 
 void StdPlayer::cardPlayed(NetMauMau::Common::ICard *playedCard) {
-	m_playedOutCards.push_back(playedCard);
+	m_playedOutCards.insert(playedCard->description());
 }
 
 void StdPlayer::talonShuffled() {

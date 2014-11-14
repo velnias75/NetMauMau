@@ -48,12 +48,16 @@ TestClient::TestClient(const std::string &pName, const std::string &server, uint
 
 TestClient::~TestClient() {}
 
-void TestClient::message(const std::string &msg) {
+void TestClient::message(const std::string &msg) const {
 	std::cout << msg << std::endl;
 }
 
-void TestClient::error(const std::string &msg) {
+void TestClient::error(const std::string &msg) const {
 	message(BOLD_ON + RED_ON + "ERROR: " + msg + RED_OFF + BOLD_OFF);
+}
+
+void TestClient::unknownServerMessage(std::string msg) const {
+	message(std::string("Unknown server message: \"") + msg + "\"");
 }
 
 void TestClient::gameOver() const {
@@ -176,6 +180,8 @@ void TestClient::openCard(const NetMauMau::Common::ICard *card, const std::strin
 	std::cout << std::endl;
 }
 
+void TestClient::talonShuffled() const {}
+
 void TestClient::cardRejected(const std::string &player,
 							  const NetMauMau::Common::ICard *card) const {
 	std::cout << BOLD_P_ON << player << BOLD_OFF << "'s card " << card->description(true)
@@ -184,7 +190,7 @@ void TestClient::cardRejected(const std::string &player,
 
 void TestClient::cardAccepted(const NetMauMau::Common::ICard *) const {}
 
-void TestClient::jackSuit(NetMauMau::Common::ICard::SUIT suit) {
+void TestClient::jackSuit(NetMauMau::Common::ICard::SUIT suit) const {
 	std::cout << "Suit chosen by Jack is " << NetMauMau::Common::suitToSymbol(suit, true, true)
 			  << std::endl;
 }

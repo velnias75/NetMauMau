@@ -147,6 +147,11 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 }
 
+void Player::talonShuffled() throw(NetMauMau::Common::Exception::SocketException) {
+	NetMauMau::Player::StdPlayer::talonShuffled();
+	m_connection.write(m_sockfd, "TALONSHUFFLED");
+}
+
 Player::IPlayer::REASON Player::getNoCardReason() const {
 	return NetMauMau::Player::IPlayer::SUSPEND;
 }

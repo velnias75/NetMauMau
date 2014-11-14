@@ -48,7 +48,8 @@ public:
 									   const Common::ICard::SUIT *jackSuit) const;
 	virtual REASON getNoCardReason() const _CONST;
 	virtual bool cardAccepted(const Common::ICard *playedCard)
-	throw(NetMauMau::Common::Exception::SocketException) ;
+	throw(NetMauMau::Common::Exception::SocketException);
+	virtual void talonShuffled() throw(NetMauMau::Common::Exception::SocketException);
 
 	virtual std::size_t getCardCount() const throw(Common::Exception::SocketException);
 

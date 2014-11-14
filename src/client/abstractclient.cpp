@@ -205,6 +205,8 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 
 					delete ic;
 
+				} else if(!m_disconnectNow && msg == "TALONSHUFFLED") {
+					talonShuffled();
 				} else if(!m_disconnectNow && msg == "OPENCARD") {
 
 					m_connection >> msg;
@@ -328,6 +330,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					break;
 				} else if(!m_disconnectNow) {
 					logDebug("Client library: " << __PRETTY_FUNCTION__ << ": " << msg);
+					unknownServerMessage(msg);
 				}
 			}
 

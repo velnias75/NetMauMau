@@ -111,6 +111,8 @@ Common::ICard *Talon::takeCard() {
 
 	if(empty()) {
 
+		m_talonChangeListener->shuffled();
+
 		Common::ICard *uc = m_uncovered.top();
 		m_uncovered.pop();
 
@@ -125,12 +127,11 @@ Common::ICard *Talon::takeCard() {
 		std::random_shuffle(cards.begin(), cards.end(),
 							Common::genRandom<std::vector<Common::ICard *>::difference_type>);
 
-		m_talonChangeListener->shuffled();
-
 		for(std::vector<Common::ICard *>::const_iterator i(cards.begin()); i != cards.end(); ++i) {
 			m_cardStack.push(*i);
-			m_talonChangeListener->talonEmpty(false);
 		}
+
+		m_talonChangeListener->talonEmpty(cards.empty());
 
 		m_uncovered.push(uc);
 		m_talonChangeListener->uncoveredCard(m_uncovered.top());

@@ -222,14 +222,14 @@ protected:
 	 *
 	 * @param msg the general message
 	 */
-	virtual void message(const std::string &msg) = 0;
+	virtual void message(const std::string &msg) const = 0;
 
 	/**
 	 * @brief The server send a error message
 	 *
 	 * @param msg the error message
 	 */
-	virtual void error(const std::string &msg) = 0;
+	virtual void error(const std::string &msg) const = 0;
 
 	/**
 	 * @brief A new turn has started
@@ -361,6 +361,16 @@ protected:
 	virtual void openCard(const Common::ICard *card, const std::string &jackSuit) const = 0;
 
 	/**
+	 * @brief The talon was empty and shuffled anew
+	 *
+	 * All played cards, except the open top card are shuffled and added to the Talon.
+	 *
+	 * This event can be used for displaying an shuffle animation.
+	 *
+	 */
+	virtual void talonShuffled() const = 0;
+
+	/**
 	 * @brief The player's played card got rejected
 	 *
 	 * @param player the player's name
@@ -380,9 +390,16 @@ protected:
 	 *
 	 * @param suit the current Jack suit
 	 */
-	virtual void jackSuit(Common::ICard::SUIT suit) = 0;
+	virtual void jackSuit(Common::ICard::SUIT suit) const = 0;
 
 	// @}
+
+	/**
+	 * @brief The server sent a message not understood by the client
+	 *
+	 * @param message the unknown message
+	 */
+	virtual void unknownServerMessage(std::string message) const = 0;
 
 private:
 	CARDS getCards(const std::vector<Common::ICard *>::size_type cnt = 0) const;

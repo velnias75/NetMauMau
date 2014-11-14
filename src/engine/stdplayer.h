@@ -21,6 +21,7 @@
 #define NETMAUMAU_STDPLAYER_H
 
 #include <algorithm>
+#include <set>
 
 #include "iplayer.h"
 
@@ -92,7 +93,7 @@ private:
 	mutable std::vector<Common::ICard *> m_cards;
 	mutable bool m_cardsTaken;
 	const RuleSet::IRuleSet *m_ruleset;
-	std::vector<Common::ICard *> m_playedOutCards;
+	std::set<std::string> m_playedOutCards;
 
 	static bool m_jackPlayed;
 };

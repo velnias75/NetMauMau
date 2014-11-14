@@ -29,8 +29,10 @@ public:
 	virtual ~TestClient();
 
 protected:
-	virtual void message(const std::string &msg);
-	virtual void error(const std::string &msg);
+	virtual void unknownServerMessage(std::string message) const;
+	
+	virtual void message(const std::string &msg) const;
+	virtual void error(const std::string &msg) const;
 	virtual void turn(std::size_t turn) const;
 	virtual void stats(const STATS &stats) const;
 	virtual void gameOver() const;
@@ -53,10 +55,11 @@ protected:
 	virtual void enableSuspend(bool enable) const _CONST;
 	virtual void initialCard(const NetMauMau::Common::ICard *card) const;
 	virtual void openCard(const NetMauMau::Common::ICard *card, const std::string &jackSuit) const;
+	virtual void talonShuffled() const _CONST;
 	virtual void cardRejected(const std::string &player,
 							  const NetMauMau::Common::ICard *card) const;
 	virtual void cardAccepted(const NetMauMau::Common::ICard *card) const _CONST;
-	virtual void jackSuit(NetMauMau::Common::ICard::SUIT suit);
+	virtual void jackSuit(NetMauMau::Common::ICard::SUIT suit) const;
 };
 
 #endif /* NETMAUMAU_TESTCLIENT_H */

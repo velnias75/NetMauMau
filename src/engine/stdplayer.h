@@ -85,6 +85,9 @@ private:
 	void countSuits(SUITCOUNT *suitCount,
 					const std::vector<NetMauMau::Common::ICard *> &myCards) const;
 
+	Common::ICard *hasEightPath(const NetMauMau::Common::ICard *uc, Common::ICard::SUIT s,
+								std::vector<NetMauMau::Common::ICard *> &cards) const;
+
 	Common::ICard *findBestCard(const Common::ICard *uc, const Common::ICard::SUIT *js,
 								bool noJack) const;
 

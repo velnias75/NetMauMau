@@ -35,6 +35,7 @@ namespace Player {
 class IPlayer {
 	DISALLOW_COPY_AND_ASSIGN(IPlayer)
 public:
+	typedef std::vector<NetMauMau::Common::ICard *> CARDS;
 	typedef enum { MAUMAU, NOMATCH, SUSPEND } REASON;
 
 	virtual ~IPlayer() {}
@@ -46,7 +47,7 @@ public:
 	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset) = 0;
 
 	virtual void receiveCard(Common::ICard *card) = 0;
-	virtual void receiveCardSet(const std::vector<Common::ICard *> &cards) = 0;
+	virtual void receiveCardSet(const CARDS &cards) = 0;
 
 	virtual Common::ICard *requestCard(const Common::ICard *uncoveredCard,
 									   const Common::ICard::SUIT *jackSuit) const = 0;

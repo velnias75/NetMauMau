@@ -26,6 +26,7 @@
 #ifndef NETMAUMAU_CARDTOOLS_H
 #define NETMAUMAU_CARDTOOLS_H
 
+#include <algorithm>
 #include <cstdlib>
 
 #include "icard.h"
@@ -165,6 +166,44 @@ _EXPORT bool isSuit(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICa
  * @return bool @c true if the card is of @c RANK
  */
 _EXPORT bool isRank(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::RANK rank);
+
+/**
+ * @brief Finds the first card of a given @c SUIT
+ *
+ * @tparam Iterator an iterator
+ *
+ * @param suit the @c SUIT to find
+ * @param first iterator to the first card
+ * @param last iterator to the last card
+ * @return NetMauMau::Common::ICard* the card if found @c 0L otherwise
+ */
+template<typename Iterator>
+NetMauMau::Common::ICard *findSuit(NetMauMau::Common::ICard::SUIT suit, Iterator first,
+								   Iterator last) {
+
+	const Iterator &f(std::find_if(first, last, std::bind2nd(std::ptr_fun(isSuit), suit)));
+
+	return f != last ? *f : 0L;
+}
+
+/**
+ * @brief Finds the first card of a given @c RANK
+ *
+ * @tparam Iterator an iterator
+ *
+ * @param rank the @c RANK to find
+ * @param first iterator to the first card
+ * @param last iterator to the last card
+ * @return NetMauMau::Common::ICard* the card if found @c 0L otherwise
+ */
+template<typename Iterator>
+NetMauMau::Common::ICard *findRank(NetMauMau::Common::ICard::RANK rank, Iterator first,
+								   Iterator last) {
+
+	const Iterator &f(std::find_if(first, last, std::bind2nd(std::ptr_fun(isRank), rank)));
+
+	return f != last ? *f : 0L;
+}
 
 /**
  * @brief Gets an <em>illegal card</em> card to trigger special actions

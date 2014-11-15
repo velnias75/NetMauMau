@@ -45,13 +45,13 @@ bool Player::isAIPlayer() const {
 void Player::receiveCard(NetMauMau::Common::ICard *card) {
 
 	try {
-		if(card) receiveCardSet(std::vector<NetMauMau::Common::ICard *>(1, card));
+		if(card) receiveCardSet(CARDS(1, card));
 	} catch(const NetMauMau::Common::Exception::SocketException &) {
 		throw Exception::ServerPlayerException(__FUNCTION__);
 	}
 }
 
-void Player::receiveCardSet(const std::vector<NetMauMau::Common::ICard *> &cards)
+void Player::receiveCardSet(const CARDS &cards)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	NetMauMau::Player::StdPlayer::receiveCardSet(cards);
@@ -59,8 +59,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	try {
 		m_connection.write(m_sockfd, "GETCARDS");
 
-		for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(cards.begin());
-				i != cards.end(); ++i) {
+		for(CARDS::const_iterator i(cards.begin()); i != cards.end(); ++i) {
 			m_connection.write(m_sockfd, (*i)->description());
 		}
 
@@ -82,8 +81,7 @@ NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *un
 		m_connection.write(m_sockfd, uncoveredCard->description());;
 		m_connection.write(m_sockfd, "PLAYCARD");
 
-		for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(getPlayerCards().begin());
-				i != getPlayerCards().end(); ++i) {
+		for(CARDS::const_iterator i(getPlayerCards().begin()); i != getPlayerCards().end(); ++i) {
 
 			if(s && (*i)->getSuit() != *s) continue;
 
@@ -119,10 +117,10 @@ NetMauMau::Common::ICard *Player::findCard(const std::string &offeredCard) const
 	NetMauMau::Common::ICard::RANK r = NetMauMau::Common::ICard::ACE;
 
 	if(NetMauMau::Common::parseCardDesc(offeredCard, &s, &r)) {
-		const std::vector<NetMauMau::Common::ICard *> &pc(getPlayerCards());
 
-		for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(pc.begin());
-				i != pc.end(); ++i) {
+		const CARDS &pc(getPlayerCards());
+
+		for(CARDS::const_iterator i(pc.begin()); i != pc.end(); ++i) {
 			if((*i)->getSuit() == s && (*i)->getRank() == r) return *i;
 		}
 	}

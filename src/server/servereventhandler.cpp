@@ -18,7 +18,6 @@
  */
 
 #include <sstream>
-#include <algorithm>
 
 #include "servereventhandler.h"
 

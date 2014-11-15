@@ -20,7 +20,6 @@
 #ifndef NETMAUMAU_STDPLAYER_H
 #define NETMAUMAU_STDPLAYER_H
 
-#include <algorithm>
 #include <set>
 
 #include "iplayer.h"
@@ -42,7 +41,7 @@ public:
 	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset);
 
 	virtual void receiveCard(Common::ICard *card);
-	virtual void receiveCardSet(const std::vector<Common::ICard *> &cards);
+	virtual void receiveCardSet(const CARDS &cards);
 
 	virtual Common::ICard *requestCard(const Common::ICard *uncoveredCard,
 									   const Common::ICard::SUIT *jackSuit) const;
@@ -63,7 +62,7 @@ public:
 	static void resetJackState() throw();
 
 protected:
-	const std::vector<Common::ICard *> &getPlayerCards() const _CONST;
+	const CARDS &getPlayerCards() const _CONST;
 	const RuleSet::IRuleSet *getRuleSet() const _PURE;
 
 	virtual void shuffleCards();
@@ -79,17 +78,19 @@ private:
 		}
 
 		NetMauMau::Common::ICard::SUIT suit;
-		std::vector<NetMauMau::Common::ICard *>::difference_type count;
+		CARDS::difference_type count;
 	} SUITCOUNT;
 
 	void countSuits(SUITCOUNT *suitCount,
-					const std::vector<NetMauMau::Common::ICard *> &myCards) const;
+					const CARDS &myCards) const;
 
 	Common::ICard *hasEightPath(const NetMauMau::Common::ICard *uc, Common::ICard::SUIT s,
-								std::vector<NetMauMau::Common::ICard *> &cards) const;
+								CARDS &cards) const;
 
 	Common::ICard *findBestCard(const Common::ICard *uc, const Common::ICard::SUIT *js,
 								bool noJack) const;
+
+	Common::ICard::SUIT findJackChoice() const;
 
 private:
 	std::string m_name;

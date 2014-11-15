@@ -17,7 +17,6 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <algorithm>
 #include <sstream>
 
 #include "abstractclient.h"

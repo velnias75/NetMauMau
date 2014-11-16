@@ -42,6 +42,11 @@ namespace NetMauMau {
 namespace Common {
 
 /**
+ * @name Card SUIT helpers
+ * @{
+ */
+
+/**
  * @brief Get an array of the four @c SUIT symbols
  *
  * @return const std::string* the four @c SUIT symbols
@@ -75,6 +80,13 @@ _EXPORT NetMauMau::Common::ICard::SUIT symbolToSuit(const std::string &symbol);
 _EXPORT std::string suitToSymbol(NetMauMau::Common::ICard::SUIT suit, bool ansi,
 								 bool endansi = false);
 
+/// @}
+
+/**
+ * @name Card description
+ * @{
+ */
+
 /**
  * @brief Parses a textual description
  *
@@ -100,13 +112,12 @@ _EXPORT _NOUNUSED bool parseCardDesc(const std::string &desc, NetMauMau::Common:
 _EXPORT std::string createCardDesc(NetMauMau::Common::ICard::SUIT suite,
 								   NetMauMau::Common::ICard::RANK rank, bool ansi);
 
+/// @}
+
 /**
- * @brief Gets the points of a @c RANK
- *
- * @param rank the @c RANK
- * @return std::size_t the points of a @c RANK
+ * @name Sorting cards
+ * @{
  */
-_EXPORT std::size_t getCardPoints(NetMauMau::Common::ICard::RANK rank) _CONST;
 
 /**
  * @brief Gets an ordinal number for a @c SUIT
@@ -146,6 +157,13 @@ _EXPORT bool cardEqual(const NetMauMau::Common::ICard *x, const NetMauMau::Commo
  * @return bool @c true if @c x comes before @c y, @c false otherwise
  */
 _EXPORT bool cardLess(const NetMauMau::Common::ICard *x, const NetMauMau::Common::ICard *y);
+
+/// @}
+
+/**
+ * @name Identifying and finding cards
+ * @{
+ */
 
 /**
  * @brief Checks if the a card is of @c SUIT
@@ -205,6 +223,13 @@ NetMauMau::Common::ICard *findRank(NetMauMau::Common::ICard::RANK rank, Iterator
 	return f != last ? *f : 0L;
 }
 
+/// @}
+
+/**
+ * @name Miscellaneous functions
+ * @{
+ */
+
 /**
  * @brief Gets an <em>illegal card</em> card to trigger special actions
  *
@@ -213,6 +238,16 @@ NetMauMau::Common::ICard *findRank(NetMauMau::Common::ICard::RANK rank, Iterator
  * @return NetMauMau::Common::ICard* an <em>illegal card</em> card
  */
 _EXPORT NetMauMau::Common::ICard *getIllegalCard() _CONST;
+
+/**
+ * @brief Gets the points of a @c RANK
+ *
+ * @param rank the @c RANK
+ * @return std::size_t the points of a @c RANK
+ */
+_EXPORT std::size_t getCardPoints(NetMauMau::Common::ICard::RANK rank) _CONST;
+
+/// @}
 
 }
 

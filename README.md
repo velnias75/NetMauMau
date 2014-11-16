@@ -20,3 +20,8 @@ Client
 ------
 
 A proof of concept Qt client can be found at https://github.com/velnias75/NetMauMau-Qt-Client
+
+Binary snapshots
+----------------
+
+http://rangun.de/netmaumau.html

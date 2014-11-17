@@ -27,6 +27,9 @@
 #include <unistd.h>
 #endif
 
+#include <cstring>
+#include <cerrno>
+
 #include "abstractconnection.h"
 
 #ifdef _WIN32
@@ -96,6 +99,32 @@ void AbstractConnection::removePlayer(int sockfd) {
 void AbstractConnection::addAIPlayers(const std::vector<std::string> &aiPlayers) {
 	m_aiPlayers.insert(m_aiPlayers.end(), aiPlayers.begin(), aiPlayers.end());
 }
+
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic push
+void AbstractConnection::wait(long ms) throw(Exception::SocketException) {
+
+	fd_set rfds;
+	int sret = 1;
+
+	while(sret > 0) {
+
+		FD_ZERO(&rfds);
+		FD_SET(getSocketFD(), &rfds);
+
+		timeval tv = { ms / 1000L, ms % 1000L };
+
+		if((sret = ::select(getSocketFD() + 1, &rfds, NULL, NULL, &tv)) < 0) {
+			throw Exception::SocketException(std::strerror(errno), getSocketFD(), errno);
+		} else if(sret > 0) {
+			intercept();
+#if _POSIX_C_SOURCE >= 200112L && defined(__linux)
+			ms = tv.tv_sec * 1000L + tv.tv_usec;
+#endif
+		}
+	}
+}
+#pragma GCC diagnostic pop
 
 const std::vector<std::string> &AbstractConnection::getAIPlayers() const {
 	return m_aiPlayers;

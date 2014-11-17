@@ -316,6 +316,12 @@ sevenRule:
 					}
 
 					m_eventHandler.playerWins(player, m_turn, m_ultimate);
+
+				} else if(player->isAIPlayer() && pc->getRank() == Common::ICard::EIGHT) {
+
+					Common::AbstractConnection *con = m_eventHandler.getConnection();
+
+					if(con) con->wait(1000L);
 				}
 			}
 

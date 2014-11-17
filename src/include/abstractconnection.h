@@ -77,6 +77,7 @@ public:
 	void removePlayer(int sockfd);
 
 	void addAIPlayers(const std::vector<std::string> &aiPlayers);
+	void wait(long ms) throw(Exception::SocketException);
 
 	void reset() throw();
 

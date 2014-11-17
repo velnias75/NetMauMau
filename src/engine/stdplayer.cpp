@@ -295,10 +295,13 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICard *uncoveredCard,
 		return uncoveredCard->getSuit();
 	}
 
-	NetMauMau::Common::ICard *bc = 0L;
+	if(m_cards.size() < 8) {
 
-	if((bc = findBestCard(uncoveredCard, 0L, true))) {
-		return bc->getSuit();
+		NetMauMau::Common::ICard *bc = 0L;
+
+		if((bc = findBestCard(uncoveredCard, 0L, true))) {
+			return bc->getSuit();
+		}
 	}
 
 	NetMauMau::Common::ICard::SUIT s = findJackChoice();
@@ -309,7 +312,6 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICard *uncoveredCard,
 	}
 
 	return s;
-
 }
 
 NetMauMau::Common::ICard::SUIT StdPlayer::findJackChoice() const {

@@ -140,7 +140,11 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			if(p->getName() != i->name) {
 
 				char cc[256];
+#ifndef _WIN32
 				std::snprintf(cc, 255, "%zu", p->getCardCount());
+#else
+				std::snprintf(cc, 255, "%lu", (unsigned long)p->getCardCount());
+#endif
 
 				try {
 					m_connection.write(i->sockfd, p->getName());

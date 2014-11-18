@@ -17,7 +17,7 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <sstream>
+#include <cstdio>
 
 #include "servereventhandler.h"
 
@@ -135,14 +135,16 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		for(NetMauMau::Engine::PLAYERS::const_iterator j(m_players.begin()); j != m_players.end();
 				++j) {
 
-			if((*j)->getName() != i->name) {
+			const NetMauMau::Engine::PLAYERS::value_type p = *j;
 
-				std::ostringstream os;
-				os << (*j)->getCardCount();
+			if(p->getName() != i->name) {
+
+				char cc[256];
+				std::snprintf(cc, 255, "%zu", p->getCardCount());
 
 				try {
-					m_connection.write(i->sockfd, (*j)->getName());
-					m_connection.write(i->sockfd, os.str());
+					m_connection.write(i->sockfd, p->getName());
+					m_connection.write(i->sockfd, cc);
 				} catch(const NetMauMau::Common::Exception::SocketException &) {
 					m_connection.write(i->sockfd, "0");
 				}

@@ -17,7 +17,7 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <sstream>
+#include <cstdio>
 
 #include "cardtools.h"
 
@@ -254,8 +254,7 @@ bool NetMauMau::Common::parseCardDesc(const std::string &desc, ICard::SUIT *suit
 
 	*suit = symbolToSuit(s);
 
-	unsigned int iVal;
-	(std::istringstream(r)) >> iVal;
+	unsigned int iVal = std::strtoul(r.c_str(), NULL, 10);
 
 	if(::isdigit(r[0]) && iVal) {
 		*rank = static_cast<ICard::RANK>(iVal);
@@ -305,9 +304,9 @@ std::string NetMauMau::Common::createCardDesc(ICard::SUIT s, ICard::RANK v, bool
 		break;
 
 	default:
-		std::ostringstream n;
-		n << static_cast<unsigned int>(v);
-		d.append(n.str());
+		char n[256];
+		std::snprintf(n, 255, "%u", static_cast<unsigned int>(v));
+		d.append(n);
 		break;
 	}
 

@@ -129,6 +129,8 @@ void AbstractSocket::connect() throw(Exception::SocketException) {
 
 }
 
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic push
 std::size_t AbstractSocket::recv(void *buf, std::size_t len,
 								 int fd) throw(Exception::SocketException) {
 
@@ -137,53 +139,40 @@ std::size_t AbstractSocket::recv(void *buf, std::size_t len,
 	std::size_t total = 0;
 	ssize_t rlen = -1;
 
-again:
-
-	if(m_interrupt) return 0;
-
-#ifdef _WIN32
 	fd_set rfds;
 	int sret;
 
+again:
+
 	FD_ZERO(&rfds);
 	FD_SET(fd, &rfds);
+	FD_SET(getSocketFD(), &rfds);
 
-	timeval tv = { 0, 0 };
+	if(!m_interrupt && (sret = ::select(std::max(fd, getSocketFD()) + 1, &rfds, NULL, NULL,
+										NULL)) > 0) {
 
-	if((sret = ::select(fd + 1, &rfds, NULL, NULL, &tv)) > 0) {
-#endif
+		if(FD_ISSET(getSocketFD(), &rfds)) {
 
-		while(total < len && (rlen = ::recv(fd, rbuf, std::min<std::size_t>(len, 1024),
-											MSG_DONTWAIT)) > 0) {
+			intercept();
+
+			if(!FD_ISSET(fd, &rfds)) goto again;
+
+		}
+
+		while(total < len && (rlen = ::recv(fd, rbuf, std::min<std::size_t>(len, 1024), 0)) > 0) {
 			total += rlen;
 			std::memcpy(bufP, rbuf, rlen);
 			bufP += rlen;
 
 			if(rlen <= static_cast<ssize_t>(len)) break;
 		}
-
-#ifdef _WIN32
 	}
 
-#endif
-
-	if(rlen == -1) {
-#ifndef _WIN32
-
-		if(errno == EAGAIN || errno == EWOULDBLOCK) {
-#else
-
-		if(sret == 0) {
-#endif
-			intercept();
-			goto again;
-		}
-
-		throw Exception::SocketException(std::strerror(errno), fd, errno);
-	}
+	if(rlen == -1) throw Exception::SocketException(std::strerror(errno), fd, errno);
 
 	return total;
 }
+#pragma GCC diagnostic pop
 
 std::string AbstractSocket::read(int fd, std::size_t len) throw(Exception::SocketException) {
 

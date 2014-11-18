@@ -257,13 +257,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 
 void Connection::intercept() throw(NetMauMau::Common::Exception::SocketException) {
-
-	timeval tv = { 0, 600 };
-
-	if(wait(&tv) > 0) {
-		INFO info;
-		accept(info, true);
-	}
+	INFO info;
+	accept(info, true);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

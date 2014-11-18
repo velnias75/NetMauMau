@@ -62,11 +62,11 @@ Engine::~Engine() {
 	if(m_delRuleSet) delete m_ruleset;
 }
 
-Engine::PLAYERS::iterator Engine::find(const std::string &name) {
+Engine::PLAYERS::const_iterator Engine::find(const std::string &name) const {
 
 	std::string nameB(name);
 
-	for(PLAYERS::iterator i(m_players.begin()); i != m_players.end(); ++i) {
+	for(PLAYERS::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
 
 		std::string nameA((*i)->getName());
 
@@ -83,7 +83,7 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 
 	if(m_state == ACCEPT_PLAYERS) {
 
-		const PLAYERS::iterator &f(find(player->getName()));
+		const PLAYERS::const_iterator &f(find(player->getName()));
 
 		if(f == m_players.end() && m_players.size() <= m_ruleset->getMaxPlayers()) {
 
@@ -174,7 +174,7 @@ void Engine::reversePlayers() {
 	std::reverse(m_players.begin(), m_players.end());
 }
 
-void Engine::message(const std::string &msg) throw(Common::Exception::SocketException) {
+void Engine::message(const std::string &msg) const throw(Common::Exception::SocketException) {
 	m_eventHandler.message(msg);
 }
 
@@ -344,7 +344,7 @@ sevenRule:
 			const std::string &pName(con->getPlayerName(e.sockfd()));
 
 			std::vector<std::string> ex(1, pName);
-			const PLAYERS::iterator &f(find(pName));
+			const PLAYERS::const_iterator &f(find(pName));
 			std::ostringstream os;
 
 			lostWatchingPlayer = !pName.empty() && f == m_players.end();
@@ -413,7 +413,7 @@ void Engine::shuffled() const {
 	}
 }
 
-void Engine::gameOver() throw() {
+void Engine::gameOver() const throw() {
 	try {
 		m_eventHandler.gameOver();
 	} catch(const Common::Exception::SocketException &e) {

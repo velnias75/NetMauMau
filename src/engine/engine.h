@@ -79,9 +79,9 @@ public:
 	bool distributeCards() throw(Common::Exception::SocketException);
 	bool nextTurn();
 
-	void message(const std::string &msg) throw(Common::Exception::SocketException);
+	void message(const std::string &msg) const throw(Common::Exception::SocketException);
 
-	void gameOver() throw();
+	void gameOver() const throw();
 	void reset() throw();
 
 protected:
@@ -92,9 +92,9 @@ protected:
 	virtual void shuffled() const;
 
 private:
-	void calcScore(Player::IPlayer *p);
+	void calcScore(Player::IPlayer *p) const;
 
-	PLAYERS::iterator find(const std::string &name);
+	PLAYERS::const_iterator find(const std::string &name) const;
 	PLAYERS::iterator removePlayer(Player::IPlayer *player);
 
 	inline void removePlayers() throw() {
@@ -109,8 +109,8 @@ private:
 	Talon *m_talon;
 	RuleSet::IRuleSet *m_ruleset;
 	PLAYERS m_players;
-	mutable std::size_t m_nxtPlayer;
-	mutable std::size_t m_turn;
+	std::size_t m_nxtPlayer;
+	std::size_t m_turn;
 	std::size_t m_curTurn;
 
 	bool m_delRuleSet;

@@ -54,7 +54,7 @@ public:
 
 private:
 	bool m_hasToSuspend;
-	mutable bool m_hasSuspended;
+	bool m_hasSuspended;
 	std::size_t m_takeCardCount;
 	bool m_jackMode;
 	Common::ICard::SUIT m_jackSuit;

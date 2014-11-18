@@ -44,13 +44,13 @@ TestEventHandler::TestEventHandler() : DefaultEventHandler() {}
 
 TestEventHandler::~TestEventHandler() {}
 
-void TestEventHandler::playerAdded(const NetMauMau::Player::IPlayer *player)
+void TestEventHandler::playerAdded(const NetMauMau::Player::IPlayer *player) const
 throw(NetMauMau::Common::Exception::SocketException) {
 	std::cerr << "Added player \"" << player->getName() << "\"" << std::endl;
 }
 
 void TestEventHandler::cardsDistributed(const NetMauMau::Player::IPlayer *player,
-										const std::vector<NetMauMau::Common::ICard *> &cards)
+										const std::vector<NetMauMau::Common::ICard *> &cards) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << "Distributing cards to player \"" << player->getName() << "\"" << std::endl;
@@ -63,18 +63,18 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 }
 
-void TestEventHandler::initialCard(const NetMauMau::Common::ICard *ic)
+void TestEventHandler::initialCard(const NetMauMau::Common::ICard *ic) const
 throw(NetMauMau::Common::Exception::SocketException) {
 	std::cerr << "Uncovered card: " << ic->description(true) << std::endl;
 }
 
-void TestEventHandler::cardsAlreadyDistributed()
+void TestEventHandler::cardsAlreadyDistributed() const
 throw(NetMauMau::Common::Exception::SocketException) {
 	std::cerr << "NOT distributing cards again" << std::endl;
 }
 
 void TestEventHandler::playerPicksCard(const NetMauMau::Player::IPlayer *player,
-									   const NetMauMau::Common::ICard */*card*/)
+									   const NetMauMau::Common::ICard *) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\ttakes a card from talon!\t("
@@ -82,7 +82,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 
 void TestEventHandler::playerPicksCards(const NetMauMau::Player::IPlayer *player,
-										std::size_t cardCount)
+										std::size_t cardCount) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\tmust take " << cardCount
@@ -90,7 +90,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 
 void TestEventHandler::playerSuspends(const NetMauMau::Player::IPlayer *player,
-									  const NetMauMau::Common::ICard *dueCard)
+									  const NetMauMau::Common::ICard *dueCard) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	if(!dueCard) {
@@ -105,7 +105,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 void TestEventHandler::playerPlaysCard(const NetMauMau::Player::IPlayer *player,
 									   const NetMauMau::Common::ICard *playedCard,
-									   const NetMauMau::Common::ICard *unvoredCard)
+									   const NetMauMau::Common::ICard *unvoredCard) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\tplays "
@@ -114,21 +114,21 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 
 void TestEventHandler::playerChooseJackSuit(const NetMauMau::Player::IPlayer *player,
-		NetMauMau::Common::ICard::SUIT suit)
+		NetMauMau::Common::ICard::SUIT suit) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\thas chosen "
 			  << NetMauMau::Common::suitToSymbol(suit, true, true) << std::endl;
 }
 
-void TestEventHandler::playerWins(const NetMauMau::Player::IPlayer *player, std::size_t t, bool)
-throw(NetMauMau::Common::Exception::SocketException) {
+void TestEventHandler::playerWins(const NetMauMau::Player::IPlayer *player, std::size_t t,
+								  bool) const throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\t" << BLUE_ON << "wins in turn #"
 			  << t << " :-)" << BLUE_OFF << std::endl;
 }
 
-void TestEventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std::size_t)
+void TestEventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std::size_t) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\t" << BOLD_ON << "has lost with "

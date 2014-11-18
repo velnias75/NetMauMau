@@ -39,62 +39,63 @@ public:
 	virtual ~EventHandler();
 
 	virtual Connection *getConnection() const _PURE;
-	virtual void gameOver() throw(Common::Exception::SocketException);
+	virtual void gameOver() const throw(Common::Exception::SocketException);
 	virtual bool shutdown() const _PURE;
 	virtual void reset() throw();
 
-	virtual void message(const std::string &msg, const std::vector<std::string> &except)
+	virtual void message(const std::string &msg, const std::vector<std::string> &except) const
 	throw(Common::Exception::SocketException);
-	virtual void error(const std::string &msg, const std::vector<std::string> &except)
-	throw(Common::Exception::SocketException);
-
-	virtual void playerAdded(const Player::IPlayer *player)
-	throw(Common::Exception::SocketException);
-	virtual void playerRejected(const Player::IPlayer *player)
+	virtual void error(const std::string &msg, const std::vector<std::string> &except) const
 	throw(Common::Exception::SocketException);
 
-	virtual void initialCard(const Common::ICard *initialCard)
+	virtual void playerAdded(const Player::IPlayer *player) const
 	throw(Common::Exception::SocketException);
-	virtual void uncoveredCard(const Common::ICard *uncovedCard)
+	virtual void playerRejected(const Player::IPlayer *player) const
 	throw(Common::Exception::SocketException);
-	virtual void talonEmpty(bool empty) throw(Common::Exception::SocketException);
 
-	virtual void stats(const Engine::PLAYERS &m_players) throw(Common::Exception::SocketException);
-	virtual void turn(std::size_t turn) throw(Common::Exception::SocketException);
+	virtual void initialCard(const Common::ICard *initialCard) const
+	throw(Common::Exception::SocketException);
+	virtual void uncoveredCard(const Common::ICard *uncovedCard) const
+	throw(Common::Exception::SocketException);
+	virtual void talonEmpty(bool empty) const throw(Common::Exception::SocketException);
+
+	virtual void stats(const Engine::PLAYERS &m_players) const
+	throw(Common::Exception::SocketException);
+	virtual void turn(std::size_t turn) const throw(Common::Exception::SocketException);
 
 	virtual void playerWins(const Player::IPlayer *player, std::size_t turn,
-							bool ultimate) throw(Common::Exception::SocketException);
-	virtual void playerLost(const Player::IPlayer *player, std::size_t turn)
+							bool ultimate) const throw(Common::Exception::SocketException);
+	virtual void playerLost(const Player::IPlayer *player, std::size_t turn) const
 	throw(Common::Exception::SocketException);
 	virtual void playerPlaysCard(const Player::IPlayer *player, const Common::ICard *playedCard,
-								 const Common::ICard *uncoveredCard)
+								 const Common::ICard *uncoveredCard) const
 	throw(Common::Exception::SocketException);
 	virtual void cardRejected(Player::IPlayer *player, const Common::ICard *uncoveredCard,
-							  const Common::ICard *playedCard)
+							  const Common::ICard *playedCard) const
 	throw(Common::Exception::SocketException);
-	virtual void playerSuspends(const Player::IPlayer *player, const Common::ICard *dueCard)
+	virtual void playerSuspends(const Player::IPlayer *player, const Common::ICard *dueCard) const
 	throw(Common::Exception::SocketException);
-	virtual void playerChooseJackSuit(const Player::IPlayer *player, Common::ICard::SUIT suit)
+	virtual void playerChooseJackSuit(const Player::IPlayer *player, Common::ICard::SUIT suit) const
 	throw(Common::Exception::SocketException);
 	virtual void playerPicksCard(const Player::IPlayer *player,
-								 const Common::ICard *card)
+								 const Common::ICard *card) const
 	throw(Common::Exception::SocketException);
-	virtual void playerPicksCards(const Player::IPlayer *player,
-								  std::size_t cardCount) throw(Common::Exception::SocketException);
-	virtual void nextPlayer(const Player::IPlayer *player)
+	virtual void playerPicksCards(const Player::IPlayer *player, std::size_t cardCount) const
+	throw(Common::Exception::SocketException);
+	virtual void nextPlayer(const Player::IPlayer *player) const
 	throw(Common::Exception::SocketException);
 
 	static void setInterrupted();
 
 private:
 	void message_internal(const std::string &type, const std::string &msg,
-						  const std::vector<std::string> &except)
+						  const std::vector<std::string> &except) const
 	throw(Common::Exception::SocketException);
 
 private:
 	static bool m_interrupt;
 	Connection &m_connection;
-	std::string m_lastMsg;
+	mutable std::string m_lastMsg;
 };
 
 }

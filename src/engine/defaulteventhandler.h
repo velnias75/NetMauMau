@@ -33,54 +33,53 @@ public:
 	virtual ~DefaultEventHandler();
 
 	virtual Common::AbstractConnection *getConnection() const _CONST;
-	virtual void gameOver() throw(Common::Exception::SocketException) _CONST;
+	virtual void gameOver() const throw(Common::Exception::SocketException) _CONST;
 	virtual bool shutdown() const _CONST;
 	virtual void reset() throw() _CONST;
 
-	virtual void message(const std::string &msg, const std::vector<std::string> &except)
+	virtual void message(const std::string &msg, const std::vector<std::string> &except) const
 	throw(Common::Exception::SocketException) _CONST;
-	virtual void error(const std::string &msg, const std::vector<std::string> &except)
-	throw(Common::Exception::SocketException) _CONST;;
+	virtual void error(const std::string &msg, const std::vector<std::string> &except) const
+	throw(Common::Exception::SocketException) _CONST;
 
-	virtual void acceptingPlayers() throw(Common::Exception::SocketException) _CONST;
-	virtual void stats(const Engine::PLAYERS &m_players)
+	virtual void acceptingPlayers() const throw(Common::Exception::SocketException) _CONST;
+	virtual void stats(const Engine::PLAYERS &m_players) const
 	throw(Common::Exception::SocketException) _CONST;
-	virtual void playerAdded(const Player::IPlayer *player)
+	virtual void playerAdded(const Player::IPlayer *player) const
 	throw(Common::Exception::SocketException) _CONST;
-	virtual void playerRejected(const Player::IPlayer *player)
+	virtual void playerRejected(const Player::IPlayer *player) const
 	throw(Common::Exception::SocketException) _CONST;
 
 	virtual void cardsDistributed(const Player::IPlayer *player,
-								  const std::vector<Common::ICard *> &cards)
+								  const std::vector<Common::ICard *> &cards) const
 	throw(Common::Exception::SocketException) _CONST;
-	virtual void initialCard(const Common::ICard *initialCard)
+	virtual void initialCard(const Common::ICard *initialCard) const
 	throw(Common::Exception::SocketException) _CONST;
-	virtual void uncoveredCard(const Common::ICard *uncovedCard)
+	virtual void uncoveredCard(const Common::ICard *uncovedCard) const
 	throw(Common::Exception::SocketException) _CONST;
-	virtual void talonEmpty(bool empty) throw(Common::Exception::SocketException) _CONST;
-	virtual void cardsAlreadyDistributed() throw(Common::Exception::SocketException) _CONST;
-
-	virtual void turn(std::size_t turn) throw(Common::Exception::SocketException) _CONST;
-
-	virtual void playerPicksCard(const Player::IPlayer *player, const Common::ICard *card)
+	virtual void talonEmpty(bool empty) const throw(Common::Exception::SocketException) _CONST;
+	virtual void cardsAlreadyDistributed() const throw(Common::Exception::SocketException) _CONST;
+	virtual void turn(std::size_t turn) const throw(Common::Exception::SocketException) _CONST;
+	virtual void playerPicksCard(const Player::IPlayer *player, const Common::ICard *card) const
 	throw(Common::Exception::SocketException) _CONST;
-	virtual void playerPicksCards(const Player::IPlayer *player, std::size_t cardCount)
+	virtual void playerPicksCards(const Player::IPlayer *player, std::size_t cardCount) const
 	throw(Common::Exception::SocketException) _CONST;
-	virtual void playerSuspends(const Player::IPlayer *player, const Common::ICard *dueCard)
+	virtual void playerSuspends(const Player::IPlayer *player, const Common::ICard *dueCard) const
 	throw(Common::Exception::SocketException) _CONST;
 	virtual void playerPlaysCard(const Player::IPlayer *player, const Common::ICard *playedCard,
-								 const Common::ICard *uncoveredCard)
+								 const Common::ICard *uncoveredCard) const
 	throw(Common::Exception::SocketException) _CONST;
 	virtual void cardRejected(Player::IPlayer *player, const Common::ICard *uncoveredCard,
-							  const Common::ICard *playedCard)
+							  const Common::ICard *playedCard) const
 	throw(Common::Exception::SocketException) _CONST;
-	virtual void playerChooseJackSuit(const Player::IPlayer *player, Common::ICard::SUIT suit)
+	virtual void playerChooseJackSuit(const Player::IPlayer *player, Common::ICard::SUIT suit) const
 	throw(Common::Exception::SocketException) _CONST;
 	virtual void playerWins(const Player::IPlayer *player, std::size_t turn,
-							bool ultimate) throw(Common::Exception::SocketException) _CONST;
+							bool ultimate) const throw(Common::Exception::SocketException) _CONST;
 	virtual void playerLost(const Player::IPlayer *player,
-							std::size_t turn) throw(Common::Exception::SocketException) _CONST;
-	virtual void nextPlayer(const Player::IPlayer *player)
+							std::size_t turn) const
+	throw(Common::Exception::SocketException) _CONST;
+	virtual void nextPlayer(const Player::IPlayer *player) const
 	throw(Common::Exception::SocketException) _CONST;
 };
 

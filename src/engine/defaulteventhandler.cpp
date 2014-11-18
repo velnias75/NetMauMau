@@ -29,7 +29,7 @@ NetMauMau::Common::AbstractConnection *DefaultEventHandler::getConnection() cons
 	return 0L;
 }
 
-void DefaultEventHandler::gameOver() throw(NetMauMau::Common::Exception::SocketException) {}
+void DefaultEventHandler::gameOver() const throw(NetMauMau::Common::Exception::SocketException) {}
 
 bool DefaultEventHandler::shutdown() const {
 	return false;
@@ -37,68 +37,74 @@ bool DefaultEventHandler::shutdown() const {
 
 void DefaultEventHandler::reset() {}
 
-void DefaultEventHandler::message(const std::string &, const std::vector<std::string> &)
+void DefaultEventHandler::message(const std::string &, const std::vector<std::string> &) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
-void DefaultEventHandler::error(const std::string &, const std::vector<std::string> &)
+void DefaultEventHandler::error(const std::string &, const std::vector<std::string> &) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
-void DefaultEventHandler::acceptingPlayers() throw(NetMauMau::Common::Exception::SocketException) {}
-
-void DefaultEventHandler::stats(const NetMauMau::Engine::PLAYERS &)
+void DefaultEventHandler::acceptingPlayers() const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
-void DefaultEventHandler::playerAdded(const NetMauMau::Player::IPlayer *)
+void DefaultEventHandler::stats(const NetMauMau::Engine::PLAYERS &) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
-void DefaultEventHandler::playerRejected(const NetMauMau::Player::IPlayer *)
+void DefaultEventHandler::playerAdded(const NetMauMau::Player::IPlayer *) const
+throw(NetMauMau::Common::Exception::SocketException) {}
+
+void DefaultEventHandler::playerRejected(const NetMauMau::Player::IPlayer *) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
 void DefaultEventHandler::cardsDistributed(const NetMauMau::Player::IPlayer *,
-		const std::vector<NetMauMau::Common::ICard *> &)
+		const std::vector<NetMauMau::Common::ICard *> &) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
-void DefaultEventHandler::initialCard(const NetMauMau::Common::ICard *)
+void DefaultEventHandler::initialCard(const NetMauMau::Common::ICard *) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
-void DefaultEventHandler::uncoveredCard(const NetMauMau::Common::ICard *)
+void DefaultEventHandler::uncoveredCard(const NetMauMau::Common::ICard *) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
-void DefaultEventHandler::talonEmpty(bool) throw(NetMauMau::Common::Exception::SocketException) {}
-
-void DefaultEventHandler::cardsAlreadyDistributed()
+void DefaultEventHandler::talonEmpty(bool) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
-void DefaultEventHandler::turn(std::size_t) throw(NetMauMau::Common::Exception::SocketException) {}
+void DefaultEventHandler::cardsAlreadyDistributed() const
+throw(NetMauMau::Common::Exception::SocketException) {}
+
+void DefaultEventHandler::turn(std::size_t) const
+throw(NetMauMau::Common::Exception::SocketException) {}
 
 void DefaultEventHandler::playerPicksCard(const NetMauMau::Player::IPlayer *,
-		const NetMauMau::Common::ICard *) throw(NetMauMau::Common::Exception::SocketException) {}
+		const NetMauMau::Common::ICard *) const
+throw(NetMauMau::Common::Exception::SocketException) {}
 
 void DefaultEventHandler::playerPicksCards(const NetMauMau::Player::IPlayer *,
-		std::size_t) throw(NetMauMau::Common::Exception::SocketException) {}
+		std::size_t) const throw(NetMauMau::Common::Exception::SocketException) {}
 
 void DefaultEventHandler::playerSuspends(const NetMauMau::Player::IPlayer *,
-		const NetMauMau::Common::ICard *) throw(NetMauMau::Common::Exception::SocketException) {}
+		const NetMauMau::Common::ICard *) const
+throw(NetMauMau::Common::Exception::SocketException) {}
 
 void DefaultEventHandler::playerPlaysCard(const NetMauMau::Player::IPlayer *,
-		const NetMauMau::Common::ICard *,
-		const NetMauMau::Common::ICard *) throw(NetMauMau::Common::Exception::SocketException) {}
+		const NetMauMau::Common::ICard *, const NetMauMau::Common::ICard *) const
+throw(NetMauMau::Common::Exception::SocketException) {}
 
 void DefaultEventHandler::cardRejected(NetMauMau::Player::IPlayer *,
 									   const NetMauMau::Common::ICard *,
-									   const NetMauMau::Common::ICard *)
+									   const NetMauMau::Common::ICard *) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
 void DefaultEventHandler::playerChooseJackSuit(const NetMauMau::Player::IPlayer *,
-		NetMauMau::Common::ICard::SUIT) throw(NetMauMau::Common::Exception::SocketException) {}
-
-void DefaultEventHandler::playerWins(const NetMauMau::Player::IPlayer *, std::size_t, bool)
+		NetMauMau::Common::ICard::SUIT) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
-void DefaultEventHandler::playerLost(const NetMauMau::Player::IPlayer *, std::size_t)
+void DefaultEventHandler::playerWins(const NetMauMau::Player::IPlayer *, std::size_t, bool) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
-void DefaultEventHandler::nextPlayer(const NetMauMau::Player::IPlayer *)
+void DefaultEventHandler::playerLost(const NetMauMau::Player::IPlayer *, std::size_t) const
+throw(NetMauMau::Common::Exception::SocketException) {}
+
+void DefaultEventHandler::nextPlayer(const NetMauMau::Player::IPlayer *) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

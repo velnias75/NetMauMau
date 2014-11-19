@@ -13,6 +13,7 @@ Package: netmaumau-server
 Architecture: any
 Priority: optional
 Section: games
+Suggests: nmm-qt-client
 Depends: libnetmaumaucommon0 (>= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: A server for the popular card game Mau Mau - server
  Several players can connect and play against each other.

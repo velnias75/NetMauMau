@@ -17,8 +17,6 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <sstream>
-
 #include "serverplayer.h"
 
 #include "serverplayerexception.h"
@@ -160,7 +158,7 @@ std::size_t Player::getCardCount() const throw(NetMauMau::Common::Exception::Soc
 
 	try {
 		m_connection.write(m_sockfd, "CARDCOUNT");
-		(std::istringstream(m_connection.read(m_sockfd))) >> cc;
+		cc = std::strtoul(m_connection.read(m_sockfd).c_str(), NULL, 10);
 	} catch(const NetMauMau::Common::Exception::SocketException &) {
 		throw Exception::ServerPlayerException(__FUNCTION__);
 	}

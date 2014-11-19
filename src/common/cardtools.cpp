@@ -211,7 +211,7 @@ unsigned int NetMauMau::Common::rankOrderPosition(NetMauMau::Common::ICard::RANK
 
 bool NetMauMau::Common::cardEqual(const NetMauMau::Common::ICard *x,
 								  const NetMauMau::Common::ICard *y) {
-	return x->description() == y->description();
+	return x->getSuit() == y->getSuit() && x->getRank() == y->getRank();
 }
 
 bool NetMauMau::Common::cardLess(const NetMauMau::Common::ICard *x,

@@ -74,16 +74,13 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		const std::string rHello = read(getSocketFD());
 		const std::string::size_type spc = rHello.find(' ');
 		const std::string::size_type dot = rHello.find('.');
+
 		const bool isServerHello = spc != std::string::npos &&
 								   dot != std::string::npos && spc < dot;
 
-		if(isServerHello && maj) {
-			(std::istringstream(rHello.substr(spc + 1, dot))) >> *maj;
-		}
+		if(isServerHello && maj) *maj = getMajorFromHello(rHello, dot, spc);
 
-		if(isServerHello && min) {
-			(std::istringstream(rHello.substr(dot + 1))) >> *min;
-		}
+		if(isServerHello && min) *min = getMinorFromHello(rHello, dot);
 
 		return (isServerHello && rHello.substr(0, std::strlen(PACKAGE_NAME)) == PACKAGE_NAME);
 

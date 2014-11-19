@@ -22,7 +22,7 @@
 #endif
 
 #include <cerrno>
-#include <sstream>
+#include <cstdio>
 #include <cstring>
 
 #ifdef HAVE_UNISTD_H
@@ -80,12 +80,10 @@ void AbstractSocket::connect() throw(Exception::SocketException) {
 
 	struct addrinfo hints;
 	struct addrinfo *result, *rp = NULL;
+	char portS[256];
 	int s;
 
-	std::ostringstream portS;
-
-	portS << m_port;
-
+	std::snprintf(portS, 255, "%u", m_port);
 	std::memset(&hints, 0, sizeof(struct addrinfo));
 
 #ifdef _WIN32
@@ -100,8 +98,7 @@ void AbstractSocket::connect() throw(Exception::SocketException) {
 	hints.ai_addr = NULL;
 	hints.ai_next = NULL;
 
-	if((s = getaddrinfo(m_server.empty() ? 0L : m_server.c_str(), portS.str().c_str(), &hints,
-						&result)) != 0) {
+	if((s = getaddrinfo(m_server.empty() ? 0L : m_server.c_str(), portS, &hints, &result)) != 0) {
 		throw Exception::SocketException(gai_strerror(s), m_sfd, errno);
 	}
 

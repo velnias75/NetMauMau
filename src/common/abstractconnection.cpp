@@ -141,4 +141,14 @@ void AbstractConnection::reset() throw() {
 	m_aiPlayers.clear();
 }
 
+uint16_t AbstractConnection::getMajorFromHello(const std::string &hello,
+		std::string::size_type dot, std::string::size_type spc) const {
+	return (uint16_t)std::strtoul(hello.substr(spc + 1, dot).c_str(), NULL, 10);
+}
+
+uint16_t AbstractConnection::getMinorFromHello(const std::string &hello,
+		std::string::size_type dot) const {
+	return (uint16_t)std::strtoul(hello.substr(dot + 1).c_str(), NULL, 10);
+}
+
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

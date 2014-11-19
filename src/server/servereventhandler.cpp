@@ -119,9 +119,15 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 
 void EventHandler::turn(std::size_t t) const throw(NetMauMau::Common::Exception::SocketException) {
-	std::ostringstream ts;
-	ts << t;
-	m_connection << "TURN" << ts.str();
+
+	char cc[256];
+#ifndef _WIN32
+	std::snprintf(cc, 255, "%zu", t);
+#else
+	std::snprintf(cc, 255, "%lu", (unsigned long)t);
+#endif
+
+	m_connection << "TURN" << cc;
 }
 
 void EventHandler::stats(const NetMauMau::Engine::PLAYERS &m_players) const
@@ -227,9 +233,14 @@ void EventHandler::playerPicksCards(const NetMauMau::Player::IPlayer *player,
 									std::size_t cardCount) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	std::ostringstream os;
-	os << cardCount;
-	m_connection << "PLAYERPICKSCARDS" << player->getName() << "TAKECOUNT" << os.str();
+	char cc[256];
+#ifndef _WIN32
+	std::snprintf(cc, 255, "%zu", cardCount);
+#else
+	std::snprintf(cc, 255, "%lu", (unsigned long)cardCount);
+#endif
+
+	m_connection << "PLAYERPICKSCARDS" << player->getName() << "TAKECOUNT" << cc;
 }
 
 void EventHandler::playerChooseJackSuit(const NetMauMau::Player::IPlayer *,

@@ -88,6 +88,10 @@ protected:
 	const PLAYERINFOS &getRegisteredPlayers() const _CONST;
 	const std::vector<std::string> &getAIPlayers() const _CONST;
 
+	uint16_t getMajorFromHello(const std::string &hello, std::string::size_type dot,
+							   std::string::size_type spc) const;
+	uint16_t getMinorFromHello(const std::string &hello, std::string::size_type dot) const;
+
 private:
 	PLAYERINFOS m_registeredPlayers;
 	std::vector<std::string> m_aiPlayers;

@@ -17,7 +17,7 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <sstream>
+#include <cstdio>
 
 #include "abstractclient.h"
 
@@ -126,7 +126,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 
 					m_connection >> msg;
 
-					(std::istringstream(msg)) >> cturn;
+					cturn = std::strtoul(msg.c_str(), NULL, 10);
 
 					turn(cturn);
 
@@ -144,10 +144,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 						std::string cntS;
 						m_connection >> cntS;
 
-						std::size_t cnt;
-						(std::istringstream(cntS)) >> cnt;
-
-						STAT stat = { msg, cnt };
+						STAT stat = { msg, std::strtoul(cntS.c_str(), NULL, 10) };
 						cstats.push_back(stat);
 
 						m_connection >> msg;
@@ -278,9 +275,14 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 
 				} else if(!m_disconnectNow && msg == "CARDCOUNT") {
 
-					std::ostringstream os;
-					os << m_cards.size();
-					m_connection << os.str();
+					char cc[256];
+#ifndef _WIN32
+					std::snprintf(cc, 255, "%zu", m_cards.size());
+#else
+					std::snprintf(cc, 255, "%lu", (unsigned long)m_cards.size());
+#endif
+
+					m_connection << cc;
 
 				} else if(!m_disconnectNow && msg == "PLAYEDCARD") {
 
@@ -319,10 +321,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					m_connection >> player >> msg;
 					m_connection >> msg;
 
-					std::size_t count;
-					(std::istringstream(msg)) >> count;
-
-					playerPicksCard(player, count);
+					playerPicksCard(player, std::strtoul(msg.c_str(), NULL, 10));
 
 				} else if(!m_disconnectNow && msg == "BYE") {
 					gameOver();

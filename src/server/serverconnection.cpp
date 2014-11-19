@@ -114,7 +114,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 		int err = getnameinfo(reinterpret_cast<struct sockaddr *>(&peer_addr), peer_addr_len,
 							  host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
 
-		(std::istringstream(service)) >> info.port;
+		info.port = (uint16_t)std::strtoul(service, NULL, 10);
 		info.host = host;
 
 		if(!err) {
@@ -132,13 +132,14 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 				const std::string::size_type spc = rHello.find(' ');
 				const std::string::size_type dot = rHello.find('.');
+
 				const bool isClientHello = spc != std::string::npos &&
 										   dot != std::string::npos && spc < dot;
 
 				if(isClientHello && rHello.substr(0, std::strlen(PACKAGE_NAME)) == hello) {
 
-					(std::istringstream(rHello.substr(spc + 1, dot))) >> info.maj;
-					(std::istringstream(rHello.substr(dot + 1))) >> info.min;
+					info.maj = getMajorFromHello(rHello, dot, spc);
+					info.min = getMinorFromHello(rHello, dot);
 
 					uint32_t cver = (info.maj << 16u) | info.min;
 					uint32_t minver = (static_cast<uint16_t>(MIN_MAJOR) << 16u) |

@@ -196,8 +196,8 @@ _EXPORT bool isRank(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICa
  * @return NetMauMau::Common::ICard* the card if found @c 0L otherwise
  */
 template<typename Iterator>
-NetMauMau::Common::ICard *findSuit(NetMauMau::Common::ICard::SUIT suit, Iterator first,
-								   Iterator last) {
+typename Iterator::value_type findSuit(NetMauMau::Common::ICard::SUIT suit, Iterator first,
+									   Iterator last) {
 
 	const Iterator &f(std::find_if(first, last, std::bind2nd(std::ptr_fun(isSuit), suit)));
 
@@ -212,13 +212,32 @@ NetMauMau::Common::ICard *findSuit(NetMauMau::Common::ICard::SUIT suit, Iterator
  * @param rank the @c RANK to find
  * @param first iterator to the first card
  * @param last iterator to the last card
- * @return NetMauMau::Common::ICard* the card if found @c 0L otherwise
+ * @return the card if found @c 0L otherwise
  */
 template<typename Iterator>
-NetMauMau::Common::ICard *findRank(NetMauMau::Common::ICard::RANK rank, Iterator first,
-								   Iterator last) {
+typename Iterator::value_type findRank(NetMauMau::Common::ICard::RANK rank, Iterator first,
+									   Iterator last) {
 
 	const Iterator &f(std::find_if(first, last, std::bind2nd(std::ptr_fun(isRank), rank)));
+
+	return f != last ? *f : 0L;
+}
+
+/**
+ * @brief Finds the first card equal to a given card
+ *
+ * @tparam Iterator an iterator
+ *
+ * @param card the card to find
+ * @param first iterator to the first card
+ * @param last iterator to the last card
+ * @return the card if found @c 0L otherwise
+ */
+template<typename Iterator>
+typename Iterator::value_type findCard(typename Iterator::value_type card, Iterator first,
+									   Iterator last) {
+
+	const Iterator &f(std::find_if(first, last, std::bind2nd(std::ptr_fun(cardEqual), card)));
 
 	return f != last ? *f : 0L;
 }

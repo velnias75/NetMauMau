@@ -31,6 +31,7 @@ include /usr/share/cdbs/1/rules/autoreconf.mk
 
 # Add here any variable or target overrides you need.
 
+DEB_CONFIGURE_EXTRA_FLAGS = --bindir=\$${prefix}/games
 DEB_MAKE_CHECK_TARGET = check
 INT_INSTALL_TARGET = install-strip
 DEB_DH_BUILDDEB_ARGS_DEFAULT := -- -z9 -Zxz
@@ -39,5 +40,4 @@ DEB_DH_AUTORECONF_ARGS = --as-needed
 DH_ALWAYS_EXCLUDE=.svn
 DEB_DH_INSTALL_ARGS_DEFAULT = --list-missing -Xclient-api-doc -X.la
 DEB_DH_MAKESHLIBS_ARGS_netmaumau-server = -n
-DEB_DH_MAKESHLIBS_ARGS_libnetmaumauclient0 = -V 'libnetmaumaucommon0 (>= $(DEB_NOEPOCH_VERSION))'
 DEB_DH_STRIP_ARGS_DEFAULT = --dbg-package=netmaumau-dbg -n

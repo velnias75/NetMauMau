@@ -133,10 +133,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 				const std::string::size_type spc = rHello.find(' ');
 				const std::string::size_type dot = rHello.find('.');
 
-				const bool isClientHello = spc != std::string::npos &&
-										   dot != std::string::npos && spc < dot;
-
-				if(isClientHello && rHello.substr(0, std::strlen(PACKAGE_NAME)) == hello) {
+				if(isValidHello(dot, spc, rHello, hello)) {
 
 					info.maj = getMajorFromHello(rHello, dot, spc);
 					info.min = getMinorFromHello(rHello, dot);

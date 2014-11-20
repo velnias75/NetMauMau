@@ -141,6 +141,16 @@ void AbstractConnection::reset() throw() {
 	m_aiPlayers.clear();
 }
 
+bool AbstractConnection::isHello(std::string::size_type dot, std::string::size_type spc) const {
+	return spc != std::string::npos && dot != std::string::npos && spc < dot;
+}
+
+bool AbstractConnection::isValidHello(std::string::size_type dot, std::string::size_type spc,
+									  const std::string &rHello,
+									  const std::string &expHello) const {
+	return isHello(dot, spc) && rHello.substr(0, std::strlen(PACKAGE_NAME)) == expHello;
+}
+
 uint16_t AbstractConnection::getMajorFromHello(const std::string &hello,
 		std::string::size_type dot, std::string::size_type spc) const {
 	return (uint16_t)std::strtoul(hello.substr(spc + 1, dot).c_str(), NULL, 10);

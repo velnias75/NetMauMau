@@ -52,6 +52,20 @@ struct cardGreater : std::binary_function < NetMauMau::Common::ICard *, NetMauMa
 private:
 	const NetMauMau::Player::IPlayer::CARDS &cards;
 };
+
+struct playedOutRank : std::binary_function<std::string, NetMauMau::Common::ICard::RANK, bool> {
+	bool operator()(const std::string &desc, NetMauMau::Common::ICard::RANK rank) const {
+
+		NetMauMau::Common::ICard::RANK r = NetMauMau::Common::ICard::RANK_ILLEGAL;
+		NetMauMau::Common::ICard::SUIT s = NetMauMau::Common::ICard::SUIT_ILLEGAL;
+
+		if(NetMauMau::Common::parseCardDesc(desc, &s, &r)) {
+			return r == rank;
+		}
+
+		return false;
+	}
+};
 #pragma GCC diagnostic pop
 
 }
@@ -61,7 +75,8 @@ using namespace NetMauMau::Player;
 bool StdPlayer::m_jackPlayed = false;
 
 StdPlayer::StdPlayer(const std::string &name) : m_name(name), m_cards(), m_cardsTaken(false),
-	m_ruleset(0), m_playerHasFewCards(false), m_powerSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL) {
+	m_ruleset(0), m_playerHasFewCards(false), m_powerSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL),
+	m_powerPlay(false) {
 	m_cards.reserve(32);
 }
 
@@ -74,6 +89,7 @@ StdPlayer::~StdPlayer() {
 void StdPlayer::reset() throw() {
 	m_powerSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
 	m_cardsTaken = false;
+	m_powerPlay = false;
 	m_cards.clear();
 }
 
@@ -228,7 +244,15 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 			CARDS::value_type f = NetMauMau::Common::findSuit(js ? *js : uc->getSuit(),
 								  myCards.begin(), e);
 
-			if(f) bestCard = f;
+			const CARDS::difference_type mySevens = std::distance(myCards.begin(), e);
+			const CARDS::difference_type poSevens = std::count_if(m_playedOutCards.begin(),
+													m_playedOutCards.end(),
+													std::bind2nd(playedOutRank(),
+															NetMauMau::Common::ICard::SEVEN));
+
+			if(f && (m_powerPlay || mySevens + poSevens > 2)) bestCard = f;
+
+			m_powerPlay = false;
 		}
 
 		if(!bestCard) {
@@ -328,6 +352,7 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICard *uncoveredCard,
 	if(m_powerSuit != NetMauMau::Common::ICard::SUIT_ILLEGAL) {
 		NetMauMau::Common::ICard::SUIT s = m_powerSuit;
 		m_powerSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
+		m_powerPlay = true;
 		return s;
 	}
 

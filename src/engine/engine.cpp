@@ -189,7 +189,11 @@ bool Engine::nextTurn() {
 		if(m_curTurn != m_turn) {
 			m_eventHandler.turn(m_turn);
 
-			if(m_turn == 1) m_eventHandler.initialCard(m_talon->uncoverCard());
+			if(m_turn == 1) {
+				Common::ICard *ic = m_talon->uncoverCard();
+				m_eventHandler.initialCard(ic);
+				cardPlayed(ic);
+			}
 
 			m_curTurn = m_turn;
 		}

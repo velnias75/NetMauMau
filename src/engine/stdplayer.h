@@ -101,6 +101,7 @@ private:
 	std::set<std::string> m_playedOutCards;
 	bool m_playerHasFewCards;
 	mutable Common::ICard::SUIT m_powerSuit;
+	mutable bool m_powerPlay;
 
 	static bool m_jackPlayed;
 };

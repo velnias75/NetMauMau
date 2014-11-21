@@ -266,6 +266,8 @@ _EXPORT NetMauMau::Common::ICard *getIllegalCard() _CONST;
  */
 _EXPORT std::size_t getCardPoints(NetMauMau::Common::ICard::RANK rank) _CONST;
 
+_EXPORT const char *getServerExe() _PURE;
+
 /// @}
 
 }

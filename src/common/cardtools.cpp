@@ -31,6 +31,12 @@ const std::string ANSI_RED;
 const std::string ANSI_DFT;
 #endif
 
+#ifndef _WIN32
+const std::string SERVER_EXE(std::string(NMM_EXE_PATH).append(1, '/').append(NMM_EXE_NAME));
+#else
+const std::string SERVER_EXE(NMM_EXE_NAME);
+#endif
+
 #pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
 #pragma GCC diagnostic push
 const std::string SUIT[] = { "\u2666", "\u2665", "\u2660", "\u2663" };
@@ -322,6 +328,10 @@ std::string NetMauMau::Common::createCardDesc(ICard::SUIT s, ICard::RANK v, bool
 
 std::string NetMauMau::Common::ansiSuit(const std::string &suit) {
 	return suitToSymbol(symbolToSuit(suit), true, true);
+}
+
+const char *NetMauMau::Common::getServerExe() {
+	return SERVER_EXE.c_str();
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

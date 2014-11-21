@@ -50,6 +50,7 @@ public:
 
 	virtual bool cardAccepted(const Common::ICard *playedCard);
 	virtual void cardPlayed(Common::ICard *playedCard);
+	virtual void informAIStat(const IPlayer *player, std::size_t count);
 	virtual void talonShuffled();
 
 	virtual REASON getNoCardReason() const _PURE;
@@ -98,6 +99,8 @@ private:
 	mutable bool m_cardsTaken;
 	const RuleSet::IRuleSet *m_ruleset;
 	std::set<std::string> m_playedOutCards;
+	bool m_playerHasFewCards;
+	mutable Common::ICard::SUIT m_powerSuit;
 
 	static bool m_jackPlayed;
 };

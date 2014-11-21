@@ -61,7 +61,7 @@ using namespace NetMauMau::Player;
 bool StdPlayer::m_jackPlayed = false;
 
 StdPlayer::StdPlayer(const std::string &name) : m_name(name), m_cards(), m_cardsTaken(false),
-	m_ruleset(0) {
+	m_ruleset(0), m_playerHasFewCards(false), m_powerSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL) {
 	m_cards.reserve(32);
 }
 
@@ -72,6 +72,7 @@ StdPlayer::~StdPlayer() {
 }
 
 void StdPlayer::reset() throw() {
+	m_powerSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
 	m_cardsTaken = false;
 	m_cards.clear();
 }
@@ -186,58 +187,22 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 		}
 	}
 
-	if(!bestCard) {
-		const CARDS::iterator
-		&e(std::partition(myCards.begin(), myCards.end(),
+
+	if(!bestCard && !noJack && m_playerHasFewCards && std::count_if(myCards.begin(), myCards.end(),
+			std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+						 NetMauMau::Common::ICard::SEVEN)) &&
+			std::count_if(myCards.begin(), myCards.end(),
 						  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-									   NetMauMau::Common::ICard::SEVEN)));
+									   NetMauMau::Common::ICard::JACK))) {
 
-		CARDS::value_type f = NetMauMau::Common::findSuit(js ? *js : uc->getSuit(),
-							  myCards.begin(), e);
+		m_powerSuit = NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN, myCards.begin(),
+					  myCards.end())->getSuit();
 
-		if(f) bestCard = f;
+	} else {
+		m_powerSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
 	}
 
-	if(!bestCard) {
-
-		SUITCOUNT suitCount[4];
-		countSuits(suitCount, myCards);
-
-		for(std::size_t i = 0; i < 4; ++i) {
-
-			const CARDS::iterator
-			&e(std::partition(myCards.begin(), myCards.end(),
-							  std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit),
-										   suitCount[i].suit)));
-
-			if(js) {
-				if(suitCount[i].count && (suitCount[i].suit == *js)) {
-					std::partition(myCards.begin(), e,
-								   std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-												NetMauMau::Common::ICard::SEVEN));
-					bestCard = myCards.front();
-					break;
-				}
-			} else {
-
-				if(!(bestCard = hasEightPath(uc, suitCount[i].suit, myCards))) {
-
-					std::sort(myCards.begin(), e, cardGreater(myCards));
-
-					std::stable_partition(myCards.begin(), e,
-										  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-													   NetMauMau::Common::ICard::SEVEN));
-
-					CARDS::value_type f = NetMauMau::Common::findRank(uc->getRank(),
-										  myCards.begin(), e);
-
-					if(f) {
-						bestCard = f;
-						break;
-					}
-				}
-			}
-		}
+	if(m_powerSuit == NetMauMau::Common::ICard::SUIT_ILLEGAL) {
 
 		if(!bestCard) {
 			const CARDS::iterator
@@ -245,18 +210,73 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 							  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
 										   NetMauMau::Common::ICard::SEVEN)));
 
-			if(!noJack) std::partition(e, myCards.end(), std::not1
-										   (std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-												   NetMauMau::Common::ICard::JACK)));
-
 			CARDS::value_type f = NetMauMau::Common::findSuit(js ? *js : uc->getSuit(),
-								  myCards.begin(), myCards.end());
+								  myCards.begin(), e);
 
-			if(f && f->getRank() != NetMauMau::Common::ICard::JACK) bestCard = f;
+			if(f) bestCard = f;
+		}
+
+		if(!bestCard) {
+
+			SUITCOUNT suitCount[4];
+			countSuits(suitCount, myCards);
+
+			for(std::size_t i = 0; i < 4; ++i) {
+
+				const CARDS::iterator
+				&e(std::partition(myCards.begin(), myCards.end(),
+								  std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit),
+											   suitCount[i].suit)));
+
+				if(js) {
+					if(suitCount[i].count && (suitCount[i].suit == *js)) {
+						std::partition(myCards.begin(), e,
+									   std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+													NetMauMau::Common::ICard::SEVEN));
+						bestCard = myCards.front();
+						break;
+					}
+				} else {
+
+					if(!(bestCard = hasEightPath(uc, suitCount[i].suit, myCards))) {
+
+						std::sort(myCards.begin(), e, cardGreater(myCards));
+
+						std::stable_partition(myCards.begin(), e,
+											  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+														   NetMauMau::Common::ICard::SEVEN));
+
+						CARDS::value_type f = NetMauMau::Common::findRank(uc->getRank(),
+											  myCards.begin(), e);
+
+						if(f) {
+							bestCard = f;
+							break;
+						}
+					}
+				}
+			}
+
+			if(!bestCard) {
+				const CARDS::iterator
+				&e(std::partition(myCards.begin(), myCards.end(),
+								  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+											   NetMauMau::Common::ICard::SEVEN)));
+
+				if(!noJack) std::partition(e, myCards.end(), std::not1
+											   (std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+													   NetMauMau::Common::ICard::JACK)));
+
+				CARDS::value_type f = NetMauMau::Common::findSuit(js ? *js : uc->getSuit(),
+									  myCards.begin(), myCards.end());
+
+				if(f && f->getRank() != NetMauMau::Common::ICard::JACK) bestCard = f;
+			}
 		}
 	}
 
-	if(!noJack && !bestCard) {
+	if(!noJack && (!bestCard || m_powerSuit != NetMauMau::Common::ICard::SUIT_ILLEGAL)) {
+
 		const CARDS::size_type jackCnt = std::count_if(myCards.begin(), myCards.end(),
 										 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
 												 NetMauMau::Common::ICard::JACK));
@@ -290,9 +310,10 @@ NetMauMau::Common::ICard::SUIT
 StdPlayer::getJackChoice(const NetMauMau::Common::ICard *uncoveredCard,
 						 const NetMauMau::Common::ICard *playedCard) const {
 
-	if(!m_jackPlayed) {
-		m_jackPlayed = true;
-		return uncoveredCard->getSuit();
+	if(m_powerSuit != NetMauMau::Common::ICard::SUIT_ILLEGAL) {
+		NetMauMau::Common::ICard::SUIT s = m_powerSuit;
+		m_powerSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
+		return s;
 	}
 
 	if(m_cards.size() < 8) {
@@ -385,6 +406,10 @@ std::size_t StdPlayer::getPoints() const {
 
 const StdPlayer::CARDS &StdPlayer::getPlayerCards() const {
 	return m_cards;
+}
+
+void StdPlayer::informAIStat(const IPlayer *, std::size_t count) {
+	m_playerHasFewCards = count < 3;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

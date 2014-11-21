@@ -94,6 +94,8 @@ protected:
 private:
 	void calcScore(Player::IPlayer *p) const;
 
+	void informAIStat() const;
+
 	PLAYERS::const_iterator find(const std::string &name) const;
 	PLAYERS::iterator removePlayer(Player::IPlayer *player);
 

@@ -205,6 +205,7 @@ bool Engine::nextTurn() {
 		}
 
 		m_eventHandler.stats(m_players);
+		informAIStat();
 
 		const bool csuspend = m_ruleset->hasToSuspend();
 		const Common::ICard::SUIT js = m_ruleset->getJackSuit();
@@ -350,6 +351,7 @@ sevenRule:
 			lostWatchingPlayer = !pName.empty() && f == m_players.end();
 
 			if(!lostWatchingPlayer) {
+
 				if(!pName.empty()) {
 
 					os << "Lost connection to player \"" << pName << "\"";
@@ -363,7 +365,9 @@ sevenRule:
 						m_eventHandler.error("Lost connection to a player", ex);
 					} catch(const Common::Exception::SocketException &) {}
 				}
+
 			} else {
+
 				try {
 
 					std::ostringstream watcher;
@@ -410,6 +414,16 @@ void Engine::cardPlayed(Common::ICard *card) const {
 void Engine::shuffled() const {
 	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
 		(*i)->talonShuffled();
+	}
+}
+
+void Engine::informAIStat() const {
+	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
+		if((*i)->isAIPlayer()) {
+			for(PLAYERS ::const_iterator j(m_players.begin()); j != m_players.end(); ++j) {
+				if(*i != *j)(*i)->informAIStat(*j, (*j)->getCardCount());
+			}
+		}
 	}
 }
 

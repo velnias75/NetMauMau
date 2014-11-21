@@ -195,8 +195,23 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 						  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
 									   NetMauMau::Common::ICard::JACK))) {
 
-		m_powerSuit = NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN, myCards.begin(),
-					  myCards.end())->getSuit();
+		SUITCOUNT suitCount[4];
+		countSuits(suitCount, myCards);
+
+		for(int p = 0; p < 4; ++p) {
+
+			std::partition(myCards.begin(), myCards.end(),
+						   std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit),
+										suitCount[p].suit));
+
+			CARDS::value_type f = NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN,
+								  myCards.begin(), myCards.end());
+
+			if(f) {
+				m_powerSuit = f->getSuit();
+				break;
+			}
+		}
 
 	} else {
 		m_powerSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;

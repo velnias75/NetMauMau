@@ -30,6 +30,10 @@ AC_ARG_ENABLE([apidoc], [AS_HELP_STRING([--disable-apidoc], [disables generation
   [ AM_CONDITIONAL([GENDOX], [ test x$enable_apidoc = xyes ]) ],
   [ AM_CONDITIONAL([GENDOX], [ true ]) ])
 
+AC_ARG_ENABLE([ai-name], [AS_HELP_STRING([--enable-ai-name], [default name of AI player])],
+  [ AC_DEFINE_UNQUOTED([AI_NAME], ["$enable_ai_name"], [default name of AI player])],
+  [ AC_DEFINE([AI_NAME], ["Computer"], [default name of AI player])])
+
 PKG_PROG_PKG_CONFIG([0.22])
 
 # Checks for programs.

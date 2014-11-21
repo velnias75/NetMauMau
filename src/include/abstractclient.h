@@ -166,6 +166,13 @@ public:
 	 */
 	std::string getPlayerName() const;
 
+	/**
+	 * @brief Gets the compiled in default AI player name
+	 *
+	 * @return the compiled in default AI player name
+	 */
+	static const char *getDefaultAIName() _CONST;
+
 	/// @}
 
 protected:

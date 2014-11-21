@@ -62,6 +62,10 @@ std::string AbstractClient::getPlayerName() const {
 	return m_pName;
 }
 
+const char *AbstractClient::getDefaultAIName() {
+	return AI_NAME;
+}
+
 void AbstractClient::disconnect() {
 	m_disconnectNow = true;
 	m_connection.setInterrupted();

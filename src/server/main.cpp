@@ -75,7 +75,7 @@ volatile bool refuse = false;
 #pragma GCC diagnostic push
 char bind[HOST_NAME_MAX] = { 0 };
 char *host = bind;
-char *aiName = "Computer";
+char *aiName = AI_NAME;
 #ifndef _WIN32
 char *user  = DP_USER;
 char *grp = DP_GROUP;

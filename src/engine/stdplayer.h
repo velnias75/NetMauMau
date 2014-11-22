@@ -82,8 +82,9 @@ private:
 		CARDS::difference_type count;
 	} SUITCOUNT;
 
-	void countSuits(SUITCOUNT *suitCount,
-					const CARDS &myCards) const;
+	void countSuits(SUITCOUNT *suitCount, const CARDS &myCards) const;
+
+	Common::ICard::SUIT getMaxPlayedOffSuit(CARDS::difference_type *count = 0L) const;
 
 	Common::ICard *hasEightPath(const NetMauMau::Common::ICard *uc, Common::ICard::SUIT s,
 								CARDS &cards) const;

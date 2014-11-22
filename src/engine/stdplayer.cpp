@@ -53,6 +53,20 @@ private:
 	const NetMauMau::Player::IPlayer::CARDS &cards;
 };
 
+struct playedOutSuit : std::binary_function<std::string, NetMauMau::Common::ICard::SUIT, bool> {
+	bool operator()(const std::string &desc, NetMauMau::Common::ICard::SUIT suit) const {
+
+		NetMauMau::Common::ICard::RANK r = NetMauMau::Common::ICard::RANK_ILLEGAL;
+		NetMauMau::Common::ICard::SUIT s = NetMauMau::Common::ICard::SUIT_ILLEGAL;
+
+		if(NetMauMau::Common::parseCardDesc(desc, &s, &r)) {
+			return s == suit;
+		}
+
+		return false;
+	}
+};
+
 struct playedOutRank : std::binary_function<std::string, NetMauMau::Common::ICard::RANK, bool> {
 	bool operator()(const std::string &desc, NetMauMau::Common::ICard::RANK rank) const {
 
@@ -206,27 +220,32 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 
 	if(!bestCard && !noJack && m_playerHasFewCards && std::count_if(myCards.begin(), myCards.end(),
 			std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-						 NetMauMau::Common::ICard::SEVEN)) &&
-			std::count_if(myCards.begin(), myCards.end(),
-						  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-									   NetMauMau::Common::ICard::JACK))) {
+						 NetMauMau::Common::ICard::JACK))) {
 
 		SUITCOUNT suitCount[4];
 		countSuits(suitCount, myCards);
 
-		for(int p = 0; p < 4; ++p) {
+		if(std::count_if(myCards.begin(), myCards.end(),
+						 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+									  NetMauMau::Common::ICard::SEVEN))) {
 
-			std::partition(myCards.begin(), myCards.end(),
-						   std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit),
-										suitCount[p].suit));
+			for(int p = 0; p < 4; ++p) {
 
-			CARDS::value_type f = NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN,
-								  myCards.begin(), myCards.end());
+				std::partition(myCards.begin(), myCards.end(),
+							   std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit),
+											suitCount[p].suit));
 
-			if(f) {
-				m_powerSuit = f->getSuit();
-				break;
+				CARDS::value_type f = NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN,
+									  myCards.begin(), myCards.end());
+
+				if(f) {
+					m_powerSuit = f->getSuit();
+					break;
+				}
 			}
+
+		} else {
+			m_powerSuit = getMaxPlayedOffSuit();
 		}
 
 	} else {
@@ -236,6 +255,7 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 	if(m_powerSuit == NetMauMau::Common::ICard::SUIT_ILLEGAL) {
 
 		if(!bestCard) {
+
 			const CARDS::iterator
 			&e(std::partition(myCards.begin(), myCards.end(),
 							  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
@@ -275,6 +295,7 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 						bestCard = myCards.front();
 						break;
 					}
+
 				} else {
 
 					if(!(bestCard = hasEightPath(uc, suitCount[i].suit, myCards))) {
@@ -292,11 +313,13 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 							bestCard = f;
 							break;
 						}
+
 					}
 				}
 			}
 
 			if(!bestCard) {
+
 				const CARDS::iterator
 				&e(std::partition(myCards.begin(), myCards.end(),
 								  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
@@ -375,7 +398,7 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICard *uncoveredCard,
 	return s;
 }
 
-NetMauMau::Common::ICard::SUIT StdPlayer::findJackChoice() const {
+NetMauMau::Common::ICard::SUIT StdPlayer::getMaxPlayedOffSuit(CARDS::difference_type *count) const {
 
 	SUITCOUNT poSuitCount[4];
 	CARDS pcVec;
@@ -397,11 +420,15 @@ NetMauMau::Common::ICard::SUIT StdPlayer::findJackChoice() const {
 
 	for(CARDS::const_iterator i(pcVec.begin()); i != pcVec.end(); ++i) delete *i;
 
-	if(poSuitCount[0].count) {
-		return poSuitCount[0].suit;
-	}
+	if(count) *count = poSuitCount[0].count;
 
-	return NetMauMau::Common::ICard::SUIT_ILLEGAL;
+	return poSuitCount[0].suit;
+}
+
+NetMauMau::Common::ICard::SUIT StdPlayer::findJackChoice() const {
+	CARDS::difference_type count = 0;
+	const NetMauMau::Common::ICard::SUIT s = getMaxPlayedOffSuit(&count);
+	return count ? s : NetMauMau::Common::ICard::SUIT_ILLEGAL;
 }
 
 IPlayer::REASON StdPlayer::getNoCardReason() const {

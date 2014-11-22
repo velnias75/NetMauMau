@@ -1,7 +1,7 @@
 /**
  * basiclogger.h - template for basic logging functionality
  *
- * $Revision: 2883 $ $Author: heiko $
+ * $Revision: 3103 $ $Author: heiko $
  *
  * (c) 2012-2014 Heiko Schäfer <heiko@rangun.de>
  *
@@ -17,6 +17,7 @@
 #endif
 
 #include <cmath>
+#include <cstdlib>
 #include <sstream>
 #include <typeinfo>
 
@@ -61,6 +62,17 @@ pthread_mutex_t _basicLoggerLock = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 namespace Commons {
+
+class IPostLogger {
+	DISALLOW_COPY_AND_ASSIGN(IPostLogger);
+public:
+	inline virtual ~IPostLogger() {}
+
+	virtual void postAction() const throw() = 0;
+
+protected:
+	inline IPostLogger() {}
+};
 
 template<class OIter>
 class _EXPORT BasicLogger {
@@ -135,7 +147,7 @@ public:
 	virtual BasicLogger &operator<<(const wchar_t *s);
 
 protected:
-	BasicLogger(const OIter &out, const LEVEL &level);
+	BasicLogger(const OIter &out, const LEVEL &level, const IPostLogger *post = 0L);
 
 	_INTERNAL LEVEL getLevel() const {
 		return m_level;
@@ -174,6 +186,8 @@ private:
 
 	bool m_noNewline;
 	bool m_silent;
+
+	const IPostLogger *m_postLogger;
 };
 
 template<class OIter>
@@ -189,8 +203,9 @@ template<class OIter>
 const std::ios_base::fmtflags BasicLogger<OIter>::dec = std::ios_base::dec;
 
 template<class OIter>
-BasicLogger<OIter>::BasicLogger(const OIter &out, const BasicLogger<OIter>::LEVEL &level) :
-	m_msg(), m_out(out), m_level(level), m_noNewline(false), m_silent(false) {
+BasicLogger<OIter>::BasicLogger(const OIter &out, const BasicLogger<OIter>::LEVEL &level,
+								const IPostLogger *post) : m_msg(), m_out(out), m_level(level),
+	m_noNewline(false), m_silent(false), m_postLogger(post) {
 
 #ifndef BASICLOGGER_NO_PTHREADS
 	pthread_mutex_lock(&_basicLoggerLock);
@@ -232,6 +247,8 @@ BasicLogger<OIter>::~BasicLogger() {
 
 		logString s = m_msg.str();
 		std::copy(s.begin(), s.end(), m_out);
+
+		if(m_postLogger) m_postLogger->postAction();
 	}
 
 #ifndef BASICLOGGER_NO_PTHREADS

@@ -25,9 +25,18 @@ const std::ostreambuf_iterator<LOG_CHAR> out = std::ostreambuf_iterator<LOG_CHAR
 
 using namespace NetMauMau::Common;
 
-Logger::Logger(const LEVEL &lvl) :
-	Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR> >(out, lvl) {}
+Logger::Logger(const LEVEL &lvl) : Commons::IPostLogger(),
+	Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR> >(out, lvl, this) {}
 
 Logger::~Logger() {}
+
+#pragma GCC diagnostic ignored "-Wsuggest-attribute=const"
+#pragma GCC diagnostic push
+void Logger::postAction() const throw() {
+#if _WIN32
+	std::cerr.flush();
+#endif
+}
+#pragma GCC diagnostic pop
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

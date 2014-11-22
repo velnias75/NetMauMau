@@ -33,11 +33,14 @@ namespace NetMauMau {
 
 namespace Common {
 
-class _EXPORT Logger : public Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR> > {
+class _EXPORT Logger : public Commons::IPostLogger,
+	public Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR> > {
 	DISALLOW_COPY_AND_ASSIGN(Logger)
 public:
 	Logger(const LEVEL &lvl);
 	virtual ~Logger();
+
+	virtual void postAction() const throw();
 };
 
 }

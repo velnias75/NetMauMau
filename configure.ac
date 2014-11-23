@@ -57,6 +57,7 @@ PKG_CHECK_MODULES([POPT], [popt >= 1.10]);
 AC_HEADER_STDBOOL
 AC_CHECK_HEADERS([poll.h])
 AC_CHECK_HEADERS([netdb.h])
+AC_CHECK_HEADERS([syslog.h])
 AC_CHECK_HEADERS([sys/socket.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -69,6 +70,7 @@ AC_TYPE_UID_T
 AC_C_INLINE
 
 # Checks for library functions.
+AC_CHECK_FUNCS([strtoul])
 AC_CHECK_FUNCS([memset])
 AC_CHECK_FUNCS([socket])
 AC_CHECK_FUNCS([select])

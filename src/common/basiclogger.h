@@ -1,7 +1,7 @@
 /**
  * basiclogger.h - template for basic logging functionality
  *
- * $Revision: 3103 $ $Author: heiko $
+ * $Revision: 3108 $ $Author: heiko $
  *
  * (c) 2012-2014 Heiko Schäfer <heiko@rangun.de>
  *
@@ -63,24 +63,13 @@ pthread_mutex_t _basicLoggerLock = PTHREAD_MUTEX_INITIALIZER;
 
 namespace Commons {
 
-class IPostLogger {
-	DISALLOW_COPY_AND_ASSIGN(IPostLogger);
-public:
-	inline virtual ~IPostLogger() {}
-
-	virtual void postAction() const throw() = 0;
-
-protected:
-	inline IPostLogger() {}
-};
+template<class> class IPostLogger;
 
 template<class OIter>
 class _EXPORT BasicLogger {
 	DISALLOW_COPY_AND_ASSIGN(BasicLogger)
-
-	typedef typename std::basic_ostringstream<typename OIter::char_type>::__string_type logString;
-
 public:
+	typedef typename std::basic_ostringstream<typename OIter::char_type>::__string_type logString;
 	typedef OIter output_iterator;
 
 	typedef enum _PACKED {
@@ -147,7 +136,7 @@ public:
 	virtual BasicLogger &operator<<(const wchar_t *s);
 
 protected:
-	BasicLogger(const OIter &out, const LEVEL &level, const IPostLogger *post = 0L);
+	BasicLogger(const OIter &out, const LEVEL &level, const IPostLogger<OIter> *post = 0L);
 
 	_INTERNAL LEVEL getLevel() const {
 		return m_level;
@@ -187,7 +176,19 @@ private:
 	bool m_noNewline;
 	bool m_silent;
 
-	const IPostLogger *m_postLogger;
+	const IPostLogger<OIter> *m_postLogger;
+};
+
+template<class OIter>
+class IPostLogger {
+	DISALLOW_COPY_AND_ASSIGN(IPostLogger);
+public:
+	inline virtual ~IPostLogger() {}
+
+	virtual void postAction(const typename BasicLogger<OIter>::logString &ls) const throw() = 0;
+
+protected:
+	inline IPostLogger() {}
 };
 
 template<class OIter>
@@ -204,8 +205,9 @@ const std::ios_base::fmtflags BasicLogger<OIter>::dec = std::ios_base::dec;
 
 template<class OIter>
 BasicLogger<OIter>::BasicLogger(const OIter &out, const BasicLogger<OIter>::LEVEL &level,
-								const IPostLogger *post) : m_msg(), m_out(out), m_level(level),
-	m_noNewline(false), m_silent(false), m_postLogger(post) {
+								const IPostLogger<OIter> *post) : m_msg(), m_out(out),
+	m_level(level), m_noNewline(false), m_silent(false),
+	m_postLogger(post) {
 
 #ifndef BASICLOGGER_NO_PTHREADS
 	pthread_mutex_lock(&_basicLoggerLock);
@@ -248,7 +250,7 @@ BasicLogger<OIter>::~BasicLogger() {
 		logString s = m_msg.str();
 		std::copy(s.begin(), s.end(), m_out);
 
-		if(m_postLogger) m_postLogger->postAction();
+		if(m_postLogger) m_postLogger->postAction(s);
 	}
 
 #ifndef BASICLOGGER_NO_PTHREADS

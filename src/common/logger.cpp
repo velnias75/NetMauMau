@@ -17,7 +17,14 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iostream>
+
 #include "logger.h"
+
+#ifdef HAVE_SYSLOG_H
+#undef LOG_DEBUG
+#include <syslog.h>
+#endif
 
 namespace {
 const std::ostreambuf_iterator<LOG_CHAR> out = std::ostreambuf_iterator<LOG_CHAR>(std::cerr);
@@ -25,18 +32,26 @@ const std::ostreambuf_iterator<LOG_CHAR> out = std::ostreambuf_iterator<LOG_CHAR
 
 using namespace NetMauMau::Common;
 
-Logger::Logger(const LEVEL &lvl) : Commons::IPostLogger(),
-	Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR> >(out, lvl, this) {}
+Logger::Logger(const LEVEL &lvl) : Commons::IPostLogger<std::ostreambuf_iterator<LOG_CHAR> >(),
+	Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR> >(out, lvl, this) {
+#ifdef HAVE_SYSLOG_H
+	openlog(PACKAGE_NAME, LOG_PID, LOG_DAEMON);
+#endif
+}
 
-Logger::~Logger() {}
+Logger::~Logger() {
+#ifdef HAVE_SYSLOG_H
+	closelog();
+#endif
+}
 
-#pragma GCC diagnostic ignored "-Wsuggest-attribute=const"
-#pragma GCC diagnostic push
-void Logger::postAction() const throw() {
+void Logger::postAction(const logString &ls) const throw() {
 #if _WIN32
 	std::cerr.flush();
 #endif
+#ifdef HAVE_SYSLOG_H
+	syslog(LOG_NOTICE, "%s", ls.c_str());
+#endif
 }
-#pragma GCC diagnostic pop
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

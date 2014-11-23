@@ -25,22 +25,20 @@
 #define LOGGER_CLASS NetMauMau::Common::Logger
 #endif
 
-#include <iostream>
-
 #include "basiclogger.h"
 
 namespace NetMauMau {
 
 namespace Common {
 
-class _EXPORT Logger : public Commons::IPostLogger,
+class _EXPORT Logger : public Commons::IPostLogger<std::ostreambuf_iterator<LOG_CHAR> >,
 	public Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR> > {
 	DISALLOW_COPY_AND_ASSIGN(Logger)
 public:
 	Logger(const LEVEL &lvl);
 	virtual ~Logger();
 
-	virtual void postAction() const throw();
+	virtual void postAction(const logString &ls) const throw();
 };
 
 }

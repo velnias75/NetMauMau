@@ -350,6 +350,21 @@ uint32_t AbstractClient::getClientProtocolVersion() {
 		   static_cast<uint16_t>(SERVER_VERSION_MINOR);
 }
 
+uint32_t AbstractClient::parseProtocolVersion(const std::string &ver) {
+
+	const std::string::size_type p = ver.find('.');
+
+	if(p != std::string::npos) {
+
+		const uint16_t maj = std::strtoul(ver.substr(0, p).c_str(), NULL, 10);
+		const uint16_t min = std::strtoul(ver.substr(p + 1).c_str(), NULL, 10);
+
+		return (maj << 16u) | min;
+	}
+
+	return 0;
+}
+
 uint16_t AbstractClient::getDefaultPort() {
 	return SERVER_PORT;
 }

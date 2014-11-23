@@ -150,6 +150,8 @@ _EXPORT bool cardEqual(const NetMauMau::Common::ICard *x, const NetMauMau::Commo
 
 /**
  * @brief Checks if a card comes before another
+ * 
+ * Useful for sorting with suit first than rank
  *
  * @param x a card
  * @param y a card
@@ -157,6 +159,20 @@ _EXPORT bool cardEqual(const NetMauMau::Common::ICard *x, const NetMauMau::Commo
  * @return bool @c true if @c x comes before @c y, @c false otherwise
  */
 _EXPORT bool cardLess(const NetMauMau::Common::ICard *x, const NetMauMau::Common::ICard *y);
+
+/**
+ * @brief Checks if a card comes before another
+ * 
+ * Useful for sorting with rank first than suit
+ *
+ * @param x a card
+ * @param y a card
+ *
+ * @return bool @c true if @c x comes before @c y, @c false otherwise
+ * 
+ * @since 0.3
+ */
+_EXPORT bool cardGreater(const NetMauMau::Common::ICard *x, const NetMauMau::Common::ICard *y);
 
 /// @}
 

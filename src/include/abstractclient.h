@@ -151,6 +151,16 @@ public:
 	 * @return uint32_t the protocol version
 	 */
 	static uint32_t getClientProtocolVersion() _CONST;
+	
+	/**
+	 * @brief Parses a version string and returns the resulting protocol version
+	 * 
+	 * @param version the protocol version as string
+	 * @return the protocol version
+	 * 
+	 * @since 0.3
+	 */
+	static uint32_t parseProtocolVersion(const std::string &version);
 
 	/**
 	 * @brief Gets the default port of the server

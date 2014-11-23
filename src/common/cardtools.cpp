@@ -232,6 +232,14 @@ bool NetMauMau::Common::cardLess(const NetMauMau::Common::ICard *x,
 		   suitOrderPosition(x->getSuit()) < suitOrderPosition(y->getSuit());
 }
 
+bool NetMauMau::Common::cardGreater(const NetMauMau::Common::ICard *x,
+									const NetMauMau::Common::ICard *y) {
+
+	return x->getRank() == y->getRank() ?
+		   suitOrderPosition(x->getSuit()) < suitOrderPosition(y->getSuit()) :
+		   rankOrderPosition(x->getRank()) < rankOrderPosition(y->getRank());
+}
+
 bool NetMauMau::Common::isSuit(const NetMauMau::Common::ICard *card,
 							   NetMauMau::Common::ICard::SUIT suit) {
 	return card->getSuit() == suit;

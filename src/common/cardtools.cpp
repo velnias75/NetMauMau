@@ -137,18 +137,22 @@ std::size_t NetMauMau::Common::getCardPoints(ICard::RANK v) {
 
 	switch(v) {
 	case ICard::SEVEN:
-		return 7;
+		return 1;
 
 	case ICard::EIGHT:
-		return 8;
+		return 2;
 
 	case ICard::NINE:
-		return 9;
+		return 3;
 
 	case ICard::TEN:
+		return 4;
+
 	case ICard::QUEEN:
+		return 5;
+
 	case ICard::KING:
-		return 10;
+		return 6;
 
 	case ICard::ACE:
 		return 11;

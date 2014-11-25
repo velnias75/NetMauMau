@@ -26,8 +26,11 @@
 #include <cerrno>
 #include <climits>
 #include <cstring>
+#include <fstream>
 #include <sstream>
 #include <iostream>
+
+#include <sys/stat.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -220,6 +223,17 @@ int dropPrivileges(const char *usr, const char *group) {
 		gid_t gid;
 
 		if(!getUser(&uid, usr) && !getGroup(&gid, group)) {
+
+#if !defined(_WIN32) && defined(PIDFILE) && defined(HAVE_ATEXIT) && defined(HAVE_CHOWN)
+
+			if(chown(PIDFILE, uid, gid)) logWarning("Couldn't change ownership of " << PIDFILE);
+
+			if(chmod(PIDFILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH)) {
+				logWarning("Couldn't change mode of " << PIDFILE);
+			}
+
+#endif
+
 			if(!setegid(gid) && !seteuid(uid)) {
 				return 0;
 			} else {
@@ -232,6 +246,18 @@ int dropPrivileges(const char *usr, const char *group) {
 	}
 
 	return -1;
+}
+#endif
+
+#ifdef HAVE_ATEXIT
+void exit_hdlr() {
+#if !defined(_WIN32) && defined(PIDFILE) && defined(HAVE_CHOWN)
+
+	if(unlink(PIDFILE)) logWarning("Couldn't remove " << PIDFILE << ": " << std::strerror(errno));
+
+#endif
+
+	logInfo("Server shut down normally");
 }
 #endif
 
@@ -332,6 +358,23 @@ int main(int argc, const char **argv) {
 	}
 
 	poptFreeContext(pctx);
+
+#ifdef HAVE_ATEXIT
+#if !defined(_WIN32) && defined(PIDFILE) && defined(HAVE_CHOWN)
+	std::ofstream pidFile(PIDFILE);
+
+	if(pidFile.is_open()) {
+		pidFile << getpid();
+		pidFile.close();
+	} else {
+		logWarning("Couldn't create " << PIDFILE);
+	}
+
+#endif
+
+	if(std::atexit(exit_hdlr)) logWarning("Couldn't register atexit function");
+
+#endif
 
 	logInfo("Welcome to " << PACKAGE_STRING);
 

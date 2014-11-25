@@ -17,6 +17,7 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <fstream>
 #include <cstdio>
 
 #include "cardtools.h"

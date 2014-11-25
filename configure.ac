@@ -34,6 +34,10 @@ AC_ARG_ENABLE([ai-name], [AS_HELP_STRING([--enable-ai-name], [default name of AI
   [ AC_DEFINE_UNQUOTED([AI_NAME], ["$enable_ai_name"], [default name of AI player])],
   [ AC_DEFINE([AI_NAME], ["Computer"], [default name of AI player])])
 
+AC_ARG_ENABLE([pidfile], [AS_HELP_STRING([--enable-pidfile], [enables creation of pid file])],
+  [ AM_CONDITIONAL([PIDFILE], [ test x$enable_pidfile = xyes ]) ],
+  [ AM_CONDITIONAL([PIDFILE], [ false ]) ])
+
 PKG_PROG_PKG_CONFIG([0.22])
 
 # Checks for programs.
@@ -67,6 +71,7 @@ AC_TYPE_SSIZE_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UID_T
+AC_TYPE_PID_T
 AC_C_INLINE
 
 # Checks for library functions.
@@ -74,11 +79,13 @@ AC_CHECK_FUNCS([strtoul])
 AC_CHECK_FUNCS([memset])
 AC_CHECK_FUNCS([socket])
 AC_CHECK_FUNCS([select])
+AC_CHECK_FUNCS([atexit])
 AC_CHECK_FUNCS([strerror])
 AC_CHECK_FUNC([arc4random_uniform], 
   [ AC_DEFINE([HAVE_ARC4RANDOM_UNIFORM], [1], [we have arc4random_uniform]) 
 ])
 AC_FUNC_ERROR_AT_LINE
+AC_FUNC_CHOWN
 
 SERVER_VERSION_MAJOR="`echo ${PACKAGE_VERSION} | tr -s '~.' '\t' | cut -f1`"
 SERVER_VERSION_MINOR="`echo ${PACKAGE_VERSION} | tr -s '~.' '\t' | cut -f2`"

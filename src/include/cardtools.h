@@ -150,7 +150,7 @@ _EXPORT bool cardEqual(const NetMauMau::Common::ICard *x, const NetMauMau::Commo
 
 /**
  * @brief Checks if a card comes before another
- * 
+ *
  * Useful for sorting with suit first than rank
  *
  * @param x a card
@@ -162,14 +162,14 @@ _EXPORT bool cardLess(const NetMauMau::Common::ICard *x, const NetMauMau::Common
 
 /**
  * @brief Checks if a card comes before another
- * 
+ *
  * Useful for sorting with rank first than suit
  *
  * @param x a card
  * @param y a card
  *
  * @return bool @c true if @c x comes before @c y, @c false otherwise
- * 
+ *
  * @since 0.3
  */
 _EXPORT bool cardGreater(const NetMauMau::Common::ICard *x, const NetMauMau::Common::ICard *y);
@@ -282,6 +282,13 @@ _EXPORT NetMauMau::Common::ICard *getIllegalCard() _CONST;
  */
 _EXPORT std::size_t getCardPoints(NetMauMau::Common::ICard::RANK rank) _CONST;
 
+/**
+ * @brief Gets the executable name of the server
+ *
+ * @note on non-Windows systems it returns the full path to the executable
+ *
+ * @return const char* the executable name of the server
+ */
 _EXPORT const char *getServerExe() _PURE;
 
 /// @}

@@ -43,10 +43,11 @@ Windows
 -------
 [https://sourceforge.net/projects/netmaumau/](https://sourceforge.net/projects/netmaumau/)
 
-Rules
------
 
-Following are the rules currently implemented in %NetMauMau:
+Rules
+=====
+
+Following are the rules currently implemented in NetMauMau:
 
 General rules
 -------------
@@ -57,7 +58,7 @@ a player cannot play a card or if the player has to take cards due to the *Seven
 pool cards are either in players hands or played out all cards except the visible card are 
 shuffled again and made available as pool again.
 
-The aim of %NetMauMau is to get away all cards as fast as possible. To achieve this a player
+The aim of NetMauMau is to get away all cards as fast as possible. To achieve this a player
 can play out any card of either the same rank or the same suit. If a player cannot play out
 any card the player has to take one from the pool and to suspend. Some cards trigger specific 
 actions as described below.

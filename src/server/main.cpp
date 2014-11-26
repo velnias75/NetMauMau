@@ -79,6 +79,7 @@ volatile bool refuse = false;
 char bind[HOST_NAME_MAX] = { 0 };
 char *host = bind;
 char *aiName = AI_NAME;
+std::string aiNames[4];
 #ifndef _WIN32
 char *user  = DP_USER;
 char *grp = DP_GROUP;
@@ -94,7 +95,7 @@ poptOption poptOptions[] = {
 	},
 	{ "ultimate", 'u', POPT_ARG_NONE, NULL, 'u', "Play until last player wins", NULL },
 	{
-		"ai-name", 'A', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &aiName, 0,
+		"ai-name", 'A', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &aiName, 'A',
 		"Set the name of the AI player", "NAME"
 	},
 	{ "bind", 'b', POPT_ARG_STRING, &host, 0, "Bind to HOST", "HOST" },
@@ -271,11 +272,18 @@ int main(int argc, const char **argv) {
 	std::srand(std::time(0L));
 #endif
 
+	std::size_t numAI = 0;
 	poptContext pctx = poptGetContext(NULL, argc, argv, poptOptions, 0);
 	int c;
 
 	while((c = poptGetNextOpt(pctx)) >= 0) {
 		switch(c) {
+		case 'A':
+
+			if(numAI < 4) aiNames[numAI++] = aiName;
+
+			break;
+
 		case 'V': {
 
 			logger(PACKAGE_STRING << " " << BUILD_TARGET);
@@ -396,18 +404,25 @@ int main(int argc, const char **argv) {
 #endif
 
 		const bool aiOpponent = minPlayers <= 1;
+
+		if(aiOpponent && !numAI) {
+			aiNames[numAI++] = aiName;
+		} else {
+			minPlayers = std::min<std::size_t>(5, numAI + minPlayers);
+		}
+
 		Server::Connection con(port, *host ? host : NULL);
 
-		ultimate = minPlayers > 2 ? ultimate : false;
+		ultimate = (!aiOpponent && minPlayers > 2) ? ultimate : numAI > 1;
 
-		if(ultimate && !aiOpponent) logInfo("Running in ultimate mode");
+		if(ultimate) logInfo("Running in ultimate mode");
 
 		try {
 
 			con.connect();
 
 			Server::EventHandler evtHdlr(con);
-			Server::Game game(evtHdlr, aiOpponent, aiName);
+			Server::Game game(evtHdlr, aiOpponent, aiNames);
 
 			Server::Connection::CAPABILITIES caps;
 			caps.insert(std::make_pair("SERVER_VERSION", PACKAGE_VERSION));
@@ -421,11 +436,11 @@ int main(int argc, const char **argv) {
 			caps.insert(std::make_pair("MIN_VERSION", mvos.str()));
 
 			std::ostringstream mpos;
-			mpos << (aiOpponent ? 1 : minPlayers);
+			mpos << (aiOpponent ? numAI + 1 : minPlayers);
 			caps.insert(std::make_pair("MAX_PLAYERS", mpos.str()));
 
 			std::ostringstream cpos;
-			cpos << game.getPlayerCount() - (aiOpponent ? 1 : 0);
+			cpos << game.getPlayerCount(); // - (aiOpponent ? 1 : 0);
 			caps.insert(std::make_pair("CUR_PLAYERS", cpos.str()));
 
 			con.setCapabilities(caps);

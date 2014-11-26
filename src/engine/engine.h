@@ -60,6 +60,10 @@ public:
 
 	virtual ~Engine();
 
+	inline void setAlwaysWait(bool wait) {
+		m_alwaysWait = wait;
+	}
+
 	inline void setUltimate(bool ultimate) {
 		m_ultimate = ultimate;
 	}
@@ -70,7 +74,7 @@ public:
 		return m_players.size() > 1;
 	}
 
-	void reversePlayers();
+	void setFirstPlayer(Player::IPlayer *p);
 
 	inline std::size_t getPlayerCount() const throw() {
 		return m_players.size();
@@ -121,6 +125,7 @@ private:
 	bool m_nextMessage;
 	bool m_ultimate;
 	bool m_initialJack;
+	bool m_alwaysWait;
 };
 
 }

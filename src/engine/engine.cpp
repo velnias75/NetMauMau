@@ -37,12 +37,26 @@
 #include "ieventhandler.h"
 #include "abstractconnection.h"
 
+namespace {
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+struct PlayerNameEqual : public std::binary_function < NetMauMau::Player::IPlayer *,
+		NetMauMau::Player::IPlayer *, bool > {
+	bool operator()(const NetMauMau::Player::IPlayer *x,
+					const NetMauMau::Player::IPlayer *y) const {
+		return x->getName() == y->getName();
+	}
+};
+#pragma GCC diagnostic pop
+}
+
 using namespace NetMauMau;
 
 Engine::Engine(Event::IEventHandler &eventHandler, bool nextMessage) : m_eventHandler(eventHandler),
 	m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)), m_ruleset(new RuleSet::StdRuleSet()),
 	m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_delRuleSet(true), m_jackMode(false),
-	m_initialChecked(false), m_nextMessage(nextMessage), m_ultimate(false), m_initialJack(false) {
+	m_initialChecked(false), m_nextMessage(nextMessage), m_ultimate(false), m_initialJack(false),
+	m_alwaysWait(false) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
 }
@@ -51,7 +65,7 @@ Engine::Engine(Event::IEventHandler &eventHandler, RuleSet::IRuleSet *ruleset, b
 	m_eventHandler(eventHandler), m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)),
 	m_ruleset(ruleset), m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_delRuleSet(false),
 	m_jackMode(false), m_initialChecked(false), m_nextMessage(nextMessage), m_ultimate(false),
-	m_initialJack(false) {
+	m_initialJack(false), m_alwaysWait(false) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
 }
@@ -170,8 +184,8 @@ bool Engine::distributeCards() throw(Common::Exception::SocketException) {
 	return false;
 }
 
-void Engine::reversePlayers() {
-	std::reverse(m_players.begin(), m_players.end());
+void Engine::setFirstPlayer(Player::IPlayer *p) {
+	std::stable_partition(m_players.begin(), m_players.end(), std::bind2nd(PlayerNameEqual(), p));
 }
 
 void Engine::message(const std::string &msg) const throw(Common::Exception::SocketException) {
@@ -322,7 +336,8 @@ sevenRule:
 
 					m_eventHandler.playerWins(player, m_turn, m_ultimate);
 
-				} else if(player->isAIPlayer() && pc->getRank() == Common::ICard::EIGHT) {
+				} else if(player->isAIPlayer() && ((pc->getRank() == Common::ICard::EIGHT) ||
+												   m_alwaysWait)) {
 
 					Common::AbstractConnection *con = m_eventHandler.getConnection();
 
@@ -456,6 +471,7 @@ void Engine::reset() throw() {
 	m_jackMode = false;
 	m_initialChecked = false;
 	m_initialJack = false;
+	m_alwaysWait = false;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

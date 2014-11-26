@@ -41,8 +41,7 @@ public:
 
 	typedef enum { ACCEPTED, REFUSED, ACCEPTED_READY, REFUSED_FULL } COLLECT_STATE;
 
-	Game(Event::IEventHandler &evtHdlr, bool aiPlayer = false,
-		 const std::string &aiName = "Computer");
+	Game(Event::IEventHandler &evtHdlr, bool aiPlayer = false, const std::string *aiName = 0L);
 	~Game();
 
 	COLLECT_STATE collectPlayers(std::size_t minPlayers, Player::IPlayer *player);
@@ -60,7 +59,7 @@ private:
 private:
 	Engine m_engine;
 	bool m_aiOpponent;
-	Player::StdPlayer m_aiPlayer;
+	std::vector<Player::StdPlayer *> m_aiPlayers;
 	std::vector<Player::IPlayer *> m_players;
 };
 

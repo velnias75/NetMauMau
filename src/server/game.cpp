@@ -23,26 +23,56 @@
 
 namespace {
 const char *GAMEREADY = "Ready for new game...";
+
+std::size_t countAI(const std::string *aiNames) {
+
+	std::size_t cnt = 0;
+
+	for(int i = 0; i < 4; ++i) {
+		if(!aiNames[i].empty()) ++cnt;
+	}
+
+	return cnt;
+}
+
 }
 
 using namespace NetMauMau::Server;
 
-Game::Game(NetMauMau::Event::IEventHandler &evtHdlr, bool aiPlayer, const std::string &aiName) :
-	m_engine(evtHdlr, !aiPlayer), m_aiOpponent(aiPlayer), m_aiPlayer(aiName), m_players() {
+Game::Game(NetMauMau::Event::IEventHandler &evtHdlr, bool aiPlayer, const std::string *aiName) :
+	m_engine(evtHdlr, !aiPlayer || countAI(aiName) > 1), m_aiOpponent(aiPlayer), m_aiPlayers(),
+	m_players() {
 
 	m_players.reserve(50);
 
 	if(aiPlayer) {
-		logInfo("Adding AI player \"" << m_aiPlayer.getName() << "\"");
-		m_engine.addPlayer(&m_aiPlayer);
+
+		std::size_t aiAdded = 0;
+
+		for(int i = 0; i < 4; ++i) {
+			if(!aiName[i].empty()) {
+				m_aiPlayers.push_back(new Player::StdPlayer(aiName[i]));
+				logInfo("Adding AI player \"" << m_aiPlayers.back()->getName() << "\"");
+				m_engine.addPlayer(m_aiPlayers.back());
+				++aiAdded;
+			}
+		}
+
+		m_engine.setAlwaysWait(aiAdded > 1);
 	}
 
 	logInfo(GAMEREADY);
 }
 
 Game::~Game() {
+
 	for(std::vector<NetMauMau::Player::IPlayer *>::const_iterator i(m_players.begin());
 			i != m_players.end(); ++i) {
+		delete *i;
+	}
+
+	for(std::vector<NetMauMau::Player::StdPlayer *>::const_iterator i(m_aiPlayers.begin());
+			i != m_aiPlayers.end(); ++i) {
 		delete *i;
 	}
 }
@@ -82,7 +112,7 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 
 	const std::size_t minPlayers = m_engine.getPlayerCount();
 
-	if(m_aiOpponent) m_engine.reversePlayers();
+	if(m_aiOpponent) m_engine.setFirstPlayer(m_players.back());
 
 	m_engine.distributeCards();
 	m_engine.setUltimate(ultimate);
@@ -91,7 +121,7 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 		if(!m_engine.nextTurn()) break;
 	}
 
-	if(ultimate && !m_aiOpponent) m_engine.gameOver();
+	if(ultimate) m_engine.gameOver();
 
 	reset();
 }
@@ -99,13 +129,20 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 void Game::reset() throw() {
 
 	m_engine.reset();
-	m_aiPlayer.resetJackState();
 
 	if(m_aiOpponent) {
-		m_aiPlayer.reset();
 
 		try {
-			m_engine.addPlayer(&m_aiPlayer);
+
+			for(std::vector<NetMauMau::Player::StdPlayer *>::const_iterator i(m_aiPlayers.begin());
+					i != m_aiPlayers.end(); ++i) {
+				(*i)->resetJackState();
+				(*i)->reset();
+				m_engine.addPlayer(*i);
+			}
+
+			m_engine.setAlwaysWait(m_aiPlayers.size() > 1);
+
 		} catch(const NetMauMau::Common::Exception::SocketException &e) {
 			logDebug(__PRETTY_FUNCTION__ << ": failed to add AI player: " << e.what());
 		}

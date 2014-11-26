@@ -99,6 +99,9 @@ private:
 	void calcScore(Player::IPlayer *p) const;
 
 	void informAIStat() const;
+	std::size_t getAICount() const;
+
+	void suspends(Player::IPlayer *p, const Common::ICard *uc = NULL) const;
 
 	PLAYERS::const_iterator find(const std::string &name) const;
 	PLAYERS::iterator removePlayer(Player::IPlayer *player);
@@ -126,6 +129,7 @@ private:
 	bool m_ultimate;
 	bool m_initialJack;
 	bool m_alwaysWait;
+	bool m_initialNextMessage;
 };
 
 }

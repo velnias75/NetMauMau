@@ -429,7 +429,7 @@ int main(int argc, const char **argv) {
 			caps.insert(std::make_pair("AI_OPPONENT", aiOpponent ? "true" : "false"));
 			caps.insert(std::make_pair("ULTIMATE", ultimate ? "true" : "false"));
 
-			if(aiOpponent) caps.insert(std::make_pair("AI_NAME", aiName));
+			if(aiOpponent) caps.insert(std::make_pair("AI_NAME", aiNames[0]));
 
 			std::ostringstream mvos;
 			mvos << MIN_MAJOR << '.' << MIN_MINOR;

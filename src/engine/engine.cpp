@@ -56,7 +56,7 @@ Engine::Engine(Event::IEventHandler &eventHandler, bool nextMessage) : m_eventHa
 	m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)), m_ruleset(new RuleSet::StdRuleSet()),
 	m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_delRuleSet(true), m_jackMode(false),
 	m_initialChecked(false), m_nextMessage(nextMessage), m_ultimate(false), m_initialJack(false),
-	m_alwaysWait(false) {
+	m_alwaysWait(false), m_initialNextMessage(nextMessage) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
 }
@@ -65,7 +65,7 @@ Engine::Engine(Event::IEventHandler &eventHandler, RuleSet::IRuleSet *ruleset, b
 	m_eventHandler(eventHandler), m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)),
 	m_ruleset(ruleset), m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_delRuleSet(false),
 	m_jackMode(false), m_initialChecked(false), m_nextMessage(nextMessage), m_ultimate(false),
-	m_initialJack(false), m_alwaysWait(false) {
+	m_initialJack(false), m_alwaysWait(false), m_initialNextMessage(nextMessage) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
 }
@@ -192,9 +192,23 @@ void Engine::message(const std::string &msg) const throw(Common::Exception::Sock
 	m_eventHandler.message(msg);
 }
 
+void Engine::suspends(Player::IPlayer *p, const Common::ICard *uc) const {
+
+	m_eventHandler.playerSuspends(p, uc);
+
+	Common::AbstractConnection *con = m_eventHandler.getConnection();
+
+	if(p->isAIPlayer() && m_alwaysWait && con) con->wait(1000L);
+}
+
 bool Engine::nextTurn() {
 
 	if(m_eventHandler.shutdown() || m_state != PLAYING) return false;
+
+	if(getAICount() == 1) {
+		m_alwaysWait  = false;
+		m_nextMessage = false;
+	}
 
 	try {
 
@@ -220,6 +234,12 @@ bool Engine::nextTurn() {
 			m_ruleset->checkInitial(player, uc);
 			m_initialJack = m_ruleset->isJackMode();
 			m_initialChecked = true;
+
+			if(uc->getRank() == Common::ICard::EIGHT && getAICount()) {
+				Common::AbstractConnection *con = m_eventHandler.getConnection();
+
+				if(con) con->wait(1000);
+			}
 		}
 
 		m_eventHandler.stats(m_players);
@@ -258,7 +278,7 @@ sevenRule:
 				player->receiveCard(pc = m_talon->takeCard());
 
 				if(player->getNoCardReason() == Player::IPlayer::SUSPEND) {
-					m_eventHandler.playerSuspends(player);
+					suspends(player);
 					pc = 0L;
 				}
 
@@ -274,7 +294,7 @@ sevenRule:
 				const bool aiSusp = (!cc && player->isAIPlayer());
 
 				if(suspend || aiSusp) {
-					m_eventHandler.playerSuspends(player);
+					suspends(player);
 					break;
 				}
 
@@ -346,7 +366,7 @@ sevenRule:
 			}
 
 		} else {
-			m_eventHandler.playerSuspends(player, uc);
+			suspends(player, uc);
 			m_ruleset->hasSuspended();
 		}
 
@@ -446,6 +466,17 @@ void Engine::informAIStat() const {
 	}
 }
 
+std::size_t Engine::getAICount() const {
+
+	std::size_t cnt = 0;
+
+	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
+		if((*i)->isAIPlayer()) ++cnt;
+	}
+
+	return cnt;
+}
+
 void Engine::gameOver() const throw() {
 	try {
 		m_eventHandler.gameOver();
@@ -469,6 +500,7 @@ void Engine::reset() throw() {
 	m_turn = 1;
 	m_curTurn = 0;
 	m_jackMode = false;
+	m_nextMessage = m_initialNextMessage;
 	m_initialChecked = false;
 	m_initialJack = false;
 	m_alwaysWait = false;

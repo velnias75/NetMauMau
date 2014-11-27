@@ -29,6 +29,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 
 #include <sys/stat.h>
 
@@ -96,7 +97,7 @@ poptOption poptOptions[] = {
 	{ "ultimate", 'u', POPT_ARG_NONE, NULL, 'u', "Play until last player wins", NULL },
 	{
 		"ai-name", 'A', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &aiName, 'A',
-		"Set the name of the AI player", "NAME"
+		"Set the name of one AI player. Can be given up to 4 times", "NAME"
 	},
 	{ "bind", 'b', POPT_ARG_STRING, &host, 0, "Bind to HOST", "HOST" },
 #ifndef _WIN32
@@ -280,7 +281,14 @@ int main(int argc, const char **argv) {
 		switch(c) {
 		case 'A':
 
-			if(numAI < 4) aiNames[numAI++] = aiName;
+			if(std::count_if(aiNames, aiNames + numAI, std::bind2nd(std::equal_to<std::string>(),
+							 aiName))) {
+				logWarning("Duplicate AI player name: \"" << aiName << "\"");
+			} else if(numAI < 4) {
+				aiNames[numAI++] = aiName;
+			} else {
+				logWarning("At maximum 4 AI players are allowed; ignoring: \"" << aiName << "\"");
+			}
 
 			break;
 

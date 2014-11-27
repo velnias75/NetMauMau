@@ -176,8 +176,9 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					}
 
 				} else if(!m_disconnectNow && msg.substr(0, 10) == "PLAYERLOST") {
-					m_connection >> msg;
-					playerLost(msg, cturn);
+					std::string pl, pc;
+					m_connection >> pl >> pc;
+					playerLost(pl, cturn, std::strtoul(pc.c_str(), NULL, 10));
 				} else if(!m_disconnectNow && msg == "GETCARDS") {
 
 					m_connection >> msg;

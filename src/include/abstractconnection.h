@@ -62,6 +62,7 @@ public:
 	typedef struct {
 		std::string name;
 		int sockfd;
+		uint32_t clientVersion;
 	} NAMESOCKFD;
 
 	typedef std::vector<NAMESOCKFD> PLAYERINFOS;

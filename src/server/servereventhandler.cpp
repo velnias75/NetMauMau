@@ -174,11 +174,24 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	if(ultimate) pw.append(1, '+');
 
 	m_connection << pw << player->getName();
+
 }
 
 void EventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std::size_t) const
 throw(NetMauMau::Common::Exception::SocketException) {
-	m_connection << "PLAYERLOST" << player->getName();
+
+	std::string pl("PLAYERLOST");
+
+	Connection::VERSIONEDMESSAGE versionedMessage;
+
+	std::ostringstream vm_old, vm_new;
+	vm_old << pl << '\0' << player->getName();
+	vm_new << vm_old.str() << '\0' << player->getPoints();
+
+	versionedMessage.insert(std::make_pair(0, vm_old.str()));
+	versionedMessage.insert(std::make_pair(m_connection.getServerVersion(), vm_new.str()));
+
+	m_connection.sendVersionedMessage(versionedMessage);
 }
 
 void EventHandler::playerPlaysCard(const NetMauMau::Player::IPlayer *player,

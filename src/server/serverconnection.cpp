@@ -21,8 +21,8 @@
 #include "config.h"
 #endif
 
+#include <algorithm>
 #include <sstream>
-
 #include <cerrno>
 #include <cstring>
 
@@ -37,6 +37,21 @@
 #include "serverconnection.h"
 
 #include "logger.h"
+
+namespace {
+
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+struct _isPlayer : public std::binary_function < NetMauMau::Common::AbstractConnection::NAMESOCKFD,
+		std::string, bool > {
+	bool operator()(const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsd,
+					const std::string &player) const {
+		return nsd.name == player;
+	}
+};
+#pragma GCC diagnostic pop
+
+}
 
 using namespace NetMauMau::Server;
 
@@ -141,14 +156,13 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 					const uint32_t cver = (info.maj << 16u) | info.min;
 					const uint32_t minver = (static_cast<uint16_t>(MIN_MAJOR) << 16u) |
 											static_cast<uint16_t>(MIN_MINOR);
-					const uint32_t maxver = (static_cast<uint16_t>(SERVER_VERSION_MAJOR) << 16u) |
-											static_cast<uint16_t>(SERVER_VERSION_MINOR);
+					const uint32_t maxver = getServerVersion();
 
 					send("NAME", 4, cfd);
 					info.name = read(cfd);
 
 					if(cver >= minver && cver <= maxver && !refuse) {
-						const NAMESOCKFD nsf = { info.name, cfd };
+						const NAMESOCKFD nsf = { info.name, cfd, cver };
 						registerPlayer(nsf);
 						send("OK", 2, cfd);
 						accepted = PLAY;
@@ -230,6 +244,32 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 	}
 
 	return accepted;
+}
+
+void Connection::sendVersionedMessage(const Connection::VERSIONEDMESSAGE &vm) const
+throw(NetMauMau::Common::Exception::SocketException) {
+
+	for(std::vector<NAMESOCKFD>::const_iterator i(getRegisteredPlayers().begin());
+			i != getRegisteredPlayers().end(); ++i) {
+
+		const Connection::PLAYERINFOS::const_iterator &f(std::find_if(getPlayers().begin(),
+				getPlayers().end(), std::bind2nd(_isPlayer(), i->name)));
+
+		if(f != getPlayers().end()) {
+
+			bool vMsg = false;
+
+			for(VERSIONEDMESSAGE::const_iterator j(vm.begin()); j != vm.end(); ++j) {
+				if(j->first && f->clientVersion >= j->first) {
+					write(i->sockfd, j->second);
+					vMsg = true;
+					break;
+				}
+			}
+
+			if(!vMsg) write(i->sockfd, vm.find(0)->second);
+		}
+	}
 }
 
 Connection &Connection::operator<<(const std::string &msg)

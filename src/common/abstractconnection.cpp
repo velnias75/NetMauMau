@@ -51,14 +51,6 @@ struct _isSocketFD :
 		return nsd.sockfd == sockfd;
 	}
 };
-
-struct _isPlayer : public std::binary_function < NetMauMau::Common::AbstractConnection::NAMESOCKFD,
-		std::string, bool > {
-	bool operator()(const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsd,
-					const std::string &player) const {
-		return nsd.name == player;
-	}
-};
 #pragma GCC diagnostic pop
 
 }

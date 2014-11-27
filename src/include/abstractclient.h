@@ -371,8 +371,10 @@ protected:
 	 *
 	 * @param player the player's name
 	 * @param turn the number of the turn the player has lost
+	 * @param points the points the loosing player had in hand
 	 */
-	virtual void playerLost(const std::string &player, std::size_t turn) const = 0;
+	virtual void playerLost(const std::string &player, std::size_t turn,
+							std::size_t points) const = 0;
 
 	/**
 	 * @brief A player picks up a card

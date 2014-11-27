@@ -37,6 +37,7 @@ class Connection : public Common::AbstractConnection {
 	DISALLOW_COPY_AND_ASSIGN(Connection)
 public:
 	typedef enum { NONE, PLAY, CAP, REFUSED, PLAYERLIST } ACCEPT_STATE;
+	typedef std::map<uint32_t, std::string, std::greater<uint32_t> > VERSIONEDMESSAGE;
 
 	Connection(uint16_t port = SERVER_PORT, const char *server = NULL);
 	virtual ~Connection();
@@ -49,6 +50,9 @@ public:
 		return getRegisteredPlayers();
 	}
 
+	void sendVersionedMessage(const VERSIONEDMESSAGE &vm) const
+	throw(Common::Exception::SocketException);
+
 	Connection &operator<<(const std::string &msg) throw(Common::Exception::SocketException);
 	Connection &operator>>(std::string &msg) throw(Common::Exception::SocketException);
 
@@ -56,6 +60,11 @@ public:
 
 	inline void setCapabilities(const CAPABILITIES &caps) {
 		m_caps = caps;
+	}
+
+	inline uint32_t getServerVersion() const {
+		return (static_cast<uint16_t>(SERVER_VERSION_MAJOR) << 16u) |
+			   static_cast<uint16_t>(SERVER_VERSION_MINOR);
 	}
 
 protected:

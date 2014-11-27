@@ -30,7 +30,7 @@ public:
 
 protected:
 	virtual void unknownServerMessage(std::string message) const;
-	
+
 	virtual void message(const std::string &msg) const;
 	virtual void error(const std::string &msg) const;
 	virtual void turn(std::size_t turn) const;
@@ -45,7 +45,8 @@ protected:
 	virtual void playerSuspends(const std::string &player) const;
 	virtual void playedCard(const std::string &player, const NetMauMau::Common::ICard *card) const;
 	virtual void playerWins(const std::string &player, std::size_t turn) const;
-	virtual void playerLost(const std::string &player, std::size_t turn) const _CONST;
+	virtual void playerLost(const std::string &player, std::size_t turn,
+							std::size_t points) const _CONST;
 	virtual void playerPicksCard(const std::string &player,
 								 const NetMauMau::Common::ICard *card) const;
 	virtual void playerPicksCard(const std::string &player, std::size_t count) const;

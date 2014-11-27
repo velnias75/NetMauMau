@@ -83,8 +83,11 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		return isValidHello(dot, spc, rHello, PACKAGE_NAME);
 
-	} else if(pret == -1) {
+	} else if(pret == -1 && errno != EINTR) {
 		throw NetMauMau::Common::Exception::SocketException(strerror(errno), getSocketFD(), errno);
+	} else if(pret == -1 && errno == EINTR) {
+		throw NetMauMau::Common::Exception::SocketException("Server is shutting down",
+				getSocketFD(), errno);
 	} else {
 		throw Exception::TimeoutException("Timeout while connecting to server", getSocketFD());
 	}
@@ -153,8 +156,8 @@ void Connection::connect() throw(NetMauMau::Common::Exception::SocketException) 
 
 	if(hello(&maj, &min)) {
 
-		uint32_t sver = (maj << 16u) | min;
-		uint32_t mver = AbstractClient::getClientProtocolVersion();
+		const uint32_t sver = (maj << 16u) | min;
+		const uint32_t mver = AbstractClient::getClientProtocolVersion();
 
 		if(mver >= sver) {
 

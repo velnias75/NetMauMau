@@ -55,8 +55,9 @@ class _EXPORT Engine : protected ITalonChange {
 public:
 	typedef std::vector<Player::IPlayer *> PLAYERS;
 
-	Engine(Event::IEventHandler &eventHandler, bool nextMessage = true);
-	Engine(Event::IEventHandler &eventHandler, RuleSet::IRuleSet *ruleset, bool nextMessage = true);
+	Engine(Event::IEventHandler &eventHandler, long aiDelay = 1000L, bool nextMessage = true);
+	Engine(Event::IEventHandler &eventHandler, long aiDelay, RuleSet::IRuleSet *ruleset,
+		   bool nextMessage = true);
 
 	virtual ~Engine();
 
@@ -122,14 +123,17 @@ private:
 	std::size_t m_turn;
 	std::size_t m_curTurn;
 
-	bool m_delRuleSet;
+	const bool m_delRuleSet;
+
 	bool m_jackMode;
 	bool m_initialChecked;
 	bool m_nextMessage;
 	bool m_ultimate;
 	bool m_initialJack;
 	bool m_alwaysWait;
-	bool m_initialNextMessage;
+
+	const bool m_initialNextMessage;
+	const long m_aiDelay;
 };
 
 }

@@ -95,7 +95,7 @@ private:
 	Common::ICard::SUIT findJackChoice() const;
 
 private:
-	std::string m_name;
+	const std::string m_name;
 	std::vector<Common::ICard *> m_cards;
 	mutable bool m_cardsTaken;
 	const RuleSet::IRuleSet *m_ruleset;

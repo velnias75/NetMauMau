@@ -88,13 +88,13 @@ protected:
 	const PLAYERINFOS &getRegisteredPlayers() const _CONST;
 	const std::vector<std::string> &getAIPlayers() const _CONST;
 
-	bool isHello(std::string::size_type dot, std::string::size_type spc) const _CONST;
-	bool isValidHello(std::string::size_type dot, std::string::size_type spc,
-					  const std::string &rHello, const std::string &expHello) const;
+	static bool isHello(std::string::size_type dot, std::string::size_type spc) _CONST;
+	static bool isValidHello(std::string::size_type dot, std::string::size_type spc,
+							 const std::string &rHello, const std::string &expHello);
 
-	uint16_t getMajorFromHello(const std::string &hello, std::string::size_type dot,
-							   std::string::size_type spc) const;
-	uint16_t getMinorFromHello(const std::string &hello, std::string::size_type dot) const;
+	static uint16_t getMajorFromHello(const std::string &hello, std::string::size_type dot,
+									  std::string::size_type spc);
+	static uint16_t getMinorFromHello(const std::string &hello, std::string::size_type dot);
 
 private:
 	PLAYERINFOS m_registeredPlayers;

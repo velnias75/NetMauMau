@@ -58,7 +58,7 @@ Connection::~Connection() {
 
 bool Connection::wire(int sockfd, const struct sockaddr *addr, socklen_t addrlen) const {
 
-	int yes = 1;
+	const int yes = 1;
 
 	if(setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char *>(&yes), sizeof(int)) == -1) {
 		return false;
@@ -102,8 +102,8 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 	struct sockaddr_storage peer_addr;
 	socklen_t peer_addr_len = sizeof(struct sockaddr_storage);
 
-	int cfd = ::accept(getSocketFD(), reinterpret_cast<struct sockaddr *>(&peer_addr),
-					   &peer_addr_len);
+	const int cfd = ::accept(getSocketFD(), reinterpret_cast<struct sockaddr *>(&peer_addr),
+							 &peer_addr_len);
 
 	if(cfd != -1) {
 
@@ -111,8 +111,8 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 		char host[NI_MAXHOST], service[NI_MAXSERV];
 
-		int err = getnameinfo(reinterpret_cast<struct sockaddr *>(&peer_addr), peer_addr_len,
-							  host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
+		const int err = getnameinfo(reinterpret_cast<struct sockaddr *>(&peer_addr), peer_addr_len,
+									host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
 
 		info.port = (uint16_t)std::strtoul(service, NULL, 10);
 		info.host = host;
@@ -138,17 +138,17 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 					info.maj = getMajorFromHello(rHello, dot, spc);
 					info.min = getMinorFromHello(rHello, dot);
 
-					uint32_t cver = (info.maj << 16u) | info.min;
-					uint32_t minver = (static_cast<uint16_t>(MIN_MAJOR) << 16u) |
-									  static_cast<uint16_t>(MIN_MINOR);
-					uint32_t maxver = (static_cast<uint16_t>(SERVER_VERSION_MAJOR) << 16u) |
-									  static_cast<uint16_t>(SERVER_VERSION_MINOR);
+					const uint32_t cver = (info.maj << 16u) | info.min;
+					const uint32_t minver = (static_cast<uint16_t>(MIN_MAJOR) << 16u) |
+											static_cast<uint16_t>(MIN_MINOR);
+					const uint32_t maxver = (static_cast<uint16_t>(SERVER_VERSION_MAJOR) << 16u) |
+											static_cast<uint16_t>(SERVER_VERSION_MINOR);
 
 					send("NAME", 4, cfd);
 					info.name = read(cfd);
 
 					if(cver >= minver && cver <= maxver && !refuse) {
-						NAMESOCKFD nsf = { info.name, cfd };
+						const NAMESOCKFD nsf = { info.name, cfd };
 						registerPlayer(nsf);
 						send("OK", 2, cfd);
 						accepted = PLAY;

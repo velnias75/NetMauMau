@@ -64,7 +64,7 @@ private:
 
 private:
 	std::string m_pName;
-	timeval *m_timeout;
+	const timeval *m_timeout;
 };
 
 }

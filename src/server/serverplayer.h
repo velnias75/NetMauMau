@@ -65,7 +65,7 @@ private:
 
 private:
 	Connection &m_connection;
-	int m_sockfd;
+	const int m_sockfd;
 };
 
 }

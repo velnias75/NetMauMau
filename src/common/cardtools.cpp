@@ -273,7 +273,7 @@ bool NetMauMau::Common::parseCardDesc(const std::string &desc, ICard::SUIT *suit
 
 	*suit = symbolToSuit(s);
 
-	unsigned int iVal = std::strtoul(r.c_str(), NULL, 10);
+	const unsigned int iVal = std::strtoul(r.c_str(), NULL, 10);
 
 	if(::isdigit(r[0]) && iVal) {
 		*rank = static_cast<ICard::RANK>(iVal);

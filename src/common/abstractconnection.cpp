@@ -36,6 +36,10 @@
 #include <mswsock.h>
 #endif
 
+#ifndef TEMP_FAILURE_RETRY
+#define TEMP_FAILURE_RETRY
+#endif
+
 namespace {
 
 #pragma GCC diagnostic ignored "-Weffc++"
@@ -106,15 +110,14 @@ void AbstractConnection::wait(long ms) throw(Exception::SocketException) {
 
 	fd_set rfds;
 	int sret = 1;
+	timeval tv = { ms / 1000L, ms % 1000L };
 
 	while(sret > 0) {
 
 		FD_ZERO(&rfds);
 		FD_SET(getSocketFD(), &rfds);
 
-		timeval tv = { ms / 1000L, ms % 1000L };
-
-		if((sret = ::select(getSocketFD() + 1, &rfds, NULL, NULL, &tv)) < 0) {
+		if((sret = TEMP_FAILURE_RETRY(::select(getSocketFD() + 1, &rfds, NULL, NULL, &tv))) < 0) {
 			throw Exception::SocketException(std::strerror(errno), getSocketFD(), errno);
 		} else if(sret > 0) {
 			intercept();
@@ -141,23 +144,22 @@ void AbstractConnection::reset() throw() {
 	m_aiPlayers.clear();
 }
 
-bool AbstractConnection::isHello(std::string::size_type dot, std::string::size_type spc) const {
+bool AbstractConnection::isHello(std::string::size_type dot, std::string::size_type spc) {
 	return spc != std::string::npos && dot != std::string::npos && spc < dot;
 }
 
 bool AbstractConnection::isValidHello(std::string::size_type dot, std::string::size_type spc,
-									  const std::string &rHello,
-									  const std::string &expHello) const {
+									  const std::string &rHello, const std::string &expHello) {
 	return isHello(dot, spc) && rHello.substr(0, std::strlen(PACKAGE_NAME)) == expHello;
 }
 
 uint16_t AbstractConnection::getMajorFromHello(const std::string &hello,
-		std::string::size_type dot, std::string::size_type spc) const {
+		std::string::size_type dot, std::string::size_type spc) {
 	return (uint16_t)std::strtoul(hello.substr(spc + 1, dot).c_str(), NULL, 10);
 }
 
 uint16_t AbstractConnection::getMinorFromHello(const std::string &hello,
-		std::string::size_type dot) const {
+		std::string::size_type dot) {
 	return (uint16_t)std::strtoul(hello.substr(dot + 1).c_str(), NULL, 10);
 }
 

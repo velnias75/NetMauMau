@@ -81,6 +81,7 @@ char bind[HOST_NAME_MAX] = { 0 };
 char *host = bind;
 char *aiName = AI_NAME;
 std::string aiNames[4];
+long aiDelay = 1000L;
 #ifndef _WIN32
 char *user  = DP_USER;
 char *grp = DP_GROUP;
@@ -98,6 +99,10 @@ poptOption poptOptions[] = {
 	{
 		"ai-name", 'A', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &aiName, 'A',
 		"Set the name of one AI player. Can be given up to 4 times", "NAME"
+	},
+	{
+		"ai-delay", 'D', POPT_ARG_LONG | POPT_ARGFLAG_SHOW_DEFAULT, &aiDelay,
+		0, "Delay after AI turns", "MILLISECONDS"
 	},
 	{ "bind", 'b', POPT_ARG_STRING, &host, 0, "Bind to HOST", "HOST" },
 #ifndef _WIN32
@@ -430,7 +435,7 @@ int main(int argc, const char **argv) {
 			con.connect();
 
 			Server::EventHandler evtHdlr(con);
-			Server::Game game(evtHdlr, aiOpponent, aiNames);
+			Server::Game game(evtHdlr, aiDelay, aiOpponent, aiNames);
 
 			Server::Connection::CAPABILITIES caps;
 			caps.insert(std::make_pair("SERVER_VERSION", PACKAGE_VERSION));
@@ -448,7 +453,7 @@ int main(int argc, const char **argv) {
 			caps.insert(std::make_pair("MAX_PLAYERS", mpos.str()));
 
 			std::ostringstream cpos;
-			cpos << game.getPlayerCount(); // - (aiOpponent ? 1 : 0);
+			cpos << game.getPlayerCount();
 			caps.insert(std::make_pair("CUR_PLAYERS", cpos.str()));
 
 			con.setCapabilities(caps);

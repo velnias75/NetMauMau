@@ -52,20 +52,22 @@ struct PlayerNameEqual : public std::binary_function < NetMauMau::Player::IPlaye
 
 using namespace NetMauMau;
 
-Engine::Engine(Event::IEventHandler &eventHandler, bool nextMessage) : m_eventHandler(eventHandler),
-	m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)), m_ruleset(new RuleSet::StdRuleSet()),
-	m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_delRuleSet(true), m_jackMode(false),
-	m_initialChecked(false), m_nextMessage(nextMessage), m_ultimate(false), m_initialJack(false),
-	m_alwaysWait(false), m_initialNextMessage(nextMessage) {
+Engine::Engine(Event::IEventHandler &eventHandler, long aiDelay, bool nextMessage) :
+	m_eventHandler(eventHandler), m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)),
+	m_ruleset(new RuleSet::StdRuleSet()), m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0),
+	m_delRuleSet(true), m_jackMode(false), m_initialChecked(false), m_nextMessage(nextMessage),
+	m_ultimate(false), m_initialJack(false), m_alwaysWait(false),
+	m_initialNextMessage(nextMessage), m_aiDelay(aiDelay) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
 }
 
-Engine::Engine(Event::IEventHandler &eventHandler, RuleSet::IRuleSet *ruleset, bool nextMessage) :
-	m_eventHandler(eventHandler), m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)),
-	m_ruleset(ruleset), m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_delRuleSet(false),
-	m_jackMode(false), m_initialChecked(false), m_nextMessage(nextMessage), m_ultimate(false),
-	m_initialJack(false), m_alwaysWait(false), m_initialNextMessage(nextMessage) {
+Engine::Engine(Event::IEventHandler &eventHandler, long aiDelay, RuleSet::IRuleSet *ruleset,
+			   bool nextMessage) : m_eventHandler(eventHandler), m_state(ACCEPT_PLAYERS),
+	m_talon(new Talon(this)), m_ruleset(ruleset), m_players(), m_nxtPlayer(0), m_turn(1),
+	m_curTurn(0), m_delRuleSet(false), m_jackMode(false), m_initialChecked(false),
+	m_nextMessage(nextMessage), m_ultimate(false), m_initialJack(false), m_alwaysWait(false),
+	m_initialNextMessage(nextMessage), m_aiDelay(aiDelay) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
 }
@@ -198,7 +200,7 @@ void Engine::suspends(Player::IPlayer *p, const Common::ICard *uc) const {
 
 	Common::AbstractConnection *con = m_eventHandler.getConnection();
 
-	if(p->isAIPlayer() && m_alwaysWait && con) con->wait(1000L);
+	if(p->isAIPlayer() && m_alwaysWait && con) con->wait(m_aiDelay);
 }
 
 bool Engine::nextTurn() {
@@ -238,7 +240,7 @@ bool Engine::nextTurn() {
 			if(uc->getRank() == Common::ICard::EIGHT && getAICount()) {
 				Common::AbstractConnection *con = m_eventHandler.getConnection();
 
-				if(con) con->wait(1000);
+				if(con) con->wait(m_aiDelay);
 			}
 		}
 
@@ -344,7 +346,7 @@ sevenRule:
 
 					PLAYERS::iterator f(m_players.begin());
 					std::advance(f, m_nxtPlayer);
-					PLAYERS::iterator nxt = m_players.erase(f);
+					const PLAYERS::iterator nxt = m_players.erase(f);
 
 					m_nxtPlayer = nxt != m_players.end() ? std::distance(m_players.begin(), nxt)
 								  : 0;
@@ -361,7 +363,7 @@ sevenRule:
 
 					Common::AbstractConnection *con = m_eventHandler.getConnection();
 
-					if(con) con->wait(1000L);
+					if(con) con->wait(m_aiDelay);
 				}
 			}
 

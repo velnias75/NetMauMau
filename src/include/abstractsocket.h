@@ -71,8 +71,8 @@ protected:
 
 private:
 	static bool m_interrupt;
-	std::string m_server;
-	uint16_t m_port;
+	const std::string m_server;
+	const uint16_t m_port;
 	int m_sfd;
 	std::string m_wireError;
 };

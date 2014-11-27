@@ -39,8 +39,9 @@ std::size_t countAI(const std::string *aiNames) {
 
 using namespace NetMauMau::Server;
 
-Game::Game(NetMauMau::Event::IEventHandler &evtHdlr, bool aiPlayer, const std::string *aiName) :
-	m_engine(evtHdlr, !aiPlayer || countAI(aiName) > 1), m_aiOpponent(aiPlayer), m_aiPlayers(),
+Game::Game(NetMauMau::Event::IEventHandler &evtHdlr, long aiDelay, bool aiPlayer,
+		   const std::string *aiName) : m_engine(evtHdlr, aiDelay,
+					   !aiPlayer || countAI(aiName) > 1), m_aiOpponent(aiPlayer), m_aiPlayers(),
 	m_players() {
 
 	m_players.reserve(50);

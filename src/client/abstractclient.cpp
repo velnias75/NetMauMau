@@ -106,7 +106,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 	m_connection.setTimeout(timeout);
 	m_connection.connect();
 
-	NetMauMau::Common::ICard *lastPlayedCard = 0L;
+	const NetMauMau::Common::ICard *lastPlayedCard = 0L;
 	bool initCardShown = false;
 	std::string msg, cjackSuit;
 	std::size_t cturn = 0;
@@ -148,7 +148,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 						std::string cntS;
 						m_connection >> cntS;
 
-						STAT stat = { msg, std::strtoul(cntS.c_str(), NULL, 10) };
+						const STAT stat = { msg, std::strtoul(cntS.c_str(), NULL, 10) };
 						cstats.push_back(stat);
 
 						m_connection >> msg;
@@ -195,7 +195,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 				} else if(!m_disconnectNow && msg == "INITIALCARD") {
 
 					m_connection >> msg;
-					NetMauMau::Common::ICard *ic = (NetMauMau::Client::CardFactory(msg)).create();
+					const NetMauMau::Common::ICard *ic = (NetMauMau::Client::CardFactory(msg)).create();
 
 					if(ic->getRank() == NetMauMau::Common::ICard::JACK ||
 							ic->getRank() == NetMauMau::Common::ICard::EIGHT) {
@@ -273,7 +273,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					std::string player;
 					m_connection >> player >> msg;
 
-					NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(msg)).create();
+					const NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(msg)).create();
 					cardRejected(player, c);
 					delete c;
 
@@ -293,7 +293,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					std::string player;
 					m_connection >> player >> msg;
 
-					NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(msg)).create();
+					const NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(msg)).create();
 					playedCard(player, c);
 					delete c;
 
@@ -312,7 +312,7 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 
 					if(extra == "CARDTAKEN") {
 						m_connection >> msg;
-						NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(msg)).create();
+						const NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(msg)).create();
 						playerPicksCard(player, c);
 						delete c;
 					} else {

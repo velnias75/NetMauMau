@@ -152,9 +152,9 @@ void StdPlayer::countSuits(SUITCOUNT *suitCount, const CARDS &myCards) const {
 	const bool noCards = myCards.empty();
 
 	for(std::size_t i = 0; i < 4; ++i) {
-		SUITCOUNT sc = { SUIT[i], noCards ? 0 : std::count_if(myCards.begin(), myCards.end(),
-						 std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit), SUIT[i]))
-					   };
+		const SUITCOUNT sc = { SUIT[i], noCards ? 0 : std::count_if(myCards.begin(), myCards.end(),
+							   std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit), SUIT[i]))
+							 };
 
 		suitCount[i] = sc;
 	}
@@ -206,8 +206,8 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 								 std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit), *js)) :
 								 myCards.end());
 
-		CARDS::value_type f = NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN,
-							  myCards.begin(), e);
+		const CARDS::value_type f = NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN,
+									myCards.begin(), e);
 
 		if(f) {
 			bestCard = f;
@@ -235,8 +235,8 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 							   std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit),
 											suitCount[p].suit));
 
-				CARDS::value_type f = NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN,
-									  myCards.begin(), myCards.end());
+				const CARDS::value_type f = NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN,
+											myCards.begin(), myCards.end());
 
 				if(f) {
 					m_powerSuit = f->getSuit();
@@ -261,8 +261,8 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 							  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
 										   NetMauMau::Common::ICard::SEVEN)));
 
-			CARDS::value_type f = NetMauMau::Common::findSuit(js ? *js : uc->getSuit(),
-								  myCards.begin(), e);
+			const CARDS::value_type f = NetMauMau::Common::findSuit(js ? *js : uc->getSuit(),
+										myCards.begin(), e);
 
 			const CARDS::difference_type mySevens = std::distance(myCards.begin(), e);
 			const CARDS::difference_type poSevens = std::count_if(m_playedOutCards.begin(),
@@ -306,8 +306,8 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 											  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
 														   NetMauMau::Common::ICard::SEVEN));
 
-						CARDS::value_type f = NetMauMau::Common::findRank(uc->getRank(),
-											  myCards.begin(), e);
+						const CARDS::value_type f = NetMauMau::Common::findRank(uc->getRank(),
+													myCards.begin(), e);
 
 						if(f) {
 							bestCard = f;
@@ -329,8 +329,8 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 											   (std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
 													   NetMauMau::Common::ICard::JACK)));
 
-				CARDS::value_type f = NetMauMau::Common::findSuit(js ? *js : uc->getSuit(),
-									  myCards.begin(), myCards.end());
+				const CARDS::value_type f = NetMauMau::Common::findSuit(js ? *js : uc->getSuit(),
+											myCards.begin(), myCards.end());
 
 				if(f && f->getRank() != NetMauMau::Common::ICard::JACK) bestCard = f;
 			}
@@ -373,7 +373,7 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICard *uncoveredCard,
 						 const NetMauMau::Common::ICard *playedCard) const {
 
 	if(m_powerSuit != NetMauMau::Common::ICard::SUIT_ILLEGAL) {
-		NetMauMau::Common::ICard::SUIT s = m_powerSuit;
+		const NetMauMau::Common::ICard::SUIT s = m_powerSuit;
 		m_powerSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
 		m_powerPlay = true;
 		return s;
@@ -381,7 +381,7 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICard *uncoveredCard,
 
 	if(m_cards.size() < 8) {
 
-		NetMauMau::Common::ICard *bc = 0L;
+		const NetMauMau::Common::ICard *bc = 0L;
 
 		if((bc = findBestCard(uncoveredCard, 0L, true))) {
 			return bc->getSuit();

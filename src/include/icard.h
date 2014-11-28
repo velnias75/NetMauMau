@@ -83,7 +83,7 @@ public:
 
 	/**
 	 * @brief Gets the points of the card
-	 *
+	 * @see Common::getCardPoints
 	 * @return std::size_t the points of the card
 	 */
 	virtual std::size_t getPoints() const = 0;

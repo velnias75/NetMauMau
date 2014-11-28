@@ -277,6 +277,19 @@ _EXPORT NetMauMau::Common::ICard *getIllegalCard() _CONST;
 /**
  * @brief Gets the points of a @c RANK
  *
+ * Rank    | Points
+ * ------: | :-----
+ * Seven   | 1
+ * Eight   | 2
+ * Nine    | 3
+ * Ten     | 4
+ * Queen   | 5
+ * King    | 6
+ * Ace     | 11
+ * Jack    | 20
+ * 
+ * @see Common::ICard::getPoints
+ *
  * @param rank the @c RANK
  * @return std::size_t the points of a @c RANK
  */

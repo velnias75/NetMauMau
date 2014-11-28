@@ -18,6 +18,7 @@
  */
 
 #include <cstring>
+#include <numeric>
 
 #include "stdplayer.h"
 
@@ -80,6 +81,13 @@ struct playedOutRank : std::binary_function<std::string, NetMauMau::Common::ICar
 		return false;
 	}
 };
+
+struct pointSum : std::binary_function<std::size_t, NetMauMau::Common::ICard *, std::size_t> {
+	std::size_t operator()(std::size_t i, const NetMauMau::Common::ICard *c) const {
+		return i + c->getPoints();
+	}
+};
+
 #pragma GCC diagnostic pop
 
 }
@@ -461,14 +469,7 @@ std::size_t StdPlayer::getCardCount() const {
 }
 
 std::size_t StdPlayer::getPoints() const {
-
-	std::size_t pts = 0;
-
-	for(CARDS::const_iterator i(m_cards.begin()); i != m_cards.end(); ++i) {
-		pts += (*i)->getPoints();
-	}
-
-	return pts;
+	return std::accumulate(m_cards.begin(), m_cards.end(), 0, pointSum());
 }
 
 const StdPlayer::CARDS &StdPlayer::getPlayerCards() const {

@@ -28,8 +28,11 @@
  * NetMauMau::Client::AbstractClient. @n Useful functions you'll find in NetMauMau::Common.
  *
  * Link your client against @c -lnetmaumauclient and @c -lnetmaumaucommon
+ * 
+ * The rules and points you can find @ref rules "here".
  *
- * You can grab the latest source code at https://github.com/velnias75/NetMauMau\n
+ * You can grab the latest source code from https://github.com/velnias75/NetMauMau or
+ * https://sourceforge.net/projects/netmaumau\n
  * A proof of concept Qt client can be found at https://github.com/velnias75/NetMauMau-Qt-Client
  *
  * @page rules Rules
@@ -49,46 +52,49 @@
  * can play out any card of either the same rank or the same suit. If a player cannot play out
  * any card the player has to take one from the pool and to suspend. Some cards trigger specific
  * actions as described below.
+ * 
+ * If a player has lost the points of the player's cards are summed up. The higher that value
+ * the worse the game is lost.
  *
  * Specific card rules
  * -------------------
  *
  * All rules apply also to the visible card at the beginning of the game for the first player.
  *
- * * **Seven**
+ * * **Seven** (1 Point)
  *
  *    if a *Seven* is played out than the next player has either to take two more cards or play
  *    out another *Seven*. In that case the next player has either to take plus two (i.e. four)
  *    cards or can also play out a *Seven* and so forth. At maximum one player has to take eight
  *    cards if a sequence of four *Seven* are played out
  *
- * * **Eight**
+ * * **Eight** (2 Points)
  *
  *    if an *Eight* is played out, the next player has to suspend and the next player can play
  *    a card. The player has **not** to take an extra card. An *Eight* played before takes
  *    precedence, i.e. even if the next player has an *Eight*, the player has to suspend
  *
- * * **Nine**
+ * * **Nine** (3 Points)
  *
  *    there is no special rule for that rank
  *
- * * **Ten**
+ * * **Ten** (4 Points)
  *
  *    there is no special rule for that rank
  *
- * * **Queen**
+ * * **Queen** (5 Points)
  *
  *    there is no special rule for that rank
  *
- * * **King**
+ * * **King** (6 Points)
  *
  *    there is no special rule for that rank
  *
- * * **Ace**
+ * * **Ace** (11 Points)
  *
  *    there is no special rule for that rank
  *
- * * **Jack**
+ * * **Jack** (20 Points)
  *
  *    if a *Jack* of any suite is played out, the player can wish a new suit. A *Jack* can get
  *    played over any card except another *Jack*. An *Eight* played before takes precedence, i.e.
@@ -408,7 +414,6 @@ protected:
 	 * taking card a is not possible
 	 *
 	 * @param enable @c true if it is possible to take a card, @c false otherwise
-	 * @return void
 	 */
 	virtual void enableSuspend(bool enable) const = 0;
 

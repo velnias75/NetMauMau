@@ -28,7 +28,7 @@
  * NetMauMau::Client::AbstractClient. @n Useful functions you'll find in NetMauMau::Common.
  *
  * Link your client against @c -lnetmaumauclient and @c -lnetmaumaucommon
- * 
+ *
  * The rules and points you can find @ref rules "here".
  *
  * You can grab the latest source code from https://github.com/velnias75/NetMauMau or
@@ -52,7 +52,7 @@
  * can play out any card of either the same rank or the same suit. If a player cannot play out
  * any card the player has to take one from the pool and to suspend. Some cards trigger specific
  * actions as described below.
- * 
+ *
  * If a player has lost the points of the player's cards are summed up. The higher that value
  * the worse the game is lost.
  *
@@ -172,6 +172,12 @@ public:
 	 *
 	 * @throw Common::Exception::SocketException if the connection failed
 	 * @throw Client::Exception::TimeoutException if the connection attempt timed out
+	 * @throw Client::Exception::ProtocolErrorException if there was a aprotocol error
+	 * @throw Client::Exception::ConnectionRejectedException if the connection got rejected
+	 * @throw Client::Exception::NoNetMauMauServerException
+	 * if the remote host is no %NetMauMau server
+	 * @throw Client::Exception::ShutdownException if the server is shutting down
+	 * @throw Client::Exception::VersionMismatchException if the client is not supported
 	 */
 	void play(timeval *timeout = NULL) throw(NetMauMau::Common::Exception::SocketException);
 
@@ -191,6 +197,7 @@ public:
 	 * @param timeout the time to wait for a connection, if @c NULL there will be no timeout
 	 *
 	 * @throw Common::Exception::SocketException if the connection failed
+	 * @throw Client::Exception::CapabilitiesException if the capabilities cannot get retrieved
 	 * @throw Client::Exception::TimeoutException if the connection attempt timed out
 	 *
 	 * @return CAPABILITIES the server capabilities
@@ -202,6 +209,11 @@ public:
 	 * @brief Returns the list of currently registered player names
 	 *
 	 * @param timeout the time to wait for a connection, if @c NULL there will be no timeout
+	 *
+	 * @throw Common::Exception::SocketException if the connection failed
+	 * @throw Client::Exception::PlayerlistException if the player list cannot get retrieved
+	 * @throw Client::Exception::TimeoutException if the connection attempt timed out
+	 *
 	 * @return NetMauMau::Client::AbstractClient::PLAYERLIST
 	 * the list of currently registered player names
 	 */

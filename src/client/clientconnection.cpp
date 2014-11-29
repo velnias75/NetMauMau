@@ -37,7 +37,14 @@
 
 #include "abstractclient.h"
 #include "timeoutexception.h"
+#include "shutdownexception.h"
+#include "playerlistexception.h"
+#include "capabilitiesexception.h"
+#include "protocolerrorexception.h"
+#include "versionmismatchexception.h"
 #include "interceptederrorexception.h"
+#include "nonetmaumauserverexception.h"
+#include "connectionrejectedexception.h"
 
 #define MAX_PNAME 1024
 
@@ -86,8 +93,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	} else if(pret == -1 && errno != EINTR) {
 		throw NetMauMau::Common::Exception::SocketException(strerror(errno), getSocketFD(), errno);
 	} else if(pret == -1 && errno == EINTR) {
-		throw NetMauMau::Common::Exception::SocketException("Server is shutting down",
-				getSocketFD(), errno);
+		throw Exception::ShutdownException("Server is shutting down", getSocketFD());
 	} else {
 		throw Exception::TimeoutException("Timeout while connecting to server", getSocketFD());
 	}
@@ -112,8 +118,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		}
 
 	} else {
-		throw NetMauMau::Common::Exception::SocketException("Unable to get player list",
-				getSocketFD());
+		throw Exception::PlayerlistException("Unable to get player list", getSocketFD());
 	}
 
 	return plv;
@@ -143,8 +148,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		}
 
 	} else {
-		throw NetMauMau::Common::Exception::SocketException("Unable to get capabilities",
-				getSocketFD());
+		throw Exception::CapabilitiesException("Unable to get capabilities", getSocketFD());
 	}
 
 	return caps;
@@ -172,33 +176,32 @@ void Connection::connect() throw(NetMauMau::Common::Exception::SocketException) 
 			if(!strncmp(name, "NAME", 4)) {
 				send(m_pName.c_str(), m_pName.length(), getSocketFD());
 			} else {
-				throw NetMauMau::Common::Exception::SocketException("Protocol error",
-						getSocketFD());
+				throw Exception::ProtocolErrorException("Protocol error", getSocketFD());
 			}
 
 			char status[2];
 			recv(status, 2, getSocketFD());
 
 			if((status[0] == 'N' && status[1] == 'O')) {
-				throw NetMauMau::Common::Exception::SocketException("Remote server rejected " \
+				throw Exception::ConnectionRejectedException("Remote server rejected " \
 						"the connection", getSocketFD());
 			} else if((status[0] == 'V' && status[1] == 'M')) {
-				std::ostringstream oscver;
-				oscver << "Client (version " << SERVER_VERSION_MAJOR << "." << SERVER_VERSION_MINOR
-					   << ") not supported. Server is too old: " << maj << '.' << min;
-				throw NetMauMau::Common::Exception::SocketException(oscver.str(), getSocketFD());
+				throw Exception::VersionMismatchException(
+					(static_cast<uint16_t>(maj) << 16u) | static_cast<uint16_t>(min),
+					(static_cast<uint16_t>(SERVER_VERSION_MAJOR) << 16u) |
+					static_cast<uint16_t>(SERVER_VERSION_MINOR), getSocketFD());
 			}
 
 		} else {
-			std::ostringstream os;
-			os << "Client (version " << SERVER_VERSION_MAJOR << "." << SERVER_VERSION_MINOR
-			   << ") not supported. Server wants at least version " << maj << "." << min;
-			throw NetMauMau::Common::Exception::SocketException(os.str(), getSocketFD());
+			throw Exception::VersionMismatchException(
+				(static_cast<uint16_t>(maj) << 16u) | static_cast<uint16_t>(min),
+				(static_cast<uint16_t>(SERVER_VERSION_MAJOR) << 16u) |
+				static_cast<uint16_t>(SERVER_VERSION_MINOR), getSocketFD());
 		}
 
 	} else {
-		throw NetMauMau::Common::Exception::SocketException("Remote server seems not to be " \
-				"a NetMauMau server", getSocketFD());
+		throw Exception::NoNetMauMauServerException("Remote server seems not to be " \
+				"a " PACKAGE_NAME " server", getSocketFD());
 	}
 }
 

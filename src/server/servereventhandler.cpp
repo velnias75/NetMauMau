@@ -189,7 +189,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	vm_new << vm_old.str() << '\0' << player->getPoints();
 
 	versionedMessage.insert(std::make_pair(0, vm_old.str()));
-	versionedMessage.insert(std::make_pair(m_connection.getServerVersion(), vm_new.str()));
+	versionedMessage.insert(std::make_pair(3, vm_new.str()));
 
 	m_connection.sendVersionedMessage(versionedMessage);
 }

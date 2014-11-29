@@ -1,3 +1,9 @@
+netmaumau (0.4) UNRELEASED; urgency=low
+
+  * 
+
+ -- Heiko Schäfer <heiko@rangun.de>  Sat, 29 Nov 2014 09:06:10 +0100
+
 netmaumau (0.3) UNRELEASED; urgency=low
 
   * On Win32 systems every log message gets flushed afterwards
@@ -5,7 +11,7 @@ netmaumau (0.3) UNRELEASED; urgency=low
 
  -- Heiko Schäfer <heiko@rangun.de>  Wed, 26 Nov 2014 12:28:36 +0100
 
-netmaumau (0.2~svn1) precise; urgency=low
+netmaumau (0.2) UNRELEASED; urgency=low
 
   * Initial release
 

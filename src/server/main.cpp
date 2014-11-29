@@ -435,7 +435,7 @@ int main(int argc, const char **argv) {
 			con.connect();
 
 			Server::EventHandler evtHdlr(con);
-			Server::Game game(evtHdlr, aiDelay, aiOpponent, aiNames);
+			Server::Game game(evtHdlr, ::labs(aiDelay), aiOpponent, aiNames);
 
 			Server::Connection::CAPABILITIES caps;
 			caps.insert(std::make_pair("SERVER_VERSION", PACKAGE_VERSION));

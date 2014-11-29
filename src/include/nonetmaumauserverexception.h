@@ -34,7 +34,7 @@ namespace Client {
 namespace Exception {
 
 /**
- * @brief The server version is not a %NetMauMau server
+ * @brief The remote host is not a %NetMauMau server
  * @since 0.4
  */
 class _EXPORT NoNetMauMauServerException : public Common::Exception::SocketException {

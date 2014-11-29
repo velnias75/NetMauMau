@@ -38,6 +38,8 @@ public:
 	virtual bool checkCard(const Common::ICard *uncoveredCard,
 						   const Common::ICard *playedCard) const;
 
+	virtual std::size_t lostPointFactor(const Common::ICard *uncoveredCard) const;
+
 	virtual bool hasToSuspend() const _PURE;
 	virtual void hasSuspended();
 	virtual bool suspendIfNoMatchingCard() const _CONST;

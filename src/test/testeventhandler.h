@@ -58,7 +58,8 @@ public:
 	virtual void playerWins(const NetMauMau::Player::IPlayer *player, std::size_t turn,
 							bool ultimate) const
 	throw(NetMauMau::Common::Exception::SocketException);
-	virtual void playerLost(const NetMauMau::Player::IPlayer *player, std::size_t turn) const
+	virtual void playerLost(const NetMauMau::Player::IPlayer *player, std::size_t turn,
+							std::size_t pointFactor) const
 	throw(NetMauMau::Common::Exception::SocketException);
 };
 

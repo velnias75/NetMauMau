@@ -128,11 +128,12 @@ void TestEventHandler::playerWins(const NetMauMau::Player::IPlayer *player, std:
 			  << t << " :-)" << BLUE_OFF << std::endl;
 }
 
-void TestEventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std::size_t) const
+void TestEventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std::size_t,
+								  std::size_t pointFactor) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\t" << BOLD_ON << "has lost with "
-			  << player->getPoints() << " points in hand :-(" << BOLD_OFF << std::endl;
+			  << (player->getPoints() * pointFactor) << " points in hand :-(" << BOLD_OFF << std::endl;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

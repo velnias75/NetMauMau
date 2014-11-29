@@ -352,7 +352,8 @@ sevenRule:
 								  : 0;
 
 					if(!hasPlayers()) {
-						m_eventHandler.playerLost(m_players[m_nxtPlayer], m_turn);
+						m_eventHandler.playerLost(m_players[m_nxtPlayer], m_turn,
+												  m_ruleset->lostPointFactor(uc));
 						m_state = FINISHED;
 					}
 

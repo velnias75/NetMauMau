@@ -53,48 +53,48 @@
  * any card the player has to take one from the pool and to suspend. Some cards trigger specific
  * actions as described below.
  *
- * If a player has lost the points of the player's cards are summed up. The higher that value
- * the worse the game is lost.
+ * If a player has lost the points of the player's cards are summed up. If the player has lost due
+ * a played out Jack, the points are doubled. The higher that value the worse the game is lost.
  *
  * Specific card rules
  * -------------------
  *
  * All rules apply also to the visible card at the beginning of the game for the first player.
  *
- * * **Seven** (1 Point)
+ * * **Seven** (1 point)
  *
  *    if a *Seven* is played out than the next player has either to take two more cards or play
  *    out another *Seven*. In that case the next player has either to take plus two (i.e. four)
  *    cards or can also play out a *Seven* and so forth. At maximum one player has to take eight
  *    cards if a sequence of four *Seven* are played out
  *
- * * **Eight** (2 Points)
+ * * **Eight** (2 points)
  *
  *    if an *Eight* is played out, the next player has to suspend and the next player can play
  *    a card. The player has **not** to take an extra card. An *Eight* played before takes
  *    precedence, i.e. even if the next player has an *Eight*, the player has to suspend
  *
- * * **Nine** (3 Points)
+ * * **Nine** (3 points)
  *
  *    there is no special rule for that rank
  *
- * * **Ten** (4 Points)
+ * * **Ten** (4 points)
  *
  *    there is no special rule for that rank
  *
- * * **Queen** (5 Points)
+ * * **Queen** (5 points)
  *
  *    there is no special rule for that rank
  *
- * * **King** (6 Points)
+ * * **King** (6 points)
  *
  *    there is no special rule for that rank
  *
- * * **Ace** (11 Points)
+ * * **Ace** (11 points)
  *
  *    there is no special rule for that rank
  *
- * * **Jack** (20 Points)
+ * * **Jack** (20 points)
  *
  *    if a *Jack* of any suite is played out, the player can wish a new suit. A *Jack* can get
  *    played over any card except another *Jack*. An *Eight* played before takes precedence, i.e.

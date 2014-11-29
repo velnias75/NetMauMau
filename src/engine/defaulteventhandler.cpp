@@ -101,7 +101,8 @@ throw(NetMauMau::Common::Exception::SocketException) {}
 void DefaultEventHandler::playerWins(const NetMauMau::Player::IPlayer *, std::size_t, bool) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
-void DefaultEventHandler::playerLost(const NetMauMau::Player::IPlayer *, std::size_t) const
+void DefaultEventHandler::playerLost(const NetMauMau::Player::IPlayer *, std::size_t,
+									 std::size_t) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
 void DefaultEventHandler::nextPlayer(const NetMauMau::Player::IPlayer *) const

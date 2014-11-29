@@ -177,7 +177,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 }
 
-void EventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std::size_t) const
+void EventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std::size_t,
+							  std::size_t pointFactor) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::string pl("PLAYERLOST");
@@ -186,7 +187,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::ostringstream vm_old, vm_new;
 	vm_old << pl << '\0' << player->getName();
-	vm_new << vm_old.str() << '\0' << player->getPoints();
+	vm_new << vm_old.str() << '\0' << (player->getPoints() * pointFactor);
 
 	versionedMessage.insert(std::make_pair(0, vm_old.str()));
 	versionedMessage.insert(std::make_pair(3, vm_new.str()));

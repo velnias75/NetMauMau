@@ -65,7 +65,8 @@ public:
 
 	virtual void playerWins(const Player::IPlayer *player, std::size_t turn,
 							bool ultimate) const throw(Common::Exception::SocketException);
-	virtual void playerLost(const Player::IPlayer *player, std::size_t turn) const
+	virtual void playerLost(const Player::IPlayer *player, std::size_t turn,
+							std::size_t pointFactor) const
 	throw(Common::Exception::SocketException);
 	virtual void playerPlaysCard(const Player::IPlayer *player, const Common::ICard *playedCard,
 								 const Common::ICard *uncoveredCard) const

@@ -76,8 +76,8 @@ public:
 	throw(Common::Exception::SocketException) _CONST;
 	virtual void playerWins(const Player::IPlayer *player, std::size_t turn,
 							bool ultimate) const throw(Common::Exception::SocketException) _CONST;
-	virtual void playerLost(const Player::IPlayer *player,
-							std::size_t turn) const
+	virtual void playerLost(const Player::IPlayer *player, std::size_t turn,
+							std::size_t pointFactor) const
 	throw(Common::Exception::SocketException) _CONST;
 	virtual void nextPlayer(const Player::IPlayer *player) const
 	throw(Common::Exception::SocketException) _CONST;

@@ -75,6 +75,10 @@ bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 	return accepted;
 }
 
+std::size_t StdRuleSet::lostPointFactor(const NetMauMau::Common::ICard *uc) const {
+	return uc->getRank() == NetMauMau::Common::ICard::JACK ? 2 : 1;
+}
+
 bool StdRuleSet::hasToSuspend() const {
 	return m_hasToSuspend && !m_hasSuspended;
 }

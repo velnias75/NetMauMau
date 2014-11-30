@@ -1,8 +1,10 @@
 netmaumau (0.4) UNRELEASED; urgency=low
 
   * If a player has lost due a played out Jack, the points are doubled
+  * If a player has lost and a 7 is the open card, the player takes the 
+    cards and they get added to the points
 
- -- Heiko Schäfer <heiko@rangun.de>  Sat, 29 Nov 2014 20:07:37 +0100
+ -- Heiko Schäfer <heiko@rangun.de>  Sun, 30 Nov 2014 11:24:03 +0100
 
 netmaumau (0.3) UNRELEASED; urgency=low
 

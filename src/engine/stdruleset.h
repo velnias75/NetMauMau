@@ -42,7 +42,10 @@ public:
 
 	virtual bool hasToSuspend() const _PURE;
 	virtual void hasSuspended();
+
 	virtual bool suspendIfNoMatchingCard() const _CONST;
+	virtual bool takeIfLost() const _CONST;
+
 	virtual std::size_t takeCards(const Common::ICard *playedCard) const;
 	virtual void hasTakenCards();
 

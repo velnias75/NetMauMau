@@ -33,6 +33,7 @@
 #include "talon.h"
 #include "logger.h"
 #include "iplayer.h"
+#include "cardtools.h"
 #include "stdruleset.h"
 #include "ieventhandler.h"
 #include "abstractconnection.h"
@@ -261,17 +262,7 @@ bool Engine::nextTurn() {
 
 			bool suspend = false;
 
-			if(m_ruleset->takeCards(pc)) {
-
-				const std::size_t cardCount = m_ruleset->takeCards(pc);
-
-				for(std::size_t i = 0; i < cardCount; ++i) {
-					player->receiveCard(m_talon->takeCard());
-				}
-
-				m_eventHandler.playerPicksCards(player, cardCount);
-				m_ruleset->hasTakenCards();
-			}
+			takeCards(player, pc);
 
 sevenRule:
 
@@ -352,8 +343,15 @@ sevenRule:
 								  : 0;
 
 					if(!hasPlayers()) {
+
+						if(m_ruleset->takeIfLost() &&
+								m_talon->getUncoveredCard()->getRank() == Common::ICard::SEVEN) {
+							takeCards(m_players[m_nxtPlayer], Common::getIllegalCard());
+						}
+
 						m_eventHandler.playerLost(m_players[m_nxtPlayer], m_turn, m_ruleset->
 												  lostPointFactor(m_talon->getUncoveredCard()));
+
 						m_state = FINISHED;
 					}
 
@@ -371,6 +369,8 @@ sevenRule:
 		} else {
 			suspends(player, uc);
 			m_ruleset->hasSuspended();
+
+			if(m_jackMode) m_ruleset->setJackModeOff();
 		}
 
 		m_eventHandler.stats(m_players);
@@ -435,6 +435,20 @@ sevenRule:
 	}
 
 	return true;
+}
+
+void Engine::takeCards(Player::IPlayer *player, const Common::ICard *card) const {
+
+	const std::size_t cardCount = m_ruleset->takeCards(card);
+
+	if(cardCount) {
+		for(std::size_t i = 0; i < cardCount; ++i) {
+			player->receiveCard(m_talon->takeCard());
+		}
+
+		m_eventHandler.playerPicksCards(player, cardCount);
+		m_ruleset->hasTakenCards();
+	}
 }
 
 void Engine::uncoveredCard(const Common::ICard *top) const

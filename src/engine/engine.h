@@ -103,6 +103,7 @@ private:
 	std::size_t getAICount() const;
 
 	void suspends(Player::IPlayer *p, const Common::ICard *uc = NULL) const;
+	void takeCards(Player::IPlayer *player, const Common::ICard *card) const;
 
 	PLAYERS::const_iterator find(const std::string &name) const;
 	PLAYERS::iterator removePlayer(Player::IPlayer *player);

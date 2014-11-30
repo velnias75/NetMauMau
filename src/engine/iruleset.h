@@ -47,7 +47,9 @@ public:
 	virtual void hasSuspended() = 0;
 	virtual std::size_t takeCards(const Common::ICard *playedCard) const = 0;;
 	virtual void hasTakenCards() = 0;
+
 	virtual bool suspendIfNoMatchingCard() const = 0;
+	virtual bool takeIfLost() const = 0;
 
 	virtual bool isJackMode() const = 0;
 	virtual Common::ICard::SUIT getJackSuit() const = 0;

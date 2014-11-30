@@ -100,6 +100,10 @@ bool StdRuleSet::suspendIfNoMatchingCard() const {
 	return false;
 }
 
+bool StdRuleSet::takeIfLost() const {
+	return true;
+}
+
 bool StdRuleSet::isJackMode() const {
 	return m_jackMode;
 }

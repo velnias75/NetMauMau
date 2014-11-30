@@ -352,8 +352,8 @@ sevenRule:
 								  : 0;
 
 					if(!hasPlayers()) {
-						m_eventHandler.playerLost(m_players[m_nxtPlayer], m_turn,
-												  m_ruleset->lostPointFactor(uc));
+						m_eventHandler.playerLost(m_players[m_nxtPlayer], m_turn, m_ruleset->
+												  lostPointFactor(m_talon->getUncoveredCard()));
 						m_state = FINISHED;
 					}
 
@@ -372,6 +372,9 @@ sevenRule:
 			suspends(player, uc);
 			m_ruleset->hasSuspended();
 		}
+
+		m_eventHandler.stats(m_players);
+		informAIStat();
 
 		if(!won) m_nxtPlayer = (m_nxtPlayer + 1) >= m_players.size() ? 0 : m_nxtPlayer + 1;
 

@@ -3,18 +3,20 @@ NetMauMau
 
 Server for the popular card game Mau Mau.
 
+Prerequisites
+-------------
+
+* a GNU GCC compiler (currently NetMauMau uses a certain amount of features exclusive to GCC)
+
+* the [POPT library](http://rpm5.org/files/popt/)
+
 Setting up the build environment
 --------------------------------
 
 After checkout run `autoreconf -ifv` to set up the build environment.
 
-`./configure && make`
-
-builds the projects and
-
-`make install`
-
-installs it.
+`./configure && make` builds the projects and `make install` installs it. 
+See `configure --help` for more options and help.
 
 Client
 ------

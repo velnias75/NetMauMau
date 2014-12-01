@@ -370,7 +370,10 @@ sevenRule:
 			suspends(player, uc);
 			m_ruleset->hasSuspended();
 
-			if(m_jackMode) m_ruleset->setJackModeOff();
+			if(m_jackMode) {
+				m_ruleset->setJackModeOff();
+				m_jackMode = false;
+			}
 		}
 
 		m_eventHandler.stats(m_players);
@@ -519,6 +522,7 @@ void Engine::reset() throw() {
 	m_nxtPlayer = 0,
 	m_turn = 1;
 	m_curTurn = 0;
+
 	m_jackMode = false;
 	m_nextMessage = m_initialNextMessage;
 	m_initialChecked = false;

@@ -24,7 +24,7 @@
 using namespace NetMauMau::RuleSet;
 
 StdRuleSet::StdRuleSet() : IRuleSet(), m_hasToSuspend(false), m_hasSuspended(false),
-	m_takeCardCount(0), m_jackMode(false), m_jackSuit(NetMauMau::Common::ICard::HEARTS) {}
+	m_takeCardCount(0), m_jackMode(false), m_jackSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL) {}
 
 StdRuleSet::~StdRuleSet() {}
 
@@ -66,7 +66,7 @@ bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 			m_jackSuit = player->getJackChoice(uncoveredCard ? uncoveredCard :
 											   playedCard, playedCard);
 		} else {
-			m_jackSuit = NetMauMau::Common::ICard::HEARTS;
+			m_jackSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
 		}
 
 		m_jackMode = true;
@@ -121,7 +121,7 @@ void StdRuleSet::reset() throw() {
 	m_hasSuspended = false;
 	m_takeCardCount = 0;
 	m_jackMode = false;
-	m_jackSuit = NetMauMau::Common::ICard::HEARTS;
+	m_jackSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

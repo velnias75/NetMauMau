@@ -260,7 +260,19 @@ throw(NetMauMau::Common::Exception::SocketException) {
 void EventHandler::playerChooseJackSuit(const NetMauMau::Player::IPlayer *,
 										NetMauMau::Common::ICard::SUIT suit) const
 throw(NetMauMau::Common::Exception::SocketException) {
-	m_connection << "JACKSUIT" << NetMauMau::Common::suitToSymbol(suit, false);
+
+	Connection::VERSIONEDMESSAGE vm;
+	std::ostringstream vm_old, vm_new;
+
+	vm_old << "JACKSUIT" << '\0' << NetMauMau::Common::suitToSymbol(suit ==
+			NetMauMau::Common::ICard::SUIT_ILLEGAL ? NetMauMau::Common::ICard::HEARTS : suit,
+			false);
+	vm_new << "JACKSUIT" << '\0' << NetMauMau::Common::suitToSymbol(suit, false);
+
+	vm.insert(std::make_pair(0, vm_old.str()));
+	vm.insert(std::make_pair(4, vm_new.str()));
+
+	m_connection.sendVersionedMessage(vm);
 }
 
 void EventHandler::nextPlayer(const NetMauMau::Player::IPlayer *player) const

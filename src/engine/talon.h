@@ -64,12 +64,13 @@ public:
 	Common::ICard *takeCard();
 
 private:
-	std::vector<Common::ICard *> createCards() const throw();
+	typedef std::vector<Common::ICard *> CARDS;
+	CARDS createCards() const throw();
 
 private:
 	const ITalonChange *m_talonChangeListener;
-	std::stack<Common::ICard *, std::vector<Common::ICard *> > m_cardStack;
-	std::stack<Common::ICard *, std::vector<Common::ICard *> > m_uncovered;
+	std::stack<Common::ICard *, CARDS > m_cardStack;
+	std::stack<Common::ICard *, CARDS > m_uncovered;
 };
 
 }

@@ -93,8 +93,7 @@ NetMauMau::Common::ICard *TestClient::playCard(const CARDS &cards) const {
 		std::cout << "Choose card:" << std::endl;
 		std::cout << "0) Suspend turn" << std::endl;
 
-		for(std::vector<NetMauMau::Common::ICard *>::const_iterator i(cards.begin());
-				i != cards.end(); ++i, ++pos) {
+		for(CARDS::const_iterator i(cards.begin()); i != cards.end(); ++i, ++pos) {
 			std::cout << (pos + 1) << ") " << (*i)->description(true) << std::endl;
 		}
 

@@ -500,12 +500,9 @@ protected:
 	virtual void unknownServerMessage(std::string message) const = 0;
 
 private:
-	CARDS getCards(const std::vector<Common::ICard *>::size_type cnt = 0) const;
-
-private:
 	Connection m_connection;
 	const std::string m_pName;
-	std::vector<Common::ICard *> m_cards;
+	CARDS m_cards;
 	const Common::ICard *m_openCard;
 	bool m_disconnectNow;
 };

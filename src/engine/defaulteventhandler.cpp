@@ -55,8 +55,7 @@ throw(NetMauMau::Common::Exception::SocketException) {}
 void DefaultEventHandler::playerRejected(const NetMauMau::Player::IPlayer *) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
-void DefaultEventHandler::cardsDistributed(const NetMauMau::Player::IPlayer *,
-		const std::vector<NetMauMau::Common::ICard *> &) const
+void DefaultEventHandler::cardsDistributed(const NetMauMau::Player::IPlayer *, const CARDS &) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
 void DefaultEventHandler::initialCard(const NetMauMau::Common::ICard *) const

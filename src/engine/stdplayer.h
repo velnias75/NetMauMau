@@ -96,7 +96,7 @@ private:
 
 private:
 	const std::string m_name;
-	std::vector<Common::ICard *> m_cards;
+	CARDS m_cards;
 	mutable bool m_cardsTaken;
 	const RuleSet::IRuleSet *m_ruleset;
 	std::set<std::string> m_playedOutCards;

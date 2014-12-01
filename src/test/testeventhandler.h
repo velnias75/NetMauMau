@@ -32,7 +32,7 @@ public:
 	throw(NetMauMau::Common::Exception::SocketException);
 
 	virtual void cardsDistributed(const NetMauMau::Player::IPlayer *player,
-								  const std::vector<NetMauMau::Common::ICard *> &cards) const
+								  const CARDS &cards) const
 	throw(NetMauMau::Common::Exception::SocketException);
 	virtual void initialCard(const NetMauMau::Common::ICard *initialCard) const
 	throw(NetMauMau::Common::Exception::SocketException);

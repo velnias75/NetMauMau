@@ -41,8 +41,7 @@ public:
 	virtual bool isAIPlayer() const _CONST;
 
 	virtual void receiveCard(Common::ICard *card);
-	virtual void receiveCardSet(const std::vector<Common::ICard *> &cards)
-	throw(Common::Exception::SocketException);
+	virtual void receiveCardSet(const CARDS &cards) throw(Common::Exception::SocketException);
 
 	virtual Common::ICard *requestCard(const Common::ICard *uncoveredCard,
 									   const Common::ICard::SUIT *jackSuit) const;

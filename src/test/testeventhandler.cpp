@@ -50,13 +50,13 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 
 void TestEventHandler::cardsDistributed(const NetMauMau::Player::IPlayer *player,
-										const std::vector<NetMauMau::Common::ICard *> &cards) const
+										const CARDS &cards) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << "Distributing cards to player \"" << player->getName() << "\"" << std::endl;
 
-	std::vector<NetMauMau::Common::ICard *>::const_iterator i(cards.begin());
-	const std::vector<NetMauMau::Common::ICard *>::const_iterator &e(cards.end());
+	CARDS::const_iterator i(cards.begin());
+	const CARDS::const_iterator &e(cards.end());
 
 	for(; i != e; ++i) {
 		std::cerr << "\tgets " << (*i)->description(true) << std::endl;
@@ -133,7 +133,8 @@ void TestEventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std:
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\t" << BOLD_ON << "has lost with "
-			  << (player->getPoints() * pointFactor) << " points in hand :-(" << BOLD_OFF << std::endl;
+			  << (player->getPoints() * pointFactor) << " points in hand :-(" << BOLD_OFF 
+			  << std::endl;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

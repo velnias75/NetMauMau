@@ -39,6 +39,8 @@ namespace Event {
 class IEventHandler {
 	DISALLOW_COPY_AND_ASSIGN(IEventHandler)
 public:
+	typedef std::vector<Common::ICard *> CARDS;
+
 	virtual ~IEventHandler() {}
 
 	virtual Common::AbstractConnection *getConnection() const = 0;
@@ -62,8 +64,7 @@ public:
 	virtual void playerRejected(const Player::IPlayer *player) const
 	throw(Common::Exception::SocketException) = 0;
 
-	virtual void cardsDistributed(const Player::IPlayer *player,
-								  const std::vector<Common::ICard *> &cards) const
+	virtual void cardsDistributed(const Player::IPlayer *player, const CARDS &cards) const
 	throw(Common::Exception::SocketException) = 0;
 	virtual void initialCard(const Common::ICard *initialCard) const
 	throw(Common::Exception::SocketException) = 0;
@@ -78,7 +79,8 @@ public:
 	throw(Common::Exception::SocketException) = 0;
 	virtual void playerPicksCards(const Player::IPlayer *player, std::size_t cardCount) const
 	throw(Common::Exception::SocketException) = 0;
-	virtual void playerSuspends(const Player::IPlayer *player, const Common::ICard *dueCard = 0L) const
+	virtual void playerSuspends(const Player::IPlayer *player,
+								const Common::ICard *dueCard = 0L) const
 	throw(Common::Exception::SocketException) = 0;
 	virtual void playerPlaysCard(const Player::IPlayer *player, const Common::ICard *playedCard,
 								 const Common::ICard *uncoveredCard) const

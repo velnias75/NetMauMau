@@ -50,8 +50,7 @@ public:
 	virtual void playerRejected(const Player::IPlayer *player) const
 	throw(Common::Exception::SocketException) _CONST;
 
-	virtual void cardsDistributed(const Player::IPlayer *player,
-								  const std::vector<Common::ICard *> &cards) const
+	virtual void cardsDistributed(const Player::IPlayer *player, const CARDS &cards) const
 	throw(Common::Exception::SocketException) _CONST;
 	virtual void initialCard(const Common::ICard *initialCard) const
 	throw(Common::Exception::SocketException) _CONST;

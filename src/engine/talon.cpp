@@ -32,11 +32,11 @@ Talon::Talon(const ITalonChange *tchg) throw() : m_talonChangeListener(tchg),
 	m_talonChangeListener->talonEmpty(false);
 }
 
-std::vector<Common::ICard *> Talon::createCards() const throw() {
+Talon::CARDS Talon::createCards() const throw() {
 
 	StdCardFactory cardFactory;
 
-	std::vector<Common::ICard *> cards;
+	Talon::CARDS cards;
 	cards.reserve(32);
 
 	cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::SEVEN));
@@ -75,8 +75,7 @@ std::vector<Common::ICard *> Talon::createCards() const throw() {
 	cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::KING));
 	cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::ACE));
 
-	std::random_shuffle(cards.begin(), cards.end(),
-						Common::genRandom<std::vector<Common::ICard *>::difference_type>);
+	std::random_shuffle(cards.begin(), cards.end(), Common::genRandom<CARDS::difference_type>);
 
 	return cards;
 }
@@ -116,7 +115,7 @@ Common::ICard *Talon::takeCard() {
 		Common::ICard *uc = m_uncovered.top();
 		m_uncovered.pop();
 
-		std::vector<Common::ICard *> cards;
+		CARDS cards;
 		cards.reserve(m_uncovered.size());
 
 		while(!m_uncovered.empty()) {
@@ -124,10 +123,9 @@ Common::ICard *Talon::takeCard() {
 			m_uncovered.pop();
 		}
 
-		std::random_shuffle(cards.begin(), cards.end(),
-							Common::genRandom<std::vector<Common::ICard *>::difference_type>);
+		std::random_shuffle(cards.begin(), cards.end(), Common::genRandom<CARDS::difference_type>);
 
-		for(std::vector<Common::ICard *>::const_iterator i(cards.begin()); i != cards.end(); ++i) {
+		for(CARDS::const_iterator i(cards.begin()); i != cards.end(); ++i) {
 			m_cardStack.push(*i);
 		}
 

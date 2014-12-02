@@ -274,10 +274,6 @@ using namespace NetMauMau;
 
 int main(int argc, const char **argv) {
 
-#ifndef HAVE_ARC4RANDOM_UNIFORM
-	std::srand(std::time(0L));
-#endif
-
 	std::size_t numAI = 0;
 	poptContext pctx = poptGetContext(NULL, argc, argv, poptOptions, 0);
 	int c;
@@ -379,6 +375,15 @@ int main(int argc, const char **argv) {
 	}
 
 	poptFreeContext(pctx);
+
+#ifndef HAVE_ARC4RANDOM_UNIFORM
+#if HAVE_INITSTATE
+	char istate[256];
+	initstate(std::time(0L), istate, 256);
+#else
+	std::srand(std::time(0L));
+#endif
+#endif
 
 #ifdef HAVE_ATEXIT
 #if !defined(_WIN32) && defined(PIDFILE) && defined(HAVE_CHOWN)

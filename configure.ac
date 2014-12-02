@@ -75,6 +75,7 @@ AC_TYPE_PID_T
 AC_C_INLINE
 
 # Checks for library functions.
+AC_CHECK_FUNCS([initstate])
 AC_CHECK_FUNCS([strtoul])
 AC_CHECK_FUNCS([memset])
 AC_CHECK_FUNCS([socket])

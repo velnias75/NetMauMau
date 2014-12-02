@@ -98,8 +98,8 @@ AC_DEFINE_UNQUOTED([SERVER_VERSION_MINOR], [${SERVER_VERSION_MINOR}], [server ve
 
 LDFLAGS="-Wl,--as-needed ${LDFLAGS}"
 CFLAGS="${CFLAGS} -std=gnu99 -fvisibility-inlines-hidden"
-CXXFLAGS="${CXXFLAGS} -std=gnu++98 -fvisibility=internal -fvisibility-inlines-hidden"
-CPPFLAGS="${CPPFLAGS} -DBASICLOGGER_NO_PTHREADS"
+CXXFLAGS="${CXXFLAGS} -std=gnu++98 -fvisibility=internal -fvisibility-inlines-hidden -fstrict-aliasing"
+CPPFLAGS="${CPPFLAGS} -DBASICLOGGER_NO_PTHREADS -D_GLIBCXX_VISIBILITY=0"
 NO_RTTI_FLAGS="-fno-rtti -fno-exceptions"
 
 AC_SUBST([LDFLAGS])

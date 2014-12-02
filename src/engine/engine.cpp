@@ -254,6 +254,8 @@ bool Engine::nextTurn() {
 		Common::ICard *pc = !csuspend ? player->requestCard(uc, (m_jackMode || m_initialJack)
 							? &js : 0L) : 0L;
 
+		if(m_initialJack && !pc) m_jackMode = true;
+
 		m_initialJack = false;
 
 		bool won = false;

@@ -96,6 +96,17 @@ using namespace NetMauMau::Player;
 
 bool StdPlayer::m_jackPlayed = false;
 
+bool StdPlayer::_hasEightPath::operator()(const NetMauMau::Common::ICard *c) const {
+
+	if(c->getRank() != NetMauMau::Common::ICard::EIGHT) {
+		for(CARDS::const_iterator i(mCards.begin()); i != mCards.end(); ++i) {
+			return hasEightPath(c, (*i)->getSuit(), mCards);
+		}
+	}
+
+	return false;
+}
+
 StdPlayer::StdPlayer(const std::string &name) : m_name(name), m_cards(), m_cardsTaken(false),
 	m_ruleset(0), m_playerHasFewCards(false), m_powerSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL),
 	m_powerPlay(false) {
@@ -172,20 +183,22 @@ void StdPlayer::countSuits(SUITCOUNT *suitCount, const CARDS &myCards) const {
 
 NetMauMau::Common::ICard *
 StdPlayer::hasEightPath(const NetMauMau::Common::ICard *uc, NetMauMau::Common::ICard::SUIT s,
-						CARDS &cards) const {
+						const CARDS &cards) {
 
-	if(cards.size() > 1) {
+	CARDS mCards(cards);
 
-		const CARDS::iterator &e(std::partition(cards.begin(), cards.end(),
+	if(mCards.size() > 1) {
+
+		const CARDS::iterator &e(std::partition(mCards.begin(), mCards.end(),
 												std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
 														NetMauMau::Common::ICard::EIGHT)));
 
-		if(std::distance(cards.begin(), e)) {
+		if(std::distance(mCards.begin(), e)) {
 
-			CARDS::value_type f_src(NetMauMau::Common::findSuit(uc->getSuit(), cards.begin(), e));
+			CARDS::value_type f_src(NetMauMau::Common::findSuit(uc->getSuit(), mCards.begin(), e));
 
 			if(f_src) {
-				CARDS::value_type f_dest(NetMauMau::Common::findSuit(s, cards.begin(), e));
+				CARDS::value_type f_dest(NetMauMau::Common::findSuit(s, mCards.begin(), e));
 
 				if(f_dest) return f_src;
 			}
@@ -434,9 +447,17 @@ NetMauMau::Common::ICard::SUIT StdPlayer::getMaxPlayedOffSuit(CARDS::difference_
 }
 
 NetMauMau::Common::ICard::SUIT StdPlayer::findJackChoice() const {
-	CARDS::difference_type count = 0;
-	const NetMauMau::Common::ICard::SUIT s = getMaxPlayedOffSuit(&count);
-	return count ? s : NetMauMau::Common::ICard::SUIT_ILLEGAL;
+
+	const CARDS::const_iterator &f(std::find_if(m_cards.begin(), m_cards.end(),
+								   _hasEightPath(m_cards)));
+
+	if(f != m_cards.end()) {
+		return (*f)->getSuit();
+	} else {
+		CARDS::difference_type count = 0;
+		const NetMauMau::Common::ICard::SUIT s = getMaxPlayedOffSuit(&count);
+		return count ? s : NetMauMau::Common::ICard::SUIT_ILLEGAL;
+	}
 }
 
 IPlayer::REASON StdPlayer::getNoCardReason() const {

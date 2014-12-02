@@ -69,6 +69,20 @@ protected:
 	virtual void shuffleCards();
 
 private:
+
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+	struct _hasEightPath : std::unary_function<Common::ICard *, bool> {
+
+		_hasEightPath(const CARDS &c) : mCards(c) {}
+
+		bool operator()(const Common::ICard *c) const;
+
+	private:
+		const CARDS &mCards;
+	};
+#pragma GCC diagnostic pop
+
 	typedef struct _suitCount {
 		bool operator<(const _suitCount &sc) const {
 			return !(count < sc.count);
@@ -86,8 +100,8 @@ private:
 
 	Common::ICard::SUIT getMaxPlayedOffSuit(CARDS::difference_type *count = 0L) const;
 
-	Common::ICard *hasEightPath(const NetMauMau::Common::ICard *uc, Common::ICard::SUIT s,
-								CARDS &cards) const;
+	static Common::ICard *hasEightPath(const NetMauMau::Common::ICard *uc, Common::ICard::SUIT s,
+									   const CARDS &cards);
 
 	Common::ICard *findBestCard(const Common::ICard *uc, const Common::ICard::SUIT *js,
 								bool noJack) const;

@@ -61,7 +61,7 @@ public:
 
 	void playCard(Common::ICard *card);
 
-	Common::ICard *takeCard();
+	Common::ICard *takeCard(bool notify = true);
 
 private:
 	typedef std::vector<Common::ICard *> CARDS;
@@ -69,8 +69,8 @@ private:
 
 private:
 	const ITalonChange *m_talonChangeListener;
-	std::stack<Common::ICard *, CARDS > m_cardStack;
-	std::stack<Common::ICard *, CARDS > m_uncovered;
+	std::stack<Common::ICard *, CARDS> m_cardStack;
+	std::stack<Common::ICard *, CARDS> m_uncovered;
 };
 
 }

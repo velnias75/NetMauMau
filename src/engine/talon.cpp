@@ -106,7 +106,7 @@ void Talon::playCard(Common::ICard *card) {
 	m_talonChangeListener->cardPlayed(card);
 }
 
-Common::ICard *Talon::takeCard() {
+Common::ICard *Talon::takeCard(bool notify) {
 
 	if(empty()) {
 
@@ -136,8 +136,12 @@ Common::ICard *Talon::takeCard() {
 	}
 
 	if(!empty()) {
+
 		Common::ICard *c = top();
 		pop();
+
+		if(notify) m_talonChangeListener->cardTaken(c);
+
 		return c;
 	}
 

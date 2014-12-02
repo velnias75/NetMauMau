@@ -378,9 +378,6 @@ sevenRule:
 			}
 		}
 
-		m_eventHandler.stats(m_players);
-		informAIStat();
-
 		if(!won) m_nxtPlayer = (m_nxtPlayer + 1) >= m_players.size() ? 0 : m_nxtPlayer + 1;
 
 		if(!m_nxtPlayer) ++m_turn;
@@ -447,12 +444,15 @@ void Engine::takeCards(Player::IPlayer *player, const Common::ICard *card) const
 	const std::size_t cardCount = m_ruleset->takeCards(card);
 
 	if(cardCount) {
+
 		for(std::size_t i = 0; i < cardCount; ++i) {
-			player->receiveCard(m_talon->takeCard());
+			player->receiveCard(m_talon->takeCard(false));
 		}
 
 		m_eventHandler.playerPicksCards(player, cardCount);
 		m_ruleset->hasTakenCards();
+
+		cardTaken();
 	}
 }
 
@@ -473,6 +473,11 @@ void Engine::cardPlayed(Common::ICard *card) const {
 	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
 		(*i)->cardPlayed(card);
 	}
+}
+
+void Engine::cardTaken(const Common::ICard *) const {
+	m_eventHandler.stats(m_players);
+	informAIStat();
 }
 
 void Engine::shuffled() const {

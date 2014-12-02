@@ -94,6 +94,7 @@ protected:
 	throw(Common::Exception::SocketException);
 	virtual void talonEmpty(bool empty) const throw();
 	virtual void cardPlayed(Common::ICard *card) const;
+	virtual void cardTaken(const Common::ICard *card = 0L) const;
 	virtual void shuffled() const;
 
 private:

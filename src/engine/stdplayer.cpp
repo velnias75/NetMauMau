@@ -17,11 +17,13 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
 #include <cstring>
 #include <numeric>
 
 #include "stdplayer.h"
 
+#include "iruleset.h"
 #include "cardtools.h"
 #include "random_gen.h"
 #include "stdcardfactory.h"
@@ -174,7 +176,6 @@ void StdPlayer::countSuits(SUITCOUNT *suitCount, const CARDS &myCards) const {
 		const SUITCOUNT sc = { SUIT[i], noCards ? 0 : std::count_if(myCards.begin(), myCards.end(),
 							   std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit), SUIT[i]))
 							 };
-
 		suitCount[i] = sc;
 	}
 
@@ -379,6 +380,16 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 NetMauMau::Common::ICard *StdPlayer::requestCard(const NetMauMau::Common::ICard *uc,
 		const NetMauMau::Common::ICard::SUIT *js) const {
 
+	if(m_ruleset) {
+		if(m_cards.size() == 1 && !(uc->getRank() == NetMauMau::Common::ICard::JACK &&
+									(*m_cards.begin())->getRank() ==
+									NetMauMau::Common::ICard::JACK)) {
+			return m_ruleset->checkCard(uc, *m_cards.begin()) ? *m_cards.begin() : 0L;
+		} else if(m_cards.size() == 1) {
+			return 0L;
+		}
+	}
+
 	NetMauMau::Common::ICard *bestCard = findBestCard(uc, js, false);
 
 	if(bestCard && bestCard->getRank() == NetMauMau::Common::ICard::JACK &&
@@ -386,7 +397,7 @@ NetMauMau::Common::ICard *StdPlayer::requestCard(const NetMauMau::Common::ICard 
 		bestCard = findBestCard(uc, js, true);
 	}
 
-	return bestCard;
+	return m_ruleset ? (m_ruleset->checkCard(uc, bestCard) ? bestCard : 0L) : bestCard;
 }
 
 NetMauMau::Common::ICard::SUIT
@@ -397,14 +408,32 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICard *uncoveredCard,
 		const NetMauMau::Common::ICard::SUIT s = m_powerSuit;
 		m_powerSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
 		m_powerPlay = true;
+
+		assert(s != NetMauMau::Common::ICard::SUIT_ILLEGAL);
+
 		return s;
+	}
+
+	if(m_cards.size() == 2 && NetMauMau::Common::findRank(NetMauMau::Common::ICard::JACK,
+			m_cards.begin(), m_cards.end())) {
+
+		const CARDS::const_iterator &f(std::find_if(m_cards.begin(), m_cards.end(),
+									   std::not1(std::bind2nd(
+											   std::ptr_fun(NetMauMau::Common::isRank),
+											   NetMauMau::Common::ICard::JACK))));
+
+		if(f != m_cards.end()) {
+			assert((*f)->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL);
+			return (*f)->getSuit();
+		}
 	}
 
 	if(m_cards.size() < 8) {
 
 		const NetMauMau::Common::ICard *bc = 0L;
 
-		if((bc = findBestCard(uncoveredCard, 0L, true))) {
+		if((bc = findBestCard(uncoveredCard, 0L, true)) &&
+				bc->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL) {
 			return bc->getSuit();
 		}
 	}
@@ -415,6 +444,8 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICard *uncoveredCard,
 		while(((s = SUIT[NetMauMau::Common::genRandom<std::size_t>(4)]) == uncoveredCard->getSuit()
 				|| s == playedCard->getSuit()));
 	}
+
+	assert(s != NetMauMau::Common::ICard::SUIT_ILLEGAL);
 
 	return s;
 }

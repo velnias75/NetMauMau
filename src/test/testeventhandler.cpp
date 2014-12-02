@@ -17,6 +17,7 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
 #include <iostream>
 
 #include "testeventhandler.h"
@@ -117,6 +118,8 @@ void TestEventHandler::playerChooseJackSuit(const NetMauMau::Player::IPlayer *pl
 		NetMauMau::Common::ICard::SUIT suit) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
+	assert(suit != NetMauMau::Common::ICard::SUIT_ILLEGAL);
+
 	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\thas chosen "
 			  << NetMauMau::Common::suitToSymbol(suit, true, true) << std::endl;
 }
@@ -133,7 +136,7 @@ void TestEventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std:
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\t" << BOLD_ON << "has lost with "
-			  << (player->getPoints() * pointFactor) << " points in hand :-(" << BOLD_OFF 
+			  << (player->getPoints() * pointFactor) << " points in hand :-(" << BOLD_OFF
 			  << std::endl;
 }
 

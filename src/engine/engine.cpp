@@ -111,10 +111,9 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 				Common::AbstractConnection *con = m_eventHandler.getConnection();
 
 				if(con) con->addAIPlayers(std::vector<std::string>(1, player->getName()));
-			} else {
-				player->setRuleSet(m_ruleset);
 			}
 
+			player->setRuleSet(m_ruleset);
 			m_eventHandler.playerAdded(player);
 
 			return true;
@@ -286,7 +285,7 @@ sevenRule:
 
 			while(pc && !(cc = m_ruleset->checkCard(player, uc, pc, !m_nextMessage))) {
 
-				const bool aiSusp = (!cc && player->isAIPlayer());
+				const bool aiSusp = !cc && player->isAIPlayer();
 
 				if(suspend || aiSusp) {
 					suspends(player);

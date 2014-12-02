@@ -17,8 +17,12 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
+
 #include "stdruleset.h"
 
+#include "random_gen.h"
+#include "cardtools.h"
 #include "iplayer.h"
 
 using namespace NetMauMau::RuleSet;
@@ -39,6 +43,8 @@ void StdRuleSet::checkInitial(const NetMauMau::Player::IPlayer *player,
 
 bool StdRuleSet::checkCard(const NetMauMau::Common::ICard *uncoveredCard,
 						   const NetMauMau::Common::ICard *playedCard) const {
+
+	if(!uncoveredCard || !playedCard) return false;
 
 	return (playedCard->getRank() == NetMauMau::Common::ICard::JACK
 			&& uncoveredCard->getRank() != NetMauMau::Common::ICard::JACK) ||
@@ -113,7 +119,9 @@ void StdRuleSet::setJackModeOff() {
 }
 
 NetMauMau::Common::ICard::SUIT StdRuleSet::getJackSuit() const {
-	return m_jackSuit;
+	return m_jackSuit == NetMauMau::Common::ICard::SUIT_ILLEGAL ?
+		   NetMauMau::Common::symbolToSuit(NetMauMau::Common::getSuitSymbols()
+										   [NetMauMau::Common::genRandom(4)]) : m_jackSuit;
 }
 
 void StdRuleSet::reset() throw() {

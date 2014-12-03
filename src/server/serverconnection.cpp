@@ -158,11 +158,18 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 											static_cast<uint16_t>(MIN_MINOR);
 					const uint32_t maxver = getServerVersion();
 
-					send("NAME", 4, cfd);
+					send(cver >= 4 ? "NAMP" : "NAME", 4, cfd);
 					info.name = read(cfd);
 
 					if(cver >= minver && cver <= maxver && !refuse) {
+						
+						if(cver >= 4 && info.name[0] == '+') {
+							info.name = info.name.substr(1);
+							logDebug("TODO: read base64 encoded picture")
+						}
+
 						const NAMESOCKFD nsf = { info.name, cfd, cver };
+						
 						registerPlayer(nsf);
 						send("OK", 2, cfd);
 						accepted = PLAY;

@@ -41,19 +41,9 @@ const NetMauMau::Common::ICard::SUIT SUIT[4] = {
 #pragma GCC diagnostic push
 struct cardGreater : std::binary_function < NetMauMau::Common::ICard *, NetMauMau::Common::ICard *,
 		bool > {
-
-	cardGreater(const NetMauMau::Player::IPlayer::CARDS &c) : cards(c) {}
-
 	bool operator()(const NetMauMau::Common::ICard *x, NetMauMau::Common::ICard *y) const {
-		return !(std::count_if(cards.begin(), cards.end(),
-							   std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank), x->getRank()))
-				 < std::count_if(cards.begin(), cards.end(),
-								 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-											  y->getRank())));
+		return !(x->getPoints() < y->getPoints());
 	}
-
-private:
-	const NetMauMau::Player::IPlayer::CARDS &cards;
 };
 
 struct playedOutSuit : std::binary_function<std::string, NetMauMau::Common::ICard::SUIT, bool> {
@@ -322,7 +312,7 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 
 					if(!(bestCard = hasEightPath(uc, suitCount[i].suit, myCards))) {
 
-						std::sort(myCards.begin(), e, cardGreater(myCards));
+						std::sort(myCards.begin(), e, cardGreater());
 
 						std::stable_partition(myCards.begin(), e,
 											  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),

@@ -1,4 +1,5 @@
 pkginclude_HEADERS = abstractclient.h clientconnection.h timeoutexception.h icard.h \
 	linkercontrol.h abstractconnection.h abstractsocket.h socketexception.h cardtools.h \
 	shutdownexception.h playerlistexception.h capabilitiesexception.h protocolerrorexception.h \
-	connectionrejectedexception.h versionmismatchexception.h nonetmaumauserverexception.h
+	connectionrejectedexception.h versionmismatchexception.h nonetmaumauserverexception.h \
+	base64.h

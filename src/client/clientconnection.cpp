@@ -46,6 +46,8 @@
 #include "nonetmaumauserverexception.h"
 #include "connectionrejectedexception.h"
 
+#include "logger.h"
+
 #define MAX_PNAME 1024
 
 using namespace NetMauMau::Client;
@@ -174,6 +176,9 @@ void Connection::connect() throw(NetMauMau::Common::Exception::SocketException) 
 			recv(name, 4, getSocketFD());
 
 			if(!strncmp(name, "NAME", 4)) {
+				send(m_pName.c_str(), m_pName.length(), getSocketFD());
+			} else if(!strncmp(name, "NAMP", 4)) {
+				logDebug("Server requests name AND picture, we send NO pic yet!");
 				send(m_pName.c_str(), m_pName.length(), getSocketFD());
 			} else {
 				throw Exception::ProtocolErrorException("Protocol error", getSocketFD());

@@ -42,7 +42,14 @@ PKG_PROG_PKG_CONFIG([0.22])
 
 # Checks for programs.
 AC_PROG_CXX
+AC_CHECK_PROGS([HELP2MAN], [help2man])
 AC_CHECK_PROGS([DOXYGEN], [doxygen])
+
+if test -z "$ac_cv_prog_HELP2MAN"; then
+  AM_CONDITIONAL([GENMAN], [ false ])
+else
+  AM_CONDITIONAL([GENMAN], [ true ])
+fi
 
 if test -z "$ac_cv_prog_DOXYGEN"; then
   AM_CONDITIONAL([GENDOX], [ false ])

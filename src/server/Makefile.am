@@ -1,5 +1,13 @@
 bin_PROGRAMS = nmm-server
 
+man1_MANS = 
+
+if GENMAN
+man1_MANS += $(bin_PROGRAMS).1
+endif
+
+DISTCLEANFILES = $(man1_MANS)
+
 noinst_HEADERS = serverconnection.h serverplayer.h servereventhandler.h game.h \
 	serverplayerexception.h
 
@@ -19,3 +27,10 @@ endif
 
 %.rc.lo: %.rc
 	$(LIBTOOL) --tag=RC --mode=compile $(RC) $< -o $@
+
+if GENMAN
+$(bin_PROGRAMS).1: $(bin_PROGRAMS)
+	$(HELP2MAN) --no-discard-stderr -LC.utf8 -N \
+		-n"Server for the popular card game Mau Mau" \
+		-S "$(PACKAGE_STRING)" $(bin_PROGRAMS) | sed 's/^Built.*on.*$$//' > $@
+endif

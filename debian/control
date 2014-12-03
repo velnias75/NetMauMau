@@ -3,7 +3,7 @@ Section: games
 Priority: extra
 Maintainer: Heiko Schäfer <heiko@rangun.de>
 Build-Depends: cdbs, debhelper (>= 9), dh-autoreconf, autotools-dev, pkg-config, 
- libpopt-dev (>= 1.10), doxygen (>= 1.8.0), graphviz, automake1.11
+ libpopt-dev (>= 1.10), doxygen (>= 1.8.0), graphviz, automake1.11, help2man
 Standards-Version: 3.9.4
 Homepage: https://github.com/velnias75/NetMauMau/
 Vcs-Git: https://git@github.com:velnias75/NetMauMau.git
@@ -11,7 +11,6 @@ Vcs-Browser: https://github.com/velnias75/NetMauMau/
 
 Package: netmaumau-server
 Architecture: any
-Priority: extra
 Section: games
 Suggests: nmm-qt-client
 Depends: libnetmaumaucommon0 (>= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
@@ -20,7 +19,6 @@ Description: Server for the popular card game Mau Mau - server
 
 Package: libnetmaumaucommon0
 Architecture: any
-Priority: extra
 Section: libs
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Server for the popular card game Mau Mau - common library
@@ -28,7 +26,6 @@ Description: Server for the popular card game Mau Mau - common library
 
 Package: libnetmaumauclient0
 Architecture: any
-Priority: extra
 Section: libs
 Depends: libnetmaumaucommon0 (>= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: Server for the popular card game Mau Mau - client library
@@ -36,7 +33,6 @@ Description: Server for the popular card game Mau Mau - client library
 
 Package: netmaumau-dev
 Architecture: any
-Priority: extra
 Section: devel
 Depends: libnetmaumaucommon0 (= ${binary:Version}), libnetmaumauclient0 (= ${binary:Version}), 
  ${misc:Depends}
@@ -45,7 +41,6 @@ Description: Server for the popular card game Mau Mau - developer files
 
 Package: netmaumau-dbg
 Architecture: any
-Priority: extra
 Section: debug
 Depends: netmaumau-server (= ${binary:Version}), libnetmaumaucommon0 (= ${binary:Version}), 
  libnetmaumauclient0 (= ${binary:Version}), ${misc:Depends}

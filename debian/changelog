@@ -4,8 +4,9 @@ netmaumau (0.4) UNRELEASED; urgency=low
   * If a player has lost and a 7 is the open card, the player takes the 
     cards and they get added to the points
   * Fixed https://github.com/velnias75/NetMauMau/issues/2
+  * Fixed https://github.com/velnias75/NetMauMau/issues/3
 
- -- Heiko Schäfer <heiko@rangun.de>  Tue, 02 Dec 2014 05:05:40 +0100
+ -- Heiko Schäfer <heiko@rangun.de>  Wed, 03 Dec 2014 08:40:36 +0100
 
 netmaumau (0.3) UNRELEASED; urgency=low
 

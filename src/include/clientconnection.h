@@ -38,6 +38,8 @@ namespace Client {
 class _EXPORT Connection : public Common::AbstractConnection {
 	DISALLOW_COPY_AND_ASSIGN(Connection)
 public:
+	using AbstractConnection::connect;
+
 	/**
 	 * @brief List of currently registered player names
 	 */
@@ -46,7 +48,7 @@ public:
 	Connection(const std::string &pName, const std::string &server, uint16_t port);
 	virtual ~Connection();
 
-	virtual void connect() throw(Common::Exception::SocketException);
+	virtual void connect(const std::string &base64png) throw(Common::Exception::SocketException);
 	CAPABILITIES capabilities() throw(NetMauMau::Common::Exception::SocketException);
 	PLAYERLIST playerList() throw(Common::Exception::SocketException);
 

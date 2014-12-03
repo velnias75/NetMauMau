@@ -156,7 +156,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	return caps;
 }
 
-void Connection::connect() throw(NetMauMau::Common::Exception::SocketException) {
+void Connection::connect(const std::string &base64png)
+throw(NetMauMau::Common::Exception::SocketException) {
 
 	uint16_t maj = 0, min = 0;
 
@@ -178,8 +179,13 @@ void Connection::connect() throw(NetMauMau::Common::Exception::SocketException) 
 			if(!strncmp(name, "NAME", 4)) {
 				send(m_pName.c_str(), m_pName.length(), getSocketFD());
 			} else if(!strncmp(name, "NAMP", 4)) {
-				logDebug("Server requests name AND picture, we send NO pic yet!");
-				send(m_pName.c_str(), m_pName.length(), getSocketFD());
+				if(base64png.empty()) {
+					send(m_pName.c_str(), m_pName.length(), getSocketFD());
+				} else {
+					const std::string picPName("+" + m_pName);
+					send(picPName.c_str(), picPName.length(), getSocketFD());
+					send(base64png.c_str(), base64png.length(), getSocketFD());
+				}
 			} else {
 				throw Exception::ProtocolErrorException("Protocol error", getSocketFD());
 			}

@@ -61,6 +61,7 @@ public:
 
 	typedef struct {
 		std::string name;
+		std::string playerPic;
 		int sockfd;
 		uint32_t clientVersion;
 	} NAMESOCKFD;

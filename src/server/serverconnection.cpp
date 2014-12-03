@@ -35,7 +35,7 @@
 #endif
 
 #include "serverconnection.h"
-
+#include "base64.h"
 #include "logger.h"
 
 namespace {
@@ -75,7 +75,8 @@ bool Connection::wire(int sockfd, const struct sockaddr *addr, socklen_t addrlen
 
 	const int yes = 1;
 
-	if(setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char *>(&yes), sizeof(int)) == -1) {
+	if(setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char *>(&yes),
+				  sizeof(int)) == -1) {
 		return false;
 	}
 
@@ -162,17 +163,20 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 					info.name = read(cfd);
 
 					if(cver >= minver && cver <= maxver && !refuse) {
-						
+
+						std::string playerPic;
+
 						if(cver >= 4 && info.name[0] == '+') {
 							info.name = info.name.substr(1);
-							logDebug("TODO: read base64 encoded picture")
+							playerPic = read(cfd);
 						}
 
-						const NAMESOCKFD nsf = { info.name, cfd, cver };
-						
+						const NAMESOCKFD nsf = { info.name, playerPic, cfd, cver };
+
 						registerPlayer(nsf);
 						send("OK", 2, cfd);
 						accepted = PLAY;
+
 					} else {
 
 						try {

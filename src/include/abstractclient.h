@@ -280,6 +280,25 @@ protected:
 	AbstractClient(const std::string &player, const std::string &server, uint16_t port);
 
 	/**
+	 * @brief Creates an @c AbstractClient instance
+	 *
+	 * Sets up all information to connect to a server. Additionally a player picture can be
+	 * submitted
+	 *
+	 * @see play
+	 * @see Common::base64_encode
+	 *
+	 * @param player the player's name
+	 * @param base64png a base64 encoded PNG image, or an empty string for no picture
+	 * @param server the server to connect to
+	 * @param port the server port to connect to
+	 *
+	 * @since 0.4
+	 */
+	AbstractClient(const std::string &player, const std::string base64png,
+				   const std::string &server, uint16_t port);
+
+	/**
 	 * @name Server requests
 	 * @{
 	 */
@@ -502,6 +521,7 @@ protected:
 private:
 	Connection m_connection;
 	const std::string m_pName;
+	const std::string m_base64png;
 	CARDS m_cards;
 	const Common::ICard *m_openCard;
 	bool m_disconnectNow;

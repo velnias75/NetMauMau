@@ -31,9 +31,7 @@ static inline bool is_base64(NetMauMau::Common::BYTE c) {
 	return (std::isalnum(c) || (c == '+') || (c == '/'));
 }
 
-using namespace NetMauMau::Common;
-
-std::string base64_encode(BYTE const *buf, unsigned int bufLen) {
+std::string NetMauMau::Common::base64_encode(BYTE const *buf, unsigned int bufLen) {
 
 	std::string ret;
 
@@ -78,14 +76,15 @@ std::string base64_encode(BYTE const *buf, unsigned int bufLen) {
 	return ret;
 }
 
-std::vector<BYTE> base64_decode(std::string const &encoded_string) {
+std::vector<NetMauMau::Common::BYTE>
+NetMauMau::Common::base64_decode(std::string const &encoded_string) {
 
 	int in_len = encoded_string.size();
 	int i = 0;
 	int j = 0;
 	int in_ = 0;
 	BYTE char_array_4[4], char_array_3[3];
-	
+
 	std::vector<BYTE> ret;
 	ret.reserve(in_len);
 

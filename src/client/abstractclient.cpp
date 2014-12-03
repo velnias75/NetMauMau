@@ -61,8 +61,13 @@ struct cardEqualsDescription : public std::binary_function < NetMauMau::Common::
 
 using namespace NetMauMau::Client;
 
+AbstractClient::AbstractClient(const std::string &pName, const std::string base64png,
+							   const std::string &server, uint16_t port) : m_connection(pName,
+										   server, port), m_pName(pName), m_base64png(base64png),
+	m_cards(), m_openCard(0L), m_disconnectNow(false) {}
+
 AbstractClient::AbstractClient(const std::string &pName, const std::string &server, uint16_t port)
-	: m_connection(pName, server, port), m_pName(pName), m_cards(), m_openCard(0L),
+	: m_connection(pName, server, port), m_pName(pName), m_base64png(), m_cards(), m_openCard(0L),
 	  m_disconnectNow(false) {}
 
 AbstractClient::~AbstractClient() {
@@ -102,7 +107,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::SocketException) {
 
 	m_connection.setTimeout(timeout);
-	m_connection.connect();
+	m_connection.connect(m_base64png);
 
 	const NetMauMau::Common::ICard *lastPlayedCard = 0L;
 	bool initCardShown = false;

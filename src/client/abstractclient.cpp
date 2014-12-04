@@ -69,13 +69,13 @@ struct cardEqualsDescription : public std::binary_function < NetMauMau::Common::
 using namespace NetMauMau::Client;
 
 AbstractClient::AbstractClient(const std::string &pName, const unsigned char *data, std::size_t len,
-							   const std::string &server, uint16_t port) : m_connection(pName,
-										   server, port), m_pName(pName), m_pngData(data),
-	m_pngDataLen(len), m_cards(), m_openCard(0L), m_disconnectNow(false) {}
+							   const std::string &server, uint16_t port) : IPlayerPicListener(),
+	m_connection(pName, server, port), m_pName(pName), m_pngData(data), m_pngDataLen(len),
+	m_cards(), m_openCard(0L), m_disconnectNow(false) {}
 
 AbstractClient::AbstractClient(const std::string &pName, const std::string &server, uint16_t port)
-	: m_connection(pName, server, port), m_pName(pName), m_pngData(0L), m_pngDataLen(0), m_cards(),
-	  m_openCard(0L), m_disconnectNow(false) {}
+	: IPlayerPicListener(), m_connection(pName, server, port), m_pName(pName), m_pngData(0L),
+	  m_pngDataLen(0), m_cards(), m_openCard(0L), m_disconnectNow(false) {}
 
 AbstractClient::~AbstractClient() {
 
@@ -121,7 +121,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 Connection::PLAYERINFOS AbstractClient::playerList(bool playerPNG, timeval *timeout)
 throw(NetMauMau::Common::Exception::SocketException) {
 	m_connection.setTimeout(timeout);
-	return m_connection.playerList(playerPNG);
+	return m_connection.playerList(this, playerPNG);
 }
 
 void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::SocketException) {
@@ -184,10 +184,15 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					std::string plPic;
 
 					m_connection >> msg;
+
+					beginReceivePlayerPicture(msg);
+
 					m_connection >> plPic;
 
 					const std::vector<NetMauMau::Common::BYTE>
 					&plPicPng(NetMauMau::Common::base64_decode(plPic));
+
+					endReceivePlayerPicture(msg);
 
 					playerJoined(msg, plPic == "-" ? 0L : plPicPng.data(),
 								 plPic == "-" ? 0 : plPicPng.size());
@@ -405,5 +410,9 @@ uint32_t AbstractClient::parseProtocolVersion(const std::string &ver) {
 uint16_t AbstractClient::getDefaultPort() {
 	return SERVER_PORT;
 }
+
+void AbstractClient::beginReceivePlayerPicture(const std::string &) const throw() {}
+
+void AbstractClient::endReceivePlayerPicture(const std::string &) const throw() {}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

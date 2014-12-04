@@ -808,6 +808,7 @@ EXCLUDE                = "@abs_top_srcdir@/src/client/interceptederrorexception.
                          "@abs_top_srcdir@/src/test" \
                          "@abs_top_srcdir@/src/include/abstractsocket.h" \
                          "@abs_top_srcdir@/src/include/linkercontrol.h" \
+                         "@abs_top_srcdir@/src/include/iplayerpiclistener.h" \
                          "@abs_top_srcdir@/src/common/icardfactory.h" \
                          "@abs_top_srcdir@/src/common/iplayer.h" \
                          "@abs_top_srcdir@/src/common/stdplayer.h" \

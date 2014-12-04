@@ -9,7 +9,7 @@ endif
 DISTCLEANFILES = $(man1_MANS)
 
 noinst_HEADERS = serverconnection.h serverplayer.h servereventhandler.h game.h \
-	serverplayerexception.h
+	serverplayerexception.h ai-icon.h
 
 if PIDFILE
 nmm_server_CPPFLAGS = -DPIDFILE="\"$(localstatedir)/run/$(PACKAGE).pid\""

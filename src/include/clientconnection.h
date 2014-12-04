@@ -32,6 +32,8 @@ namespace NetMauMau {
 
 namespace Client {
 
+class IPlayerPicListener;
+
 /**
  * @brief Handles the connection from the client to a server
  */
@@ -65,7 +67,8 @@ public:
 	virtual void connect(const unsigned char *pngData,
 						 std::size_t pngDataLen) throw(Common::Exception::SocketException);
 	CAPABILITIES capabilities() throw(NetMauMau::Common::Exception::SocketException);
-	PLAYERINFOS playerList(bool playerPNG) throw(Common::Exception::SocketException);
+	PLAYERINFOS playerList(const IPlayerPicListener *hdl,
+						   bool playerPNG) throw(Common::Exception::SocketException);
 
 	void setTimeout(struct timeval *timeout);
 

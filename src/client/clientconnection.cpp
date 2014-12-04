@@ -101,7 +101,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 #pragma GCC diagnostic pop
 
-Connection::PLAYERINFOS Connection::playerList(bool playerPNG)
+Connection::PLAYERINFOS Connection::playerList(const IPlayerPicListener *hdl,  bool playerPNG)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	PLAYERINFOS plv;
@@ -121,11 +121,16 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		*this >> pl;
 
-		if(playerPNG) *this >> pic;
+		if(playerPNG) {
+			hdl->beginReceivePlayerPicture(pl);
+			*this >> pic;
+		}
 
 		while(pl != "PLAYERLISTEND") {
 
 			const std::vector<NetMauMau::Common::BYTE> &pp(NetMauMau::Common::base64_decode(pic));
+
+			if(playerPNG) hdl->endReceivePlayerPicture(pl);
 
 			NetMauMau::Common::BYTE *ppd = 0L;
 
@@ -140,7 +145,13 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 			*this >> pl;
 
-			if(playerPNG) *this >> pic;
+			const bool ple = (pl == "PLAYERLISTEND");
+
+			if(playerPNG) {
+				if(!ple) hdl->beginReceivePlayerPicture(pl);
+
+				*this >> pic;
+			}
 		}
 
 	} else {

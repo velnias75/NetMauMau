@@ -106,8 +106,9 @@
 
 #include <vector>
 
-#include "icard.h"
+#include "iplayerpiclistener.h"
 #include "clientconnection.h"
+#include "icard.h"
 
 namespace NetMauMau {
 
@@ -135,7 +136,7 @@ namespace Client {
  *
  * @note All data is transferred as UTF-8 encoded byte strings
  */
-class _EXPORT AbstractClient {
+class _EXPORT AbstractClient : protected IPlayerPicListener {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClient)
 public:
 	/// @copydoc Connection::CAPABILITIES
@@ -389,6 +390,9 @@ protected:
 	 */
 	virtual void playerJoined(const std::string &player, const unsigned char *pngData,
 							  std::size_t len) const = 0;
+
+	virtual void beginReceivePlayerPicture(const std::string &player) const throw() _CONST;
+	virtual void endReceivePlayerPicture(const std::string &player) const throw() _CONST;
 
 	/**
 	 * @brief A player got rejected to join the game

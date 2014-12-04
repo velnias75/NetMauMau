@@ -10,7 +10,7 @@ libnetmaumauclient_la_SOURCES = abstractclient.cpp clientconnection.cpp clientca
 	playerlistexception.cpp capabilitiesexception.cpp protocolerrorexception.cpp \
 	connectionrejectedexception.cpp versionmismatchexception.cpp nonetmaumauserverexception.cpp
 libnetmaumauclient_la_LDFLAGS = -nodefaultlibs -nostartfiles -no-undefined \
-	-version-info 0:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
+	-version-info 1:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
 libnetmaumauclient_la_LIBADD = ../common/libnetmaumaucommon.la
 
 endif

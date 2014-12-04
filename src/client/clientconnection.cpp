@@ -35,6 +35,7 @@
 
 #include "clientconnection.h"
 
+#include "base64.h"
 #include "abstractclient.h"
 #include "timeoutexception.h"
 #include "shutdownexception.h"
@@ -45,8 +46,6 @@
 #include "interceptederrorexception.h"
 #include "nonetmaumauserverexception.h"
 #include "connectionrejectedexception.h"
-
-#include "logger.h"
 
 #define MAX_PNAME 1024
 
@@ -102,21 +101,46 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 #pragma GCC diagnostic pop
 
-Connection::PLAYERLIST Connection::playerList()
+Connection::PLAYERINFOS Connection::playerList(bool playerPNG)
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	PLAYERLIST plv;
+	PLAYERINFOS plv;
 
 	if(hello()) {
 
-		send("PLAYERLIST", 10, getSocketFD());
+		if(playerPNG) {
+			std::ostringstream os;
+			os << "PLAYERLIST" << ' ' << SERVER_VERSION_MAJOR << '.' << SERVER_VERSION_MINOR;
 
-		std::string pl;
+			send(os.str().c_str(), os.str().length(), getSocketFD());
+		} else {
+			send("PLAYERLIST", 10, getSocketFD());
+		}
+
+		std::string pl, pic;
+
 		*this >> pl;
 
+		if(playerPNG) *this >> pic;
+
 		while(pl != "PLAYERLISTEND") {
-			plv.push_back(pl);
+
+			const std::vector<NetMauMau::Common::BYTE> &pp(NetMauMau::Common::base64_decode(pic));
+
+			NetMauMau::Common::BYTE *ppd = 0L;
+
+			if(!pic.empty() && pic != "-") {
+				ppd = new NetMauMau::Common::BYTE[pp.size()];
+				std::memcpy(ppd, pp.data(), pp.size() * sizeof(NetMauMau::Common::BYTE));
+			}
+
+			PLAYERINFO pInfo = { pl, ppd, (pic.empty() || pic != "-") ? pp.size() : 0 };
+
+			plv.push_back(pInfo);
+
 			*this >> pl;
+
+			if(playerPNG) *this >> pic;
 		}
 
 	} else {
@@ -156,7 +180,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	return caps;
 }
 
-void Connection::connect(const std::string &base64png)
+void Connection::connect(const unsigned char *data, std::size_t len)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	uint16_t maj = 0, min = 0;
@@ -179,10 +203,12 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			if(!strncmp(name, "NAME", 4)) {
 				send(m_pName.c_str(), m_pName.length(), getSocketFD());
 			} else if(!strncmp(name, "NAMP", 4)) {
-				if(base64png.empty()) {
+				if(!(data && len)) {
 					send(m_pName.c_str(), m_pName.length(), getSocketFD());
 				} else {
-					const std::string picPName("+" + m_pName);
+					const std::string &picPName("+" + m_pName);
+					const std::string &base64png(NetMauMau::Common::base64_encode(data, len));
+
 					send(picPName.c_str(), picPName.length(), getSocketFD());
 					send(base64png.c_str(), base64png.length(), getSocketFD());
 				}
@@ -260,6 +286,14 @@ Connection &Connection::operator<<(const std::string &msg)
 throw(NetMauMau::Common::Exception::SocketException) {
 	send(msg.c_str(), msg.length(), getSocketFD());
 	return *this;
+}
+
+bool NetMauMau::Client::operator<(const std::string &x, const Connection::PLAYERINFO &y) {
+	return x < y.name;
+}
+
+bool NetMauMau::Client::operator<(const Connection::PLAYERINFO &x, const std::string &y) {
+	return x.name < y;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

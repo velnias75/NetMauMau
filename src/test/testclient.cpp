@@ -131,7 +131,8 @@ NetMauMau::Common::ICard::SUIT TestClient::getJackSuitChoice() const {
 	return NetMauMau::Common::symbolToSuit(NetMauMau::Common::getSuitSymbols()[pos - 1]);
 }
 
-void TestClient::playerJoined(const std::string &player) const {
+void TestClient::playerJoined(const std::string &player, const unsigned char *,
+							  std::size_t) const {
 	std::cout << BOLD_P_ON << player << BOLD_OFF << " joins the game" << std::endl;
 }
 

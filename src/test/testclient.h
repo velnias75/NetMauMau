@@ -40,7 +40,8 @@ protected:
 	virtual NetMauMau::Common::ICard *playCard(const CARDS &cards) const;
 	virtual NetMauMau::Common::ICard::SUIT getJackSuitChoice() const;
 
-	virtual void playerJoined(const std::string &player) const;
+	virtual void playerJoined(const std::string &player, const unsigned char *pngData,
+							  std::size_t pngDataLen) const;
 	virtual void playerRejected(const std::string &player) const;
 	virtual void playerSuspends(const std::string &player) const;
 	virtual void playedCard(const std::string &player, const NetMauMau::Common::ICard *card) const;

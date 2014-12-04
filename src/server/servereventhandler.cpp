@@ -91,7 +91,19 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 void EventHandler::playerAdded(const NetMauMau::Player::IPlayer *player) const
 throw(NetMauMau::Common::Exception::SocketException) {
-	m_connection << "PLAYERJOINED" << player->getName();
+
+	std::string pl("PLAYERJOINED");
+
+	Connection::VERSIONEDMESSAGE versionedMessage;
+
+	std::ostringstream vm_old, vm_new;
+	vm_old << pl << '\0' << player->getName();
+	vm_new << vm_old.str() << '\0' << "VM_ADDPIC";
+
+	versionedMessage.insert(std::make_pair(0, vm_old.str()));
+	versionedMessage.insert(std::make_pair(4, vm_new.str()));
+
+	m_connection.sendVersionedMessage(versionedMessage);
 }
 
 void EventHandler::playerRejected(const NetMauMau::Player::IPlayer *player) const

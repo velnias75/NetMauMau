@@ -41,16 +41,31 @@ public:
 	using AbstractConnection::connect;
 
 	/**
+	 * @brief tbw
+	 */
+	typedef struct {
+		std::string name;
+		const unsigned char *pngData;
+		std::size_t pngDataLen;
+	} PLAYERINFO;
+
+	/**
 	 * @brief List of currently registered player names
 	 */
 	typedef std::vector<std::string> PLAYERLIST;
 
+	/**
+	 * @brief List of currently registered player infos
+	 */
+	typedef std::vector<PLAYERINFO> PLAYERINFOS;
+
 	Connection(const std::string &pName, const std::string &server, uint16_t port);
 	virtual ~Connection();
 
-	virtual void connect(const std::string &base64png) throw(Common::Exception::SocketException);
+	virtual void connect(const unsigned char *pngData,
+						 std::size_t pngDataLen) throw(Common::Exception::SocketException);
 	CAPABILITIES capabilities() throw(NetMauMau::Common::Exception::SocketException);
-	PLAYERLIST playerList() throw(Common::Exception::SocketException);
+	PLAYERINFOS playerList(bool playerPNG) throw(Common::Exception::SocketException);
 
 	void setTimeout(struct timeval *timeout);
 
@@ -68,6 +83,9 @@ private:
 	std::string m_pName;
 	const timeval *m_timeout;
 };
+
+_EXPORT bool operator<(const std::string &, const Connection::PLAYERINFO &) _PURE;
+_EXPORT bool operator<(const Connection::PLAYERINFO &, const std::string &) _PURE;
 
 }
 

@@ -144,6 +144,9 @@ public:
 	/// @copydoc Connection::PLAYERLIST
 	typedef Connection::PLAYERLIST PLAYERLIST;
 
+	/// @copydoc Connection::PLAYERINFOS
+	typedef Connection::PLAYERINFOS PLAYERINFOS;
+
 	/**
 	 * @brief A vector of @c Common::ICard pointers
 	 */
@@ -208,6 +211,7 @@ public:
 	/**
 	 * @brief Returns the list of currently registered player names
 	 *
+	 * @param playerPNG @c true if the player images should get retieved
 	 * @param timeout the time to wait for a connection, if @c NULL there will be no timeout
 	 *
 	 * @throw Common::Exception::SocketException if the connection failed
@@ -216,6 +220,14 @@ public:
 	 *
 	 * @return NetMauMau::Client::AbstractClient::PLAYERLIST
 	 * the list of currently registered player names
+	 *
+	 * @since 0.4
+	 */
+	PLAYERINFOS playerList(bool playerPNG, timeval *timeout = NULL)
+	throw(NetMauMau::Common::Exception::SocketException);
+
+	/**
+	 * @overload
 	 */
 	PLAYERLIST playerList(timeval *timeout = NULL)
 	throw(NetMauMau::Common::Exception::SocketException);
@@ -286,16 +298,16 @@ protected:
 	 * submitted
 	 *
 	 * @see play
-	 * @see Common::base64_encode
 	 *
 	 * @param player the player's name
-	 * @param base64png a base64 encoded PNG image, or an empty string for no picture
+	 * @param pngData pointer to a buffer containg PNG image data or @c NULL
+	 * @param pngDataLen length of the data in the buffer pointed to by @c pngData
 	 * @param server the server to connect to
 	 * @param port the server port to connect to
 	 *
 	 * @since 0.4
 	 */
-	AbstractClient(const std::string &player, const std::string base64png,
+	AbstractClient(const std::string &player, const unsigned char *pngData, std::size_t pngDataLen,
 				   const std::string &server, uint16_t port);
 
 	/**
@@ -369,9 +381,14 @@ protected:
 	/**
 	 * @brief A new player joined the game
 	 *
+	 * Transmits a PNG picture of the player if available
+	 *
 	 * @param player the new player's name
+	 * @param pngData PNG data of the players picture or @c 0L
+	 * @param pngDataLen length of the PNG data
 	 */
-	virtual void playerJoined(const std::string &player) const = 0;
+	virtual void playerJoined(const std::string &player, const unsigned char *pngData,
+							  std::size_t len) const = 0;
 
 	/**
 	 * @brief A player got rejected to join the game
@@ -521,7 +538,8 @@ protected:
 private:
 	Connection m_connection;
 	const std::string m_pName;
-	const std::string m_base64png;
+	const unsigned char *m_pngData;
+	std::size_t m_pngDataLen;
 	CARDS m_cards;
 	const Common::ICard *m_openCard;
 	bool m_disconnectNow;

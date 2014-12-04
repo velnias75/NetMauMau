@@ -17,6 +17,12 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @NOTE keeping API compatibility:
+ * https://techbase.kde.org/Policies/Binary_Compatibility_Issues_With_C++#Adding_new_virtual_functions_to_leaf_classes
+ * http://static.coldattic.info/restricted/science/syrcose09/cppbincomp.pdf
+ */
+
 #include <cstdio>
 
 #include "abstractclient.h"
@@ -24,6 +30,7 @@
 #include "interceptederrorexception.h"
 #include "clientcardfactory.h"
 #include "cardtools.h"
+#include "base64.h"
 #include "logger.h"
 
 namespace {
@@ -61,14 +68,14 @@ struct cardEqualsDescription : public std::binary_function < NetMauMau::Common::
 
 using namespace NetMauMau::Client;
 
-AbstractClient::AbstractClient(const std::string &pName, const std::string base64png,
+AbstractClient::AbstractClient(const std::string &pName, const unsigned char *data, std::size_t len,
 							   const std::string &server, uint16_t port) : m_connection(pName,
-										   server, port), m_pName(pName), m_base64png(base64png),
-	m_cards(), m_openCard(0L), m_disconnectNow(false) {}
+										   server, port), m_pName(pName), m_pngData(data),
+	m_pngDataLen(len), m_cards(), m_openCard(0L), m_disconnectNow(false) {}
 
 AbstractClient::AbstractClient(const std::string &pName, const std::string &server, uint16_t port)
-	: m_connection(pName, server, port), m_pName(pName), m_base64png(), m_cards(), m_openCard(0L),
-	  m_disconnectNow(false) {}
+	: m_connection(pName, server, port), m_pName(pName), m_pngData(0L), m_pngDataLen(0), m_cards(),
+	  m_openCard(0L), m_disconnectNow(false) {}
 
 AbstractClient::~AbstractClient() {
 
@@ -100,14 +107,27 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 Connection::PLAYERLIST AbstractClient::playerList(timeval *timeout)
 throw(NetMauMau::Common::Exception::SocketException) {
+
+	const PLAYERINFOS &pi(playerList(false, timeout));
+	PLAYERLIST pl;
+
+	for(PLAYERINFOS::const_iterator i(pi.begin()); i != pi.end(); ++i) {
+		pl.push_back(i->name);
+	}
+
+	return pl;
+}
+
+Connection::PLAYERINFOS AbstractClient::playerList(bool playerPNG, timeval *timeout)
+throw(NetMauMau::Common::Exception::SocketException) {
 	m_connection.setTimeout(timeout);
-	return m_connection.playerList();
+	return m_connection.playerList(playerPNG);
 }
 
 void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::SocketException) {
 
 	m_connection.setTimeout(timeout);
-	m_connection.connect(m_base64png);
+	m_connection.connect(m_pngData, m_pngDataLen);
 
 	const NetMauMau::Common::ICard *lastPlayedCard = 0L;
 	bool initCardShown = false;
@@ -160,8 +180,18 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					stats(cstats);
 
 				} else if(!m_disconnectNow && msg == "PLAYERJOINED") {
+
+					std::string plPic;
+
 					m_connection >> msg;
-					playerJoined(msg);
+					m_connection >> plPic;
+
+					const std::vector<NetMauMau::Common::BYTE>
+					&plPicPng(NetMauMau::Common::base64_decode(plPic));
+
+					playerJoined(msg, plPic == "-" ? 0L : plPicPng.data(),
+								 plPic == "-" ? 0 : plPicPng.size());
+
 				} else if(!m_disconnectNow && msg == "PLAYERREJECTED") {
 					m_connection >> msg;
 					playerRejected(msg);

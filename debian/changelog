@@ -5,8 +5,9 @@ netmaumau (0.4) UNRELEASED; urgency=low
     cards and they get added to the points
   * Fixed https://github.com/velnias75/NetMauMau/issues/2
   * Fixed https://github.com/velnias75/NetMauMau/issues/3
+  * Player pictures can get transferred via server to clients
 
- -- Heiko Schäfer <heiko@rangun.de>  Wed, 03 Dec 2014 08:40:36 +0100
+ -- Heiko Schäfer <heiko@rangun.de>  Thu, 04 Dec 2014 06:08:36 +0100
 
 netmaumau (0.3) UNRELEASED; urgency=low
 

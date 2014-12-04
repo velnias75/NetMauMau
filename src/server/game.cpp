@@ -40,8 +40,8 @@ std::size_t countAI(const std::string *aiNames) {
 using namespace NetMauMau::Server;
 
 Game::Game(NetMauMau::Event::IEventHandler &evtHdlr, long aiDelay, bool aiPlayer,
-		   const std::string *aiName) : m_engine(evtHdlr, aiDelay,
-					   !aiPlayer || countAI(aiName) > 1), m_aiOpponent(aiPlayer), m_aiPlayers(),
+		   const std::string *aiNames) : m_engine(evtHdlr, aiDelay,
+					   !aiPlayer || countAI(aiNames) > 1), m_aiOpponent(aiPlayer), m_aiPlayers(),
 	m_players() {
 
 	m_players.reserve(50);
@@ -51,11 +51,17 @@ Game::Game(NetMauMau::Event::IEventHandler &evtHdlr, long aiDelay, bool aiPlayer
 		std::size_t aiAdded = 0;
 
 		for(int i = 0; i < 4; ++i) {
-			if(!aiName[i].empty()) {
-				m_aiPlayers.push_back(new Player::StdPlayer(aiName[i]));
-				logInfo("Adding AI player \"" << m_aiPlayers.back()->getName() << "\"");
-				m_engine.addPlayer(m_aiPlayers.back());
-				++aiAdded;
+
+			if(!aiNames[i].empty()) {
+
+				const std::string &aiSanName(aiNames[i][0] == '+' ? & (aiNames[i][1]) : aiNames[i]);
+
+				if(!aiSanName.empty()) {
+					m_aiPlayers.push_back(new NetMauMau::Player::StdPlayer(aiSanName));
+					logInfo("Adding AI player \"" << m_aiPlayers.back()->getName() << "\"");
+					m_engine.addPlayer(m_aiPlayers.back());
+					++aiAdded;
+				}
 			}
 		}
 

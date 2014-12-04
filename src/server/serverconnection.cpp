@@ -343,6 +343,15 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 					send(cver >= 4 ? "NAMP" : "NAME", 4, cfd);
 					info.name = read(cfd);
 
+					const std::string &sanName(info.name[0] == '+' ? info.name.substr(1) :
+											   info.name);
+
+					if(!sanName.empty()) {
+						info.name = sanName;
+					} else {
+						refuse = true;
+					}
+
 					if(cver >= minver && cver <= maxver && !refuse) {
 
 						std::string playerPic;

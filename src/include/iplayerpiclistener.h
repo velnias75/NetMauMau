@@ -36,6 +36,9 @@ public:
 	virtual void beginReceivePlayerPicture(const std::string &player) const throw() = 0;
 	virtual void endReceivePlayerPicture(const std::string &player) const throw() = 0;
 
+	virtual void uploadSucceded(const std::string &player) const throw() = 0;
+	virtual void uploadFailed(const std::string &player) const throw() = 0;
+
 protected:
 	IPlayerPicListener() {}
 };

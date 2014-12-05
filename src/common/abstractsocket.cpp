@@ -131,11 +131,7 @@ void AbstractSocket::connect() throw(Exception::SocketException) {
 std::size_t AbstractSocket::recv(void *buf, std::size_t len,
 								 int fd) throw(Exception::SocketException) {
 
-	char rbuf[std::min<std::size_t>(len, 1024)];
-	char *bufP = static_cast<char *>(buf);
 	std::size_t total = 0;
-	ssize_t rlen = -1;
-
 	fd_set rfds;
 	int sret;
 
@@ -156,16 +152,23 @@ again:
 
 		}
 
-		while(total < len && (rlen = ::recv(fd, rbuf, std::min<std::size_t>(len, 1024), 0)) > 0) {
-			total += rlen;
-			std::memcpy(bufP, rbuf, rlen);
-			bufP += rlen;
+		char *ptr = static_cast<char *>(buf);
 
-			if(rlen <= static_cast<ssize_t>(len)) break;
+		while(len > 0) {
+
+			ssize_t i = ::recv(fd, ptr, len, 0);
+
+			if(i < 0) throw Exception::SocketException(std::strerror(errno), fd, errno);
+
+			ptr += i;
+
+			if(i < static_cast<ssize_t>(len)) break;
+
+			len -= i;
 		}
-	}
 
-	if(rlen == -1) throw Exception::SocketException(std::strerror(errno), fd, errno);
+		total = (ptr - static_cast<char *>(buf));
+	}
 
 	return total;
 }
@@ -174,11 +177,13 @@ again:
 std::string AbstractSocket::read(int fd, std::size_t len) throw(Exception::SocketException) {
 
 	std::string ret;
-	char rbuf[len];
+	char *rbuf = new char[len];
 	const std::size_t rlen = recv(rbuf, len, fd);
 
 	ret.reserve(rlen);
 	ret.append(rbuf, rlen);
+
+	delete [] rbuf;
 
 	return ret;
 }
@@ -186,16 +191,17 @@ std::string AbstractSocket::read(int fd, std::size_t len) throw(Exception::Socke
 void AbstractSocket::send(const void *buf, std::size_t len,
 						  int fd) throw(Exception::SocketException) {
 
-	const char *bufP = static_cast<const char *>(buf);
-	ssize_t slen = 0;
-	std::size_t total = 0;
+	const char *ptr = static_cast<const char *>(buf);
 
-	while(total < len && (slen = ::send(fd, bufP, len, MSG_NOSIGNAL)) > 0) {
-		bufP += slen;
-		total += slen;
+	while(len > 0) {
+
+		ssize_t i = ::send(fd, ptr, len, MSG_NOSIGNAL);
+
+		if(i < 0) throw Exception::SocketException(std::strerror(errno), fd, errno);
+
+		ptr += i;
+		len -= i;
 	}
-
-	if(slen == -1) throw Exception::SocketException(std::strerror(errno), fd, errno);
 }
 
 void AbstractSocket::write(int fd, const std::string &msg) throw(Exception::SocketException) {

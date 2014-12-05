@@ -24,6 +24,7 @@
  */
 
 #include <cstdio>
+#include <cstring>
 
 #include "abstractclient.h"
 
@@ -70,8 +71,10 @@ using namespace NetMauMau::Client;
 
 AbstractClient::AbstractClient(const std::string &pName, const unsigned char *data, std::size_t len,
 							   const std::string &server, uint16_t port) : IPlayerPicListener(),
-	m_connection(pName, server, port), m_pName(pName), m_pngData(data), m_pngDataLen(len),
-	m_cards(), m_openCard(0L), m_disconnectNow(false) {}
+	m_connection(pName, server, port), m_pName(pName), m_pngData(new unsigned char[len]()),
+	m_pngDataLen(len), m_cards(), m_openCard(0L), m_disconnectNow(false) {
+	std::memcpy(m_pngData, data, len);
+}
 
 AbstractClient::AbstractClient(const std::string &pName, const std::string &server, uint16_t port)
 	: IPlayerPicListener(), m_connection(pName, server, port), m_pName(pName), m_pngData(0L),
@@ -82,6 +85,7 @@ AbstractClient::~AbstractClient() {
 	for(CARDS::const_iterator i(m_cards.begin()); i != m_cards.end(); ++i) delete *i;
 
 	delete m_openCard;
+	delete [] m_pngData;
 
 	m_connection.setInterrupted(false);
 }
@@ -127,7 +131,11 @@ throw(NetMauMau::Common::Exception::SocketException) {
 void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::SocketException) {
 
 	m_connection.setTimeout(timeout);
-	m_connection.connect(m_pngData, m_pngDataLen);
+	m_connection.connect(this, m_pngData, m_pngDataLen);
+
+	delete [] m_pngData;
+	m_pngDataLen = 0;
+	m_pngData = 0L;
 
 	const NetMauMau::Common::ICard *lastPlayedCard = 0L;
 	bool initCardShown = false;
@@ -193,7 +201,6 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					&plPicPng(NetMauMau::Common::base64_decode(plPic));
 
 					endReceivePlayerPicture(msg);
-
 					playerJoined(msg, plPic == "-" ? 0L : plPicPng.data(),
 								 plPic == "-" ? 0 : plPicPng.size());
 
@@ -412,7 +419,8 @@ uint16_t AbstractClient::getDefaultPort() {
 }
 
 void AbstractClient::beginReceivePlayerPicture(const std::string &) const throw() {}
-
 void AbstractClient::endReceivePlayerPicture(const std::string &) const throw() {}
+void AbstractClient::uploadSucceded(const std::string &) const throw() {}
+void AbstractClient::uploadFailed(const std::string &) const throw() {}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

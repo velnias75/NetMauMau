@@ -43,12 +43,12 @@ public:
 	using AbstractConnection::connect;
 
 	/**
-	 * @brief tbw
+	 * @brief Holds the name as well as the PNG data of the player image
 	 */
 	typedef struct {
-		std::string name;
-		const unsigned char *pngData;
-		std::size_t pngDataLen;
+		std::string name; ///< the player name
+		const unsigned char *pngData; ///< raw data of the player image, must be freed by the client
+		std::size_t pngDataLen; ///< length of the raw data of the player image
 	} PLAYERINFO;
 
 	/**
@@ -64,7 +64,7 @@ public:
 	Connection(const std::string &pName, const std::string &server, uint16_t port);
 	virtual ~Connection();
 
-	virtual void connect(const unsigned char *pngData,
+	virtual void connect(const IPlayerPicListener *l, const unsigned char *pngData,
 						 std::size_t pngDataLen) throw(Common::Exception::SocketException);
 	CAPABILITIES capabilities() throw(NetMauMau::Common::Exception::SocketException);
 	PLAYERINFOS playerList(const IPlayerPicListener *hdl,

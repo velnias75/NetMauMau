@@ -23,6 +23,7 @@
 
 #include <sstream>
 #include <cstring>
+#include <cstdlib>
 #include <cerrno>
 
 #ifdef HAVE_UNISTD_H
@@ -101,7 +102,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 #pragma GCC diagnostic pop
 
-Connection::PLAYERINFOS Connection::playerList(const IPlayerPicListener *hdl,  bool playerPNG)
+Connection::PLAYERINFOS Connection::playerList(const IPlayerPicListener *hdl, bool playerPNG)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	PLAYERINFOS plv;
@@ -191,7 +192,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	return caps;
 }
 
-void Connection::connect(const unsigned char *data, std::size_t len)
+void Connection::connect(const IPlayerPicListener *l, const unsigned char *data, std::size_t len)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	uint16_t maj = 0, min = 0;
@@ -217,11 +218,28 @@ throw(NetMauMau::Common::Exception::SocketException) {
 				if(!(data && len)) {
 					send(m_pName.c_str(), m_pName.length(), getSocketFD());
 				} else {
-					const std::string &picPName("+" + m_pName);
-					const std::string &base64png(NetMauMau::Common::base64_encode(data, len));
+					try {
+						const std::string &base64png(NetMauMau::Common::base64_encode(data, len));
 
-					send(picPName.c_str(), picPName.length(), getSocketFD());
-					send(base64png.c_str(), base64png.length(), getSocketFD());
+						std::ostringstream osp;
+						osp << "+" << m_pName << '\0' << base64png.length() << '\0' << base64png;
+
+						send(osp.str().c_str(), osp.str().length(), getSocketFD());
+
+						char ack[1024] = "0";
+						recv(ack, 1023, getSocketFD());
+
+						if(std::strtoul(ack, NULL, 10) == base64png.length()) {
+							send("OK", 2, getSocketFD());
+							l->uploadSucceded(m_pName);
+						} else {
+							send("NO", 2, getSocketFD());
+							l->uploadFailed(m_pName);
+						}
+
+					} catch(const NetMauMau::Common::Exception::SocketException &) {
+						l->uploadFailed(m_pName);
+					}
 				}
 			} else {
 				throw Exception::ProtocolErrorException("Protocol error", getSocketFD());

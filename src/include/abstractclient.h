@@ -212,7 +212,10 @@ public:
 	/**
 	 * @brief Returns the list of currently registered player names
 	 *
-	 * @param playerPNG @c true if the player images should get retieved
+	 * @note The image data returned in @c NetMauMau::Client::AbstractClient::PLAYERLIST must
+	 * be freed by the user @code delete [] x->pngData @endcode
+	 *
+	 * @param playerPNG @c true if the player images should get retrieved
 	 * @param timeout the time to wait for a connection, if @c NULL there will be no timeout
 	 *
 	 * @throw Common::Exception::SocketException if the connection failed
@@ -228,6 +231,10 @@ public:
 	throw(NetMauMau::Common::Exception::SocketException);
 
 	/**
+	 * @brief Returns the list of currently registered player names
+	 *
+	 * It does not retrieve the player images
+	 *
 	 * @overload
 	 */
 	PLAYERLIST playerList(timeval *timeout = NULL)
@@ -391,9 +398,6 @@ protected:
 	virtual void playerJoined(const std::string &player, const unsigned char *pngData,
 							  std::size_t len) const = 0;
 
-	virtual void beginReceivePlayerPicture(const std::string &player) const throw() _CONST;
-	virtual void endReceivePlayerPicture(const std::string &player) const throw() _CONST;
-
 	/**
 	 * @brief A player got rejected to join the game
 	 *
@@ -533,6 +537,55 @@ protected:
 	// @}
 
 	/**
+	 * @name Player image notifications
+	 *
+	 * The notifications can be overloaded if the client is interested in events
+	 * regarding the player pictures.
+	 *
+	 * This functions all do nothing at default.
+	 *
+	 * @{
+	 */
+
+	/**
+	 * @brief A download of a player image has started
+	 *
+	 * @param player the player the image is downloaded for
+	 *
+	 * @since 0.4
+	 */
+	virtual void beginReceivePlayerPicture(const std::string &player) const throw() _CONST;
+
+	/**
+	 * @brief A download of a player image has ended
+	 *
+	 * @param player the player the image is downloaded for
+	 *
+	 * @since 0.4
+	 */
+	virtual void endReceivePlayerPicture(const std::string &player) const throw() _CONST;
+
+	/**
+	 * @brief The upload of the player image has succeded
+	 *
+	 * @param player the player the image is uploaded for
+	 *
+	 * @since 0.4
+	 */
+	virtual void uploadSucceded(const std::string &player) const throw() _CONST;
+
+	/**
+	 * @brief The upload of the player image has failed
+	 *
+	 * @param player the player the image is uploaded for
+	 *
+	 * @since 0.4
+	 */
+	virtual void uploadFailed(const std::string &player) const throw() _CONST;
+
+	/// @}
+
+	/**
 	 * @brief The server sent a message not understood by the client
 	 *
 	 * @param message the unknown message
@@ -542,7 +595,7 @@ protected:
 private:
 	Connection m_connection;
 	const std::string m_pName;
-	const unsigned char *m_pngData;
+	unsigned char *m_pngData;
 	std::size_t m_pngDataLen;
 	CARDS m_cards;
 	const Common::ICard *m_openCard;

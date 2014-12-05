@@ -23,8 +23,9 @@
 
 #include <algorithm>
 #include <sstream>
-#include <cerrno>
 #include <cstring>
+#include <cerrno>
+#include <cstdio>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -38,6 +39,8 @@
 #include "ai-icon.h"
 #include "base64.h"
 #include "logger.h"
+
+#define MAXPICBYTES 1048576
 
 namespace {
 
@@ -164,24 +167,78 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 					const uint32_t maxver = getServerVersion();
 
 					send(cver >= 4 ? "NAMP" : "NAME", 4, cfd);
-					info.name = read(cfd);
 
-					const std::string &sanName(info.name[0] == '+' ? info.name.substr(1) :
-											   info.name);
+					std::string namePic;
+					namePic.reserve(MAXPICBYTES);
+					namePic = read(cfd, MAXPICBYTES);
 
-					if(!sanName.empty()) {
-						info.name = sanName;
-					} else {
-						refuse = true;
-					}
+					std::size_t left = namePic.length();
+
+					info.name = namePic.substr(0, namePic.find('\0'));
 
 					if(cver >= minver && cver <= maxver && !refuse) {
 
-						std::string playerPic;
+						std::string playerPic, picLength;
 
 						if(cver >= 4 && info.name[0] == '+') {
-							info.name = info.name.substr(1);
-							playerPic = read(cfd);
+
+							try {
+
+								left += info.name.length() + 1;
+
+								info.name = info.name.substr(1);
+
+								picLength = namePic.substr(namePic.find('\0') + 1);
+								picLength = picLength.substr(0, picLength.find('\0'));
+
+								left += picLength.length() + 1;
+
+								std::size_t pl;
+								(std::istringstream(picLength)) >> pl;
+
+								std::size_t v = pl - left;
+								playerPic = namePic.substr(namePic.rfind('\0') + 1);
+
+								while(v) {
+									playerPic.reserve(playerPic.size() + v);
+									playerPic.append(read(cfd, v));
+									v = pl - playerPic.length();
+								}
+
+								char cc[8] = "0\0";
+
+								if(pl > MAXPICBYTES) {
+
+									send(cc, 8, cfd);
+									recv(cc, 2, cfd);
+									logInfo("Player picture for \"" << info.name
+											<< "\" rejected (too large)");
+									std::string().swap(playerPic);
+
+								} else {
+#ifndef _WIN32
+									std::snprintf(cc, 7, "%zu", playerPic.length());
+#else
+									std::snprintf(cc, 7, "%lu", (unsigned long)playerPic.length());
+#endif
+									send(cc, 8, cfd);
+									recv(cc, 2, cfd);
+
+									if(!(cc[0] == 'O' && cc[1] == 'K')) {
+										logWarning("Player picture transmission for \""
+												   << info.name
+												   << "\" failed: got " << playerPic.length()
+												   << " bytes; expected " << pl << " bytes)");
+										std::string().swap(playerPic);
+									} else {
+										logInfo("Player picture transmission for \"" << info.name
+												<< "\" successful (" << playerPic.length()
+												<< " bytes)");
+									}
+								}
+							} catch(const NetMauMau::Common::Exception::SocketException &) {
+								std::string().swap(playerPic);
+							}
 						}
 
 						const NAMESOCKFD nsf = { info.name, playerPic, cfd, cver };
@@ -306,10 +363,13 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 			for(VERSIONEDMESSAGE::const_iterator j(vm.begin()); j != vm.end(); ++j) {
 				if(j->first && f->clientVersion >= j->first) {
+
 					std::string msg(j->second);
-					write(i->sockfd, msg.substr(j->second.length() - 9) == "VM_ADDPIC" ?
-						  msg.replace(j->second.length() - 9, std::string::npos,
-									  i->playerPic.empty() ? "-" : i->playerPic) : msg);
+					const bool wantPic = msg.substr(j->second.length() - 9) == "VM_ADDPIC";
+
+					write(i->sockfd, wantPic ? msg.replace(j->second.length() - 9,
+														   std::string::npos, i->playerPic.empty()
+														   ? "-" : i->playerPic) : msg);
 					vMsg = true;
 					break;
 				}

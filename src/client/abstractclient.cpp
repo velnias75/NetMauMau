@@ -418,6 +418,10 @@ uint16_t AbstractClient::getDefaultPort() {
 	return SERVER_PORT;
 }
 
+bool AbstractClient::isPlayerImageUploadable(const unsigned char *pngData, std::size_t pngDataLen) {
+	return NetMauMau::Common::base64_encode(pngData, pngDataLen).size() <= MAXPICBYTES;
+}
+
 void AbstractClient::beginReceivePlayerPicture(const std::string &) const throw() {}
 void AbstractClient::endReceivePlayerPicture(const std::string &) const throw() {}
 void AbstractClient::uploadSucceded(const std::string &) const throw() {}

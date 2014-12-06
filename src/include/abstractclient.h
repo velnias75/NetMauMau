@@ -263,6 +263,20 @@ public:
 	static uint32_t parseProtocolVersion(const std::string &version);
 
 	/**
+	 * @brief Checks if an player image is uploadable to the server
+	 *
+	 * @note it is possible that the server rejects the image anyway if configured to use
+	 * a different (smaller) maximum file size than this client
+	 *
+	 * @param pngData the image data
+	 * @param pngDataLen length of the image data
+	 * @return bool @true if the file will most probably accepted by the server, @c false otherwise
+	 *
+	 * @since 0.5
+	 */
+	static bool isPlayerImageUploadable(const unsigned char *pngData, std::size_t pngDataLen);
+
+	/**
 	 * @brief Gets the default port of the server
 	 *
 	 * @return uint16_t the default port of the server

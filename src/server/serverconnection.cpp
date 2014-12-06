@@ -40,8 +40,6 @@
 #include "base64.h"
 #include "logger.h"
 
-#define MAXPICBYTES 1048576
-
 namespace {
 
 const std::string &AIDefaultIcon(NetMauMau::Common::base64_encode(ai_icon_data,

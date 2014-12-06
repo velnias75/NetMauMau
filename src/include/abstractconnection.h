@@ -59,7 +59,8 @@ public:
 		uint16_t maj, min;
 	} INFO;
 
-	typedef struct {
+	typedef struct _nameSockFD {
+		~_nameSockFD();
 		std::string name;
 		std::string playerPic;
 		int sockfd;

@@ -61,6 +61,8 @@ AbstractConnection::_info::_info() : sockfd(-1), name(), host(), port(0), maj(0)
 
 AbstractConnection::_info::~_info() {}
 
+AbstractConnection::_nameSockFD::~_nameSockFD() {}
+
 AbstractConnection::AbstractConnection(const char *server, uint16_t port) :
 	AbstractSocket(server, port), m_registeredPlayers() {}
 

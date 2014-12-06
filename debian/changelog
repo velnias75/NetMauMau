@@ -1,3 +1,9 @@
+netmaumau (0.5) UNRELEASED; urgency=low
+
+  * 
+
+ -- Heiko Schäfer <heiko@rangun.de>  Sat, 06 Dec 2014 08:13:08 +0100
+
 netmaumau (0.4) UNRELEASED; urgency=low
 
   * If a player has lost due a played out Jack, the points are doubled

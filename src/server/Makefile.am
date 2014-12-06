@@ -30,7 +30,7 @@ endif
 
 if GENMAN
 $(bin_PROGRAMS).1: $(bin_PROGRAMS)
-	$(HELP2MAN) --no-discard-stderr -LC.utf8 -N \
+	$(HELP2MAN) -l --no-discard-stderr -LC.utf8 -N \
 		-n"Server for the popular card game Mau Mau" \
 		-S "$(PACKAGE_STRING)" $(builddir)/$(bin_PROGRAMS) | sed 's/^Built.*on.*$$//' > $@
 endif

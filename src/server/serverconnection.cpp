@@ -128,218 +128,263 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 	if(cfd != -1) {
 
-		info.sockfd = cfd;
+		try {
 
-		char host[NI_MAXHOST], service[NI_MAXSERV];
+			info.sockfd = cfd;
 
-		const int err = getnameinfo(reinterpret_cast<struct sockaddr *>(&peer_addr), peer_addr_len,
-									host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
+			char host[NI_MAXHOST], service[NI_MAXSERV];
 
-		info.port = (uint16_t)std::strtoul(service, NULL, 10);
-		info.host = host;
+			const int err = getnameinfo(reinterpret_cast<struct sockaddr *>(&peer_addr),
+										peer_addr_len, host, NI_MAXHOST, service, NI_MAXSERV,
+										NI_NUMERICSERV);
 
-		if(!err) {
+			info.port = (uint16_t)std::strtoul(service, NULL, 10);
+			info.host = host;
 
-			const std::string hello(PACKAGE_NAME);
+			if(!err) {
 
-			std::ostringstream os;
-			os << hello << ' ' << MIN_MAJOR << '.' << MIN_MINOR;
+				const std::string hello(PACKAGE_NAME);
 
-			send(os.str().c_str(), os.str().length(), cfd);
+				std::ostringstream os;
+				os << hello << ' ' << MIN_MAJOR << '.' << MIN_MINOR;
 
-			const std::string rHello = read(cfd);
+				send(os.str().c_str(), os.str().length(), cfd);
 
-			if(rHello != "CAP" && rHello.substr(0, 10) != "PLAYERLIST") {
+				const std::string rHello = read(cfd);
 
-				const std::string::size_type spc = rHello.find(' ');
-				const std::string::size_type dot = rHello.find('.');
+				if(rHello != "CAP" && rHello.substr(0, 10) != "PLAYERLIST") {
 
-				if(isValidHello(dot, spc, rHello, hello)) {
+					const std::string::size_type spc = rHello.find(' ');
+					const std::string::size_type dot = rHello.find('.');
 
-					info.maj = getMajorFromHello(rHello, dot, spc);
-					info.min = getMinorFromHello(rHello, dot);
+					if(isValidHello(dot, spc, rHello, hello)) {
 
-					const uint32_t cver = (info.maj << 16u) | info.min;
-					const uint32_t minver = (static_cast<uint16_t>(MIN_MAJOR) << 16u) |
-											static_cast<uint16_t>(MIN_MINOR);
-					const uint32_t maxver = getServerVersion();
+						info.maj = getMajorFromHello(rHello, dot, spc);
+						info.min = getMinorFromHello(rHello, dot);
 
-					send(cver >= 4 ? "NAMP" : "NAME", 4, cfd);
+						const uint32_t cver = (info.maj << 16u) | info.min;
+						const uint32_t minver = (static_cast<uint16_t>(MIN_MAJOR) << 16u) |
+												static_cast<uint16_t>(MIN_MINOR);
+						const uint32_t maxver = getServerVersion();
 
-					std::string namePic;
-					namePic.reserve(MAXPICBYTES);
-					namePic = read(cfd, MAXPICBYTES);
+						send(cver >= 4 ? "NAMP" : "NAME", 4, cfd);
 
-					std::size_t left = namePic.length();
+						std::string namePic;
 
-					info.name = namePic.substr(0, namePic.find('\0'));
+						try {
+							namePic.reserve(MAXPICBYTES);
+						} catch(const std::bad_alloc &) {}
 
-					if(cver >= minver && cver <= maxver && !refuse) {
+						try {
+							namePic = read(cfd, cver >= 4 ? MAXPICBYTES : 1024);
+						} catch(const NetMauMau::Common::Exception::SocketException &e) {
+							if(e.error() == ENOMEM) {
 
-						std::string playerPic, picLength;
-
-						if(cver >= 4 && info.name[0] == '+') {
-
-							try {
-
-								left += info.name.length() + 1;
-
-								info.name = info.name.substr(1);
-
-								picLength = namePic.substr(namePic.find('\0') + 1);
-								picLength = picLength.substr(0, picLength.find('\0'));
-
-								left += picLength.length() + 1;
-
-								std::size_t pl;
-								(std::istringstream(picLength)) >> pl;
-
-								std::size_t v = pl - left;
-								playerPic = namePic.substr(namePic.rfind('\0') + 1);
-
-								while(v) {
-									playerPic.reserve(playerPic.size() + v);
-									playerPic.append(read(cfd, v));
-									v = pl - playerPic.length();
+								try {
+									namePic = read(cfd);
+								} catch(const NetMauMau::Common::Exception::SocketException &) {
+									throw;
 								}
 
-								char cc[8] = "0\0";
-
-								if(pl > MAXPICBYTES) {
-
-									send(cc, 8, cfd);
-									recv(cc, 2, cfd);
-									logInfo("Player picture for \"" << info.name
-											<< "\" rejected (too large)");
-									std::string().swap(playerPic);
-
-								} else {
-#ifndef _WIN32
-									std::snprintf(cc, 7, "%zu", playerPic.length());
-#else
-									std::snprintf(cc, 7, "%lu", (unsigned long)playerPic.length());
-#endif
-									send(cc, 8, cfd);
-									recv(cc, 2, cfd);
-
-									if(!(cc[0] == 'O' && cc[1] == 'K')) {
-										logWarning("Player picture transmission for \""
-												   << info.name
-												   << "\" failed: got " << playerPic.length()
-												   << " bytes; expected " << pl << " bytes)");
-										std::string().swap(playerPic);
-									} else {
-										logInfo("Player picture transmission for \"" << info.name
-												<< "\" successful (" << playerPic.length()
-												<< " bytes)");
-									}
-								}
-							} catch(const NetMauMau::Common::Exception::SocketException &) {
-								std::string().swap(playerPic);
+							} else {
+								throw;
 							}
 						}
 
-						const NAMESOCKFD nsf = { info.name, playerPic, cfd, cver };
+						std::size_t left = namePic.length();
 
-						registerPlayer(nsf);
-						send("OK", 2, cfd);
-						accepted = PLAY;
+						info.name = namePic.substr(0, namePic.find('\0'));
 
+						if(cver >= minver && cver <= maxver && !refuse) {
+
+							std::string playerPic, picLength;
+
+							if(cver >= 4 && info.name[0] == '+') {
+
+								try {
+
+									left += info.name.length() + 1;
+
+									info.name = info.name.substr(1);
+
+									picLength = namePic.substr(namePic.find('\0') + 1);
+									picLength = picLength.substr(0, picLength.find('\0'));
+
+									left += picLength.length() + 1;
+
+									std::size_t pl;
+									(std::istringstream(picLength)) >> pl;
+
+									try {
+
+										std::size_t v = pl - std::min(pl, left);
+										playerPic = namePic.substr(namePic.rfind('\0') + 1);
+
+										while(v) {
+											playerPic.reserve(playerPic.size() + v);
+											playerPic.append(read(cfd, v));
+											v = pl - playerPic.length();
+										}
+
+										char cc[20] = "0\0";
+
+										if(pl > MAXPICBYTES) {
+
+											send(cc, 20, cfd);
+											recv(cc, 2, cfd);
+											logInfo("Player picture for \"" << info.name
+													<< "\" rejected (too large)");
+											std::string().swap(playerPic);
+
+										} else {
+#ifndef _WIN32
+											std::snprintf(cc, 20, "%zu", playerPic.length());
+#else
+											std::snprintf(cc, 20, "%lu",
+														  (unsigned long)playerPic.length());
+#endif
+											send(cc, 20, cfd);
+											recv(cc, 2, cfd);
+
+											if(!(cc[0] == 'O' && cc[1] == 'K')) {
+												logWarning("Player picture transmission for \""
+														   << info.name << "\" failed: got "
+														   << playerPic.length()
+														   << " bytes; expected " << pl
+														   << " bytes)");
+												std::string().swap(playerPic);
+											} else {
+												logInfo("Player picture transmission for \""
+														<< info.name << "\" successful ("
+														<< playerPic.length() << " bytes)");
+											}
+										}
+
+									} catch(const std::bad_alloc &) {
+
+										char cc[20] = "0\0";
+
+										send(cc, 20, cfd);
+										recv(cc, 2, cfd);
+										logInfo("Player picture for \"" << info.name
+												<< "\" rejected (out of memory)");
+
+										std::string().swap(playerPic);
+									}
+
+								} catch(const NetMauMau::Common::Exception::SocketException &) {
+									std::string().swap(playerPic);
+								}
+							}
+
+							const NAMESOCKFD nsf = { info.name, playerPic, cfd, cver };
+
+							registerPlayer(nsf);
+							send("OK", 2, cfd);
+							accepted = PLAY;
+
+						} else {
+
+							try {
+								send(cver <= maxver ? "NO" : "VM", 2, cfd);
+							} catch(const NetMauMau::Common::Exception::SocketException &e) {
+								logDebug("Sending " << (cver <= maxver ? "NO" : "VM")
+										 << " to client failed: " << e.what());
+							}
+
+							shutdown(cfd, SHUT_RDWR);
+							close(cfd);
+							accepted = REFUSED;
+						}
 					} else {
+						logDebug("HELLO failed: " << rHello.substr(0, std::strlen(PACKAGE_NAME))
+								 << " != " << hello);
 
 						try {
-							send(cver <= maxver ? "NO" : "VM", 2, cfd);
+							send("NO", 2, cfd);
 						} catch(const NetMauMau::Common::Exception::SocketException &e) {
-							logDebug("Sending " << (cver <= maxver ? "NO" : "VM")
-									 << " to client failed: " << e.what());
+							logDebug("Sending NO to client failed: " << e.what());
 						}
 
 						shutdown(cfd, SHUT_RDWR);
 						close(cfd);
-						accepted = REFUSED;
 					}
-				} else {
-					logDebug("HELLO failed: " << rHello.substr(0, std::strlen(PACKAGE_NAME))
-							 << " != " << hello);
 
-					try {
-						send("NO", 2, cfd);
-					} catch(const NetMauMau::Common::Exception::SocketException &e) {
-						logDebug("Sending NO to client failed: " << e.what());
+				} else if(rHello.substr(0, 10) == "PLAYERLIST") {
+
+					const std::string::size_type spc = rHello.find(' ');
+					const std::string::size_type dot = rHello.find('.');
+
+					const PLAYERINFOS &pi(getRegisteredPlayers());
+					const uint32_t cver = rHello.length() > 10 ?
+										  (getMajorFromHello(rHello, dot, spc) << 16u) |
+										  getMinorFromHello(rHello, dot) : 0;
+
+					for(PLAYERINFOS::const_iterator i(pi.begin()); i != pi.end(); ++i) {
+
+						std::string piz(i->name);
+						piz.append(1, 0);
+
+						if(cver >= 4) {
+							piz.reserve(piz.length() + i->playerPic.length() + 1);
+							piz.append(i->playerPic.empty() ? "-" : i->playerPic).append(1, 0);
+						}
+
+						send(piz.c_str(), piz.length(), cfd);
 					}
+
+					for(std::vector<std::string>::const_iterator i(getAIPlayers().begin());
+							i != getAIPlayers().end(); ++i) {
+
+						std::string piz(*i);
+						piz.append(1, 0);
+
+						if(cver >= 4) {
+							piz.reserve(piz.length() + AIDefaultIcon.length() + 1);
+							piz.append(AIDefaultIcon).append(1, 0);
+						}
+
+						send(piz.c_str(), piz.length(), cfd);
+					}
+
+					send(cver >= 4 ? "PLAYERLISTEND\0-\0" : "PLAYERLISTEND\0",
+						 cver >= 4 ? 16 : 14, cfd);
 
 					shutdown(cfd, SHUT_RDWR);
 					close(cfd);
-				}
 
-			} else if(rHello.substr(0, 10) == "PLAYERLIST") {
+					accepted = PLAYERLIST;
 
-				const std::string::size_type spc = rHello.find(' ');
-				const std::string::size_type dot = rHello.find('.');
+				} else {
 
-				const PLAYERINFOS &pi(getRegisteredPlayers());
-				const uint32_t cver = rHello.length() > 10 ?
-									  (getMajorFromHello(rHello, dot, spc) << 16u) |
-									  getMinorFromHello(rHello, dot) : 0;
+					std::ostringstream oscap;
 
-				for(PLAYERINFOS::const_iterator i(pi.begin()); i != pi.end(); ++i) {
-
-					std::string piz(i->name);
-					piz.append(1, 0);
-
-					if(cver >= 4) {
-						piz.reserve(piz.length() + i->playerPic.length() + 1);
-						piz.append(i->playerPic.empty() ? "-" : i->playerPic).append(1, 0);
+					for(CAPABILITIES::const_iterator i(m_caps.begin()); i != m_caps.end(); ++i) {
+						oscap << i->first << '=' << i->second << '\0';
 					}
 
-					send(piz.c_str(), piz.length(), cfd);
+					oscap << "CAPEND" << '\0';
+
+					send(oscap.str().c_str(), oscap.str().length(), cfd);
+
+					shutdown(cfd, SHUT_RDWR);
+					close(cfd);
+
+					accepted = CAP;
 				}
-
-				for(std::vector<std::string>::const_iterator i(getAIPlayers().begin());
-						i != getAIPlayers().end(); ++i) {
-
-					std::string piz(*i);
-					piz.append(1, 0);
-
-					if(cver >= 4) {
-						piz.reserve(piz.length() + AIDefaultIcon.length() + 1);
-						piz.append(AIDefaultIcon).append(1, 0);
-					}
-
-					send(piz.c_str(), piz.length(), cfd);
-				}
-
-				send(cver >= 4 ? "PLAYERLISTEND\0-\0" : "PLAYERLISTEND\0",
-					 cver >= 4 ? 16 : 14, cfd);
-
-				shutdown(cfd, SHUT_RDWR);
-				close(cfd);
-
-				accepted = PLAYERLIST;
 
 			} else {
-
-				std::ostringstream oscap;
-
-				for(CAPABILITIES::const_iterator i(m_caps.begin()); i != m_caps.end(); ++i) {
-					oscap << i->first << '=' << i->second << '\0';
-				}
-
-				oscap << "CAPEND" << '\0';
-
-				send(oscap.str().c_str(), oscap.str().length(), cfd);
-
 				shutdown(cfd, SHUT_RDWR);
 				close(cfd);
 
-				accepted = CAP;
+				throw NetMauMau::Common::Exception::SocketException(gai_strerror(err), -1, errno);
 			}
 
-		} else {
+		} catch(const NetMauMau::Common::Exception::SocketException &) {
 			shutdown(cfd, SHUT_RDWR);
 			close(cfd);
 
-			throw NetMauMau::Common::Exception::SocketException(gai_strerror(err), -1, errno);
+			throw;
 		}
 	}
 
@@ -360,6 +405,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			bool vMsg = false;
 
 			for(VERSIONEDMESSAGE::const_iterator j(vm.begin()); j != vm.end(); ++j) {
+
 				if(j->first && f->clientVersion >= j->first) {
 
 					std::string msg(j->second);

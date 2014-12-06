@@ -136,8 +136,14 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			NetMauMau::Common::BYTE *ppd = 0L;
 
 			if(!pic.empty() && pic != "-") {
-				ppd = new NetMauMau::Common::BYTE[pp.size()];
-				std::memcpy(ppd, pp.data(), pp.size() * sizeof(NetMauMau::Common::BYTE));
+
+				ppd = new(std::nothrow) NetMauMau::Common::BYTE[pp.size()];
+
+				if(ppd) {
+					std::memcpy(ppd, pp.data(), pp.size() * sizeof(NetMauMau::Common::BYTE));
+				} else {
+					pic = "-";
+				}
 			}
 
 			PLAYERINFO pInfo = { pl, ppd, (pic.empty() || pic != "-") ? pp.size() : 0 };
@@ -219,21 +225,30 @@ throw(NetMauMau::Common::Exception::SocketException) {
 					send(m_pName.c_str(), m_pName.length(), getSocketFD());
 				} else {
 					try {
+
 						const std::string &base64png(NetMauMau::Common::base64_encode(data, len));
 
-						std::ostringstream osp;
-						osp << "+" << m_pName << '\0' << base64png.length() << '\0' << base64png;
+						if(!base64png.empty()) {
 
-						send(osp.str().c_str(), osp.str().length(), getSocketFD());
+							std::ostringstream osp;
+							osp << "+" << m_pName << '\0' << base64png.length() << '\0'
+								<< base64png;
 
-						char ack[1024] = "0";
-						recv(ack, 1023, getSocketFD());
+							send(osp.str().c_str(), osp.str().length(), getSocketFD());
 
-						if(std::strtoul(ack, NULL, 10) == base64png.length()) {
-							send("OK", 2, getSocketFD());
-							l->uploadSucceded(m_pName);
+							char ack[1024] = "0";
+							recv(ack, 1023, getSocketFD());
+
+							if(std::strtoul(ack, NULL, 10) == base64png.length()) {
+								send("OK", 2, getSocketFD());
+								l->uploadSucceded(m_pName);
+							} else {
+								send("NO", 2, getSocketFD());
+								l->uploadFailed(m_pName);
+							}
+
 						} else {
-							send("NO", 2, getSocketFD());
+							send(m_pName.c_str(), m_pName.length(), getSocketFD());
 							l->uploadFailed(m_pName);
 						}
 

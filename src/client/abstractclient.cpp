@@ -71,9 +71,17 @@ using namespace NetMauMau::Client;
 
 AbstractClient::AbstractClient(const std::string &pName, const unsigned char *data, std::size_t len,
 							   const std::string &server, uint16_t port) : IPlayerPicListener(),
-	m_connection(pName, server, port), m_pName(pName), m_pngData(new unsigned char[len]()),
-	m_pngDataLen(len), m_cards(), m_openCard(0L), m_disconnectNow(false) {
-	std::memcpy(m_pngData, data, len);
+	m_connection(pName, server, port), m_pName(pName),
+	m_pngData(new(std::nothrow) unsigned char[len]()), m_pngDataLen(len), m_cards(),
+	m_openCard(0L), m_disconnectNow(false) {
+
+	if(m_pngData && m_pngDataLen) {
+		std::memcpy(m_pngData, data, len);
+	} else {
+		delete [] m_pngData;
+		m_pngData = 0L;
+		m_pngDataLen = 0;
+	}
 }
 
 AbstractClient::AbstractClient(const std::string &pName, const std::string &server, uint16_t port)
@@ -201,8 +209,11 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					&plPicPng(NetMauMau::Common::base64_decode(plPic));
 
 					endReceivePlayerPicture(msg);
-					playerJoined(msg, plPic == "-" ? 0L : plPicPng.data(),
-								 plPic == "-" ? 0 : plPicPng.size());
+
+					const bool hasPlPic = !(plPic == "-" || plPicPng.empty());
+
+					playerJoined(msg, hasPlPic ? plPicPng.data() : 0L,
+								 hasPlPic ? plPicPng.size() : 0);
 
 				} else if(!m_disconnectNow && msg == "PLAYERREJECTED") {
 					m_connection >> msg;
@@ -419,7 +430,8 @@ uint16_t AbstractClient::getDefaultPort() {
 }
 
 bool AbstractClient::isPlayerImageUploadable(const unsigned char *pngData, std::size_t pngDataLen) {
-	return NetMauMau::Common::base64_encode(pngData, pngDataLen).size() <= MAXPICBYTES;
+	const std::string &base64png(NetMauMau::Common::base64_encode(pngData, pngDataLen));
+	return !base64png.empty() && base64png.size() <= MAXPICBYTES;
 }
 
 void AbstractClient::beginReceivePlayerPicture(const std::string &) const throw() {}

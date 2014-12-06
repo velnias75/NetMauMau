@@ -1,8 +1,8 @@
 netmaumau (0.5) UNRELEASED; urgency=low
 
-  * 
+  * fixed out of memory handling at picture upload
 
- -- Heiko Schäfer <heiko@rangun.de>  Sat, 06 Dec 2014 08:13:08 +0100
+ -- Heiko Schäfer <heiko@rangun.de>  Sat, 06 Dec 2014 16:00:35 +0100
 
 netmaumau (0.4) UNRELEASED; urgency=low
 

@@ -177,10 +177,18 @@ again:
 std::string AbstractSocket::read(int fd, std::size_t len) throw(Exception::SocketException) {
 
 	std::string ret;
-	char *rbuf = new char[len];
+	char *rbuf = new(std::nothrow) char[len];
+
+	if(!rbuf) throw Exception::SocketException(std::strerror(ENOMEM), fd, ENOMEM);
+
 	const std::size_t rlen = recv(rbuf, len, fd);
 
-	ret.reserve(rlen);
+	try {
+		ret.reserve(rlen);
+	} catch(const std::bad_alloc &) {
+		throw Exception::SocketException(std::strerror(ENOMEM), fd, ENOMEM);
+	}
+
 	ret.append(rbuf, rlen);
 
 	delete [] rbuf;

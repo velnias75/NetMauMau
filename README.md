@@ -36,6 +36,13 @@ can be added by `layman`
 The GitHub repository of **games-overlay** is here:
 [https://github.com/hasufell/games-overlay](https://github.com/hasufell/games-overlay)
 
+**Adding the overlay**
+
+With paludis: see [Paludis repository configuration](http://paludis.exherbo.org/configuration/repositories/index.html)
+
+With layman:
+```layman -f -o https://raw.github.com/hasufell/games-overlay/master/repository.xml -a games-overlay``` or ```layman -a games-overlay```
+
 Install NetMauMau with `emerge games-server/netmaumau`
 
 Ubuntu

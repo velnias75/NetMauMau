@@ -506,6 +506,10 @@ std::size_t Engine::getAICount() const {
 	return cnt;
 }
 
+void Engine::gameAboutToStart() {
+	m_eventHandler.gameAboutToStart();
+}
+
 void Engine::gameOver() const throw() {
 	try {
 		m_eventHandler.gameOver();

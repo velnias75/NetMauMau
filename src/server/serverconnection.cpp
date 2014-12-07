@@ -65,7 +65,7 @@ Connection::Connection(uint16_t port, const char *server) : AbstractConnection(s
 
 Connection::~Connection() {
 
-	for(std::vector<NAMESOCKFD>::const_iterator i(getRegisteredPlayers().begin());
+	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
 
 		try {
@@ -394,7 +394,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 void Connection::sendVersionedMessage(const Connection::VERSIONEDMESSAGE &vm) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	for(std::vector<NAMESOCKFD>::const_iterator i(getRegisteredPlayers().begin());
+	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
 
 		const Connection::PLAYERINFOS::const_iterator &f(std::find_if(getPlayers().begin(),
@@ -424,10 +424,17 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 }
 
+void Connection::clearPlayerPictures() {
+	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
+			i != getRegisteredPlayers().end(); ++i) {
+		std::string().swap(i->playerPic);
+	}
+}
+
 Connection &Connection::operator<<(const std::string &msg)
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	for(std::vector<NAMESOCKFD>::const_iterator i(getRegisteredPlayers().begin());
+	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
 		write(i->sockfd, msg);
 	}
@@ -438,7 +445,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 Connection &Connection::operator>>(std::string &msg)
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	for(std::vector<NAMESOCKFD>::const_iterator i(getRegisteredPlayers().begin());
+	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
 		msg = read(i->sockfd);
 	}

@@ -67,6 +67,8 @@ public:
 			   static_cast<uint16_t>(SERVER_VERSION_MINOR);
 	}
 
+	void clearPlayerPictures();
+
 protected:
 	virtual bool wire(int sockfd, const struct sockaddr *addr, socklen_t addrlen) const;
 	virtual std::string wireError(const std::string &err) const;

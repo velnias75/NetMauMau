@@ -123,6 +123,7 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 
 	m_engine.distributeCards();
 	m_engine.setUltimate(ultimate);
+	m_engine.gameAboutToStart();
 
 	while(ultimate ? m_engine.getPlayerCount() >= 2 : m_engine.getPlayerCount() == minPlayers) {
 		if(!m_engine.nextTurn()) break;

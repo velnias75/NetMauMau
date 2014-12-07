@@ -86,6 +86,7 @@ public:
 
 	void message(const std::string &msg) const throw(Common::Exception::SocketException);
 
+	void gameAboutToStart();
 	void gameOver() const throw();
 	void reset() throw();
 

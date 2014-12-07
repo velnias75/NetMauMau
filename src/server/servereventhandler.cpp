@@ -38,6 +38,10 @@ Connection *EventHandler::getConnection() const {
 	return &m_connection;
 }
 
+void EventHandler::gameAboutToStart() const {
+	m_connection.clearPlayerPictures();
+}
+
 void EventHandler::gameOver() const throw(NetMauMau::Common::Exception::SocketException) {
 	m_connection << "BYE";
 }

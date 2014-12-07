@@ -62,7 +62,7 @@ public:
 	typedef struct _nameSockFD {
 		~_nameSockFD();
 		std::string name;
-		std::string playerPic;
+		mutable std::string playerPic;
 		int sockfd;
 		uint32_t clientVersion;
 	} NAMESOCKFD;

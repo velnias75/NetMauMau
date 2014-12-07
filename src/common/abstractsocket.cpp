@@ -131,14 +131,6 @@ void AbstractSocket::connect() throw(Exception::SocketException) {
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic push
-/**
- *
- * @param buf
- * @param len
- * @param fd
- * @param check
- * @return
- */
 std::size_t AbstractSocket::recv(void *buf, std::size_t len,
 								 int fd) throw(Exception::SocketException) {
 
@@ -245,8 +237,8 @@ void AbstractSocket::checkSocket(int fd) throw(Exception::SocketException) {
 	int ret = 0, error_code = 0;
 	socklen_t slen = sizeof(error_code);
 
-	if(getsockopt(fd, SOL_SOCKET, SO_ERROR, reinterpret_cast<char *>(&error_code), &slen) == -1 ||
-			error_code) {
+	if((ret = getsockopt(fd, SOL_SOCKET, SO_ERROR,
+						 reinterpret_cast<char *>(&error_code), &slen)) == -1 || error_code) {
 		throw Exception::SocketException(std::strerror(ret == -1 ? errno : error_code), fd,
 										 ret == -1 ? errno : error_code);
 	}

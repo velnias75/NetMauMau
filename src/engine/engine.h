@@ -114,6 +114,8 @@ private:
 		m_players.clear();
 	}
 
+	void checkPlayersAlive() const throw(Common::Exception::SocketException);
+
 private:
 	Event::IEventHandler &m_eventHandler;
 

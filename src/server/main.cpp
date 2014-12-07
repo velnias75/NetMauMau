@@ -21,6 +21,14 @@
 #include "config.h"
 #endif
 
+#if _WIN32
+#define COPY "\270"
+#define AUML "\204"
+#else
+#define COPY "\u00a9"
+#define AUML "\u00e4"
+#endif
+
 #include <set>
 #include <ctime>
 #include <cerrno>
@@ -322,8 +330,8 @@ int main(int argc, const char **argv) {
 
 			logger("");
 			std::strftime(dateOut, sizeof(dateOut), "%Y", std::localtime(&t));
-			logger("Copyright \u00a9 " << dateOut << " Heiko Sch\u00e4fer <" << PACKAGE_BUGREPORT
-				   << ">");
+			logger("Copyright " COPY " " << dateOut << " Heiko Sch" AUML "fer <"
+				   << PACKAGE_BUGREPORT << ">");
 
 #ifdef PACKAGE_URL
 

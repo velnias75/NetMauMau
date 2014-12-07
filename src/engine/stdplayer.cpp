@@ -134,6 +134,10 @@ bool StdPlayer::isAIPlayer() const {
 	return true;
 }
 
+bool StdPlayer::isAlive() const {
+	return true;
+}
+
 void StdPlayer::setRuleSet(const NetMauMau::RuleSet::IRuleSet *ruleset) {
 	m_ruleset = ruleset;
 }

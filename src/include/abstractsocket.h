@@ -29,6 +29,9 @@
 
 #ifdef _WIN32
 #include <ws2tcpip.h>
+#ifndef SHUT_RDWR
+#define SHUT_RDWR SD_BOTH
+#endif
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -54,6 +57,8 @@ public:
 	static void write(int fd, const std::string &msg) throw(Exception::SocketException);
 
 	_EXPORT static void setInterrupted(bool b = true);
+
+	_EXPORT static void checkSocket(int fd) throw(Exception::SocketException);
 
 protected:
 	AbstractSocket(const char *server, uint16_t port);

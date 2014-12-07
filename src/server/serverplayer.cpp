@@ -40,6 +40,17 @@ bool Player::isAIPlayer() const {
 	return false;
 }
 
+bool Player::isAlive() const {
+
+	try {
+		NetMauMau::Common::AbstractSocket::checkSocket(m_sockfd);
+	} catch(const Exception::ServerPlayerException &) {
+		return false;
+	}
+
+	return true;
+}
+
 void Player::receiveCard(NetMauMau::Common::ICard *card) {
 
 	try {

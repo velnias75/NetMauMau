@@ -32,9 +32,6 @@
 
 #ifdef _WIN32
 #include <mswsock.h>
-#ifndef SHUT_RDWR
-#define SHUT_RDWR SD_BOTH
-#endif
 #endif
 
 namespace NetMauMau {

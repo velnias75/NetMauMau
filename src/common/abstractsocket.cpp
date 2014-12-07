@@ -67,7 +67,10 @@ AbstractSocket::AbstractSocket(const char *server, uint16_t port) : m_server(ser
 	m_port(port), m_sfd(-1), m_wireError() {}
 
 AbstractSocket::~AbstractSocket() {
-	if(m_sfd != -1) close(m_sfd);
+	if(m_sfd != -1) {
+		shutdown(m_sfd, SHUT_RDWR);
+		close(m_sfd);
+	}
 }
 
 void AbstractSocket::connect() throw(Exception::SocketException) {
@@ -128,8 +131,18 @@ void AbstractSocket::connect() throw(Exception::SocketException) {
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic push
+/**
+ *
+ * @param buf
+ * @param len
+ * @param fd
+ * @param check
+ * @return
+ */
 std::size_t AbstractSocket::recv(void *buf, std::size_t len,
 								 int fd) throw(Exception::SocketException) {
+
+	checkSocket(fd);
 
 	std::size_t total = 0;
 	fd_set rfds;
@@ -186,6 +199,7 @@ std::string AbstractSocket::read(int fd, std::size_t len) throw(Exception::Socke
 	try {
 		ret.reserve(rlen);
 	} catch(const std::bad_alloc &) {
+		delete [] rbuf;
 		throw Exception::SocketException(std::strerror(ENOMEM), fd, ENOMEM);
 	}
 
@@ -198,6 +212,8 @@ std::string AbstractSocket::read(int fd, std::size_t len) throw(Exception::Socke
 
 void AbstractSocket::send(const void *buf, std::size_t len,
 						  int fd) throw(Exception::SocketException) {
+
+	checkSocket(fd);
 
 	const char *ptr = static_cast<const char *>(buf);
 
@@ -222,6 +238,18 @@ void AbstractSocket::intercept() {}
 
 void AbstractSocket::setInterrupted(bool b) {
 	m_interrupt = b;
+}
+
+void AbstractSocket::checkSocket(int fd) throw(Exception::SocketException) {
+
+	int ret = 0, error_code = 0;
+	socklen_t slen = sizeof(error_code);
+
+	if(getsockopt(fd, SOL_SOCKET, SO_ERROR, reinterpret_cast<char *>(&error_code), &slen) == -1 ||
+			error_code) {
+		throw Exception::SocketException(std::strerror(ret == -1 ? errno : error_code), fd,
+										 ret == -1 ? errno : error_code);
+	}
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

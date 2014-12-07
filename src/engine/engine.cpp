@@ -214,6 +214,8 @@ bool Engine::nextTurn() {
 
 	try {
 
+		checkPlayersAlive();
+
 		Player::IPlayer *player = m_players[m_nxtPlayer];
 
 		if(m_curTurn != m_turn) {
@@ -383,6 +385,8 @@ sevenRule:
 
 	} catch(const Common::Exception::SocketException &e) {
 
+		logDebug("SocketException: " << e);
+
 		Common::AbstractConnection *con = m_eventHandler.getConnection();
 		bool lostWatchingPlayer = false;
 
@@ -515,6 +519,12 @@ void Engine::gameOver() const throw() {
 		m_eventHandler.gameOver();
 	} catch(const Common::Exception::SocketException &e) {
 		logDebug(__PRETTY_FUNCTION__ << ": failed to handle event \'gameOver\': " << e.what());
+	}
+}
+
+void Engine::checkPlayersAlive() const throw(Common::Exception::SocketException) {
+	for(PLAYERS::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
+		if(!(*i)->isAlive()) throw Common::Exception::SocketException((*i)->getName() + " is dead");
 	}
 }
 

@@ -32,7 +32,7 @@ nmm_server_LDADD += netmaumau.rc.lo
 endif
 
 ai-icon.h: Tuyul.PNG
-	$(SHELL) $(srcdir)/create_ai_icon.sh $< > $@
+	$(SHELL) $(srcdir)/create_ai_icon.sh 'ai_icon_data' $< > $@
 
 %.rc.lo: %.rc
 	$(LIBTOOL) --tag=RC --mode=compile $(RC) $< -o $@

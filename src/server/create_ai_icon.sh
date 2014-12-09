@@ -18,7 +18,11 @@
 #  along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-PNGDATA="`cat $1 | xxd -i`"
+command -v xxd >/dev/null 2>&1 || \
+ { echo >&2 "I require xxd but it's not installed.  Aborting."; exit 1; }
+
+PNGDATA="`cat $2 | xxd -i`"
+HGUARD="CREATE_AI_ICON_`echo -n $1 | tr '[:lower:]' '[:upper:]'`_H"
 
 cat << EOF
 /*
@@ -39,21 +43,21 @@ cat << EOF
  * You should have received a copy of the GNU Lesser General Public License
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Created from file "$1" by $USER
+ * Created from file "$2" by $USER
  */
 
-#ifndef AI_ICON_H
-#define AI_ICON_H
+#ifndef $HGUARD
+#define $HGUARD
 
 namespace {
 
-const unsigned char ai_icon_data[] = {
+const unsigned char $1[] = {
 $PNGDATA
 };
 
 }
 
-#endif /* AI_ICON_H */
+#endif /* $HGUARD */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
 EOF

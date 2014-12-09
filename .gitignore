@@ -62,6 +62,7 @@ src/common/.libs
 src/engine/.libs
 src/server/.libs
 src/server/nmm-server
+src/server/ai-icon.h
 src/test/test_client
 src/test/test_netmaumau
 doc/client-dox.stamp

@@ -1,12 +1,18 @@
 bin_PROGRAMS = nmm-server
 
+EXTRA_DIST = Tuyul.PNG create_ai_icon.sh
+
 man1_MANS = 
 
 if GENMAN
 man1_MANS += $(bin_PROGRAMS).1
 endif
 
+MAINTAINERCLEANFILES = ai-icon.h
+
 DISTCLEANFILES = $(man1_MANS)
+
+BUILT_SOURCES = ai-icon.h
 
 noinst_HEADERS = serverconnection.h serverplayer.h servereventhandler.h game.h \
 	serverplayerexception.h ai-icon.h
@@ -24,6 +30,9 @@ nmm_server_LDADD = ../common/libnetmaumaucommon.la ../engine/libengine.la $(POPT
 if RC
 nmm_server_LDADD += netmaumau.rc.lo
 endif
+
+ai-icon.h: Tuyul.PNG
+	$(SHELL) $(srcdir)/create_ai_icon.sh $< > $@
 
 %.rc.lo: %.rc
 	$(LIBTOOL) --tag=RC --mode=compile $(RC) $< -o $@

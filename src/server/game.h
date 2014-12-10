@@ -52,10 +52,10 @@ public:
 	}
 
 	void start(bool ultimate = false) throw(Common::Exception::SocketException);
+	void reset(bool playerLost) throw();
 
 private:
 	bool addPlayer(Player::IPlayer *player);
-	void reset() throw();
 
 private:
 	Engine m_engine;

@@ -122,7 +122,48 @@ void Connection::connect() throw(NetMauMau::Common::Exception::SocketException) 
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic push
-int Connection::wait(timeval *tv) const {
+int Connection::wait(timeval *tv) {
+
+	if(tv) {
+		for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
+				i != getRegisteredPlayers().end(); ++i) {
+
+#if _WIN32
+			fd_set rfds;
+
+			FD_ZERO(&rfds);
+			FD_SET(i->sockfd, &rfds);
+
+			int nRet, err = 0;
+			timeval tv = { 0, 0 };
+
+			if((nRet = select(0, &rfds, NULL, NULL, &tv)) == SOCKET_ERROR) {
+				err = -2;
+			}
+
+			if(nRet > 0 && FD_ISSET(i->sockfd, &rfds)) {
+				err = -2;
+			}
+
+			if(err == -2) {
+				logDebug("Lost connection to player \"" << i->name << "\"");
+				removePlayer(i->sockfd);
+				return err;
+			}
+
+#else
+
+			char buffer[32];
+
+			if(!::recv(i->sockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT)) {
+				logDebug("Lost connection to player \"" << i->name << "\"");
+				removePlayer(i->sockfd);
+				return -2;
+			}
+
+#endif
+		}
+	}
 
 	fd_set rfds;
 

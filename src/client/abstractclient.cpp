@@ -108,7 +108,7 @@ const char *AbstractClient::getDefaultAIName() {
 
 void AbstractClient::disconnect() {
 	m_disconnectNow = true;
-	m_connection.setInterrupted();
+	m_connection.setInterrupted(true, true);
 }
 
 Connection::CAPABILITIES AbstractClient::capabilities(timeval *timeout)
@@ -397,7 +397,9 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 			}
 
 		} catch(const Exception::InterceptedErrorException &e) {
-			error(e.what());
+
+			if(!m_disconnectNow) error(e.what());
+
 			break;
 		}
 	}

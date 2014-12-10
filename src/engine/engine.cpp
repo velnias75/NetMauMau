@@ -194,6 +194,12 @@ void Engine::message(const std::string &msg) const throw(Common::Exception::Sock
 	m_eventHandler.message(msg);
 }
 
+void Engine::error(const std::string &msg) const throw() {
+	try {
+		m_eventHandler.error(msg);
+	} catch(const Common::Exception::SocketException &) {}
+}
+
 void Engine::suspends(Player::IPlayer *p, const Common::ICard *uc) const {
 
 	m_eventHandler.playerSuspends(p, uc);

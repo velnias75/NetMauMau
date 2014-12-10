@@ -271,6 +271,16 @@ void AbstractSocket::setInterrupted(bool b) {
 	m_interrupt = b;
 }
 
+void AbstractSocket::setInterrupted(bool b, bool shut) {
+
+	setInterrupted(b);
+
+	if(b && shut) {
+		shutdown(getSocketFD(), SHUT_RDWR);
+		close(getSocketFD());
+	}
+}
+
 void AbstractSocket::checkSocket(int fd) throw(Exception::SocketException) {
 
 	int ret = 0, error_code = 0;

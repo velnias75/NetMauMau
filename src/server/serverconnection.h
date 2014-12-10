@@ -44,7 +44,7 @@ public:
 
 	virtual void connect() throw(Common::Exception::SocketException);
 
-	int wait(timeval *tv = NULL) const;
+	int wait(timeval *tv = NULL);
 
 	inline const PLAYERINFOS &getPlayers() const {
 		return getRegisteredPlayers();

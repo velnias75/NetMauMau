@@ -131,10 +131,12 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 
 	if(ultimate || m_aiOpponent) m_engine.gameOver();
 
-	reset();
+	reset(false);
 }
 
-void Game::reset() throw() {
+void Game::reset(bool playerLost) throw() {
+
+	if(playerLost) m_engine.error("Lost connection to a waiting player.");
 
 	m_engine.reset();
 

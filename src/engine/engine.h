@@ -85,6 +85,7 @@ public:
 	bool nextTurn();
 
 	void message(const std::string &msg) const throw(Common::Exception::SocketException);
+	void error(const std::string &msg) const throw();
 
 	void gameAboutToStart();
 	void gameOver() const throw();

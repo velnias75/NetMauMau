@@ -57,7 +57,10 @@ Connection::Connection(const std::string &pName, const std::string &server, uint
 	if(m_pName.length() > MAX_PNAME - 1) m_pName = m_pName.substr(0, MAX_PNAME - 1);
 }
 
-Connection::~Connection() {}
+Connection::~Connection() {
+	shutdown(getSocketFD(), SHUT_RDWR);
+	close(getSocketFD());
+}
 
 void Connection::setTimeout(struct timeval *timeout) {
 	m_timeout = timeout;

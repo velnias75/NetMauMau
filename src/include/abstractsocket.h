@@ -59,6 +59,7 @@ public:
 					  const std::string &msg) throw(Exception::SocketException);
 
 	_EXPORT static void setInterrupted(bool b = true);
+	void setInterrupted(bool b, bool shut);
 
 	_EXPORT static void checkSocket(int fd) throw(Exception::SocketException);
 

@@ -473,7 +473,11 @@ int main(int argc, const char **argv) {
 
 			while(!interrupt) {
 
-				if(con.wait() > 0) {
+				timeval tv = { 0, 500 };
+
+				int r;
+
+				if((r = con.wait(&tv)) > 0) {
 
 					Server::Connection::INFO info;
 					Server::Connection::ACCEPT_STATE state = Server::Connection::NONE;
@@ -515,6 +519,8 @@ int main(int argc, const char **argv) {
 							}
 						}
 					}
+				} else if(r == -2) {
+					game.reset(true);
 				}
 			}
 

@@ -161,4 +161,8 @@ void Game::reset(bool playerLost) throw() {
 	logInfo(GAMEREADY);
 }
 
+void Game::shutdown() throw() {
+	m_engine.error("The server has been shut down");
+}
+
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

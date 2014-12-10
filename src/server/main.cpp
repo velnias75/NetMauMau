@@ -522,6 +522,8 @@ int main(int argc, const char **argv) {
 				} else if(r == -2) {
 					game.reset(true);
 				}
+
+				if(interrupt) game.shutdown();
 			}
 
 		} catch(const Common::Exception::SocketException &e) {

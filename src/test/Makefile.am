@@ -6,7 +6,7 @@ endif
 
 TESTS = $(check_PROGRAMS)
 
-noinst_HEADERS = testeventhandler.h testclient.h
+noinst_HEADERS = testeventhandler.h testclient.h testimg.h
 
 test_netmaumau_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/engine

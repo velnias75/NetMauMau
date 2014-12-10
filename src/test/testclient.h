@@ -25,7 +25,8 @@
 class TestClient : public NetMauMau::Client::AbstractClient {
 	DISALLOW_COPY_AND_ASSIGN(TestClient)
 public:
-	TestClient(const std::string &pName, const std::string &server, uint16_t port);
+	TestClient(const std::string &pName, const std::string &server, uint16_t port,
+			   const unsigned char *pngData, std::size_t pngDataLen);
 	virtual ~TestClient();
 
 protected:

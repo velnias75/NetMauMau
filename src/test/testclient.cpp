@@ -43,8 +43,9 @@ const std::string BOLD_OFF;
 #endif
 }
 
-TestClient::TestClient(const std::string &pName, const std::string &server, uint16_t port)
-	: AbstractClient(pName, server, port) {}
+TestClient::TestClient(const std::string &pName, const std::string &server, uint16_t port,
+					   const unsigned char *pngData, std::size_t pngDataLen)
+	: AbstractClient(pName, pngData, pngDataLen, server, port) {}
 
 TestClient::~TestClient() {}
 

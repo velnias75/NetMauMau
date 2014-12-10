@@ -25,6 +25,7 @@
 #include <popt.h>
 
 #include "testclient.h"
+#include "testimg.h"
 
 namespace {
 #ifndef DISABLE_ANSI
@@ -39,6 +40,8 @@ const std::string BOLD_ON;
 const std::string BOLD_OFF;
 #endif
 
+bool noImg = false;
+
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 #pragma GCC diagnostic push
 char *pName = "TestClient";
@@ -51,7 +54,8 @@ poptOption poptOptions[] = {
 		"name", 'n', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &pName,
 		0, "Set the name of the player", "NAME"
 	},
-	{ "caps", 0, POPT_ARG_VAL, &showCaps, 1, "Display the server capabilities ", NULL },
+	{ "no-img", 'N', POPT_ARG_VAL, &noImg, 1, "Do not send the test player image", NULL },
+	{ "caps", 0, POPT_ARG_VAL, &showCaps, 1, "Display the server capabilities", NULL },
 	POPT_AUTOHELP
 	POPT_TABLEEND
 };
@@ -95,7 +99,8 @@ int main(int argc, const char **argv) {
 		if(server.empty()) server = "localhost";
 	}
 
-	TestClient client(pName, server, port);
+	TestClient client(pName, server, port, noImg ? 0L : test_client_img, noImg ? 0 :
+					  sizeof(test_client_img));
 
 	try {
 		struct timeval tv = { 120, 0 };

@@ -220,6 +220,45 @@ void AbstractSocket::send(const void *buf, std::size_t len,
 	}
 }
 
+void AbstractSocket::write(int *fds, std::size_t numfd,
+						   const std::string &msg) throw(Exception::SocketException) {
+	if(fds) {
+		if(numfd > 1) {
+
+			std::string v;
+
+			const std::size_t partLen = msg.size() / numfd;
+			const std::size_t partRem = msg.size() % numfd;
+
+			std::size_t p = 0;
+
+			for(; p < numfd; ++p) {
+
+				const std::string::size_type start = p * partLen;
+
+				v.reserve(partLen);
+				v = msg.substr(start, start + partLen);
+
+				for(std::size_t f = 0; f < numfd; ++f) {
+					write(fds[f], v);
+				}
+			}
+
+			const std::string::size_type start = p * partLen;
+
+			v.reserve(partRem);
+			v = msg.substr(start, start + partRem).append(1, 0);
+
+			for(std::size_t f = 0; f < numfd; ++f) {
+				write(fds[f], v);
+			}
+
+		} else if(numfd == 1) {
+			write(fds[0], msg);
+		}
+	}
+}
+
 void AbstractSocket::write(int fd, const std::string &msg) throw(Exception::SocketException) {
 	std::string v(msg);
 	v.append(1, 0);

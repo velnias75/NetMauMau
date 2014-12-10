@@ -54,6 +54,24 @@ struct _isPlayer : public std::binary_function < NetMauMau::Common::AbstractConn
 		return nsd.name == player;
 	}
 };
+
+struct _playerClientversionLess :
+	public std::binary_function < NetMauMau::Common::AbstractConnection::PLAYERINFOS::value_type,
+		NetMauMau::Common::AbstractConnection::PLAYERINFOS::value_type, bool > {
+	bool operator()(const NetMauMau::Common::AbstractConnection::PLAYERINFOS::value_type &x,
+					const NetMauMau::Common::AbstractConnection::PLAYERINFOS::value_type &y) const {
+		return x.clientVersion < y.clientVersion;
+	}
+};
+
+struct _playerClientversionLess2 :
+	public std::binary_function < NetMauMau::Common::AbstractConnection::PLAYERINFOS::value_type,
+		uint32_t, bool > {
+	bool operator()(const NetMauMau::Common::AbstractConnection::PLAYERINFOS::value_type &x,
+					uint32_t y) const {
+		return x.clientVersion < y;
+	}
+};
 #pragma GCC diagnostic pop
 
 }
@@ -394,6 +412,40 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 void Connection::sendVersionedMessage(const Connection::VERSIONEDMESSAGE &vm) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
+#if 0
+
+	PLAYERINFOS sortedPI(getRegisteredPlayers());
+	std::sort(sortedPI.begin(), sortedPI.end(), _playerClientversionLess());
+
+	for(VERSIONEDMESSAGE::const_iterator j(vm.begin()); j != vm.end(); ++j) {
+
+		const PLAYERINFOS::iterator &a(std::find_if(sortedPI.begin(), sortedPI.end(),
+									   std::bind2nd(std::not2(_playerClientversionLess2()),
+											   j->first)));
+
+		const PLAYERINFOS::iterator &b(std::find_if(sortedPI.begin(), sortedPI.end(),
+									   std::bind2nd(_playerClientversionLess2(), j->first)));
+
+		const PLAYERINFOS::difference_type fdsNum = std::distance(a, b);
+		PLAYERINFOS::difference_type l = 0;
+		int fds[fdsNum];
+
+		for(PLAYERINFOS::iterator k(a); l < fdsNum; ++k, ++l) {
+			fds[l] = k->sockfd;
+			k = sortedPI.erase(k);
+		}
+
+		std::string msg(j->second);
+		const bool wantPic = msg.substr(j->second.length() - 9) == "VM_ADDPIC";
+
+		for(PLAYERINFOS::const_iterator i(getPlayers().begin()); i != getPlayers().end(); ++i) {
+			write(fds, fdsNum, wantPic ? msg.replace(j->second.length() - 9,
+					std::string::npos, i->playerPic.empty() ? "-" : i->playerPic) : msg);
+		}
+	}
+
+#endif
+
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
 
@@ -409,11 +461,22 @@ throw(NetMauMau::Common::Exception::SocketException) {
 				if(j->first && f->clientVersion >= j->first) {
 
 					std::string msg(j->second);
+
 					const bool wantPic = msg.substr(j->second.length() - 9) == "VM_ADDPIC";
 
-					write(i->sockfd, wantPic ? msg.replace(j->second.length() - 9,
-														   std::string::npos, i->playerPic.empty()
-														   ? "-" : i->playerPic) : msg);
+					const Connection::PLAYERINFOS::const_iterator
+					&pp(wantPic ? std::find_if(getPlayers().begin(), getPlayers().end(),
+											   std::bind2nd(_isPlayer(), msg.substr(13,
+															msg.length() - 23))) :
+						getPlayers().end());
+
+					if(wantPic && pp != getPlayers().end()) {
+						write(i->sockfd, msg.replace(j->second.length() - 9, std::string::npos,
+													 pp->playerPic.empty() ? "-" : pp->playerPic));
+					} else {
+						write(i->sockfd, msg);
+					}
+
 					vMsg = true;
 					break;
 				}

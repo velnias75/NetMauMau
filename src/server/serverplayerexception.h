@@ -32,7 +32,7 @@ class ServerPlayerException : public Common::Exception::SocketException {
 	ServerPlayerException &operator=(const ServerPlayerException &);
 public:
 	ServerPlayerException(const ServerPlayerException &o) throw();
-	ServerPlayerException(const std::string &msg, int sockfd = -1) throw();
+	ServerPlayerException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~ServerPlayerException() throw();
 };
 

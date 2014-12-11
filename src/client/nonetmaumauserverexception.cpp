@@ -21,8 +21,8 @@
 
 using namespace NetMauMau::Client::Exception;
 
-NoNetMauMauServerException::NoNetMauMauServerException(const std::string &msg, int sfd) throw() :
-	SocketException(msg, sfd) {}
+NoNetMauMauServerException::NoNetMauMauServerException(const std::string &msg, SOCKET sfd) throw()
+	: SocketException(msg, sfd) {}
 
 NoNetMauMauServerException::~NoNetMauMauServerException() throw() {}
 

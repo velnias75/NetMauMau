@@ -21,8 +21,8 @@
 
 using namespace NetMauMau::Server::Exception;
 
-ServerPlayerException::ServerPlayerException(const std::string &msg, int sfd) throw() :
-	SocketException(msg, sfd) {}
+ServerPlayerException::ServerPlayerException(const std::string &msg, SOCKET sfd) throw()
+	: SocketException(msg, sfd) {}
 
 ServerPlayerException::~ServerPlayerException() throw() {}
 

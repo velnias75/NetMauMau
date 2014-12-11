@@ -22,8 +22,8 @@
 #endif
 
 #include <sstream>
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
 #include <cerrno>
 
 #ifdef HAVE_UNISTD_H
@@ -37,6 +37,7 @@
 #include "clientconnection.h"
 
 #include "base64.h"
+#include "errorstring.h"
 #include "abstractclient.h"
 #include "timeoutexception.h"
 #include "shutdownexception.h"
@@ -59,7 +60,11 @@ Connection::Connection(const std::string &pName, const std::string &server, uint
 
 Connection::~Connection() {
 	shutdown(getSocketFD(), SHUT_RDWR);
+#ifndef _WIN32
 	close(getSocketFD());
+#else
+	close(getSocketFD());
+#endif
 }
 
 void Connection::setTimeout(struct timeval *timeout) {
@@ -96,7 +101,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		return isValidHello(dot, spc, rHello, PACKAGE_NAME);
 
 	} else if(pret == -1 && errno != EINTR) {
-		throw NetMauMau::Common::Exception::SocketException(strerror(errno), getSocketFD(), errno);
+		throw NetMauMau::Common::Exception::SocketException(NetMauMau::Common::errorString(),
+				getSocketFD(), errno);
 	} else if(pret == -1 && errno == EINTR) {
 		throw Exception::ShutdownException("Server is shutting down", getSocketFD());
 	} else {
@@ -289,13 +295,17 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 }
 
-bool Connection::wire(int sockfd, const struct sockaddr *addr, socklen_t addrlen) const {
+bool Connection::wire(SOCKET sockfd, const struct sockaddr *addr, socklen_t addrlen) const {
 
 	int ret = -1;
 
 	if((ret = ::connect(sockfd, addr, addrlen)) == -1) {
 		shutdown(sockfd, SHUT_RDWR);
+#ifndef _WIN32
 		close(sockfd);
+#else
+		closesocket(sockfd);
+#endif
 	}
 
 	return ret != -1;

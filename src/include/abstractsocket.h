@@ -53,35 +53,35 @@ public:
 
 	virtual void connect() throw(Exception::SocketException);
 
-	std::string read(int fd, std::size_t len = 1024) throw(Exception::SocketException);
-	static void write(int fd, const std::string &msg) throw(Exception::SocketException);
-	static void write(int *fds, std::size_t numfd,
+	std::string read(SOCKET fd, std::size_t len = 1024) throw(Exception::SocketException);
+	static void write(SOCKET fd, const std::string &msg) throw(Exception::SocketException);
+	static void write(SOCKET *fds, std::size_t numfd,
 					  const std::string &msg) throw(Exception::SocketException);
 
 	_EXPORT static void setInterrupted(bool b = true);
 	void setInterrupted(bool b, bool shut);
 
-	_EXPORT static void checkSocket(int fd) throw(Exception::SocketException);
+	_EXPORT static void checkSocket(SOCKET fd) throw(Exception::SocketException);
 
 protected:
 	AbstractSocket(const char *server, uint16_t port);
 
-	virtual bool wire(int sockfd, const sockaddr *addr, socklen_t addrlen) const = 0;
+	virtual bool wire(SOCKET sockfd, const sockaddr *addr, socklen_t addrlen) const = 0;
 	virtual std::string wireError(const std::string &err) const = 0;
 	virtual void intercept() _CONST;
 
-	std::size_t recv(void *buf, std::size_t len, int fd) throw(Exception::SocketException);
-	static void send(const void *buf, std::size_t len, int fd) throw(Exception::SocketException);
+	std::size_t recv(void *buf, std::size_t len, SOCKET fd) throw(Exception::SocketException);
+	static void send(const void *buf, std::size_t len, SOCKET fd) throw(Exception::SocketException);
 
-	inline int getSocketFD() const {
+	inline SOCKET getSocketFD() const {
 		return m_sfd;
 	}
 
 private:
-	static bool m_interrupt;
+	volatile static bool m_interrupt;
 	const std::string m_server;
 	const uint16_t m_port;
-	int m_sfd;
+	SOCKET m_sfd;
 	std::string m_wireError;
 };
 

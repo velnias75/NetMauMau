@@ -41,7 +41,7 @@ class _EXPORT CapabilitiesException : public Common::Exception::SocketException 
 	CapabilitiesException &operator=(const CapabilitiesException &);
 public:
 	CapabilitiesException(const CapabilitiesException &o) throw();
-	CapabilitiesException(const std::string &msg, int sockfd = -1) throw();
+	CapabilitiesException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~CapabilitiesException() throw();
 };
 

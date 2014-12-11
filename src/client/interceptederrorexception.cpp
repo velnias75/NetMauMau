@@ -22,7 +22,7 @@
 using namespace NetMauMau::Client;
 
 Exception::InterceptedErrorException::InterceptedErrorException(const std::string &msg,
-		int sfd) throw() : SocketException(msg, sfd) {}
+		SOCKET sfd) throw() : SocketException(msg, sfd) {}
 
 Exception::InterceptedErrorException::~InterceptedErrorException() throw() {}
 

@@ -21,7 +21,7 @@
 
 using namespace NetMauMau::Client::Exception;
 
-PlayerlistException::PlayerlistException(const std::string &msg, int sfd) throw() :
+PlayerlistException::PlayerlistException(const std::string &msg, SOCKET sfd) throw() :
 	SocketException(msg, sfd) {}
 
 PlayerlistException::~PlayerlistException() throw() {}

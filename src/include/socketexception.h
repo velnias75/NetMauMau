@@ -28,6 +28,13 @@
 #include <exception>
 #include <string>
 
+#if _WIN32
+#include <winsock2.h>
+#else
+#define INVALID_SOCKET -1
+typedef int SOCKET;
+#endif
+
 #include "linkercontrol.h"
 
 namespace NetMauMau {
@@ -46,7 +53,7 @@ class _EXPORT SocketException : public std::exception {
 	SocketException &operator=(const SocketException &);
 public:
 	SocketException(const SocketException &o) throw();
-	SocketException(const std::string &msg, int sockfd = -1, int err = 0) throw();
+	SocketException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET, int err = 0) throw();
 	virtual ~SocketException() throw();
 
 	/**
@@ -59,15 +66,15 @@ public:
 	/**
 	 * @brief The socket on which the error occurred
 	 *
-	 * @return int the socket
+	 * @return SOCKET the socket
 	 */
-	int sockfd() const throw() _PURE;
+	SOCKET sockfd() const throw() _PURE;
 
 	int error() const throw() _PURE;
 
 private:
 	const std::string m_msg;
-	const int m_sockfd;
+	const SOCKET m_sockfd;
 	const int m_errno;
 };
 

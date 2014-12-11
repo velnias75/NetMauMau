@@ -32,7 +32,7 @@ class _EXPORT InterceptedErrorException : public Common::Exception::SocketExcept
 	InterceptedErrorException &operator=(const InterceptedErrorException &);
 public:
 	InterceptedErrorException(const InterceptedErrorException &o) throw();
-	InterceptedErrorException(const std::string &msg, int sockfd = -1) throw();
+	InterceptedErrorException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~InterceptedErrorException() throw();
 };
 

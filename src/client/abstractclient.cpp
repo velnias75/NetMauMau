@@ -401,6 +401,9 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 			if(!m_disconnectNow) error(e.what());
 
 			break;
+
+		} catch(const NetMauMau::Common::Exception::SocketException &) {
+			if(!m_disconnectNow) throw;
 		}
 	}
 

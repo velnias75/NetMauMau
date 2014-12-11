@@ -76,7 +76,7 @@ public:
 	Connection &operator<<(const std::string &msg) throw(Common::Exception::SocketException);
 
 protected:
-	virtual bool wire(int sockfd, const struct sockaddr *addr, socklen_t addrlen) const;
+	virtual bool wire(SOCKET sockfd, const struct sockaddr *addr, socklen_t addrlen) const;
 	virtual std::string wireError(const std::string &err) const;
 
 private:

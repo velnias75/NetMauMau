@@ -44,7 +44,7 @@ class _EXPORT VersionMismatchException : public Common::Exception::SocketExcepti
 public:
 	VersionMismatchException(const VersionMismatchException &o) throw();
 	VersionMismatchException(uint32_t serverVersion, uint32_t clientVersion,
-							 int sockfd = -1) throw();
+							 SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~VersionMismatchException() throw();
 
 	virtual const char *what() const throw();

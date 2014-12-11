@@ -21,7 +21,7 @@
 
 using namespace NetMauMau::Client::Exception;
 
-ProtocolErrorException::ProtocolErrorException(const std::string &msg, int sfd) throw() :
+ProtocolErrorException::ProtocolErrorException(const std::string &msg, SOCKET sfd) throw() :
 	SocketException(msg, sfd) {}
 
 ProtocolErrorException::~ProtocolErrorException() throw() {}

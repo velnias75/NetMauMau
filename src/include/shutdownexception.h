@@ -41,7 +41,7 @@ class _EXPORT ShutdownException : public Common::Exception::SocketException {
 	ShutdownException &operator=(const ShutdownException &);
 public:
 	ShutdownException(const ShutdownException &o) throw();
-	ShutdownException(const std::string &msg, int sockfd = -1) throw();
+	ShutdownException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~ShutdownException() throw();
 };
 

@@ -70,7 +70,7 @@ public:
 	void clearPlayerPictures();
 
 protected:
-	virtual bool wire(int sockfd, const struct sockaddr *addr, socklen_t addrlen) const;
+	virtual bool wire(SOCKET sockfd, const struct sockaddr *addr, socklen_t addrlen) const;
 	virtual std::string wireError(const std::string &err) const;
 	virtual void intercept() throw(Common::Exception::SocketException);
 

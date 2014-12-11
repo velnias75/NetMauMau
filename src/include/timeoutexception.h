@@ -43,7 +43,7 @@ class _EXPORT TimeoutException : public Common::Exception::SocketException {
 	TimeoutException &operator=(const TimeoutException &);
 public:
 	TimeoutException(const TimeoutException &o) throw();
-	TimeoutException(const std::string &msg, int sockfd = -1) throw();
+	TimeoutException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~TimeoutException() throw();
 };
 

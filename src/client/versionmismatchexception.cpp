@@ -24,7 +24,7 @@
 using namespace NetMauMau::Client::Exception;
 
 VersionMismatchException::VersionMismatchException(uint32_t serverVersion, uint32_t clientVersion,
-		int sfd) throw() : SocketException("", sfd), m_serverVersion(serverVersion),
+		SOCKET sfd) throw() : SocketException("", sfd), m_serverVersion(serverVersion),
 	m_clientVersion(clientVersion) {}
 
 VersionMismatchException::~VersionMismatchException() throw() {}

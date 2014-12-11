@@ -49,7 +49,7 @@ public:
 	typedef struct _EXPORT _info {
 		_info();
 		~_info();
-		int sockfd;
+		SOCKET sockfd;
 		std::string  name;
 		std::string  host;
 		uint16_t     port;
@@ -60,7 +60,7 @@ public:
 		~_nameSockFD();
 		std::string name;
 		mutable std::string playerPic;
-		int sockfd;
+		SOCKET sockfd;
 		uint32_t clientVersion;
 	} NAMESOCKFD;
 
@@ -73,8 +73,8 @@ public:
 
 	virtual ~AbstractConnection();
 
-	std::string getPlayerName(int sockfd) const;
-	void removePlayer(int sockfd);
+	std::string getPlayerName(SOCKET sockfd) const;
+	void removePlayer(SOCKET sockfd);
 
 	void addAIPlayers(const std::vector<std::string> &aiPlayers);
 	void wait(long ms) throw(Exception::SocketException);

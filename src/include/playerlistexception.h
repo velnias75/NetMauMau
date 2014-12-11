@@ -41,7 +41,7 @@ class _EXPORT PlayerlistException : public Common::Exception::SocketException {
 	PlayerlistException &operator=(const PlayerlistException &);
 public:
 	PlayerlistException(const PlayerlistException &o) throw();
-	PlayerlistException(const std::string &msg, int sockfd = -1) throw();
+	PlayerlistException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~PlayerlistException() throw();
 };
 

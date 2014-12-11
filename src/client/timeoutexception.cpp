@@ -21,7 +21,7 @@
 
 using namespace NetMauMau::Client::Exception;
 
-TimeoutException::TimeoutException(const std::string &msg, int sfd) throw() :
+TimeoutException::TimeoutException(const std::string &msg, SOCKET sfd) throw() :
 	SocketException(msg, sfd) {}
 
 TimeoutException::~TimeoutException() throw() {}

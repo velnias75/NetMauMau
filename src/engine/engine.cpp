@@ -436,7 +436,11 @@ sevenRule:
 			con->removePlayer(e.sockfd());
 
 			shutdown(e.sockfd(), SHUT_RDWR);
+#ifndef _WIN32
 			close(e.sockfd());
+#else
+			closesocket(e.sockfd());
+#endif
 
 			if(f != m_players.end()) removePlayer(*f);
 		}

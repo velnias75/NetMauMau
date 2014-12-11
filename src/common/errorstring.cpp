@@ -17,13 +17,46 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "shutdownexception.h"
+#include <string>
 
-using namespace NetMauMau::Client::Exception;
+#include <cstring>
+#include <cerrno>
 
-ShutdownException::ShutdownException(const std::string &msg, SOCKET sfd) throw() :
-	SocketException(msg, sfd) {}
+#if _WIN32
+#include <windows.h>
+#include <winsock2.h>
+#endif
 
-ShutdownException::~ShutdownException() throw() {}
+#include "errorstring.h"
+
+#if _WIN32
+namespace {
+TCHAR buffer[1024];
+}
+#endif
+
+const char *NetMauMau::Common::errorString() {
+#ifndef _WIN32
+	return errorString(errno);
+#else
+	return errorString(WSAGetLastError());
+#endif
+}
+
+const char *NetMauMau::Common::errorString(int errnum) {
+#ifndef _WIN32
+	return std::strerror(errnum);
+#else
+
+	if(!FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
+					  errnum, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buffer, sizeof(buffer),
+					  NULL)) {
+		return std::strerror(errnum);
+	}
+
+	return buffer;
+
+#endif
+}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

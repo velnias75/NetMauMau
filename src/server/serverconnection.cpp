@@ -36,6 +36,7 @@
 #endif
 
 #include "serverconnection.h"
+#include "errorstring.h"
 #include "ai-icon.h"
 #include "base64.h"
 #include "logger.h"
@@ -90,11 +91,15 @@ Connection::~Connection() {
 			send("BYE", 3, i->sockfd);
 		} catch(const NetMauMau::Common::Exception::SocketException &) {}
 
+#ifndef _WIN32
 		close(i->sockfd);
+#else
+		closesocket(i->sockfd);
+#endif
 	}
 }
 
-bool Connection::wire(int sockfd, const struct sockaddr *addr, socklen_t addrlen) const {
+bool Connection::wire(SOCKET sockfd, const struct sockaddr *addr, socklen_t addrlen) const {
 
 	const int yes = 1;
 
@@ -115,8 +120,8 @@ void Connection::connect() throw(NetMauMau::Common::Exception::SocketException) 
 	AbstractConnection::connect();
 
 	if(listen(getSocketFD(), SOMAXCONN)) {
-		throw NetMauMau::Common::Exception::SocketException(std::strerror(errno), getSocketFD(),
-				errno);
+		throw NetMauMau::Common::Exception::SocketException(NetMauMau::Common::errorString(),
+				getSocketFD(), errno);
 	}
 }
 
@@ -135,13 +140,13 @@ int Connection::wait(timeval *tv) {
 			FD_SET(i->sockfd, &rfds);
 
 			int nRet, err = 0;
-			timeval tv = { 0, 0 };
+			//timeval tv = { 0, 0 };
 
-			if((nRet = select(0, &rfds, NULL, NULL, &tv)) == SOCKET_ERROR) {
+			if((nRet = select(0, &rfds, NULL, NULL, NULL)) == SOCKET_ERROR) {
 				err = -2;
 			}
 
-			if(nRet > 0 && FD_ISSET(i->sockfd, &rfds)) {
+			if(!(nRet > 0 && FD_ISSET(i->sockfd, &rfds))) {
 				err = -2;
 			}
 
@@ -182,10 +187,10 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 	struct sockaddr_storage peer_addr;
 	socklen_t peer_addr_len = sizeof(struct sockaddr_storage);
 
-	const int cfd = ::accept(getSocketFD(), reinterpret_cast<struct sockaddr *>(&peer_addr),
-							 &peer_addr_len);
+	const SOCKET cfd = ::accept(getSocketFD(), reinterpret_cast<struct sockaddr *>(&peer_addr),
+								&peer_addr_len);
 
-	if(cfd != -1) {
+	if(cfd != INVALID_SOCKET) {
 
 		try {
 
@@ -352,7 +357,11 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 							}
 
 							shutdown(cfd, SHUT_RDWR);
+#ifndef _WIN32
 							close(cfd);
+#else
+							closesocket(cfd);
+#endif
 							accepted = REFUSED;
 						}
 					} else {
@@ -366,7 +375,11 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						}
 
 						shutdown(cfd, SHUT_RDWR);
+#ifndef _WIN32
 						close(cfd);
+#else
+						closesocket(cfd);
+#endif
 					}
 
 				} else if(rHello.substr(0, 10) == "PLAYERLIST") {
@@ -410,7 +423,11 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						 cver >= 4 ? 16 : 14, cfd);
 
 					shutdown(cfd, SHUT_RDWR);
+#ifndef _WIN32
 					close(cfd);
+#else
+					closesocket(cfd);
+#endif
 
 					accepted = PLAYERLIST;
 
@@ -427,21 +444,33 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 					send(oscap.str().c_str(), oscap.str().length(), cfd);
 
 					shutdown(cfd, SHUT_RDWR);
+#ifndef _WIN32
 					close(cfd);
+#else
+					closesocket(cfd);
+#endif
 
 					accepted = CAP;
 				}
 
 			} else {
 				shutdown(cfd, SHUT_RDWR);
+#ifndef _WIN32
 				close(cfd);
+#else
+				closesocket(cfd);
+#endif
 
 				throw NetMauMau::Common::Exception::SocketException(gai_strerror(err), -1, errno);
 			}
 
 		} catch(const NetMauMau::Common::Exception::SocketException &) {
 			shutdown(cfd, SHUT_RDWR);
+#ifndef _WIN32
 			close(cfd);
+#else
+			closesocket(cfd);
+#endif
 
 			throw;
 		}

@@ -21,8 +21,8 @@
 
 using namespace NetMauMau::Client::Exception;
 
-ConnectionRejectedException::ConnectionRejectedException(const std::string &msg, int sfd) throw() :
-	SocketException(msg, sfd) {}
+ConnectionRejectedException::ConnectionRejectedException(const std::string &msg,
+		SOCKET sfd) throw() : SocketException(msg, sfd) {}
 
 ConnectionRejectedException::~ConnectionRejectedException() throw() {}
 

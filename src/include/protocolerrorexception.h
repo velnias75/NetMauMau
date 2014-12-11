@@ -41,7 +41,7 @@ class _EXPORT ProtocolErrorException : public Common::Exception::SocketException
 	ProtocolErrorException &operator=(const ProtocolErrorException &);
 public:
 	ProtocolErrorException(const ProtocolErrorException &o) throw();
-	ProtocolErrorException(const std::string &msg, int sockfd = -1) throw();
+	ProtocolErrorException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~ProtocolErrorException() throw();
 };
 

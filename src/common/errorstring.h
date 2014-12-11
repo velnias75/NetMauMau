@@ -17,13 +17,22 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "shutdownexception.h"
+#ifndef NETMAUMAU_COMMON_ERRORSTRING_H
+#define NETMAUMAU_COMMON_ERRORSTRING_H
 
-using namespace NetMauMau::Client::Exception;
+#include "linkercontrol.h"
 
-ShutdownException::ShutdownException(const std::string &msg, SOCKET sfd) throw() :
-	SocketException(msg, sfd) {}
+namespace NetMauMau {
 
-ShutdownException::~ShutdownException() throw() {}
+namespace Common {
+
+_EXPORT const char *errorString();
+_EXPORT const char *errorString(int errnum);
+
+}
+
+}
+
+#endif /* NETMAUMAU_COMMON_ERRORSTRING_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

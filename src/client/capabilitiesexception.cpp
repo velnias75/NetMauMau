@@ -21,7 +21,7 @@
 
 using namespace NetMauMau::Client::Exception;
 
-CapabilitiesException::CapabilitiesException(const std::string &msg, int sfd) throw() :
+CapabilitiesException::CapabilitiesException(const std::string &msg, SOCKET sfd) throw() :
 	SocketException(msg, sfd) {}
 
 CapabilitiesException::~CapabilitiesException() throw() {}

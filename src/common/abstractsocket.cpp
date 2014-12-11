@@ -34,6 +34,8 @@
 #endif
 
 #include "abstractsocket.h"
+#include "errorstring.h"
+#include "logger.h"
 
 #ifdef _WIN32
 #define MSG_NOSIGNAL 0x0000000
@@ -61,15 +63,19 @@ void shut_down() {
 
 using namespace NetMauMau::Common;
 
-bool AbstractSocket::m_interrupt = false;
+volatile bool AbstractSocket::m_interrupt = false;
 
 AbstractSocket::AbstractSocket(const char *server, uint16_t port) : m_server(server ? server : ""),
 	m_port(port), m_sfd(-1), m_wireError() {}
 
 AbstractSocket::~AbstractSocket() {
-	if(m_sfd != -1) {
+	if(m_sfd != INVALID_SOCKET) {
 		shutdown(m_sfd, SHUT_RDWR);
+#ifndef _WIN32
 		close(m_sfd);
+#else
+		closesocket(m_sfd);
+#endif
 	}
 }
 
@@ -109,21 +115,25 @@ void AbstractSocket::connect() throw(Exception::SocketException) {
 
 		m_sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
 
-		if(m_sfd == -1) continue;
+		if(m_sfd == INVALID_SOCKET) continue;
 
 		if(wire(m_sfd, rp->ai_addr, rp->ai_addrlen)) {
 			break;
 		} else {
-			m_wireError = std::strerror(errno);
+			m_wireError = NetMauMau::Common::errorString();
 		}
 
+#ifndef _WIN32
 		close(m_sfd);
+#else
+		closesocket(m_sfd);
+#endif
 	}
 
 	freeaddrinfo(result);
 
 	if(rp == NULL) {
-		m_sfd = -1;
+		m_sfd = INVALID_SOCKET;
 		throw Exception::SocketException(wireError(m_wireError));
 	}
 
@@ -132,7 +142,7 @@ void AbstractSocket::connect() throw(Exception::SocketException) {
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic push
 std::size_t AbstractSocket::recv(void *buf, std::size_t len,
-								 int fd) throw(Exception::SocketException) {
+								 SOCKET fd) throw(Exception::SocketException) {
 
 	checkSocket(fd);
 
@@ -163,7 +173,7 @@ again:
 
 			ssize_t i = ::recv(fd, ptr, len, 0);
 
-			if(i < 0) throw Exception::SocketException(std::strerror(errno), fd, errno);
+			if(i < 0) throw Exception::SocketException(NetMauMau::Common::errorString(), fd, errno);
 
 			ptr += i;
 
@@ -179,12 +189,12 @@ again:
 }
 #pragma GCC diagnostic pop
 
-std::string AbstractSocket::read(int fd, std::size_t len) throw(Exception::SocketException) {
+std::string AbstractSocket::read(SOCKET fd, std::size_t len) throw(Exception::SocketException) {
 
 	std::string ret;
 	char *rbuf = new(std::nothrow) char[len];
 
-	if(!rbuf) throw Exception::SocketException(std::strerror(ENOMEM), fd, ENOMEM);
+	if(!rbuf) throw Exception::SocketException(NetMauMau::Common::errorString(ENOMEM), fd, ENOMEM);
 
 	const std::size_t rlen = recv(rbuf, len, fd);
 
@@ -192,7 +202,7 @@ std::string AbstractSocket::read(int fd, std::size_t len) throw(Exception::Socke
 		ret.reserve(rlen);
 	} catch(const std::bad_alloc &) {
 		delete [] rbuf;
-		throw Exception::SocketException(std::strerror(ENOMEM), fd, ENOMEM);
+		throw Exception::SocketException(NetMauMau::Common::errorString(ENOMEM), fd, ENOMEM);
 	}
 
 	ret.append(rbuf, rlen);
@@ -203,7 +213,7 @@ std::string AbstractSocket::read(int fd, std::size_t len) throw(Exception::Socke
 }
 
 void AbstractSocket::send(const void *buf, std::size_t len,
-						  int fd) throw(Exception::SocketException) {
+						  SOCKET fd) throw(Exception::SocketException) {
 
 	checkSocket(fd);
 
@@ -213,14 +223,14 @@ void AbstractSocket::send(const void *buf, std::size_t len,
 
 		ssize_t i = ::send(fd, ptr, len, MSG_NOSIGNAL);
 
-		if(i < 0) throw Exception::SocketException(std::strerror(errno), fd, errno);
+		if(i < 0) throw Exception::SocketException(NetMauMau::Common::errorString(), fd, errno);
 
 		ptr += i;
 		len -= i;
 	}
 }
 
-void AbstractSocket::write(int *fds, std::size_t numfd,
+void AbstractSocket::write(SOCKET *fds, std::size_t numfd,
 						   const std::string &msg) throw(Exception::SocketException) {
 	if(fds) {
 		if(numfd > 1) {
@@ -259,7 +269,7 @@ void AbstractSocket::write(int *fds, std::size_t numfd,
 	}
 }
 
-void AbstractSocket::write(int fd, const std::string &msg) throw(Exception::SocketException) {
+void AbstractSocket::write(SOCKET fd, const std::string &msg) throw(Exception::SocketException) {
 	std::string v(msg);
 	v.append(1, 0);
 	send(v.c_str(), v.length(), fd);
@@ -277,19 +287,23 @@ void AbstractSocket::setInterrupted(bool b, bool shut) {
 
 	if(b && shut) {
 		shutdown(getSocketFD(), SHUT_RDWR);
+#ifndef _WIN32
 		close(getSocketFD());
+#else
+		closesocket(getSocketFD());
+#endif
 	}
 }
 
-void AbstractSocket::checkSocket(int fd) throw(Exception::SocketException) {
+void AbstractSocket::checkSocket(SOCKET fd) throw(Exception::SocketException) {
 
 	int ret = 0, error_code = 0;
 	socklen_t slen = sizeof(error_code);
 
 	if((ret = getsockopt(fd, SOL_SOCKET, SO_ERROR,
 						 reinterpret_cast<char *>(&error_code), &slen)) == -1 || error_code) {
-		throw Exception::SocketException(std::strerror(ret == -1 ? errno : error_code), fd,
-										 ret == -1 ? errno : error_code);
+		throw Exception::SocketException(NetMauMau::Common::errorString(ret == -1 ? errno :
+										 error_code), fd, ret == -1 ? errno : error_code);
 	}
 }
 

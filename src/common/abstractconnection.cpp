@@ -32,6 +32,8 @@
 
 #include "abstractconnection.h"
 
+#include "errorstring.h"
+
 #ifdef _WIN32
 #include <mswsock.h>
 #endif
@@ -45,9 +47,9 @@ namespace {
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
 struct _isSocketFD :
-	public std::binary_function < NetMauMau::Common::AbstractConnection::NAMESOCKFD, int, bool > {
+	public std::binary_function<NetMauMau::Common::AbstractConnection::NAMESOCKFD, SOCKET, bool> {
 	bool operator()(const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsd,
-					int sockfd) const {
+					SOCKET sockfd) const {
 		return nsd.sockfd == sockfd;
 	}
 };
@@ -76,7 +78,7 @@ const AbstractConnection::PLAYERINFOS &AbstractConnection::getRegisteredPlayers(
 	return m_registeredPlayers;
 }
 
-std::string AbstractConnection::getPlayerName(int sockfd) const {
+std::string AbstractConnection::getPlayerName(SOCKET sockfd) const {
 
 	const PLAYERINFOS::const_iterator &f(std::find_if(m_registeredPlayers.begin(),
 										 m_registeredPlayers.end(),
@@ -85,7 +87,7 @@ std::string AbstractConnection::getPlayerName(int sockfd) const {
 	return f != m_registeredPlayers.end() ? f->name : "";
 }
 
-void AbstractConnection::removePlayer(int sockfd) {
+void AbstractConnection::removePlayer(SOCKET sockfd) {
 
 	const PLAYERINFOS::iterator &f(std::find_if(m_registeredPlayers.begin(),
 								   m_registeredPlayers.end(),
@@ -112,7 +114,8 @@ void AbstractConnection::wait(long ms) throw(Exception::SocketException) {
 		FD_SET(getSocketFD(), &rfds);
 
 		if((sret = TEMP_FAILURE_RETRY(::select(getSocketFD() + 1, &rfds, NULL, NULL, &tv))) < 0) {
-			throw Exception::SocketException(std::strerror(errno), getSocketFD(), errno);
+			throw Exception::SocketException(NetMauMau::Common::errorString(), getSocketFD(),
+											 errno);
 		} else if(sret > 0) {
 			intercept();
 #if _POSIX_C_SOURCE >= 200112L && defined(__linux)

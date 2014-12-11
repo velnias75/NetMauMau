@@ -41,7 +41,7 @@ class _EXPORT NoNetMauMauServerException : public Common::Exception::SocketExcep
 	NoNetMauMauServerException &operator=(const NoNetMauMauServerException &);
 public:
 	NoNetMauMauServerException(const NoNetMauMauServerException &o) throw();
-	NoNetMauMauServerException(const std::string &msg, int sockfd = -1) throw();
+	NoNetMauMauServerException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~NoNetMauMauServerException() throw();
 };
 

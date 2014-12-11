@@ -41,7 +41,7 @@ class _EXPORT ConnectionRejectedException : public Common::Exception::SocketExce
 	ConnectionRejectedException &operator=(const ConnectionRejectedException &);
 public:
 	ConnectionRejectedException(const ConnectionRejectedException &o) throw();
-	ConnectionRejectedException(const std::string &msg, int sockfd = -1) throw();
+	ConnectionRejectedException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~ConnectionRejectedException() throw();
 };
 

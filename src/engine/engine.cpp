@@ -452,7 +452,8 @@ sevenRule:
 	return true;
 }
 
-void Engine::takeCards(Player::IPlayer *player, const Common::ICard *card) const {
+void Engine::takeCards(Player::IPlayer *player, const Common::ICard *card) const
+throw(Common::Exception::SocketException) {
 
 	const std::size_t cardCount = m_ruleset->takeCards(card);
 
@@ -488,7 +489,7 @@ void Engine::cardPlayed(Common::ICard *card) const {
 	}
 }
 
-void Engine::cardTaken(const Common::ICard *) const {
+void Engine::cardTaken(const Common::ICard *) const throw(Common::Exception::SocketException) {
 	m_eventHandler.stats(m_players);
 	informAIStat();
 }
@@ -520,7 +521,7 @@ std::size_t Engine::getAICount() const {
 	return cnt;
 }
 
-void Engine::gameAboutToStart() {
+void Engine::gameAboutToStart() const {
 	m_eventHandler.gameAboutToStart();
 }
 

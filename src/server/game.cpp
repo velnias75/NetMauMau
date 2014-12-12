@@ -161,7 +161,7 @@ void Game::reset(bool playerLost) throw() {
 	logInfo(GAMEREADY);
 }
 
-void Game::shutdown() throw() {
+void Game::shutdown() const throw() {
 	m_engine.error("The server has been shut down");
 }
 

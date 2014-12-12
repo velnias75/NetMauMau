@@ -158,6 +158,7 @@ int getGroup(gid_t *gid, const char *group) {
 
 	errno = 0;
 
+	// cppcheck-suppress nonreentrantFunctionsgetgrnam
 	struct group *g = getgrnam(group);
 
 	if(g) {
@@ -216,6 +217,7 @@ int getUser(uid_t *uid, const char *usr) {
 
 	errno = 0;
 
+	// cppcheck-suppress nonreentrantFunctionsgetpwnam
 	struct passwd *u = getpwnam(usr);
 
 	if(u) {
@@ -323,12 +325,14 @@ int main(int argc, const char **argv) {
 
 			char dateOut[1024];
 			std::time_t t = BUILD_DATE;
+			// cppcheck-suppress nonreentrantFunctionslocaltime
 			std::strftime(dateOut, sizeof(dateOut), "%x", std::localtime(&t));
 
 			logger("Built " << dateOut << node.str() << " (" << BUILD_HOST << ")"
 				   << cppversion.str());
 
 			logger("");
+			// cppcheck-suppress nonreentrantFunctionslocaltime
 			std::strftime(dateOut, sizeof(dateOut), "%Y", std::localtime(&t));
 			logger("Copyright " COPY " " << dateOut << " Heiko Sch" AUML "fer <"
 				   << PACKAGE_BUGREPORT << ">");

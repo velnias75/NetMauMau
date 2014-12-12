@@ -53,7 +53,7 @@ public:
 
 	void start(bool ultimate = false) throw(Common::Exception::SocketException);
 	void reset(bool playerLost) throw();
-	void shutdown() throw();;
+	void shutdown() const throw();;
 
 private:
 	bool addPlayer(Player::IPlayer *player);

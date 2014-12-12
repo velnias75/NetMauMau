@@ -281,7 +281,7 @@ void AbstractSocket::setInterrupted(bool b) {
 	m_interrupt = b;
 }
 
-void AbstractSocket::setInterrupted(bool b, bool shut) {
+void AbstractSocket::setInterrupted(bool b, bool shut) const {
 
 	setInterrupted(b);
 

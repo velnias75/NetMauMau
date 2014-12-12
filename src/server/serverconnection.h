@@ -62,12 +62,12 @@ public:
 		m_caps = caps;
 	}
 
-	inline uint32_t getServerVersion() const {
+	inline static uint32_t getServerVersion() {
 		return (static_cast<uint16_t>(SERVER_VERSION_MAJOR) << 16u) |
 			   static_cast<uint16_t>(SERVER_VERSION_MINOR);
 	}
 
-	void clearPlayerPictures();
+	void clearPlayerPictures() const;
 
 protected:
 	virtual bool wire(SOCKET sockfd, const struct sockaddr *addr, socklen_t addrlen) const;

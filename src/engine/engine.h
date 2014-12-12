@@ -87,7 +87,7 @@ public:
 	void message(const std::string &msg) const throw(Common::Exception::SocketException);
 	void error(const std::string &msg) const throw();
 
-	void gameAboutToStart();
+	void gameAboutToStart() const;
 	void gameOver() const throw();
 	void reset() throw();
 
@@ -96,7 +96,8 @@ protected:
 	throw(Common::Exception::SocketException);
 	virtual void talonEmpty(bool empty) const throw();
 	virtual void cardPlayed(Common::ICard *card) const;
-	virtual void cardTaken(const Common::ICard *card = 0L) const;
+	virtual void cardTaken(const NetMauMau::Common::ICard* = 0L) const
+	throw(Common::Exception::SocketException);
 	virtual void shuffled() const;
 
 private:
@@ -106,7 +107,8 @@ private:
 	std::size_t getAICount() const;
 
 	void suspends(Player::IPlayer *p, const Common::ICard *uc = NULL) const;
-	void takeCards(Player::IPlayer *player, const Common::ICard *card) const;
+	void takeCards(Player::IPlayer *player, const Common::ICard *card) const
+	throw(Common::Exception::SocketException);
 
 	PLAYERS::const_iterator find(const std::string &name) const;
 	PLAYERS::iterator removePlayer(Player::IPlayer *player);

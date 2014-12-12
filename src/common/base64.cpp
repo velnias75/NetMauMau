@@ -37,7 +37,6 @@ std::string NetMauMau::Common::base64_encode(BYTE const *buf, unsigned int bufLe
 	std::string ret;
 
 	int i = 0;
-	int j = 0;
 	BYTE char_array_3[3];
 	BYTE char_array_4[4];
 
@@ -67,6 +66,8 @@ std::string NetMauMau::Common::base64_encode(BYTE const *buf, unsigned int bufLe
 
 	if(i) {
 
+		int j = 0;
+
 		for(j = i; j < 3; ++j) char_array_3[j] = '\0';
 
 		char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
@@ -87,7 +88,6 @@ NetMauMau::Common::base64_decode(std::string const &encoded_string) {
 
 	int in_len = encoded_string.size();
 	int i = 0;
-	int j = 0;
 	int in_ = 0;
 	BYTE char_array_4[4], char_array_3[3];
 
@@ -120,6 +120,8 @@ NetMauMau::Common::base64_decode(std::string const &encoded_string) {
 	}
 
 	if(i) {
+
+		int j = 0;
 
 		for(j = i; j < 4; ++j) char_array_4[j] = 0;
 

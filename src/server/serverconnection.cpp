@@ -146,7 +146,7 @@ int Connection::wait(timeval *tv) {
 				err = -2;
 			}
 
-			if(!(nRet > 0 && FD_ISSET(i->sockfd, &rfds))) {
+			if(nRet > 0 && FD_ISSET(i->sockfd, &rfds)) {
 				err = -2;
 			}
 
@@ -557,7 +557,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 }
 
-void Connection::clearPlayerPictures() {
+void Connection::clearPlayerPictures() const {
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
 		std::string().swap(i->playerPic);

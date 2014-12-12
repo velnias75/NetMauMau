@@ -47,7 +47,7 @@ public:
 							 SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~VersionMismatchException() throw();
 
-	virtual const char *what() const throw();
+	virtual const char *what() const throw() _PURE;
 
 	/**
 	 * @brief Gets the server version
@@ -64,6 +64,7 @@ public:
 	uint32_t getClientVersion() const throw() _PURE;
 
 private:
+	std::string m_vMsg;
 	const uint32_t m_serverVersion;
 	const uint32_t m_clientVersion;
 };

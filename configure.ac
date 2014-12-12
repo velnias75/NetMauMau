@@ -45,6 +45,7 @@ PKG_PROG_PKG_CONFIG([0.22])
 AC_PROG_CXX
 AC_CHECK_PROGS([HELP2MAN], [help2man])
 AC_CHECK_PROGS([DOXYGEN], [doxygen])
+AC_CHECK_PROGS([CPPCHECK], [cppcheck])
 
 if test -z "$ac_cv_prog_HELP2MAN"; then
   AM_CONDITIONAL([GENMAN], [ false ])
@@ -54,6 +55,12 @@ fi
 
 if test -z "$ac_cv_prog_DOXYGEN"; then
   AM_CONDITIONAL([GENDOX], [ false ])
+fi
+
+if test -z "$ac_cv_prog_CPPCHECK"; then
+  AM_CONDITIONAL([CHECKCPP], [ false ])
+else 
+  AM_CONDITIONAL([CHECKCPP], [ true ])
 fi
 
 if test -z "$ac_cv_prog_RC"; then

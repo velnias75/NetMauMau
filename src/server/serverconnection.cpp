@@ -140,9 +140,9 @@ int Connection::wait(timeval *tv) {
 			FD_SET(i->sockfd, &rfds);
 
 			int nRet, err = 0;
-			//timeval tv = { 0, 0 };
+			timeval tv = { 0, 0 };
 
-			if((nRet = select(0, &rfds, NULL, NULL, NULL)) == SOCKET_ERROR) {
+			if((nRet = select(0, &rfds, NULL, NULL, &tv)) == SOCKET_ERROR) {
 				err = -2;
 			}
 

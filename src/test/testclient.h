@@ -63,6 +63,9 @@ protected:
 							  const NetMauMau::Common::ICard *card) const;
 	virtual void cardAccepted(const NetMauMau::Common::ICard *card) const _CONST;
 	virtual void jackSuit(NetMauMau::Common::ICard::SUIT suit) const;
+
+private:
+	mutable CARDS m_myCards;
 };
 
 #endif /* NETMAUMAU_TESTCLIENT_H */

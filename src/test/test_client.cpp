@@ -71,11 +71,6 @@ int main(int argc, const char **argv) {
 
 	poptSetOtherOptionHelp(pctx, "[OPTIONS]* [<server[:port]>]");
 
-// 	if(argc < 2) {
-// 		poptPrintUsage(pctx, stderr, 0);
-// 		return EXIT_FAILURE;
-// 	}
-
 	while((c = poptGetNextOpt(pctx)) >= 0);
 
 	const char *lo = poptGetArg(pctx);

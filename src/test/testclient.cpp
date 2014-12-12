@@ -18,6 +18,7 @@
  */
 
 #include <iostream>
+#include <iomanip>
 
 #include "testclient.h"
 
@@ -45,7 +46,7 @@ const std::string BOLD_OFF;
 
 TestClient::TestClient(const std::string &pName, const std::string &server, uint16_t port,
 					   const unsigned char *pngData, std::size_t pngDataLen)
-	: AbstractClient(pName, pngData, pngDataLen, server, port) {}
+	: AbstractClient(pName, pngData, pngDataLen, server, port), m_myCards() {}
 
 TestClient::~TestClient() {}
 
@@ -87,23 +88,34 @@ NetMauMau::Common::ICard *TestClient::playCard(const CARDS &cards) const {
 
 	std::size_t pos;
 
+	CARDS possibleCards(cards);
+	std::sort(possibleCards.begin(), possibleCards.end(),
+			  std::ptr_fun(NetMauMau::Common::cardGreater));
+
 	do {
 
 		pos = 0;
 
 		std::cout << "Choose card:" << std::endl;
-		std::cout << "0) Suspend turn" << std::endl;
+		std::cout << " 0) Suspend turn" << std::endl;
 
-		for(CARDS::const_iterator i(cards.begin()); i != cards.end(); ++i, ++pos) {
-			std::cout << (pos + 1) << ") " << (*i)->description(true) << std::endl;
+		for(CARDS::const_iterator i(m_myCards.begin()); i != m_myCards.end(); ++i) {
+			if(NetMauMau::Common::findCard(*i, possibleCards.begin(), possibleCards.end())) {
+				std::cout << std::setw(2) << (pos + 1) << std::setw(0) << ") "
+						  << (*i)->description(true) << std::endl;
+				++pos;
+			} else {
+				std::cout << "    " << (*i)->description(true) << std::endl;
+			}
+
 		}
 
 		std::cout << "Choose: ";
 		std::cin >> pos;
 
-	} while(pos > cards.size());
+	} while(pos > possibleCards.size());
 
-	if(pos) return cards.at(pos - 1);
+	if(pos) return possibleCards.at(pos - 1);
 
 	return 0L;
 }
@@ -158,10 +170,17 @@ void TestClient::playerWins(const std::string &player, std::size_t t) const {
 void TestClient::playerLost(const std::string &, std::size_t, std::size_t) const {}
 
 void TestClient::cardSet(const CARDS &cards) const {
-	for(CARDS::const_iterator i(cards.begin()); i != cards.end(); ++i) {
+
+	CARDS newCards(cards);
+	std::sort(newCards.begin(), newCards.end(), std::ptr_fun(NetMauMau::Common::cardGreater));
+
+	for(CARDS::const_iterator i(newCards.begin()); i != newCards.end(); ++i) {
 		std::cout << BOLD_P_ON << getPlayerName() << BOLD_OFF << " gets card: "
 				  << (*i)->description(true) << std::endl;
 	}
+
+	m_myCards.insert(m_myCards.end(), newCards.begin(), newCards.end());
+	std::sort(m_myCards.begin(), m_myCards.end(), std::ptr_fun(NetMauMau::Common::cardGreater));
 }
 
 void TestClient::enableSuspend(bool) const {}
@@ -189,7 +208,10 @@ void TestClient::cardRejected(const std::string &player,
 			  << " is REJECTED" << std::endl;
 }
 
-void TestClient::cardAccepted(const NetMauMau::Common::ICard *) const {}
+void TestClient::cardAccepted(const NetMauMau::Common::ICard *card) const {
+	m_myCards.erase(std::find_if(m_myCards.begin(), m_myCards.end(),
+								 std::bind2nd(std::ptr_fun(NetMauMau::Common::cardEqual), card)));
+}
 
 void TestClient::jackSuit(NetMauMau::Common::ICard::SUIT suit) const {
 	std::cout << "Suit chosen by Jack is " << NetMauMau::Common::suitToSymbol(suit, true, true)

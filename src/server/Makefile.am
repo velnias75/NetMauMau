@@ -31,6 +31,7 @@ if RC
 nmm_server_LDADD += netmaumau.rc.lo
 endif
 
+.DELETE_ON_ERROR:
 ai-icon.h: Tuyul.PNG
 	$(SHELL) $(srcdir)/create_ai_icon.sh 'ai_icon_data' $< > $@
 

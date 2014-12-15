@@ -13,6 +13,8 @@ exclusive to GCC)
 
 * xxd (from the vim package [on **Debian** based distributions *vim-common*; on **Gentoo** *vim-core*])
 
+* libmagic (*optionally, but recommended*)
+
 Setting up the build environment
 --------------------------------
 

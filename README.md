@@ -11,10 +11,14 @@ exclusive to GCC)
 
 * the [POPT library](http://rpm5.org/files/popt/)
 
+* xxd (from the vim package [on Debian based distributions *vim-common*])
+
 Setting up the build environment
 --------------------------------
 
-After checkout run `autoreconf -ifv` to set up the build environment.
+NetMauMau prefers *automake-1.11*
+
+After checkout run `env AUTOMAKE=automake-1.11 ACLOCAL=aclocal-1.11 autoreconf -ifv` to set up the build environment.
 
 `./configure && make` builds the projects and `make install` installs it.
 See `configure --help` for more options and help.

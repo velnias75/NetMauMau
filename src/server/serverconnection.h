@@ -75,6 +75,9 @@ protected:
 	virtual void intercept() throw(Common::Exception::SocketException);
 
 private:
+	static bool isPNG(const std::string &pic);
+
+private:
 	CAPABILITIES m_caps;
 };
 

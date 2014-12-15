@@ -70,10 +70,12 @@ else
 fi
 
 # Checks for libraries.
-PKG_CHECK_MODULES([POPT], [popt >= 1.10]);
+PKG_CHECK_MODULES([POPT], [popt >= 1.10])
+AC_CHECK_LIB([magic], [magic_open])
 
 # Checks for header files.
 AC_HEADER_STDBOOL
+AC_CHECK_HEADERS([magic.h])
 AC_CHECK_HEADERS([poll.h])
 AC_CHECK_HEADERS([netdb.h])
 AC_CHECK_HEADERS([syslog.h])

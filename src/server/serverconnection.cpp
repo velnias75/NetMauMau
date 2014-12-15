@@ -37,6 +37,7 @@
 
 #include "serverconnection.h"
 #include "errorstring.h"
+#include "pngcheck.h"
 #include "ai-icon.h"
 #include "base64.h"
 #include "logger.h"
@@ -292,12 +293,16 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 										char cc[20] = "0\0";
 
-										if(pl > MAXPICBYTES) {
+										if(pl > MAXPICBYTES || !isPNG(playerPic)) {
 
 											send(cc, 20, cfd);
 											recv(cc, 2, cfd);
 											logInfo("Player picture for \"" << info.name
-													<< "\" rejected (too large)");
+													<< "\" rejected (too large"
+#if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
+													<< " or no PNG image"
+#endif
+													<< ")");
 											std::string().swap(playerPic);
 
 										} else {
@@ -589,6 +594,11 @@ throw(NetMauMau::Common::Exception::SocketException) {
 void Connection::intercept() throw(NetMauMau::Common::Exception::SocketException) {
 	INFO info;
 	accept(info, true);
+}
+
+bool Connection::isPNG(const std::string &pic) {
+	const std::vector<NetMauMau::Common::BYTE> &pngData(NetMauMau::Common::base64_decode(pic));
+	return !(pngData.empty() || !NetMauMau::Common::checkPNG(pngData.data(), pngData.size()));
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

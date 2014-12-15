@@ -31,6 +31,7 @@
 #include "interceptederrorexception.h"
 #include "clientcardfactory.h"
 #include "cardtools.h"
+#include "pngcheck.h"
 #include "base64.h"
 #include "logger.h"
 
@@ -436,7 +437,8 @@ uint16_t AbstractClient::getDefaultPort() {
 
 bool AbstractClient::isPlayerImageUploadable(const unsigned char *pngData, std::size_t pngDataLen) {
 	const std::string &base64png(NetMauMau::Common::base64_encode(pngData, pngDataLen));
-	return !base64png.empty() && base64png.size() <= MAXPICBYTES;
+	return !base64png.empty() && base64png.size() <= MAXPICBYTES &&
+		   NetMauMau::Common::checkPNG(pngData, pngDataLen);
 }
 
 void AbstractClient::beginReceivePlayerPicture(const std::string &) const throw() {}

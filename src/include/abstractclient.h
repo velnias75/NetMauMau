@@ -29,6 +29,8 @@
  *
  * Link your client against @c -lnetmaumauclient and @c -lnetmaumaucommon
  *
+ * If %NetMauMau was linked against libmagic, link your client against @c -lmagic as well
+ *
  * The rules and points you can find @ref rules "here".
  *
  * You can grab the latest source code from https://github.com/velnias75/NetMauMau or

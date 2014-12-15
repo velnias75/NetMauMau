@@ -40,7 +40,7 @@ const std::string BOLD_ON;
 const std::string BOLD_OFF;
 #endif
 
-bool noImg = false;
+bool noImg = true;
 
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 #pragma GCC diagnostic push
@@ -54,8 +54,8 @@ poptOption poptOptions[] = {
 		"name", 'n', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &pName,
 		0, "Set the name of the player", "NAME"
 	},
-	{ "no-img", 'N', POPT_ARG_VAL, &noImg, 1, "Do not send the test player image", NULL },
-	{ "caps", 0, POPT_ARG_VAL, &showCaps, 1, "Display the server capabilities", NULL },
+	{ "player-image", 'i', POPT_ARG_VAL, &noImg, 0, "Send a test player image", NULL },
+	{ "caps", 'c', POPT_ARG_VAL, &showCaps, 1, "Display the server capabilities", NULL },
 	POPT_AUTOHELP
 	POPT_TABLEEND
 };

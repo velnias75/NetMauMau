@@ -71,3 +71,5 @@ doc/client.dox.warnings
 doc/html
 win32
 autoscan-2.69.log
+src/server/netmaumau.rc
+src/server/nmm-server.1

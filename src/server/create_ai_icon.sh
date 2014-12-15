@@ -21,7 +21,12 @@
 command -v xxd >/dev/null 2>&1 || \
  { echo >&2 "I require xxd but it's not installed.  Aborting."; exit 1; }
 
-PNGDATA="`cat $2 | xxd -i`"
+if [ -z "$2" -o "$2" == "-" ]; then
+	PNGDATA="`xxd -i`"
+else
+	PNGDATA="`cat $2 | xxd -i`"
+fi
+
 HGUARD="CREATE_AI_ICON_`echo -n $1 | tr '[:lower:]' '[:upper:]'`_H"
 
 cat << EOF
@@ -43,7 +48,6 @@ cat << EOF
  * You should have received a copy of the GNU Lesser General Public License
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Created from file "$2" by $USER
  */
 
 #ifndef $HGUARD

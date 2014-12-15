@@ -44,8 +44,7 @@
 
 namespace {
 
-const std::string &AIDefaultIcon(NetMauMau::Common::base64_encode(ai_icon_data,
-								 sizeof(ai_icon_data)));
+const std::string &AIDefaultIcon(reinterpret_cast<const char *>(ai_icon_data));
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push

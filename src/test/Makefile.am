@@ -4,6 +4,12 @@ if ENABLE_CLIENT
 noinst_PROGRAMS = test_client
 endif
 
+EXTRA_DIST = testimg.png
+
+MAINTAINERCLEANFILES = testimg.h
+
+BUILT_SOURCES = testimg.h
+
 TESTS = $(check_PROGRAMS)
 
 noinst_HEADERS = testeventhandler.h testclient.h testimg.h
@@ -21,3 +27,7 @@ test_client_SOURCES = test_client.cpp testclient.cpp
 test_client_LDADD = ../client/libnetmaumauclient.la ../common/libnetmaumaucommon.la $(POPT_LIBS)
 test_client_LDFLAGS = -no-install
 endif
+
+.DELETE_ON_ERROR:
+testimg.h: testimg.png
+	$(SHELL) $(top_srcdir)/src/server/create_ai_icon.sh 'test_client_img' $< > $@

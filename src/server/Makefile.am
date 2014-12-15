@@ -33,7 +33,7 @@ endif
 
 .DELETE_ON_ERROR:
 ai-icon.h: Tuyul.PNG
-	$(SHELL) $(srcdir)/create_ai_icon.sh 'ai_icon_data' $< > $@
+	base64 -w0 $< | $(SHELL) $(srcdir)/create_ai_icon.sh 'ai_icon_data' > $@
 
 %.rc.lo: %.rc
 	$(LIBTOOL) --tag=RC --mode=compile $(RC) $< -o $@

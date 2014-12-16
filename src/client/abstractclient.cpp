@@ -24,6 +24,7 @@
  */
 
 #include <cstdio>
+#include <cassert>
 #include <cstring>
 
 #include "abstractclient.h"
@@ -272,7 +273,12 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					m_openCard = (NetMauMau::Client::CardFactory(msg)).create();
 
 					if(!initCardShown) {
+
+						assert(NetMauMau::Common::symbolToSuit(cjackSuit)
+							   != NetMauMau::Common::ICard::SUIT_ILLEGAL);
+
 						openCard(m_openCard, cjackSuit);
+
 					} else {
 						initCardShown = false;
 					}
@@ -360,11 +366,23 @@ void AbstractClient::play(timeval *timeout) throw(NetMauMau::Common::Exception::
 					cjackSuit.clear();
 
 				} else if(!m_disconnectNow && msg == "JACKSUIT") {
+
 					m_connection >> msg;
 					cjackSuit = msg;
+
+					assert(NetMauMau::Common::symbolToSuit(cjackSuit)
+						   != NetMauMau::Common::ICard::SUIT_ILLEGAL);
+
 					jackSuit(NetMauMau::Common::symbolToSuit(cjackSuit));
+
 				} else if(!m_disconnectNow && msg == "JACKCHOICE") {
-					m_connection << NetMauMau::Common::suitToSymbol(getJackSuitChoice(), false);
+
+					const NetMauMau::Common::ICard::SUIT s = getJackSuitChoice();
+
+					assert(s != NetMauMau::Common::ICard::SUIT_ILLEGAL);
+
+					m_connection << NetMauMau::Common::suitToSymbol(s, false);
+
 				} else if(!m_disconnectNow && msg == "PLAYERPICKSCARD") {
 
 					std::string player, extra;

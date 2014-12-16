@@ -1,7 +1,7 @@
 /**
  * basiclogger.h - template for basic logging functionality
  *
- * $Revision: 3108 $ $Author: heiko $
+ * $Revision: 3314 $ $Author: heiko $
  *
  * (c) 2012-2014 Heiko Schäfer <heiko@rangun.de>
  *
@@ -17,6 +17,7 @@
 #endif
 
 #include <cmath>
+#include <ctime>
 #include <cstdlib>
 #include <sstream>
 #include <typeinfo>
@@ -95,6 +96,12 @@ public:
 		bool b;
 	} abool;
 
+	typedef struct _time {
+		_time(const char *f = "%a, %d %b %Y %T %z", const tm *t = NULL) : fmt(f), time(t) {}
+		const char *fmt;
+		const tm *time;
+	} time;
+
 	static const std::ios_base::fmtflags hex;
 	static const std::ios_base::fmtflags dec;
 
@@ -111,6 +118,7 @@ public:
 	virtual BasicLogger &operator<<(const std::ios_base::fmtflags &f);
 	virtual BasicLogger &operator<<(const BasicLogger::nonl &nonl);
 	virtual BasicLogger &operator<<(const BasicLogger::width &w);
+	virtual BasicLogger &operator<<(const BasicLogger::time &t);
 
 	virtual BasicLogger &operator<<(const logString &msg);
 #ifndef LOG_CHAR
@@ -374,6 +382,21 @@ BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const BasicLogger<OIter>::non
 template<class OIter>
 BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const BasicLogger<OIter>::width &w) {
 	getMessageStream().width(w.m_width);
+	return *this;
+}
+
+template<class OIter>
+BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const BasicLogger<OIter>::time &t) {
+
+	char outstr[200] = "";
+	time_t ti = t.time ? 0 : std::time(NULL);
+	// cppcheck-suppress nonreentrantFunctionslocaltime
+	const tm *tmp = t.time ? t.time : std::localtime(&ti);
+
+	if(tmp && std::strftime(outstr, sizeof(outstr), t.fmt, tmp)) {
+		getMessageStream() << outstr;
+	}
+
 	return *this;
 }
 

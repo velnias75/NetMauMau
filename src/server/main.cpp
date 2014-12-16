@@ -148,7 +148,7 @@ void updatePlayerCap(NetMauMau::Server::Connection::CAPABILITIES &caps, std::siz
 volatile bool interrupt = false;
 
 void sh_interrupt(int) {
-	logWarning("Server is about to shut down");
+	logWarning(NetMauMau::Common::Logger::time("%T - ") << "Server is about to shut down");
 	NetMauMau::Server::EventHandler::setInterrupted();
 	interrupt = true;
 }
@@ -274,7 +274,7 @@ void exit_hdlr() {
 
 #endif
 
-	logInfo("Server shut down normally");
+	logInfo(NetMauMau::Common::Logger::time("%T - ") << "Server shut down normally");
 }
 #endif
 
@@ -497,7 +497,8 @@ int main(int argc, const char **argv) {
 
 						if(state == Server::Connection::PLAY) {
 
-							logInfo("Connection from " << info.host << ":" << info.port << " as \""
+							logInfo(NetMauMau::Common::Logger::time("%T - ") <<
+									"Connection from " << info.host << ":" << info.port << " as \""
 									<< info.name << "\" (" << info.maj << "." << info.min << ") "
 									<< NetMauMau::Common::Logger::nonl());
 

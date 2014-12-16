@@ -17,6 +17,8 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <ctime>
+
 #include "game.h"
 #include "logger.h"
 #include "abstractconnection.h"
@@ -68,7 +70,7 @@ Game::Game(NetMauMau::Event::IEventHandler &evtHdlr, long aiDelay, bool aiPlayer
 		m_engine.setAlwaysWait(aiAdded > 1);
 	}
 
-	logInfo(GAMEREADY);
+	logInfo(NetMauMau::Common::Logger::time("%T - ") << GAMEREADY);
 }
 
 Game::~Game() {
@@ -158,7 +160,7 @@ void Game::reset(bool playerLost) throw() {
 		}
 	}
 
-	logInfo(GAMEREADY);
+	logInfo(NetMauMau::Common::Logger::time("%T - ") << GAMEREADY);
 }
 
 void Game::shutdown() const throw() {

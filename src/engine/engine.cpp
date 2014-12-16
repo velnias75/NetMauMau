@@ -21,6 +21,7 @@
 #include "config.h"
 #endif
 
+#include <cassert>
 #include <sstream>
 #include <algorithm>
 
@@ -257,6 +258,10 @@ bool Engine::nextTurn() {
 
 		const bool csuspend = m_ruleset->hasToSuspend();
 		const Common::ICard::SUIT js = m_ruleset->getJackSuit();
+
+		assert(uc->getRank() != Common::ICard::JACK ||
+			   (uc->getRank() == Common::ICard::JACK && (m_jackMode || m_initialJack) &&
+				js != Common::ICard::SUIT_ILLEGAL));
 
 		Common::ICard *pc = !csuspend ? player->requestCard(uc, (m_jackMode || m_initialJack)
 							? &js : 0L) : 0L;

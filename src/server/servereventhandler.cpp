@@ -90,7 +90,6 @@ throw(NetMauMau::Common::Exception::SocketException) {
 void EventHandler::error(const std::string &msg, const std::vector<std::string> &except) const
 throw(NetMauMau::Common::Exception::SocketException) {
 	message_internal("ERROR", msg, except);
-	logError(msg);
 }
 
 void EventHandler::playerAdded(const NetMauMau::Player::IPlayer *player) const

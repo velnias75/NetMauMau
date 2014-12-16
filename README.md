@@ -1,7 +1,5 @@
-NetMauMau
-=========
-
-Server for the popular card game Mau Mau.
+Build instructions, binaries and rules
+======================================
 
 Prerequisites
 -------------

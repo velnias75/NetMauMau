@@ -70,7 +70,7 @@ Game::Game(NetMauMau::Event::IEventHandler &evtHdlr, long aiDelay, bool aiPlayer
 		m_engine.setAlwaysWait(aiAdded > 1);
 	}
 
-	logInfo(NetMauMau::Common::Logger::time("%T - ") << GAMEREADY);
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << GAMEREADY);
 }
 
 Game::~Game() {
@@ -160,7 +160,7 @@ void Game::reset(bool playerLost) throw() {
 		}
 	}
 
-	logInfo(NetMauMau::Common::Logger::time("%T - ") << GAMEREADY);
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << GAMEREADY);
 }
 
 void Game::shutdown() const throw() {

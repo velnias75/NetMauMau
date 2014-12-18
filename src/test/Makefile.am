@@ -4,6 +4,12 @@ if ENABLE_CLIENT
 noinst_PROGRAMS = test_client
 endif
 
+if GSL
+GSL=-DHAVE_GSL
+else
+GSL=
+endif
+
 EXTRA_DIST = testimg.png
 
 MAINTAINERCLEANFILES = testimg.h
@@ -14,6 +20,7 @@ TESTS = $(check_PROGRAMS)
 
 noinst_HEADERS = testeventhandler.h testclient.h testimg.h
 
+test_netmaumau_CPPFLAGS = $(GSL)
 test_netmaumau_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/engine
 test_netmaumau_SOURCES = test_netmaumau.cpp testeventhandler.cpp

@@ -4,14 +4,15 @@ Build instructions, binaries and rules
 Prerequisites
 -------------
 
-* a GNU GCC compiler (currently NetMauMau uses a certain amount of features
-exclusive to GCC)
+* a GNU GCC compiler (currently NetMauMau uses a certain amount of features exclusive to GCC)
 
-* the [POPT library](http://rpm5.org/files/popt/)
+* the [POPT library >= 1.10](http://rpm5.org/files/popt/)
 
 * xxd (from the vim package [on **Debian** based distributions *vim-common*; on **Gentoo** *vim-core*])
 
 * libmagic (*optionally, but recommended*)
+
+* GNU Scientific Library >= 1.9 (*optionally*, for better random number generator)
 
 Setting up the build environment
 --------------------------------

@@ -39,6 +39,10 @@
 #include "ieventhandler.h"
 #include "abstractconnection.h"
 
+#if defined(HAVE_GSL)
+#include <random_gen.h>
+#endif
+
 namespace {
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
@@ -51,6 +55,16 @@ struct PlayerNameEqual : public std::binary_function < NetMauMau::Player::IPlaye
 };
 #pragma GCC diagnostic pop
 }
+
+#if defined(HAVE_GSL)
+namespace NetMauMau _EXPORT {
+
+namespace Common _EXPORT {
+const GSLRNG<std::ptrdiff_t> RNG;
+}
+
+}
+#endif
 
 using namespace NetMauMau;
 
@@ -268,8 +282,6 @@ bool Engine::nextTurn() {
 
 		if(m_initialJack && !pc) m_jackMode = true;
 
-		m_initialJack = false;
-
 		bool won = false;
 
 		if(!csuspend) {
@@ -336,7 +348,7 @@ sevenRule:
 
 			if(pc && cc) {
 
-				if(m_jackMode) m_ruleset->setJackModeOff();
+				if(m_jackMode || m_initialJack) m_ruleset->setJackModeOff();
 
 				won = player->cardAccepted(pc);
 				m_talon->playCard(pc);
@@ -393,6 +405,8 @@ sevenRule:
 		if(!won) m_nxtPlayer = (m_nxtPlayer + 1) >= m_players.size() ? 0 : m_nxtPlayer + 1;
 
 		if(!m_nxtPlayer) ++m_turn;
+
+		m_initialJack = false;
 
 	} catch(const Common::Exception::SocketException &e) {
 

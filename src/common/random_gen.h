@@ -29,11 +29,52 @@
 #include "config.h"
 #endif
 
+#if defined(HAVE_GSL)
+#include <ctime>
+#include <gsl/gsl_rng.h>
+#include "linkercontrol.h"
+#endif
+
 #include <cstdlib>
 
 namespace NetMauMau {
 
 namespace Common {
+
+#if defined(HAVE_GSL)
+template<typename T>
+class GSLRNG {
+	DISALLOW_COPY_AND_ASSIGN(GSLRNG)
+public:
+	GSLRNG(long unsigned int seed = std::time(0L)) : m_rng(gsl_rng_alloc(gsl_rng_mt19937_1999)) {
+		if(m_rng) gsl_rng_set(m_rng, seed);
+	}
+
+	~GSLRNG() {
+		if(m_rng) gsl_rng_free(m_rng);
+	}
+
+	T rand(T ubound) const {
+
+		if(m_rng) {
+			return ubound > 0 ? static_cast<T>(gsl_rng_uniform_int(m_rng,
+											   static_cast<unsigned long int>(ubound))) : 0;
+		}
+
+#if HAVE_ARC4RANDOM_UNIFORM
+		return ubound > 0 ? ::arc4random_uniform(ubound) : 0;
+#else
+		return ubound > 0 ? (std::rand() % ubound) : 0;
+#endif
+	}
+
+private:
+	gsl_rng *m_rng;
+};
+
+extern const GSLRNG<std::ptrdiff_t> RNG;
+
+#endif
 
 /**
  * @brief Generates a random number
@@ -44,7 +85,9 @@ namespace Common {
  */
 template<typename T>
 inline T genRandom(T ubound) {
-#if HAVE_ARC4RANDOM_UNIFORM
+#if defined(HAVE_GSL)
+	return RNG.rand(ubound);
+#elif HAVE_ARC4RANDOM_UNIFORM
 	return ubound > 0 ? ::arc4random_uniform(ubound) : 0;
 #else
 	return ubound > 0 ? (std::rand() % ubound) : 0;

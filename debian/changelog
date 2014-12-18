@@ -2,8 +2,9 @@ netmaumau (0.6) UNRELEASED; urgency=low
 
   * check if the player image is really a PNG image
   * improved test tools (for developing)
+  * added dependency to libgsl0-dev
 
- -- Heiko Schäfer <heiko@rangun.de>  Thu, 18 Dec 2014 05:54:54 +0100
+ -- Heiko Schäfer <heiko@rangun.de>  Thu, 18 Dec 2014 10:00:23 +0100
 
 netmaumau (0.5) UNRELEASED; urgency=low
 

@@ -72,6 +72,9 @@ fi
 # Checks for libraries.
 PKG_CHECK_MODULES([POPT], [popt >= 1.10])
 AC_CHECK_LIB([magic], [magic_open])
+PKG_CHECK_MODULES([GSL], [gsl >= 1.9],
+  [AM_CONDITIONAL([GSL], [ true ])], 
+  [AM_CONDITIONAL([GSL], [ false ])])
 
 # Checks for header files.
 AC_HEADER_STDBOOL

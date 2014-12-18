@@ -8,6 +8,12 @@ if GENMAN
 man1_MANS += $(bin_PROGRAMS).1
 endif
 
+if GSL
+GSL=-DHAVE_GSL
+else
+GSL=
+endif
+
 MAINTAINERCLEANFILES = ai-icon.h
 
 DISTCLEANFILES = $(man1_MANS)
@@ -17,8 +23,10 @@ BUILT_SOURCES = ai-icon.h
 noinst_HEADERS = serverconnection.h serverplayer.h servereventhandler.h game.h \
 	serverplayerexception.h ai-icon.h
 
+nmm_server_CPPFLAGS = $(GSL)
+
 if PIDFILE
-nmm_server_CPPFLAGS = -DPIDFILE="\"$(localstatedir)/run/$(PACKAGE).pid\""
+nmm_server_CPPFLAGS += -DPIDFILE="\"$(localstatedir)/run/$(PACKAGE).pid\""
 endif
 
 nmm_server_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \

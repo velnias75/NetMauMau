@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Heiko Schäfer <heiko@rangun.de>
 Build-Depends: cdbs, debhelper (>= 9), dh-autoreconf, autotools-dev, pkg-config, 
  libpopt-dev (>= 1.10), doxygen (>= 1.8.0), graphviz, automake1.11, help2man, vim-common,
- libmagic-dev
+ libmagic-dev, libgsl0-dev
 Standards-Version: 3.9.4
 Homepage: https://github.com/velnias75/NetMauMau/
 Vcs-Git: https://git@github.com:velnias75/NetMauMau.git

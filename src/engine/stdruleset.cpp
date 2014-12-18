@@ -57,7 +57,7 @@ bool StdRuleSet::checkCard(const NetMauMau::Common::ICard *uncoveredCard,
 
 bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 						   const NetMauMau::Common::ICard *uncoveredCard,
-						   const NetMauMau::Common::ICard *playedCard, bool ai) {
+						   const NetMauMau::Common::ICard *playedCard, bool /*ai*/) {
 
 	const bool accepted = uncoveredCard ? checkCard(uncoveredCard, playedCard) : true;
 
@@ -68,12 +68,12 @@ bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 		m_takeCardCount += 2;
 	} else if(accepted && playedCard->getRank() == NetMauMau::Common::ICard::JACK) {
 
-		if(!(ai && (!player->isAIPlayer() && player->getCardCount() == 1))) {
-			m_jackSuit = player->getJackChoice(uncoveredCard ? uncoveredCard :
-											   playedCard, playedCard);
-		} else {
-			m_jackSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
-		}
+// 		if(!(ai && (!player->isAIPlayer() && player->getCardCount() == 1))) {
+		m_jackSuit = player->getJackChoice(uncoveredCard ? uncoveredCard :
+										   playedCard, playedCard);
+// 		} else {
+// 			m_jackSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
+// 		}
 
 		m_jackMode = true;
 	}

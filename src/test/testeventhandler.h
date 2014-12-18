@@ -61,6 +61,9 @@ public:
 	virtual void playerLost(const NetMauMau::Player::IPlayer *player, std::size_t turn,
 							std::size_t pointFactor) const
 	throw(NetMauMau::Common::Exception::SocketException);
+
+private:
+	bool m_isatty;
 };
 
 #endif /* NETMAUMAU_TESTEVENTHANDLER_H */

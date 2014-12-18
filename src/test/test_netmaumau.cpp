@@ -46,18 +46,12 @@ int main(int, char **) {
 
 	engine.addPlayer(&p1);
 	engine.addPlayer(&p2);
-
-// 	eng.distributeCards();
-
 	engine.addPlayer(&p3);
 	engine.addPlayer(&p4);
 
 	engine.distributeCards();
 
-// 	std::size_t pc = engine.getPlayerCount();
-
 	while(engine.hasPlayers()) {
-// 	while(eng.getPlayerCount() == pc) {
 		engine.nextTurn();
 	}
 

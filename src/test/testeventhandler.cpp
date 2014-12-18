@@ -17,8 +17,18 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
+#include "config.h"
+#endif
+
+#include <cstdio>
 #include <cassert>
+#include <iomanip>
 #include <iostream>
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 #include "testeventhandler.h"
 
@@ -27,12 +37,14 @@
 
 namespace {
 #ifndef DISABLE_ANSI
+#define OFF (m_isatty ? 10 : 0)
 const std::string BLUE_ON("\x1B[1m\x1B[34m");
 const std::string BLUE_OFF("\x1B[39m\x1B[22m");
 const std::string BOLD_P_ON("Player \x1B[1m");
 const std::string BOLD_ON("\x1B[1m");
 const std::string BOLD_OFF("\x1B[22m");
 #else
+#define OFF 0
 const std::string BLUE_ON;
 const std::string BLUE_OFF;
 const std::string BOLD_P_ON("Player ");
@@ -41,7 +53,12 @@ const std::string BOLD_OFF;
 #endif
 }
 
-TestEventHandler::TestEventHandler() : DefaultEventHandler() {}
+#define PLAYER (m_isatty ? BOLD_P_ON : "Player ") << std::setw(8) << std::left \
+		<< player->getName() << (m_isatty ? BOLD_OFF : "")
+
+#define SETWIDTH std::setw(29)
+
+TestEventHandler::TestEventHandler() : DefaultEventHandler(), m_isatty(isatty(fileno(stderr))) {}
 
 TestEventHandler::~TestEventHandler() {}
 
@@ -60,13 +77,13 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	const CARDS::const_iterator &e(cards.end());
 
 	for(; i != e; ++i) {
-		std::cerr << "\tgets " << (*i)->description(true) << std::endl;
+		std::cerr << "\tgets " << (*i)->description(m_isatty) << std::endl;
 	}
 }
 
 void TestEventHandler::initialCard(const NetMauMau::Common::ICard *ic) const
 throw(NetMauMau::Common::Exception::SocketException) {
-	std::cerr << "Uncovered card: " << ic->description(true) << std::endl;
+	std::cerr << "Uncovered card: " << ic->description(m_isatty) << std::endl;
 }
 
 void TestEventHandler::cardsAlreadyDistributed() const
@@ -78,7 +95,7 @@ void TestEventHandler::playerPicksCard(const NetMauMau::Player::IPlayer *player,
 									   const NetMauMau::Common::ICard *) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\ttakes a card from talon!\t("
+	std::cerr << PLAYER << SETWIDTH << "takes a card from talon!" << "("
 			  << player->getCardCount() << ")" << std::endl;
 }
 
@@ -86,8 +103,8 @@ void TestEventHandler::playerPicksCards(const NetMauMau::Player::IPlayer *player
 										std::size_t cardCount) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\tmust take " << cardCount
-			  << " cards!\t\t(" << player->getCardCount() << ")" << std::endl;
+	std::cerr << PLAYER << "must take " << cardCount << std::setw(19) << " cards!" << "("
+			  << player->getCardCount() << ")" << std::endl;
 }
 
 void TestEventHandler::playerSuspends(const NetMauMau::Player::IPlayer *player,
@@ -95,11 +112,11 @@ void TestEventHandler::playerSuspends(const NetMauMau::Player::IPlayer *player,
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	if(!dueCard) {
-		std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\tsuspends this turn!\t\t("
+		std::cerr << PLAYER << SETWIDTH << "suspends this turn!" << " ("
 				  << player->getCardCount() << ")" << std::endl;
 	} else {
-		std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\tsuspends this turn due to "
-				  << dueCard->description(true)  << "\t(" << player->getCardCount() << ")"
+		std::cerr << PLAYER << "suspends this turn due to " << std::setw(6 + OFF)
+				  << dueCard->description(m_isatty) << "(" << player->getCardCount() << ")"
 				  << std::endl;
 	}
 }
@@ -109,9 +126,9 @@ void TestEventHandler::playerPlaysCard(const NetMauMau::Player::IPlayer *player,
 									   const NetMauMau::Common::ICard *unvoredCard) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\tplays "
-			  << playedCard->description(true) << " over " << unvoredCard->description(true)
-			  << "\t\t(" << player->getCardCount() << ")" << std::endl;
+	std::cerr << PLAYER << "plays " << std::setw(6 + OFF) << playedCard->description(m_isatty)
+			  << " over " << std::setw(16 + OFF) << unvoredCard->description(m_isatty) << "("
+			  << player->getCardCount() << ")" << std::endl;
 }
 
 void TestEventHandler::playerChooseJackSuit(const NetMauMau::Player::IPlayer *player,
@@ -120,24 +137,24 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	assert(suit != NetMauMau::Common::ICard::SUIT_ILLEGAL);
 
-	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\thas chosen "
-			  << NetMauMau::Common::suitToSymbol(suit, true, true) << std::endl;
+	std::cerr << PLAYER << "has chosen "
+			  << NetMauMau::Common::suitToSymbol(suit, m_isatty, m_isatty) << std::endl;
 }
 
 void TestEventHandler::playerWins(const NetMauMau::Player::IPlayer *player, std::size_t t,
 								  bool) const throw(NetMauMau::Common::Exception::SocketException) {
 
-	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\t" << BLUE_ON << "wins in turn #"
-			  << t << " :-)" << BLUE_OFF << std::endl;
+	std::cerr << PLAYER << (m_isatty ? BLUE_ON : "") << "wins in turn #" << t << " :-)"
+			  << (m_isatty ? BLUE_OFF : "") << std::endl;
 }
 
 void TestEventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std::size_t,
 								  std::size_t pointFactor) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	std::cerr << BOLD_P_ON << player->getName() << BOLD_OFF << "\t" << BOLD_ON << "has lost with "
-			  << (player->getPoints() * pointFactor) << " points in hand :-(" << BOLD_OFF
-			  << std::endl;
+	std::cerr << PLAYER << (m_isatty ? BOLD_ON : "") << "has lost with "
+			  << (player->getPoints() * pointFactor) << " points in hand :-("
+			  << (m_isatty ? BOLD_OFF : "") << std::endl;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

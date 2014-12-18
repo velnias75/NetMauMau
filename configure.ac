@@ -86,6 +86,7 @@ AC_CHECK_HEADERS([sys/socket.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AX_CXX_GCC_ABI_DEMANGLE
+AC_CHECK_TYPES([ptrdiff_t])
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
 AC_TYPE_UINT16_T

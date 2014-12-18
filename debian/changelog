@@ -1,8 +1,9 @@
 netmaumau (0.6) UNRELEASED; urgency=low
 
   * check if the player image is really a PNG image
+  * improved test tools (for developing)
 
- -- Heiko Schäfer <heiko@rangun.de>  Mon, 15 Dec 2014 09:30:06 +0100
+ -- Heiko Schäfer <heiko@rangun.de>  Thu, 18 Dec 2014 05:54:54 +0100
 
 netmaumau (0.5) UNRELEASED; urgency=low
 

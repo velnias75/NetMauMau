@@ -98,10 +98,11 @@ NetMauMau::Common::ICard *TestClient::playCard(const CARDS &cards) const {
 
 		std::cout << "Choose card:" << std::endl;
 		std::cout << " 0) Suspend turn" << std::endl;
+		std::cout << " 1) Take cards and choose again" << std::endl;
 
 		for(CARDS::const_iterator i(m_myCards.begin()); i != m_myCards.end(); ++i) {
 			if(NetMauMau::Common::findCard(*i, possibleCards.begin(), possibleCards.end())) {
-				std::cout << std::setw(2) << (pos + 1) << std::setw(0) << ") "
+				std::cout << std::setw(2) << (pos + 2) << std::setw(0) << ") "
 						  << (*i)->description(true) << std::endl;
 				++pos;
 			} else {
@@ -113,11 +114,16 @@ NetMauMau::Common::ICard *TestClient::playCard(const CARDS &cards) const {
 		std::cout << "Choose: ";
 		std::cin >> pos;
 
-	} while(pos > possibleCards.size());
+	} while(pos > possibleCards.size() + 1);
 
-	if(pos) return possibleCards.at(pos - 1);
+	if(!pos) {
+		return 0;
+	} else if(pos == 1) {
+		return NetMauMau::Common::getIllegalCard();
+	}
 
-	return 0L;
+	return possibleCards.at(pos - 2);
+
 }
 
 NetMauMau::Common::ICard::SUIT TestClient::getJackSuitChoice() const {

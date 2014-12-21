@@ -21,14 +21,17 @@
 
 #include "stdruleset.h"
 
+#include "iaceroundlistener.h"
 #include "random_gen.h"
 #include "cardtools.h"
 #include "iplayer.h"
 
 using namespace NetMauMau::RuleSet;
 
-StdRuleSet::StdRuleSet() : IRuleSet(), m_hasToSuspend(false), m_hasSuspended(false),
-	m_takeCardCount(0), m_jackMode(false), m_jackSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL) {}
+StdRuleSet::StdRuleSet(const NetMauMau::IAceRoundListener *l) : IRuleSet(), m_hasToSuspend(false),
+	m_hasSuspended(false), m_takeCardCount(0), m_jackMode(false),
+	m_jackSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL), m_aceRound(l), m_aceRoundPlayer(0L),
+	m_arl(l) {}
 
 StdRuleSet::~StdRuleSet() {}
 
@@ -46,18 +49,29 @@ bool StdRuleSet::checkCard(const NetMauMau::Common::ICard *uncoveredCard,
 
 	if(!uncoveredCard || !playedCard) return false;
 
-	return (playedCard->getRank() == NetMauMau::Common::ICard::JACK
-			&& uncoveredCard->getRank() != NetMauMau::Common::ICard::JACK) ||
-		   ((((isJackMode() && getJackSuit() == playedCard->getSuit()) ||
-			  (!isJackMode() && (uncoveredCard->getSuit() == playedCard->getSuit() ||
-								 (uncoveredCard->getRank() == playedCard->getRank()))))) &&
-			!(playedCard->getRank() == NetMauMau::Common::ICard::JACK &&
-			  uncoveredCard->getRank() == NetMauMau::Common::ICard::JACK));
+	return (m_aceRound && m_aceRoundPlayer) ?
+		   (playedCard->getRank() == NetMauMau::Common::ICard::ACE) :
+		   ((playedCard->getRank() == NetMauMau::Common::ICard::JACK
+			 && uncoveredCard->getRank() != NetMauMau::Common::ICard::JACK) ||
+			((((isJackMode() && getJackSuit() == playedCard->getSuit()) ||
+			   (!isJackMode() && (uncoveredCard->getSuit() == playedCard->getSuit() ||
+								  (uncoveredCard->getRank() == playedCard->getRank()))))) &&
+			 !(playedCard->getRank() == NetMauMau::Common::ICard::JACK &&
+			   uncoveredCard->getRank() == NetMauMau::Common::ICard::JACK)));
 }
 
 bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 						   const NetMauMau::Common::ICard *uncoveredCard,
 						   const NetMauMau::Common::ICard *playedCard, bool /*ai*/) {
+
+	if(m_aceRound && uncoveredCard && (!m_aceRoundPlayer || m_aceRoundPlayer == player) &&
+			playedCard->getRank() == NetMauMau::Common::ICard::ACE) {
+		if((m_aceRoundPlayer = player->getAceRoundChoice() ? player : 0L)) {
+			m_arl->aceRoundStarted();
+		} else {
+			m_arl->aceRoundEnded();
+		}
+	}
 
 	const bool accepted = uncoveredCard ? checkCard(uncoveredCard, playedCard) : true;
 
@@ -67,14 +81,7 @@ bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 	if(accepted && playedCard->getRank() == NetMauMau::Common::ICard::SEVEN) {
 		m_takeCardCount += 2;
 	} else if(accepted && playedCard->getRank() == NetMauMau::Common::ICard::JACK) {
-
-// 		if(!(ai && (!player->isAIPlayer() && player->getCardCount() == 1))) {
-		m_jackSuit = player->getJackChoice(uncoveredCard ? uncoveredCard :
-										   playedCard, playedCard);
-// 		} else {
-// 			m_jackSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
-// 		}
-
+		m_jackSuit = player->getJackChoice(uncoveredCard ? uncoveredCard : playedCard, playedCard);
 		m_jackMode = true;
 	}
 
@@ -110,6 +117,14 @@ bool StdRuleSet::takeIfLost() const {
 	return true;
 }
 
+bool StdRuleSet::isAceRoundPossible() const {
+	return m_aceRound;
+}
+
+bool StdRuleSet::isAceRound() const {
+	return m_aceRoundPlayer && isAceRoundPossible();
+}
+
 bool StdRuleSet::isJackMode() const {
 	return m_jackMode;
 }
@@ -130,6 +145,7 @@ void StdRuleSet::reset() throw() {
 	m_takeCardCount = 0;
 	m_jackMode = false;
 	m_jackSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
+	m_aceRoundPlayer = 0L;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

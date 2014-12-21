@@ -79,8 +79,8 @@ struct _playerClientversionLess2 :
 
 using namespace NetMauMau::Server;
 
-Connection::Connection(uint16_t port, const char *server) : AbstractConnection(server, port),
-	m_caps() {}
+Connection::Connection(uint32_t minVer, uint16_t port, const char *server)
+	: AbstractConnection(server, port), m_caps(), m_clientMinVer(minVer) {}
 
 Connection::~Connection() {
 
@@ -227,8 +227,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						info.min = getMinorFromHello(rHello, dot);
 
 						const uint32_t cver = (info.maj << 16u) | info.min;
-						const uint32_t minver = (static_cast<uint16_t>(MIN_MAJOR) << 16u) |
-												static_cast<uint16_t>(MIN_MINOR);
+						const uint32_t minver = getMinClientVersion();
 						const uint32_t maxver = getServerVersion();
 
 						send(cver >= 4 ? "NAMP" : "NAME", 4, cfd);

@@ -94,9 +94,13 @@ NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *un
 
 			if(s && (*i)->getSuit() != *s) continue;
 
-			const bool accepted = getRuleSet()->checkCard(*i, uncoveredCard);
-			const bool jack = (*i)->getRank() == NetMauMau::Common::ICard::JACK &&
-							  uncoveredCard->getRank() != NetMauMau::Common::ICard::JACK;
+			const bool accepted = getRuleSet()->isAceRound() ?
+								  (*i)->getRank() == NetMauMau::Common::ICard::ACE :
+								  getRuleSet()->checkCard(*i, uncoveredCard);
+
+			const bool jack = ((*i)->getRank() == NetMauMau::Common::ICard::JACK &&
+							   uncoveredCard->getRank() != NetMauMau::Common::ICard::JACK) &&
+							  !getRuleSet()->isAceRound();
 
 			if(accepted || jack) {
 				m_connection.write(m_sockfd, (*i)->description());
@@ -187,6 +191,22 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	} catch(const NetMauMau::Common::Exception::SocketException &) {
 		throw Exception::ServerPlayerException(__FUNCTION__);
 	}
+}
+
+bool Player::getAceRoundChoice() const throw(NetMauMau::Common::Exception::SocketException) {
+
+	if(std::count_if(getPlayerCards().begin(), getPlayerCards().end(),
+					 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+								  NetMauMau::Common::ICard::ACE)) > 1) {
+		try {
+			m_connection.write(m_sockfd, "ACEROUND");
+			return m_connection.read(m_sockfd) == "TRUE";
+		} catch(const NetMauMau::Common::Exception::SocketException &) {
+			throw Exception::ServerPlayerException(__FUNCTION__);
+		}
+	}
+
+	return false;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

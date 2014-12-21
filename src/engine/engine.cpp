@@ -68,11 +68,11 @@ const GSLRNG<std::ptrdiff_t> RNG;
 
 using namespace NetMauMau;
 
-Engine::Engine(Event::IEventHandler &eventHandler, long aiDelay, bool nextMessage) :
+Engine::Engine(Event::IEventHandler &eventHandler, long aiDelay, bool nextMessage, bool aceRound) :
 	m_eventHandler(eventHandler), m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)),
-	m_ruleset(new RuleSet::StdRuleSet()), m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0),
-	m_delRuleSet(true), m_jackMode(false), m_initialChecked(false), m_nextMessage(nextMessage),
-	m_ultimate(false), m_initialJack(false), m_alwaysWait(false),
+	m_ruleset(new RuleSet::StdRuleSet(aceRound ? this : 0L)), m_players(), m_nxtPlayer(0),
+	m_turn(1), m_curTurn(0), m_delRuleSet(true), m_jackMode(false), m_initialChecked(false),
+	m_nextMessage(nextMessage), m_ultimate(false), m_initialJack(false), m_alwaysWait(false),
 	m_initialNextMessage(nextMessage), m_aiDelay(aiDelay) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
@@ -517,6 +517,14 @@ void Engine::shuffled() const {
 	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
 		(*i)->talonShuffled();
 	}
+}
+
+void Engine::aceRoundStarted() const throw(Common::Exception::SocketException) {
+	m_eventHandler.aceRoundStarted();
+}
+
+void Engine::aceRoundEnded() const throw(Common::Exception::SocketException) {
+	m_eventHandler.aceRoundEnded();
 }
 
 void Engine::informAIStat() const {

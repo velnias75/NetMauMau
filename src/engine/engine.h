@@ -23,6 +23,7 @@
 #include <vector>
 #include <string>
 
+#include "iaceroundlistener.h"
 #include "socketexception.h"
 #include "italonchange.h"
 
@@ -47,7 +48,7 @@ namespace RuleSet {
 class IRuleSet;
 }
 
-class _EXPORT Engine : protected ITalonChange {
+class _EXPORT Engine : protected ITalonChange, protected IAceRoundListener {
 	DISALLOW_COPY_AND_ASSIGN(Engine)
 
 	typedef enum { ACCEPT_PLAYERS, NOCARDS, PLAYING, FINISHED } STATE;
@@ -55,7 +56,8 @@ class _EXPORT Engine : protected ITalonChange {
 public:
 	typedef std::vector<Player::IPlayer *> PLAYERS;
 
-	Engine(Event::IEventHandler &eventHandler, long aiDelay = 1000L, bool nextMessage = true);
+	Engine(Event::IEventHandler &eventHandler, long aiDelay = 1000L, bool nextMessage = true,
+		   bool aceRound = false);
 	Engine(Event::IEventHandler &eventHandler, long aiDelay, RuleSet::IRuleSet *ruleset,
 		   bool nextMessage = true);
 
@@ -99,6 +101,9 @@ protected:
 	virtual void cardTaken(const NetMauMau::Common::ICard* = 0L) const
 	throw(Common::Exception::SocketException);
 	virtual void shuffled() const;
+
+	virtual void aceRoundStarted() const throw(Common::Exception::SocketException);
+	virtual void aceRoundEnded() const throw(Common::Exception::SocketException);
 
 private:
 	void calcScore(Player::IPlayer *p) const;

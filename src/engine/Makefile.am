@@ -1,7 +1,7 @@
 noinst_LTLIBRARIES = libeventhandler.la libengine_private.la libengine.la
 
 noinst_HEADERS = talon.h engine.h stdcardfactory.h defaulteventhandler.h ieventhandler.h \
-	stdruleset.h iruleset.h stdplayer.h italonchange.h
+	stdruleset.h iruleset.h stdplayer.h italonchange.h iaceroundlistener.h
 
 if GSL
 GSL=-DHAVE_GSL

@@ -77,6 +77,7 @@
 
 namespace {
 
+bool aceRound = false;
 bool ultimate = false;
 std::size_t minPlayers = 1;
 uint16_t port = SERVER_PORT;
@@ -104,6 +105,10 @@ poptOption poptOptions[] = {
 		'p', "Set amount of players", "AMOUNT"
 	},
 	{ "ultimate", 'u', POPT_ARG_NONE, NULL, 'u', "Play until last player wins", NULL },
+	{
+		"ace-round", 'a', POPT_ARG_NONE, NULL, 'a', "Enable ace rounds (requires all clients " \
+		"to be at least of version 0.7)", NULL
+	},
 	{
 		"ai-name", 'A', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &aiName, 'A',
 		"Set the name of one AI player. Can be given up to 4 times", "NAME"
@@ -361,6 +366,10 @@ int main(int argc, const char **argv) {
 			ultimate = true;
 			break;
 
+		case 'a':
+			aceRound = true;
+			break;
+
 		case 'I':
 #if !WIN32
 			if(interface[0] == '?') {
@@ -441,18 +450,26 @@ int main(int argc, const char **argv) {
 			minPlayers = std::min<std::size_t>(5, numAI + minPlayers);
 		}
 
-		Server::Connection con(port, *host ? host : NULL);
+		Server::Connection con(aceRound ? std::max(7,
+							   static_cast<uint16_t>(MIN_MAJOR) << 16u |
+							   static_cast<uint16_t>(MIN_MINOR)) :
+							   static_cast<uint16_t>(MIN_MAJOR) << 16u |
+							   static_cast<uint16_t>(MIN_MINOR), port, *host ? host : NULL);
 
 		ultimate = (!aiOpponent && minPlayers > 2) ? ultimate : numAI > 1;
 
 		if(ultimate) logInfo("Running in ultimate mode");
+
+		logInfo("Server accepts clients >= "
+				<< static_cast<uint16_t>(con.getMinClientVersion() >> 16)
+				<< "." << static_cast<uint16_t>(con.getMinClientVersion()));
 
 		try {
 
 			con.connect();
 
 			Server::EventHandler evtHdlr(con);
-			Server::Game game(evtHdlr, ::labs(aiDelay), aiOpponent, aiNames);
+			Server::Game game(evtHdlr, ::labs(aiDelay), aiOpponent, aiNames, aceRound);
 
 			Server::Connection::CAPABILITIES caps;
 			caps.insert(std::make_pair("SERVER_VERSION", PACKAGE_VERSION));
@@ -462,7 +479,9 @@ int main(int argc, const char **argv) {
 			if(aiOpponent) caps.insert(std::make_pair("AI_NAME", aiNames[0]));
 
 			std::ostringstream mvos;
-			mvos << MIN_MAJOR << '.' << MIN_MINOR;
+			mvos << static_cast<uint16_t>(con.getMinClientVersion() >> 16)
+				 << '.' << static_cast<uint16_t>(con.getMinClientVersion());
+
 			caps.insert(std::make_pair("MIN_VERSION", mvos.str()));
 
 			std::ostringstream mpos;

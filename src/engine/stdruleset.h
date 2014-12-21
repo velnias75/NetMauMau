@@ -24,12 +24,14 @@
 
 namespace NetMauMau {
 
+class IAceRoundListener;
+
 namespace RuleSet {
 
 class StdRuleSet : public IRuleSet {
 	DISALLOW_COPY_AND_ASSIGN(StdRuleSet)
 public:
-	StdRuleSet();
+	StdRuleSet(const IAceRoundListener *l = 0L);
 	virtual ~StdRuleSet();
 
 	virtual void checkInitial(const Player::IPlayer *player, const Common::ICard *playedCard);
@@ -49,6 +51,9 @@ public:
 	virtual std::size_t takeCards(const Common::ICard *playedCard) const;
 	virtual void hasTakenCards();
 
+	virtual bool isAceRoundPossible() const _PURE;
+
+	virtual bool isAceRound() const;
 	virtual bool isJackMode() const _PURE;
 	virtual Common::ICard::SUIT getJackSuit() const _PURE;
 	virtual void setJackModeOff();
@@ -63,6 +68,9 @@ private:
 	std::size_t m_takeCardCount;
 	bool m_jackMode;
 	Common::ICard::SUIT m_jackSuit;
+	bool m_aceRound;
+	const Player::IPlayer *m_aceRoundPlayer;
+	const IAceRoundListener *m_arl;
 };
 
 }

@@ -51,6 +51,9 @@ public:
 	virtual bool suspendIfNoMatchingCard() const = 0;
 	virtual bool takeIfLost() const = 0;
 
+	virtual bool isAceRoundPossible() const = 0;
+
+	virtual bool isAceRound() const = 0;
 	virtual bool isJackMode() const = 0;
 	virtual Common::ICard::SUIT getJackSuit() const = 0;
 	virtual void setJackModeOff() = 0;

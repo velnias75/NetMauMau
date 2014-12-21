@@ -68,8 +68,9 @@ namespace Client {
  * @note Starting with version 0.6 and with *libmagic* enabled, the server checks if the player
  * images are really in the PNG format
  */
-class _EXPORT AbstractClient : protected IPlayerPicListener {
-	DISALLOW_COPY_AND_ASSIGN(AbstractClient)
+class _EXPORT AbstractClientV05 : protected IPlayerPicListener {
+	DISALLOW_COPY_AND_ASSIGN(AbstractClientV05)
+	friend class AbstractClientV07;
 public:
 	/// @copydoc Connection::CAPABILITIES
 	typedef Connection::CAPABILITIES CAPABILITIES;
@@ -99,7 +100,7 @@ public:
 	 */
 	typedef std::vector<STAT> STATS;
 
-	virtual ~AbstractClient();
+	virtual ~AbstractClientV05();
 
 	/**
 	 * @brief Attempt to start a game on the servers
@@ -233,7 +234,7 @@ public:
 
 protected:
 	/**
-	 * @brief Creates an @c AbstractClient instance
+	 * @brief Creates an @c AbstractClientV05 instance
 	 *
 	 * Sets up all information to connect to a server
 	 *
@@ -243,10 +244,10 @@ protected:
 	 * @param server the server to connect to
 	 * @param port the server port to connect to
 	 */
-	AbstractClient(const std::string &player, const std::string &server, uint16_t port);
+	AbstractClientV05(const std::string &player, const std::string &server, uint16_t port);
 
 	/**
-	 * @brief Creates an @c AbstractClient instance
+	 * @brief Creates an @c AbstractClientV05 instance
 	 *
 	 * Sets up all information to connect to a server. Additionally a player picture can be
 	 * submitted
@@ -261,8 +262,8 @@ protected:
 	 *
 	 * @since 0.4
 	 */
-	AbstractClient(const std::string &player, const unsigned char *pngData, std::size_t pngDataLen,
-				   const std::string &server, uint16_t port);
+	AbstractClientV05(const std::string &player, const unsigned char *pngData,
+					  std::size_t pngDataLen, const std::string &server, uint16_t port);
 
 	/**
 	 * @name Server requests
@@ -539,6 +540,13 @@ protected:
 	virtual void unknownServerMessage(std::string message) const = 0;
 
 private:
+	typedef enum { OK, NOT_UNDERSTOOD, BREAK } PIRET;
+	virtual PIRET playInternal(std::string &msg, std::size_t *cturn, bool *initCardShown,
+							   std::string &cjackSuit,
+							   const NetMauMau::Common::ICard **lastPlayedCard)
+	throw(NetMauMau::Common::Exception::SocketException);
+
+private:
 	Connection m_connection;
 	const std::string m_pName;
 	unsigned char *m_pngData;
@@ -547,6 +555,27 @@ private:
 	const Common::ICard *m_openCard;
 	bool m_disconnectNow;
 };
+
+class _EXPORT AbstractClientV07 : public AbstractClientV05 {
+	DISALLOW_COPY_AND_ASSIGN(AbstractClientV07)
+protected:
+	AbstractClientV07(const std::string &player, const std::string &server, uint16_t port);
+	AbstractClientV07(const std::string &player, const unsigned char *pngData,
+					  std::size_t pngDataLen, const std::string &server, uint16_t port);
+
+	virtual bool getAceRoundChoice() const = 0;
+	virtual void aceRoundStarted() const = 0;
+	virtual void aceRoundEnded() const = 0;
+
+private:
+	using AbstractClientV05::playInternal;
+
+	virtual AbstractClientV05::PIRET playInternal(std::string &msg, std::size_t *cturn,
+			bool *initCardShown, std::string &cjackSuit, const Common::ICard **lastPlayedCard)
+	throw(NetMauMau::Common::Exception::SocketException);
+};
+
+typedef AbstractClientV07 AbstractClient;
 
 }
 

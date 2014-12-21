@@ -49,6 +49,8 @@ public:
 	virtual Common::ICard::SUIT getJackChoice(const Common::ICard *uncoveredCard,
 			const Common::ICard *playedCard) const;
 
+	virtual bool getAceRoundChoice() const _PURE;
+
 	virtual bool cardAccepted(const Common::ICard *playedCard);
 	virtual void cardPlayed(Common::ICard *playedCard);
 	virtual void informAIStat(const IPlayer *player, std::size_t count);
@@ -118,6 +120,7 @@ private:
 	bool m_playerHasFewCards;
 	mutable Common::ICard::SUIT m_powerSuit;
 	mutable bool m_powerPlay;
+	mutable bool m_tryAceRound;
 
 	static bool m_jackPlayed;
 };

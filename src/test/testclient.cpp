@@ -46,7 +46,7 @@ const std::string BOLD_OFF;
 
 TestClient::TestClient(const std::string &pName, const std::string &server, uint16_t port,
 					   const unsigned char *pngData, std::size_t pngDataLen)
-	: AbstractClient(pName, pngData, pngDataLen, server, port), m_myCards() {}
+	: NetMauMau::Client::AbstractClient(pName, pngData, pngDataLen, server, port), m_myCards() {}
 
 TestClient::~TestClient() {}
 
@@ -150,6 +150,10 @@ NetMauMau::Common::ICard::SUIT TestClient::getJackSuitChoice() const {
 	return NetMauMau::Common::symbolToSuit(NetMauMau::Common::getSuitSymbols()[pos - 1]);
 }
 
+bool TestClient::getAceRoundChoice() const {
+	return false;
+}
+
 void TestClient::playerJoined(const std::string &player, const unsigned char *,
 							  std::size_t) const {
 	std::cout << BOLD_P_ON << player << BOLD_OFF << " joins the game" << std::endl;
@@ -242,5 +246,9 @@ void TestClient::playerPicksCard(const std::string &player, std::size_t count) c
 void TestClient::nextPlayer(const std::string &player) const {
 	std::cout << "Waiting for turn of player " << BOLD_ON << player << BOLD_OFF << std::endl;
 }
+
+void TestClient::aceRoundStarted() const {}
+
+void TestClient::aceRoundEnded() const {}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

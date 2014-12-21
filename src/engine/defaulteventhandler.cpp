@@ -109,4 +109,8 @@ throw(NetMauMau::Common::Exception::SocketException) {}
 void DefaultEventHandler::nextPlayer(const NetMauMau::Player::IPlayer *) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
+void DefaultEventHandler::aceRoundStarted() throw(NetMauMau::Common::Exception::SocketException) {}
+
+void DefaultEventHandler::aceRoundEnded() throw(NetMauMau::Common::Exception::SocketException) {}
+
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

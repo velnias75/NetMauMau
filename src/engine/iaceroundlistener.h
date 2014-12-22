@@ -24,13 +24,17 @@
 
 namespace NetMauMau {
 
+namespace Player {
+class IPlayer;
+}
+
 class IAceRoundListener {
 	DISALLOW_COPY_AND_ASSIGN(IAceRoundListener)
 public:
 	virtual ~IAceRoundListener() {}
 
-	virtual void aceRoundStarted() const = 0;
-	virtual void aceRoundEnded() const = 0;
+	virtual void aceRoundStarted(const Player::IPlayer *player) const = 0;
+	virtual void aceRoundEnded(const Player::IPlayer *player) const = 0;
 
 protected:
 	IAceRoundListener() {}

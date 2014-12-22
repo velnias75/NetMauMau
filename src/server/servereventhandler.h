@@ -87,8 +87,10 @@ public:
 	virtual void nextPlayer(const Player::IPlayer *player) const
 	throw(Common::Exception::SocketException);
 
-	virtual void aceRoundStarted() throw(Common::Exception::SocketException);
-	virtual void aceRoundEnded() throw(Common::Exception::SocketException);
+	virtual void aceRoundStarted(const Player::IPlayer *player)
+	throw(Common::Exception::SocketException);
+	virtual void aceRoundEnded(const Player::IPlayer *player)
+	throw(Common::Exception::SocketException);
 
 	static void setInterrupted();
 

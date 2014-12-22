@@ -99,8 +99,10 @@ public:
 	virtual void nextPlayer(const Player::IPlayer *player) const
 	throw(Common::Exception::SocketException) = 0;
 
-	virtual void aceRoundStarted() throw(Common::Exception::SocketException) = 0;
-	virtual void aceRoundEnded() throw(Common::Exception::SocketException) = 0;
+	virtual void aceRoundStarted(const Player::IPlayer *player)
+	throw(Common::Exception::SocketException) = 0;
+	virtual void aceRoundEnded(const Player::IPlayer *player)
+	throw(Common::Exception::SocketException) = 0;
 
 protected:
 	IEventHandler() {}

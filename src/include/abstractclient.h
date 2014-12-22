@@ -564,8 +564,8 @@ protected:
 					  std::size_t pngDataLen, const std::string &server, uint16_t port);
 
 	virtual bool getAceRoundChoice() const = 0;
-	virtual void aceRoundStarted() const = 0;
-	virtual void aceRoundEnded() const = 0;
+	virtual void aceRoundStarted(const std::string &player) const = 0;
+	virtual void aceRoundEnded(const std::string &player) const = 0;
 
 private:
 	using AbstractClientV05::playInternal;

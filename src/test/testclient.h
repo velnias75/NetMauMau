@@ -65,8 +65,8 @@ protected:
 	virtual void cardAccepted(const NetMauMau::Common::ICard *card) const _CONST;
 	virtual void jackSuit(NetMauMau::Common::ICard::SUIT suit) const;
 
-	virtual void aceRoundStarted() const _CONST;
-	virtual void aceRoundEnded() const _CONST;
+	virtual void aceRoundStarted(const std::string &player) const _CONST;
+	virtual void aceRoundEnded(const std::string &player) const _CONST;
 
 private:
 	mutable CARDS m_myCards;

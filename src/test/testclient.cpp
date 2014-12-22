@@ -247,8 +247,8 @@ void TestClient::nextPlayer(const std::string &player) const {
 	std::cout << "Waiting for turn of player " << BOLD_ON << player << BOLD_OFF << std::endl;
 }
 
-void TestClient::aceRoundStarted() const {}
+void TestClient::aceRoundStarted(const std::string &) const {}
 
-void TestClient::aceRoundEnded() const {}
+void TestClient::aceRoundEnded(const std::string &) const {}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

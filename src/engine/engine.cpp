@@ -519,12 +519,14 @@ void Engine::shuffled() const {
 	}
 }
 
-void Engine::aceRoundStarted() const throw(Common::Exception::SocketException) {
-	m_eventHandler.aceRoundStarted();
+void Engine::aceRoundStarted(const Player::IPlayer *player) const
+throw(Common::Exception::SocketException) {
+	m_eventHandler.aceRoundStarted(player);
 }
 
-void Engine::aceRoundEnded() const throw(Common::Exception::SocketException) {
-	m_eventHandler.aceRoundEnded();
+void Engine::aceRoundEnded(const Player::IPlayer *player) const
+throw(Common::Exception::SocketException) {
+	m_eventHandler.aceRoundEnded(player);
 }
 
 void Engine::informAIStat() const {

@@ -102,8 +102,10 @@ protected:
 	throw(Common::Exception::SocketException);
 	virtual void shuffled() const;
 
-	virtual void aceRoundStarted() const throw(Common::Exception::SocketException);
-	virtual void aceRoundEnded() const throw(Common::Exception::SocketException);
+	virtual void aceRoundStarted(const Player::IPlayer *player) const
+	throw(Common::Exception::SocketException);
+	virtual void aceRoundEnded(const Player::IPlayer *player)
+	const throw(Common::Exception::SocketException);
 
 private:
 	void calcScore(Player::IPlayer *p) const;

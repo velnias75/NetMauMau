@@ -67,9 +67,9 @@ bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 	if(m_aceRound && uncoveredCard && (!m_aceRoundPlayer || m_aceRoundPlayer == player) &&
 			playedCard->getRank() == NetMauMau::Common::ICard::ACE) {
 		if((m_aceRoundPlayer = player->getAceRoundChoice() ? player : 0L)) {
-			m_arl->aceRoundStarted();
+			m_arl->aceRoundStarted(player);
 		} else {
-			m_arl->aceRoundEnded();
+			m_arl->aceRoundEnded(player);
 		}
 	}
 

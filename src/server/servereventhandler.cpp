@@ -301,12 +301,14 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 }
 
-void EventHandler::aceRoundStarted() throw(NetMauMau::Common::Exception::SocketException) {
-	m_connection << "ACEROUNDSTARTED";
+void EventHandler::aceRoundStarted(const NetMauMau::Player::IPlayer *player)
+throw(NetMauMau::Common::Exception::SocketException) {
+	m_connection << "ACEROUNDSTARTED" << player->getName();
 }
 
-void EventHandler::aceRoundEnded() throw(NetMauMau::Common::Exception::SocketException) {
-	m_connection << "ACEROUNDENDED";
+void EventHandler::aceRoundEnded(const NetMauMau::Player::IPlayer *player)
+throw(NetMauMau::Common::Exception::SocketException) {
+	m_connection << "ACEROUNDENDED" << player->getName();
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

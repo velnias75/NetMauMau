@@ -82,8 +82,10 @@ public:
 	virtual void nextPlayer(const Player::IPlayer *player) const
 	throw(Common::Exception::SocketException) _CONST;
 
-	virtual void aceRoundStarted() throw(Common::Exception::SocketException) _CONST;
-	virtual void aceRoundEnded() throw(Common::Exception::SocketException) _CONST;
+	virtual void aceRoundStarted(const Player::IPlayer *player)
+	throw(Common::Exception::SocketException) _CONST;
+	virtual void aceRoundEnded(const Player::IPlayer *player)
+	throw(Common::Exception::SocketException) _CONST;
 };
 
 }

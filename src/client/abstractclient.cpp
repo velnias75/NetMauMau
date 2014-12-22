@@ -215,9 +215,11 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		if(!m_disconnectNow && msg == "ACEROUND") {
 			m_connection << (getAceRoundChoice() ? "TRUE" : "FALSE");
 		} else if(!m_disconnectNow && msg == "ACEROUNDSTARTED") {
-			aceRoundStarted();
+			m_connection >> msg;
+			aceRoundStarted(msg);
 		} else if(!m_disconnectNow && msg == "ACEROUNDENDED") {
-			aceRoundEnded();
+			m_connection >> msg;
+			aceRoundEnded(msg);
 		} else {
 			return NOT_UNDERSTOOD;
 		}

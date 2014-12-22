@@ -71,18 +71,21 @@ protected:
 
 	virtual void shuffleCards();
 
+	bool isAceRoundAllowed() const;
+
 private:
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-	struct _hasEightPath : std::unary_function<Common::ICard *, bool> {
+	struct _hasRankPath : std::unary_function<Common::ICard *, bool> {
 
-		_hasEightPath(const CARDS &c) : mCards(c) {}
+		_hasRankPath(const CARDS &c, NetMauMau::Common::ICard::RANK r) : mCards(c), rank(r) {}
 
 		bool operator()(const Common::ICard *c) const;
 
 	private:
 		const CARDS &mCards;
+		const NetMauMau::Common::ICard::RANK rank;
 	};
 #pragma GCC diagnostic pop
 
@@ -103,8 +106,8 @@ private:
 
 	Common::ICard::SUIT getMaxPlayedOffSuit(CARDS::difference_type *count = 0L) const;
 
-	static Common::ICard *hasEightPath(const NetMauMau::Common::ICard *uc, Common::ICard::SUIT s,
-									   const CARDS &cards);
+	static Common::ICard *hasRankPath(const NetMauMau::Common::ICard *uc, Common::ICard::SUIT s,
+									  NetMauMau::Common::ICard::RANK r, const CARDS &cards);
 
 	Common::ICard *findBestCard(const Common::ICard *uc, const Common::ICard::SUIT *js,
 								bool noJack) const;

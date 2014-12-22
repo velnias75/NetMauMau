@@ -1,6 +1,6 @@
 diff -uNr netmaumau-0.7.orig/configure.ac netmaumau-0.7/configure.ac
---- netmaumau-0.7.orig/configure.ac	2014-12-20 11:29:51.000000000 +0100
-+++ netmaumau-0.7/configure.ac	2014-12-20 18:26:29.934315073 +0100
+--- netmaumau-0.7.orig/configure.ac	2014-12-22 08:22:51.000000000 +0100
++++ netmaumau-0.7/configure.ac	2014-12-22 08:43:06.121412832 +0100
 @@ -7,7 +7,7 @@
  AM_INIT_AUTOMAKE([foreign])
  AM_MAINTAINER_MODE
@@ -20,20 +20,20 @@ diff -uNr netmaumau-0.7.orig/configure.ac netmaumau-0.7/configure.ac
  AC_DEFINE_UNQUOTED([SERVER_VERSION_MAJOR], [${SERVER_VERSION_MAJOR}], [server version major])
  AC_DEFINE_UNQUOTED([SERVER_VERSION_MINOR], [${SERVER_VERSION_MINOR}], [server version minor])
 diff -uNr netmaumau-0.7.orig/src/client/Makefile.am netmaumau-0.7/src/client/Makefile.am
---- netmaumau-0.7.orig/src/client/Makefile.am	2014-12-20 17:29:42.000000000 +0100
-+++ netmaumau-0.7/src/client/Makefile.am	2014-12-20 18:26:29.934315073 +0100
+--- netmaumau-0.7.orig/src/client/Makefile.am	2014-12-22 08:22:51.000000000 +0100
++++ netmaumau-0.7/src/client/Makefile.am	2014-12-22 08:43:06.131411132 +0100
 @@ -14,7 +14,7 @@
  	interceptederrorexception.cpp timeoutexception.cpp shutdownexception.cpp \
  	playerlistexception.cpp capabilitiesexception.cpp protocolerrorexception.cpp \
  	connectionrejectedexception.cpp versionmismatchexception.cpp nonetmaumauserverexception.cpp
 -libnetmaumauclient_la_LDFLAGS = -nodefaultlibs -nostartfiles -no-undefined \
 +libnetmaumauclient_la_LDFLAGS = -static-libgcc -static-libstdc++ -no-undefined \
- 	-version-info 1:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
+ 	-version-info 2:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
  libnetmaumauclient_la_LIBADD = libnetmaumauclient_private.la ../common/libnetmaumaucommon.la
  
 diff -uNr netmaumau-0.7.orig/src/common/Makefile.am netmaumau-0.7/src/common/Makefile.am
---- netmaumau-0.7.orig/src/common/Makefile.am	2014-12-20 17:29:42.000000000 +0100
-+++ netmaumau-0.7/src/common/Makefile.am	2014-12-20 18:58:06.696662006 +0100
+--- netmaumau-0.7.orig/src/common/Makefile.am	2014-12-22 08:22:51.000000000 +0100
++++ netmaumau-0.7/src/common/Makefile.am	2014-12-22 08:43:06.131411132 +0100
 @@ -11,15 +11,16 @@
  endif
  
@@ -56,7 +56,7 @@ diff -uNr netmaumau-0.7.orig/src/common/Makefile.am netmaumau-0.7/src/common/Mak
  	-version-info 0:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
 diff -uNr netmaumau-0.7.orig/src/server/Makefile.am netmaumau-0.7/src/server/Makefile.am
 --- netmaumau-0.7.orig/src/server/Makefile.am	2014-12-18 15:57:05.000000000 +0100
-+++ netmaumau-0.7/src/server/Makefile.am	2014-12-20 18:26:29.934315073 +0100
++++ netmaumau-0.7/src/server/Makefile.am	2014-12-22 08:43:06.131411132 +0100
 @@ -31,6 +31,7 @@
  
  nmm_server_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
@@ -67,7 +67,7 @@ diff -uNr netmaumau-0.7.orig/src/server/Makefile.am netmaumau-0.7/src/server/Mak
  nmm_server_LDADD = ../common/libnetmaumaucommon.la ../engine/libengine.la $(POPT_LIBS)
 diff -uNr netmaumau-0.7.orig/src/test/Makefile.am netmaumau-0.7/src/test/Makefile.am
 --- netmaumau-0.7.orig/src/test/Makefile.am	2014-12-18 15:57:05.000000000 +0100
-+++ netmaumau-0.7/src/test/Makefile.am	2014-12-20 18:26:29.944300319 +0100
++++ netmaumau-0.7/src/test/Makefile.am	2014-12-22 08:43:06.131411132 +0100
 @@ -24,15 +24,15 @@
  test_netmaumau_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
  	-I$(top_srcdir)/src/engine

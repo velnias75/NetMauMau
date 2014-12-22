@@ -195,9 +195,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 bool Player::getAceRoundChoice() const throw(NetMauMau::Common::Exception::SocketException) {
 
-	if(std::count_if(getPlayerCards().begin(), getPlayerCards().end(),
-					 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-								  NetMauMau::Common::ICard::ACE)) > 1) {
+	if(isAceRoundAllowed()) {
 		try {
 			m_connection.write(m_sockfd, "ACEROUND");
 			return m_connection.read(m_sockfd) == "TRUE";

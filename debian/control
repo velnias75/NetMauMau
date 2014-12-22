@@ -24,18 +24,18 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Server for the popular card game Mau Mau - common library
  Several players can connect and play against each other.
 
-Package: libnetmaumauclient1
+Package: libnetmaumauclient2
 Architecture: any
 Section: libs
 Depends: libnetmaumaucommon0 (>= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-Replaces: libnetmaumauclient0
+Replaces: libnetmaumauclient0, libnetmaumauclient1
 Description: Server for the popular card game Mau Mau - client library
  Several players can connect and play against each other.
 
 Package: netmaumau-dev
 Architecture: any
 Section: devel
-Depends: libnetmaumaucommon0 (= ${binary:Version}), libnetmaumauclient1 (= ${binary:Version}), 
+Depends: libnetmaumaucommon0 (= ${binary:Version}), libnetmaumauclient2 (= ${binary:Version}), 
  ${misc:Depends}
 Description: Server for the popular card game Mau Mau - developer files
  Several players can connect and play against each other.
@@ -44,6 +44,6 @@ Package: netmaumau-dbg
 Architecture: any
 Section: debug
 Depends: netmaumau-server (= ${binary:Version}), libnetmaumaucommon0 (= ${binary:Version}), 
- libnetmaumauclient1 (= ${binary:Version}), ${misc:Depends}
+ libnetmaumauclient2 (= ${binary:Version}), ${misc:Depends}
 Description: Server for the popular card game Mau Mau - debugger symbols
  Several players can connect and play against each other.

@@ -133,10 +133,10 @@ the first player.
 
 * **Ace** (11 points)
 
-   if the **Ace rounds** are enabled (--ace-round|-a), a player can, if he has 
-   two or more *Aces*, start an **Ace round**. Within the **Ace round** other 
-   players can only play out *Aces* or have to suspend and take a card. The 
-   player can stop the **Ace round** at any time. The **Ace round** is also
+   if the **Ace rounds** are enabled (`--ace-round|-a`), a player can, if he
+   has two or more *Aces*, start an **Ace round**. Within the **Ace round** 
+   other players can only play out *Aces* or have to suspend and take a card. 
+   The player can stop the **Ace round** at any time. The **Ace round** is also
    stopped if the player plays the last *Ace*
 
 * **Jack** (20 points)

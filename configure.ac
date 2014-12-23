@@ -10,6 +10,7 @@ AC_CONFIG_HEADERS([config.h])
 LT_INIT
 LT_LANG([Windows Resource])
 
+AC_SUBST([BUILD_YEAR], [`date +%Y`])
 AC_DEFINE_UNQUOTED([BUILD_DATE], [`date +%s`], [the build date in Unix time])
 AC_DEFINE_UNQUOTED([BUILD_NODE], ["`uname -n`"], [the build node])
 AC_DEFINE_UNQUOTED([BUILD_HOST], ["$build_cpu-$build_vendor-$build_os"], [the build host])
@@ -38,6 +39,10 @@ AC_ARG_ENABLE([apidoc], [AS_HELP_STRING([--disable-apidoc], [disables generation
 AC_ARG_ENABLE([ai-name], [AS_HELP_STRING([--enable-ai-name], [default name of AI player])],
   [ AC_DEFINE_UNQUOTED([AI_NAME], ["$enable_ai_name"], [default name of AI player])],
   [ AC_DEFINE([AI_NAME], ["Computer"], [default name of AI player])])
+
+AC_ARG_ENABLE([ai-image], [AS_HELP_STRING([--enable-ai-image], [path to image of AI player])],
+  [ AC_SUBST([AI_IMAGE], [$enable_ai_image])],
+  [ AC_SUBST([AI_IMAGE], [\$\(top_srcdir\)/src/server/Tuyul.PNG])])
 
 AC_ARG_ENABLE([pidfile], [AS_HELP_STRING([--enable-pidfile], [enables creation of pid file])],
   [ AM_CONDITIONAL([PIDFILE], [ test x$enable_pidfile = xyes ]) ],

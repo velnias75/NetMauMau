@@ -31,7 +31,7 @@ include /usr/share/cdbs/1/rules/autoreconf.mk
 
 # Add here any variable or target overrides you need.
 
-DEB_CONFIGURE_EXTRA_FLAGS = --bindir=\$${prefix}/games --enable-cli-client
+DEB_CONFIGURE_EXTRA_FLAGS = --bindir=\$${prefix}/games --enable-cli-client --enable-ai-image=/usr/share/pixmaps/debian-logo.png
 DEB_MAKE_CHECK_TARGET = check
 INT_INSTALL_TARGET = install-strip
 DEB_DH_BUILDDEB_ARGS_DEFAULT := -- -z9 -Zxz

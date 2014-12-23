@@ -44,15 +44,15 @@ nmm_server_LDADD += netmaumau.rc.lo
 endif
 
 .DELETE_ON_ERROR:
-ai-icon.h: Tuyul.PNG
-	base64 -w0 $< | $(SHELL) $(srcdir)/create_ai_icon.sh 'ai_icon_data' > $@
+ai-icon.h: $(AI_IMAGE)
+	base64 -w0 $< | $(SHELL) $(srcdir)/create_ai_icon.sh 'ai_icon_data' > $(builddir)/$(@F)
 
 %.rc.lo: %.rc
 	$(LIBTOOL) --tag=RC --mode=compile $(RC) $< -o $@
 
 if GENMAN
 export HELP2MAN_OUTPUT := 1
-$(bin_PROGRAMS).1: $(bin_PROGRAMS)
+$(bin_PROGRAMS).1: $(bin_PROGRAMS) $(top_builddir)/netmaumau.h2m
 	$(HELP2MAN) -l --no-discard-stderr -N -n"Server for the popular card game Mau Mau" \
 		-i $(top_builddir)/netmaumau.h2m -S "$(PACKAGE_STRING)" \
 		$(builddir)/$(bin_PROGRAMS) > $@

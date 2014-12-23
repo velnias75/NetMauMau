@@ -2,7 +2,7 @@ Source: netmaumau
 Section: games
 Priority: extra
 Maintainer: Heiko Schäfer <heiko@rangun.de>
-Build-Depends: cdbs, debhelper (>= 9), dh-autoreconf, autotools-dev, pkg-config, 
+Build-Depends: cdbs, debhelper (>= 9), dh-autoreconf, autotools-dev, pkg-config, debconf,
  libpopt-dev (>= 1.10), doxygen (>= 1.8.0), graphviz, automake1.11, help2man, vim-common,
  libmagic-dev, libgsl0-dev
 Standards-Version: 3.9.4

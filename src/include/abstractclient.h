@@ -52,21 +52,7 @@ namespace NetMauMau {
 namespace Client {
 
 /**
- * @brief Main client interface to communicate with the server
- *
- * In your client subclass @c AbstractClient and implement all pure virtual methods. In the
- * constructor @c AbstractClient() you can setup the connection.\n
- * To actually join the game you need to call @c play(). The pure virtual functions are
- * translated events and requests of the server, which your client has to handle accordingly.\n
- * If you just want to query the player list, you can call @c playerList() and to get the
- * servers capabilities you can call @c capabilities()
- *
- * A complete proof of concept client can be obtained via git:
- * `git clone https://github.com/velnias75/NetMauMau-Qt-Client.git`
- *
- * @note All data is transferred as UTF-8 encoded byte strings
- * @note Starting with version 0.6 and with *libmagic* enabled, the server checks if the player
- * images are really in the PNG format
+ * @brief %Client interface to communicate with the server
  */
 class _EXPORT AbstractClientV05 : protected IPlayerPicListener {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV05)
@@ -137,7 +123,7 @@ public:
 	 * @throw Client::Exception::CapabilitiesException if the capabilities cannot get retrieved
 	 * @throw Client::Exception::TimeoutException if the connection attempt timed out
 	 *
-	 * @return CAPABILITIES the server capabilities
+	 * @return the server capabilities
 	 */
 	CAPABILITIES capabilities(timeval *timeout = NULL)
 	throw(NetMauMau::Common::Exception::SocketException);
@@ -155,8 +141,7 @@ public:
 	 * @throw Client::Exception::PlayerlistException if the player list cannot get retrieved
 	 * @throw Client::Exception::TimeoutException if the connection attempt timed out
 	 *
-	 * @return NetMauMau::Client::AbstractClient::PLAYERLIST
-	 * the list of currently registered player names
+	 * @return the list of currently registered player names
 	 *
 	 * @since 0.4
 	 */
@@ -181,7 +166,7 @@ public:
 	 * uint16_t minor = static_cast<uint16_t>(AbstractClient::getClientProtocolVersion());
 	 * @endcode
 	 *
-	 * @return uint32_t the protocol version
+	 * @return the protocol version
 	 */
 	static uint32_t getClientProtocolVersion() _CONST;
 
@@ -203,7 +188,7 @@ public:
 	 *
 	 * @param pngData the image data
 	 * @param pngDataLen length of the image data
-	 * @return bool @true if the file will most probably accepted by the server, @c false otherwise
+	 * @return @c true if the file will most probably accepted by the server, @c false otherwise
 	 *
 	 * @since 0.5
 	 */
@@ -212,14 +197,14 @@ public:
 	/**
 	 * @brief Gets the default port of the server
 	 *
-	 * @return uint16_t the default port of the server
+	 * @return the default port of the server
 	 */
 	static uint16_t getDefaultPort() _CONST;
 
 	/**
 	 * @brief Gets the player's name
 	 *
-	 * @return std::string the player's name
+	 * @return the player's name
 	 */
 	std::string getPlayerName() const;
 
@@ -280,16 +265,15 @@ protected:
 	 * @see Common::getIllegalCard
 	 *
 	 * @param cards playable cards, which will get accepted by the server
-	 * @return NetMauMau::Common::ICard* the card the player wants to play
-	 * or @c NULL if the player cannot play a card and/or suspends the turn or
-	 * the <em>illegal card</em>
+	 * @return the card the player wants to play or @c NULL if the player cannot play a
+	 * card and/or suspends the turn or the <em>illegal card</em>
 	 */
 	virtual Common::ICard *playCard(const CARDS &cards) const = 0;
 
 	/**
 	 * @brief Gets the current Jack suit
 	 *
-	 * @return NetMauMau::Common::ICard::SUIT the current Jack suit
+	 * @return the current Jack suit
 	 */
 	virtual Common::ICard::SUIT getJackSuitChoice() const = 0;
 
@@ -556,16 +540,73 @@ private:
 	bool m_disconnectNow;
 };
 
+/**
+ * @brief %Client interface to communicate with the server
+ *
+ * @since 0.7
+ */
 class _EXPORT AbstractClientV07 : public AbstractClientV05 {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV07)
 protected:
+
+	/**
+	 * @brief Creates an @c AbstractClientV07 instance
+	 *
+	 * @copydetails AbstractClientV05(const std::string &, const std::string &, uint16_t)
+	 */
 	AbstractClientV07(const std::string &player, const std::string &server, uint16_t port);
+
+	/**
+	 * @brief Creates an @c AbstractClientV07 instance
+	 *
+	 * @copydetails AbstractClientV05(const std::string &, const unsigned char *,
+	 *				  std::size_t, const std::string &, uint16_t)
+	 */
 	AbstractClientV07(const std::string &player, const unsigned char *pngData,
 					  std::size_t pngDataLen, const std::string &server, uint16_t port);
 
+	/**
+	 * @name Server requests
+	 *
+	 * This requests require a %client of at least version 0.7
+	 *
+	 * @{
+	 */
+
+	/**
+	 * @brief Gets the choice if an ace round should be started
+	 * @return @c true to start an ace round, @c false otherwise
+	 * @since 0.7
+	 */
 	virtual bool getAceRoundChoice() const = 0;
+
+	/// @}
+
+	/**
+	 * @name Server events
+	 *
+	 * This events require a %client of at least version 0.7
+	 *
+	 * @{
+	 */
+
+	/**
+	 * @brief An ace round was started by a player
+	 *
+	 * @param player the player starting the ace round
+	 * @since 0.7
+	 */
 	virtual void aceRoundStarted(const std::string &player) const = 0;
+
+	/**
+	 * @brief An ace round was ended by a player
+	 *
+	 * @param player the player ending the ace round
+	 * @since 0.7
+	 */
 	virtual void aceRoundEnded(const std::string &player) const = 0;
+
+	/// @}
 
 private:
 	using AbstractClientV05::playInternal;
@@ -575,6 +616,26 @@ private:
 	throw(NetMauMau::Common::Exception::SocketException);
 };
 
+/**
+ * @brief Alias to the current client interface to communicate with the server
+ *
+ * In your client subclass @c AbstractClient and implement all pure virtual methods. In the
+ * constructor @c AbstractClient you can setup the connection.\n
+ * To actually join the game you need to call @c play(). The pure virtual functions are
+ * translated events and requests of the server, which your client has to handle accordingly.\n
+ * If you just want to query the player list, you can call @c playerList() and to get the
+ * servers capabilities you can call @c capabilities()
+ *
+ * A complete proof of concept client can be obtained via git:
+ * `git clone https://github.com/velnias75/NetMauMau-Qt-Client.git`
+ *
+ * @note All data is transferred as UTF-8 encoded byte strings
+ * @note Starting with version 0.6 and with *libmagic* enabled, the server checks if the player
+ * images are really in the PNG format
+ *
+ * @see AbstractClientV07
+ *
+ */
 typedef AbstractClientV07 AbstractClient;
 
 }

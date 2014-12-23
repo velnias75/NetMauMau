@@ -49,7 +49,7 @@ namespace Common {
 /**
  * @brief Get an array of the four @c SUIT symbols
  *
- * @return const std::string* the four @c SUIT symbols
+ * @return the four @c SUIT symbols
  */
 _EXPORT const std::string *getSuitSymbols() _CONST;
 
@@ -57,7 +57,7 @@ _EXPORT const std::string *getSuitSymbols() _CONST;
  * @brief Converts a @c SUIT symbol to a ANSI color representation
  *
  * @param suit the @c SUIT symbol
- * @return std::string a @c SUIT symbol in ANSI color representation
+ * @return a @c SUIT symbol in ANSI color representation
  */
 _EXPORT std::string ansiSuit(const std::string &suit);
 
@@ -65,7 +65,7 @@ _EXPORT std::string ansiSuit(const std::string &suit);
  * @brief Converts a symbol to a NetMauMau::Common::ICard::SUIT
  *
  * @param symbol the symbol
- * @return NetMauMau::Common::ICard::SUIT the @c SUIT
+ * @return the @c SUIT
  */
 _EXPORT NetMauMau::Common::ICard::SUIT symbolToSuit(const std::string &symbol);
 
@@ -75,7 +75,7 @@ _EXPORT NetMauMau::Common::ICard::SUIT symbolToSuit(const std::string &symbol);
  * @param suit the @c SUIT to convert
  * @param ansi if @c true create a ANSI color representation
  * @param endansi if @c false (default) don't end the ANSI color codes
- * @return std::string the @c SUIT symbol
+ * @return the @c SUIT symbol
  */
 _EXPORT std::string suitToSymbol(NetMauMau::Common::ICard::SUIT suit, bool ansi,
 								 bool endansi = false);
@@ -96,7 +96,7 @@ _EXPORT std::string suitToSymbol(NetMauMau::Common::ICard::SUIT suit, bool ansi,
  * @param[in] desc the textual description of the card
  * @param[out] suit pointer to store the resulting @c SUIT
  * @param[out] rank pointer to store the resulting @c RANK
- * @return bool @c true if the parsing was successful, @c false otherwise
+ * @return @c true if the parsing was successful, @c false otherwise
  */
 _EXPORT _NOUNUSED bool parseCardDesc(const std::string &desc, NetMauMau::Common::ICard::SUIT *suit,
 									 NetMauMau::Common::ICard::RANK *rank) _NONNULL(2, 3);
@@ -107,7 +107,7 @@ _EXPORT _NOUNUSED bool parseCardDesc(const std::string &desc, NetMauMau::Common:
  * @param suite the @c SUIT
  * @param rank the @c RANK
  * @param ansi if @c true create a ANSI color representation
- * @return std::string the card description
+ * @return the card description
  */
 _EXPORT std::string createCardDesc(NetMauMau::Common::ICard::SUIT suite,
 								   NetMauMau::Common::ICard::RANK rank, bool ansi);
@@ -126,7 +126,7 @@ _EXPORT std::string createCardDesc(NetMauMau::Common::ICard::SUIT suite,
  * See here: http://i-p-c-s.org/faq/suit-ranking.php
  *
  * @param suit the @c SUIT to get the ordinal for
- * @return unsigned int ordinal number for a @c SUIT
+ * @return ordinal number for a @c SUIT
  */
 _EXPORT unsigned int suitOrderPosition(NetMauMau::Common::ICard::SUIT suit) _CONST;
 
@@ -134,7 +134,7 @@ _EXPORT unsigned int suitOrderPosition(NetMauMau::Common::ICard::SUIT suit) _CON
  * @brief Gets an ordinal number for a @c RANK
  *
  * @param rank the @c RANK to get the ordinal for
- * @return unsigned int ordinal number for a @c RANK
+ * @return ordinal number for a @c RANK
  */
 _EXPORT unsigned int rankOrderPosition(NetMauMau::Common::ICard::RANK rank) _CONST;
 
@@ -144,7 +144,7 @@ _EXPORT unsigned int rankOrderPosition(NetMauMau::Common::ICard::RANK rank) _CON
  * @param x a card
  * @param y a card
  *
- * @return bool @c true if the cards are equal, @c false otherwise
+ * @return @c true if the cards are equal, @c false otherwise
  */
 _EXPORT bool cardEqual(const NetMauMau::Common::ICard *x, const NetMauMau::Common::ICard *y);
 
@@ -156,7 +156,7 @@ _EXPORT bool cardEqual(const NetMauMau::Common::ICard *x, const NetMauMau::Commo
  * @param x a card
  * @param y a card
  *
- * @return bool @c true if @c x comes before @c y, @c false otherwise
+ * @return @c true if @c x comes before @c y, @c false otherwise
  */
 _EXPORT bool cardLess(const NetMauMau::Common::ICard *x, const NetMauMau::Common::ICard *y);
 
@@ -168,7 +168,7 @@ _EXPORT bool cardLess(const NetMauMau::Common::ICard *x, const NetMauMau::Common
  * @param x a card
  * @param y a card
  *
- * @return bool @c true if @c x comes before @c y, @c false otherwise
+ * @return @c true if @c x comes before @c y, @c false otherwise
  *
  * @since 0.3
  */
@@ -187,7 +187,7 @@ _EXPORT bool cardGreater(const NetMauMau::Common::ICard *x, const NetMauMau::Com
  * @param card the card to check
  * @param suit the @c SUIT to check for
  *
- * @return bool @c true if the card is of @c SUIT
+ * @return @c true if the card is of @c SUIT
  */
 _EXPORT bool isSuit(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::SUIT suit);
 
@@ -197,7 +197,7 @@ _EXPORT bool isSuit(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICa
  * @param card the card to check
  * @param rank the @c RANK to check for
  *
- * @return bool @c true if the card is of @c RANK
+ * @return @c true if the card is of @c RANK
  */
 _EXPORT bool isRank(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::RANK rank);
 
@@ -209,7 +209,7 @@ _EXPORT bool isRank(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICa
  * @param suit the @c SUIT to find
  * @param first iterator to the first card
  * @param last iterator to the last card
- * @return NetMauMau::Common::ICard* the card if found @c 0L otherwise
+ * @return the card if found @c 0L otherwise
  */
 template<typename Iterator>
 typename Iterator::value_type findSuit(NetMauMau::Common::ICard::SUIT suit, Iterator first,
@@ -270,7 +270,7 @@ typename Iterator::value_type findCard(typename Iterator::value_type card, Itera
  *
  * @see NetMauMau::Client::AbstractClient::playCard()
  *
- * @return NetMauMau::Common::ICard* an <em>illegal card</em> card
+ * @return an <em>illegal card</em> card
  */
 _EXPORT NetMauMau::Common::ICard *getIllegalCard() _CONST;
 
@@ -287,11 +287,11 @@ _EXPORT NetMauMau::Common::ICard *getIllegalCard() _CONST;
  * King    | 6
  * Ace     | 11
  * Jack    | 20
- * 
+ *
  * @see Common::ICard::getPoints
  *
  * @param rank the @c RANK
- * @return std::size_t the points of a @c RANK
+ * @return the points of a @c RANK
  */
 _EXPORT std::size_t getCardPoints(NetMauMau::Common::ICard::RANK rank) _CONST;
 
@@ -300,7 +300,7 @@ _EXPORT std::size_t getCardPoints(NetMauMau::Common::ICard::RANK rank) _CONST;
  *
  * @note on non-Windows systems it returns the full path to the executable
  *
- * @return const char* the executable name of the server
+ * @return the executable name of the server
  */
 _EXPORT const char *getServerExe() _PURE;
 

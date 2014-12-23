@@ -52,14 +52,14 @@ public:
 	/**
 	 * @brief Gets the server version
 	 *
-	 * @return uint32_t the server version
+	 * @return the server version
 	 */
 	uint32_t getServerVersion() const throw() _PURE;
 
 	/**
 	 * @brief Gets the client version
 	 *
-	 * @return uint32_t the client version
+	 * @return the client version
 	 */
 	uint32_t getClientVersion() const throw() _PURE;
 

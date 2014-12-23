@@ -1,6 +1,6 @@
 diff -uNr netmaumau-0.7.orig/configure.ac netmaumau-0.7/configure.ac
---- netmaumau-0.7.orig/configure.ac	2014-12-22 08:22:51.000000000 +0100
-+++ netmaumau-0.7/configure.ac	2014-12-22 08:43:06.121412832 +0100
+--- netmaumau-0.7.orig/configure.ac	2014-12-23 13:49:25.000000000 +0100
++++ netmaumau-0.7/configure.ac	2014-12-23 13:58:25.191315986 +0100
 @@ -7,7 +7,7 @@
  AM_INIT_AUTOMAKE([foreign])
  AM_MAINTAINER_MODE
@@ -10,7 +10,7 @@ diff -uNr netmaumau-0.7.orig/configure.ac netmaumau-0.7/configure.ac
  LT_LANG([Windows Resource])
  
  AC_DEFINE_UNQUOTED([BUILD_DATE], [`date +%s`], [the build date in Unix time])
-@@ -115,7 +115,7 @@
+@@ -123,7 +123,7 @@
  AC_SUBST([SERVER_VERSION_MAJOR])
  AC_SUBST([SERVER_VERSION_MINOR])
  
@@ -21,7 +21,7 @@ diff -uNr netmaumau-0.7.orig/configure.ac netmaumau-0.7/configure.ac
  AC_DEFINE_UNQUOTED([SERVER_VERSION_MINOR], [${SERVER_VERSION_MINOR}], [server version minor])
 diff -uNr netmaumau-0.7.orig/src/client/Makefile.am netmaumau-0.7/src/client/Makefile.am
 --- netmaumau-0.7.orig/src/client/Makefile.am	2014-12-22 08:22:51.000000000 +0100
-+++ netmaumau-0.7/src/client/Makefile.am	2014-12-22 08:43:06.131411132 +0100
++++ netmaumau-0.7/src/client/Makefile.am	2014-12-23 13:58:25.191315986 +0100
 @@ -14,7 +14,7 @@
  	interceptederrorexception.cpp timeoutexception.cpp shutdownexception.cpp \
  	playerlistexception.cpp capabilitiesexception.cpp protocolerrorexception.cpp \
@@ -33,7 +33,7 @@ diff -uNr netmaumau-0.7.orig/src/client/Makefile.am netmaumau-0.7/src/client/Mak
  
 diff -uNr netmaumau-0.7.orig/src/common/Makefile.am netmaumau-0.7/src/common/Makefile.am
 --- netmaumau-0.7.orig/src/common/Makefile.am	2014-12-22 08:22:51.000000000 +0100
-+++ netmaumau-0.7/src/common/Makefile.am	2014-12-22 08:43:06.131411132 +0100
++++ netmaumau-0.7/src/common/Makefile.am	2014-12-23 13:58:25.201317819 +0100
 @@ -11,15 +11,16 @@
  endif
  
@@ -55,9 +55,9 @@ diff -uNr netmaumau-0.7.orig/src/common/Makefile.am netmaumau-0.7/src/common/Mak
 +libnetmaumaucommon_la_LDFLAGS = -static-libgcc -static-libstd++ -no-undefined \
  	-version-info 0:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
 diff -uNr netmaumau-0.7.orig/src/server/Makefile.am netmaumau-0.7/src/server/Makefile.am
---- netmaumau-0.7.orig/src/server/Makefile.am	2014-12-18 15:57:05.000000000 +0100
-+++ netmaumau-0.7/src/server/Makefile.am	2014-12-22 08:43:06.131411132 +0100
-@@ -31,6 +31,7 @@
+--- netmaumau-0.7.orig/src/server/Makefile.am	2014-12-23 07:43:05.000000000 +0100
++++ netmaumau-0.7/src/server/Makefile.am	2014-12-23 13:58:25.201317819 +0100
+@@ -35,6 +35,7 @@
  
  nmm_server_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
  	-I$(top_srcdir)/src/engine $(POPT_CFLAGS)
@@ -66,23 +66,14 @@ diff -uNr netmaumau-0.7.orig/src/server/Makefile.am netmaumau-0.7/src/server/Mak
  	game.cpp serverplayerexception.cpp
  nmm_server_LDADD = ../common/libnetmaumaucommon.la ../engine/libengine.la $(POPT_LIBS)
 diff -uNr netmaumau-0.7.orig/src/test/Makefile.am netmaumau-0.7/src/test/Makefile.am
---- netmaumau-0.7.orig/src/test/Makefile.am	2014-12-18 15:57:05.000000000 +0100
-+++ netmaumau-0.7/src/test/Makefile.am	2014-12-22 08:43:06.131411132 +0100
-@@ -24,15 +24,15 @@
- test_netmaumau_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
+--- netmaumau-0.7.orig/src/test/Makefile.am	2014-12-23 13:49:24.000000000 +0100
++++ netmaumau-0.7/src/test/Makefile.am	2014-12-23 13:59:45.995588424 +0100
+@@ -25,7 +25,7 @@
  	-I$(top_srcdir)/src/engine
  test_netmaumau_SOURCES = test_netmaumau.cpp testeventhandler.cpp
-+test_netmaumau_LDFLAGS = -all-static
  test_netmaumau_LDADD = ../common/libnetmaumaucommon.la ../engine/libengine.la
 -test_netmaumau_LDFLAGS = -no-install
++test_netmaumau_LDFLAGS = -all-static
  
- if ENABLE_CLIENT
- test_client_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
- 	-I$(top_srcdir)/src/client $(POPT_CFLAGS)
- test_client_SOURCES = test_client.cpp testclient.cpp
-+test_client_LDFLAGS = -all-static
- test_client_LDADD = ../client/libnetmaumauclient.la ../common/libnetmaumaucommon.la $(POPT_LIBS)
--test_client_LDFLAGS = -no-install
- endif
- 
- .DELETE_ON_ERROR:
+ if ENABLE_CLI_CLIENT
+ nmm_client_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \

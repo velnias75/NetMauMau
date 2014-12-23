@@ -14,7 +14,7 @@ else
 GSL=
 endif
 
-MAINTAINERCLEANFILES = ai-icon.h
+MAINTAINERCLEANFILES = ai-icon.h $(bin_PROGRAMS).1
 
 DISTCLEANFILES = $(man1_MANS)
 
@@ -27,6 +27,10 @@ nmm_server_CPPFLAGS = $(GSL)
 
 if PIDFILE
 nmm_server_CPPFLAGS += -DPIDFILE="\"$(localstatedir)/run/$(PACKAGE).pid\""
+endif
+
+if !GENMAN
+nmm_server_CPPFLAGS += -DNOH2M
 endif
 
 nmm_server_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
@@ -47,8 +51,9 @@ ai-icon.h: Tuyul.PNG
 	$(LIBTOOL) --tag=RC --mode=compile $(RC) $< -o $@
 
 if GENMAN
+export HELP2MAN_OUTPUT := 1
 $(bin_PROGRAMS).1: $(bin_PROGRAMS)
 	$(HELP2MAN) -l --no-discard-stderr -N -n"Server for the popular card game Mau Mau" \
-		-Len_US.utf8 \
-		-S "$(PACKAGE_STRING)" $(builddir)/$(bin_PROGRAMS) | sed 's/^Built.*on.*$$//' > $@
+		-i $(top_builddir)/netmaumau.h2m -S "$(PACKAGE_STRING)" \
+		$(builddir)/$(bin_PROGRAMS) > $@
 endif

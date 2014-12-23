@@ -157,4 +157,18 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			  << (m_isatty ? BOLD_OFF : "") << std::endl;
 }
 
+void TestEventHandler::aceRoundStarted(const NetMauMau::Player::IPlayer *player)
+throw(NetMauMau::Common::Exception::SocketException) {
+	std::cerr << PLAYER << (m_isatty ? BOLD_ON : "") << "started" << (m_isatty ? BOLD_OFF : "")
+			  << " an " << (m_isatty ? BLUE_ON : "") << "Ace round" << (m_isatty ? BLUE_OFF : "")
+			  << std::endl;
+}
+
+void TestEventHandler::aceRoundEnded(const NetMauMau::Player::IPlayer *player)
+throw(NetMauMau::Common::Exception::SocketException) {
+	std::cerr << PLAYER << (m_isatty ? BOLD_ON : "") << "ended" << (m_isatty ? BOLD_OFF : "")
+			  << " an " << (m_isatty ? BLUE_ON : "") << "Ace round" << (m_isatty ? BLUE_OFF : "")
+			  << std::endl;
+}
+
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

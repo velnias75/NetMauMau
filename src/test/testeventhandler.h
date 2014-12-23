@@ -62,6 +62,11 @@ public:
 							std::size_t pointFactor) const
 	throw(NetMauMau::Common::Exception::SocketException);
 
+	virtual void aceRoundStarted(const NetMauMau::Player::IPlayer *player)
+	throw(NetMauMau::Common::Exception::SocketException);
+	virtual void aceRoundEnded(const NetMauMau::Player::IPlayer *player)
+	throw(NetMauMau::Common::Exception::SocketException);
+
 private:
 	bool m_isatty;
 };

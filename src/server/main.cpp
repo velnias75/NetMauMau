@@ -310,49 +310,81 @@ int main(int argc, const char **argv) {
 
 		case 'V': {
 
-			logger(PACKAGE_STRING << " " << BUILD_TARGET);
-			logger("");
+#if !(defined(_WIN32) || defined(NOH2M))
 
-			std::ostringstream node;
+			if(!getenv("HELP2MAN_OUTPUT")) {
+#endif
+				logger(PACKAGE_STRING << " " << BUILD_TARGET);
+				logger("");
 
-			if(std::string("(none)") != BUILD_NODE) {
-				node << " on " << BUILD_NODE;
-			} else {
-				node << "";
-			}
+				std::ostringstream node;
 
-			std::ostringstream cppversion;
+				if(std::string("(none)") != BUILD_NODE) {
+					node << " on " << BUILD_NODE;
+				} else {
+					node << "";
+				}
+
+				std::ostringstream cppversion;
 #if defined(__GNUC__) && defined(__VERSION__)
-			cppversion << " with g++ " << __VERSION__;
+				cppversion << " with g++ " << __VERSION__;
 #else
-			cppversion << "";
+				cppversion << "";
 #endif
 
-			char dateOut[1024];
-			std::time_t t = BUILD_DATE;
-			// cppcheck-suppress nonreentrantFunctionslocaltime
-			std::strftime(dateOut, sizeof(dateOut), "%x", std::localtime(&t));
+				char dateOut[1024];
+				std::time_t t = BUILD_DATE;
+				// cppcheck-suppress nonreentrantFunctionslocaltime
+				std::strftime(dateOut, sizeof(dateOut), "%x", std::localtime(&t));
 
-			logger("Built " << dateOut << node.str() << " (" << BUILD_HOST << ")"
-				   << cppversion.str());
+				logger("Built " << dateOut << node.str() << " (" << BUILD_HOST << ")"
+					   << cppversion.str());
 
-			logger("");
-			// cppcheck-suppress nonreentrantFunctionslocaltime
-			std::strftime(dateOut, sizeof(dateOut), "%Y", std::localtime(&t));
-			logger("Copyright " COPY " " << dateOut << " Heiko Sch" AUML "fer <"
-				   << PACKAGE_BUGREPORT << ">");
+				logger("");
+				// cppcheck-suppress nonreentrantFunctionslocaltime
+				std::strftime(dateOut, sizeof(dateOut), "%Y", std::localtime(&t));
+				logger("Copyright " COPY " " << dateOut << " Heiko Sch" AUML "fer <"
+					   << PACKAGE_BUGREPORT << ">");
 
 #ifdef PACKAGE_URL
 
-			if(*PACKAGE_URL) {
+				if(*PACKAGE_URL) {
+					logger("");
+					logger("WWW: " << PACKAGE_URL);
+				}
+
+#endif
 				logger("");
-				logger("WWW: " << PACKAGE_URL);
+				logger("There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A "
+					   "PARTICULAR PURPOSE.");
+
+#if !(defined(_WIN32) || defined(NOH2M))
+			} else {
+
+				char dateOut[1024];
+				std::time_t t = BUILD_DATE;
+				// cppcheck-suppress nonreentrantFunctionslocaltime
+				std::strftime(dateOut, sizeof(dateOut), "%Y", std::localtime(&t));
+
+				logger(PACKAGE_NAME << " - Copyright (c) " << dateOut
+					   << ", Heiko Schaefer <heiko@rangun.de>");
+				logger("");
+				logger(PACKAGE_NAME << " is free software: you can redistribute it and/or modify" \
+					   " it under the terms of the GNU Lesser General Public License as "\
+					   "published by the Free Software Foundation, either version 3 of the "\
+					   "License, or (at your option) any later version.");
+				logger("");
+				logger(PACKAGE_NAME << " is distributed in the hope that it will be useful, but " \
+					   "WITHOUT ANY WARRANTY; without even the implied warranty of " \
+					   "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser" \
+					   " General Public License for more details.");
+				logger("");
+				logger("You should have received a copy of the GNU Lesser General Public "\
+					   "License along with " << PACKAGE_NAME << ".  If not, see "\
+					   "<http://www.gnu.org/licenses/>.");
 			}
 
 #endif
-			logger("");
-			logger("There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A "
-				   "PARTICULAR PURPOSE.");
 		}
 
 		poptFreeContext(pctx);

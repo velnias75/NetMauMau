@@ -1,0 +1,8 @@
+[DESCRIPTION]
+@PACKAGE_NAME@ is a server for the popular card game Mau Mau
+
+[AUTHOR]
+Heiko Schaefer <heiko@rangun.de>
+
+[REPORTING BUGS]
+@PACKAGE_BUGREPORT@

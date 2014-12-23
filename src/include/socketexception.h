@@ -59,14 +59,14 @@ public:
 	/**
 	 * @brief A description of the error
 	 *
-	 * @return const char* the description of the error
+	 * @return the description of the error
 	 */
 	virtual const char *what() const throw() _PURE;
 
 	/**
 	 * @brief The socket on which the error occurred
 	 *
-	 * @return SOCKET the socket
+	 * @return the socket
 	 */
 	SOCKET sockfd() const throw() _PURE;
 

@@ -81,7 +81,7 @@ extern const GSLRNG<std::ptrdiff_t> RNG;
  *
  * @tparam T type of the number
  * @param ubound upper bound
- * @return T the random number
+ * @return the random number
  */
 template<typename T>
 inline T genRandom(T ubound) {

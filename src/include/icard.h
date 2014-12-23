@@ -70,21 +70,21 @@ public:
 	/**
 	 * @brief Gets the suit of the card
 	 *
-	 * @return NetMauMau::Common::ICard::SUIT the suit of the card
+	 * @return the suit of the card
 	 */
 	virtual SUIT getSuit() const = 0;
 
 	/**
 	 * @brief Gets the rank of the card
 	 *
-	 * @return NetMauMau::Common::ICard::RANK the rank of the card
+	 * @return the rank of the card
 	 */
 	virtual RANK getRank() const = 0;
 
 	/**
 	 * @brief Gets the points of the card
 	 * @see Common::getCardPoints
-	 * @return std::size_t the points of the card
+	 * @return the points of the card
 	 */
 	virtual std::size_t getPoints() const = 0;
 
@@ -92,7 +92,7 @@ public:
 	 * @brief Returns the textual description of the card
 	 * @see NetMauMau::Common::parseCardDesc
 	 * @param ansi @c true if ANSI color code should be used, @c false otherwise
-	 * @return std::string the textual description of the card
+	 * @return the textual description of the card
 	 */
 	virtual std::string description(bool ansi = false) const = 0;
 

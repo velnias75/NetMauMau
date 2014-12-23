@@ -27,6 +27,10 @@ AC_ARG_ENABLE([client], [AS_HELP_STRING([--disable-client], [disables build of c
   [ AM_CONDITIONAL([ENABLE_CLIENT], [ test x$enable_client = xyes ]) ],
   [ AM_CONDITIONAL([ENABLE_CLIENT], [ true ]) ])
 
+AC_ARG_ENABLE([cli-client], [AS_HELP_STRING([--enable-cli-client], [enables build of CLI client])],
+  [ AM_CONDITIONAL([ENABLE_CLI_CLIENT], [ test x$enable_cli_client = xyes ]) ],
+  [ AM_CONDITIONAL([ENABLE_CLI_CLIENT], [ false ]) ])
+
 AC_ARG_ENABLE([apidoc], [AS_HELP_STRING([--disable-apidoc], [disables generation of API docs])],
   [ AM_CONDITIONAL([GENDOX], [ test x$enable_apidoc = xyes ]) ],
   [ AM_CONDITIONAL([GENDOX], [ true ]) ])
@@ -67,6 +71,10 @@ if test -z "$ac_cv_prog_RC"; then
   AM_CONDITIONAL([RC], [ false ])
 else
   AM_CONDITIONAL([RC], [ true ])
+fi
+
+if test x$enable_cli_client = xyes; then
+  AM_CONDITIONAL([ENABLE_CLIENT], [ true ])
 fi
 
 # Checks for libraries.
@@ -134,7 +142,7 @@ AC_SUBST([NO_RTTI_FLAGS])
 
 AC_CONFIG_MACRO_DIR([m4])
 
-AC_CONFIG_FILES([src/server/netmaumau.rc doc/client.dox])
+AC_CONFIG_FILES([src/server/netmaumau.rc doc/client.dox netmaumau.h2m])
 
 AC_OUTPUT([Makefile src/include/Makefile src/Makefile src/common/Makefile src/engine/Makefile 
   src/server/Makefile src/client/Makefile src/test/Makefile doc/Makefile])

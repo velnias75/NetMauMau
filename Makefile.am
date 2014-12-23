@@ -4,6 +4,8 @@ ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = COPYING netmaumau.ico
 
+AM_DISTCHECK_CONFIGURE_FLAGS = --disable-client --enable-cli-client --enable-pidfile
+
 if CHECKCPP
 # suppression template: // cppcheck-suppress {id}
 cppcheck:

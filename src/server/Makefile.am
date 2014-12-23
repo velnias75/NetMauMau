@@ -48,7 +48,7 @@ ai-icon.h: Tuyul.PNG
 
 if GENMAN
 $(bin_PROGRAMS).1: $(bin_PROGRAMS)
-	$(HELP2MAN) -l --no-discard-stderr -LC.utf8 -N \
-		-n"Server for the popular card game Mau Mau" \
+	$(HELP2MAN) -l --no-discard-stderr -N -n"Server for the popular card game Mau Mau" \
+		-Len_US.utf8 \
 		-S "$(PACKAGE_STRING)" $(builddir)/$(bin_PROGRAMS) | sed 's/^Built.*on.*$$//' > $@
 endif

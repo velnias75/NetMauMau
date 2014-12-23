@@ -151,7 +151,13 @@ NetMauMau::Common::ICard::SUIT TestClient::getJackSuitChoice() const {
 }
 
 bool TestClient::getAceRoundChoice() const {
-	return false;
+
+	std::cout << "Do you want to start/continue an ace round? (y/n) ";
+
+	std::string acr;
+	std::cin >> acr;
+
+	return acr[0] == 'Y' || acr[0] == 'y';
 }
 
 void TestClient::playerJoined(const std::string &player, const unsigned char *,
@@ -247,8 +253,14 @@ void TestClient::nextPlayer(const std::string &player) const {
 	std::cout << "Waiting for turn of player " << BOLD_ON << player << BOLD_OFF << std::endl;
 }
 
-void TestClient::aceRoundStarted(const std::string &) const {}
+void TestClient::aceRoundStarted(const std::string &player) const {
+	std::cout << BOLD_P_ON << player << BOLD_OFF << " " << BOLD_ON << "started" << BOLD_OFF
+			  << " an " << BLUE_ON << "Ace round" << BLUE_OFF << std::endl;
+}
 
-void TestClient::aceRoundEnded(const std::string &) const {}
+void TestClient::aceRoundEnded(const std::string &player) const {
+	std::cout << BOLD_P_ON << player << BOLD_OFF << " " << BOLD_ON << "ended" << BOLD_OFF
+			  << " an " << BLUE_ON << "Ace round" << BLUE_OFF << std::endl;
+}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

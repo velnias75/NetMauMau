@@ -12,7 +12,7 @@ clean-local:
 	-rm -f ai-icon-deleted
 
 ai-icon-deleted: $(AI_IMAGE)
-	-@rm $(top_srcdir)/src/server/ai-icon.h
-	-@rm $(top_builddir)/src/server/ai-icon.h
+	-@rm -f $(top_srcdir)/src/server/ai-icon.h 2> /dev/null
+	-@rm -f $(top_builddir)/src/server/ai-icon.h 2> /dev/null
 	-touch ai-icon-deleted
 endif

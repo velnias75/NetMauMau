@@ -54,6 +54,9 @@ if GENMAN
 export HELP2MAN_OUTPUT := 1
 $(bin_PROGRAMS).1: $(bin_PROGRAMS) $(top_builddir)/netmaumau.h2m
 	$(HELP2MAN) -l --no-discard-stderr -N -n"Server for the popular card game Mau Mau" \
-		-i $(top_builddir)/netmaumau.h2m -S "$(PACKAGE_STRING)" \
+		-i $(top_builddir)/netmaumau.h2m -I $(top_builddir)/gsl.h2m -S "$(PACKAGE_STRING)" \
 		$(builddir)/$(bin_PROGRAMS) > $@
 endif
+
+distclean-local:
+	-rm -f $(top_builddir)/gsl.h2m

@@ -33,6 +33,7 @@
 #include <ctime>
 #include <gsl/gsl_rng.h>
 #include "linkercontrol.h"
+#include "logger.h"
 #endif
 
 #include <cstdlib>
@@ -47,7 +48,20 @@ class GSLRNG {
 	DISALLOW_COPY_AND_ASSIGN(GSLRNG)
 public:
 	GSLRNG(long unsigned int seed = std::time(0L)) : m_rng(gsl_rng_alloc(gsl_rng_ranlxs2)) {
+
 		if(m_rng) gsl_rng_set(m_rng, seed);
+
+#ifndef _WIN32
+
+		if(getenv("GSL_RNG_TYPE") || getenv("GSL_RNG_SEED")) {
+
+			if(m_rng) gsl_rng_free(m_rng);
+
+			m_rng = gsl_rng_alloc(gsl_rng_env_setup());
+		}
+
+#endif
+
 	}
 
 	~GSLRNG() {

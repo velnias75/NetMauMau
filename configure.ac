@@ -53,7 +53,7 @@ PKG_PROG_PKG_CONFIG([0.22])
 # Checks for programs.
 AC_PROG_CXX
 AC_CHECK_PROGS([HELP2MAN], [help2man])
-AC_CHECK_PROGS([DOXYGEN], [doxygen])
+AC_CHECK_PROGS([DOXYGEN],  [doxygen])
 AC_CHECK_PROGS([CPPCHECK], [cppcheck])
 
 if test -z "$ac_cv_prog_HELP2MAN"; then
@@ -86,8 +86,19 @@ fi
 PKG_CHECK_MODULES([POPT], [popt >= 1.10])
 AC_CHECK_LIB([magic], [magic_open])
 PKG_CHECK_MODULES([GSL], [gsl >= 1.9],
-  [AM_CONDITIONAL([GSL], [ true ])], 
-  [AM_CONDITIONAL([GSL], [ false ])])
+  [ AM_CONDITIONAL([GSL], [ true ]) 
+	echo "[[ENVIRONMENT]]
+.TP
+\fBGSL_RNG_TYPE\fR
+the name of a generator, such as ranlxs2, taus or mt19937
+.TP
+\fBGSL_RNG_SEED\fR
+the desired seed value
+.PP
+See the
+.mso www.tmac
+.URL \"http://www.gnu.org/software/gsl/manual/html_node/Random-number-environment-variables.html\" \"GSL Manual\" \" for more information\"" > gsl.h2m ], 
+  [ AM_CONDITIONAL([GSL], [ false ])] )
 
 # Checks for header files.
 AC_HEADER_STDBOOL

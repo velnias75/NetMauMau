@@ -16,6 +16,9 @@ MAINTAINERCLEANFILES = testimg.h
 
 BUILT_SOURCES = testimg.h
 
+export GSL_RNG_TYPE := ranlxs2
+export GSL_RNG_SEED := 280375
+
 TESTS = $(check_PROGRAMS)
 
 noinst_HEADERS = testeventhandler.h testclient.h testimg.h

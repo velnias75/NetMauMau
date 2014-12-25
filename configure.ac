@@ -4,7 +4,7 @@
 AC_PREREQ([2.61])
 AC_INIT([NetMauMau], [0.7], [heiko@rangun.de], [netmaumau], [https://github.com/velnias75/NetMauMau])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip tar-pax no-installinfo no-texinfo.tex])
 AM_MAINTAINER_MODE
 AC_CONFIG_HEADERS([config.h])
 LT_INIT

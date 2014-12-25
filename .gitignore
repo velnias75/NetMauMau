@@ -74,3 +74,5 @@ autoscan-2.69.log
 src/server/netmaumau.rc
 src/server/nmm-server.1
 src/test/testimg.h
+gsl.h2m
+netmaumau.h2m

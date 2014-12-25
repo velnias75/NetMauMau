@@ -159,6 +159,8 @@ Engine::PLAYERS::iterator Engine::removePlayer(Player::IPlayer *player) {
 
 	if(f != m_players.end()) return m_players.erase(f);
 
+	m_ruleset->setCurPlayers(m_players.size());
+
 	return f;
 }
 
@@ -191,6 +193,8 @@ bool Engine::distributeCards() throw(Common::Exception::SocketException) {
 		m_turn = 1;
 		m_curTurn = 0;
 		m_state = PLAYING;
+
+		m_ruleset->setCurPlayers(m_players.size());
 
 		return true;
 

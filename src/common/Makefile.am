@@ -1,8 +1,8 @@
 lib_LTLIBRARIES = libnetmaumaucommon.la
 noinst_LTLIBRARIES = libnetmaumaucommon_private.la
 
-noinst_HEADERS = icardfactory.h iplayer.h basiclogger.h logger.h random_gen.h base64.h \
-	errorstring.h pngcheck.h
+noinst_HEADERS = base64.h basiclogger.h errorstring.h icardfactory.h iplayer.h logger.h pngcheck.h \
+	random_gen.h 
 
 if GSL
 GSL=-DHAVE_GSL
@@ -18,7 +18,7 @@ libnetmaumaucommon_private_la_SOURCES = cardtools.cpp errorstring.cpp pngcheck.c
 libnetmaumaucommon_la_CPPFLAGS = $(GSL) -DNMM_EXE_PATH=\"$(bindir)\" \
 	-DNMM_EXE_NAME=\"nmm-server$(EXEEXT)\"
 libnetmaumaucommon_la_CXXFLAGS = -I$(top_srcdir)/src/include
-libnetmaumaucommon_la_SOURCES = abstractsocket.cpp abstractconnection.cpp logger.cpp base64.cpp \
+libnetmaumaucommon_la_SOURCES = abstractconnection.cpp abstractsocket.cpp base64.cpp logger.cpp \
 	socketexception.cpp
 libnetmaumaucommon_la_LIBADD = libnetmaumaucommon_private.la
 libnetmaumaucommon_la_LDFLAGS = -nodefaultlibs -nostartfiles \

@@ -31,12 +31,16 @@ using namespace NetMauMau::RuleSet;
 StdRuleSet::StdRuleSet(const NetMauMau::IAceRoundListener *l) : IRuleSet(), m_hasToSuspend(false),
 	m_hasSuspended(false), m_takeCardCount(0), m_jackMode(false),
 	m_jackSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL), m_aceRound(l), m_aceRoundPlayer(0L),
-	m_arl(l) {}
+	m_arl(l), m_curPlayers(0) {}
 
 StdRuleSet::~StdRuleSet() {}
 
 std::size_t StdRuleSet::getMaxPlayers() const {
 	return 5;
+}
+
+void StdRuleSet::setCurPlayers(std::size_t players) {
+	m_curPlayers = players;
 }
 
 void StdRuleSet::checkInitial(const NetMauMau::Player::IPlayer *player,
@@ -83,7 +87,8 @@ bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 
 	if(accepted && playedCard->getRank() == NetMauMau::Common::ICard::SEVEN) {
 		m_takeCardCount += 2;
-	} else if(accepted && playedCard->getRank() == NetMauMau::Common::ICard::JACK) {
+	} else if(accepted && playedCard->getRank() == NetMauMau::Common::ICard::JACK &&
+			  (player->getCardCount() > 1 && m_curPlayers >= 2)) {
 		m_jackSuit = player->getJackChoice(uncoveredCard ? uncoveredCard : playedCard, playedCard);
 		m_jackMode = true;
 	}
@@ -149,6 +154,7 @@ void StdRuleSet::reset() throw() {
 	m_jackMode = false;
 	m_jackSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
 	m_aceRoundPlayer = 0L;
+	m_curPlayers = 0;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

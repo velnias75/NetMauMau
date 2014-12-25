@@ -515,11 +515,11 @@ int main(int argc, const char **argv) {
 
 			while(!interrupt) {
 
-				timeval tv = { 0, 500 };
+				timeval tv = { 1, 0 };
 
 				int r;
 
-				if((r = con.wait(&tv)) > 0) {
+				if((r = con.wait((game.getPlayerCount() > 0 && !aiOpponent) ? &tv : NULL)) > 0) {
 
 					Server::Connection::INFO info;
 					Server::Connection::ACCEPT_STATE state = Server::Connection::NONE;
@@ -567,6 +567,8 @@ int main(int argc, const char **argv) {
 				}
 
 				if(interrupt) game.shutdown();
+
+				updatePlayerCap(caps, game.getPlayerCount(), con, aiOpponent);
 			}
 
 		} catch(const Common::Exception::SocketException &e) {

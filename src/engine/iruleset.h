@@ -59,6 +59,7 @@ public:
 	virtual void setJackModeOff() = 0;
 
 	virtual std::size_t getMaxPlayers() const = 0;
+	virtual void setCurPlayers(std::size_t players) = 0;
 
 	virtual void reset() throw() = 0;
 

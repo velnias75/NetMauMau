@@ -59,6 +59,7 @@ public:
 	virtual void setJackModeOff();
 
 	virtual std::size_t getMaxPlayers() const _CONST;
+	virtual void setCurPlayers(std::size_t players);
 
 	virtual void reset() throw();
 
@@ -71,6 +72,7 @@ private:
 	bool m_aceRound;
 	const Player::IPlayer *m_aceRoundPlayer;
 	const IAceRoundListener *m_arl;
+	std::size_t m_curPlayers;
 };
 
 }

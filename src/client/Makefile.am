@@ -10,10 +10,10 @@ libnetmaumauclient_private_la_CXXFLAGS = $(NO_RTTI_FLAGS) -I$(top_srcdir)/src/co
 libnetmaumauclient_private_la_SOURCES = clientcardfactory.cpp
 
 libnetmaumauclient_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include
-libnetmaumauclient_la_SOURCES = abstractclient.cpp clientconnection.cpp \
-	interceptederrorexception.cpp timeoutexception.cpp shutdownexception.cpp \
-	playerlistexception.cpp capabilitiesexception.cpp protocolerrorexception.cpp \
-	connectionrejectedexception.cpp versionmismatchexception.cpp nonetmaumauserverexception.cpp
+libnetmaumauclient_la_SOURCES = abstractclient.cpp capabilitiesexception.cpp clientconnection.cpp \
+	connectionrejectedexception.cpp interceptederrorexception.cpp \
+	nonetmaumauserverexception.cpp playerlistexception.cpp protocolerrorexception.cpp \
+	shutdownexception.cpp timeoutexception.cpp versionmismatchexception.cpp 
 libnetmaumauclient_la_LDFLAGS = -nodefaultlibs -nostartfiles -no-undefined \
 	-version-info 2:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
 libnetmaumauclient_la_LIBADD = libnetmaumauclient_private.la ../common/libnetmaumaucommon.la

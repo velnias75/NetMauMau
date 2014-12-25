@@ -20,8 +20,8 @@ DISTCLEANFILES = $(man1_MANS)
 
 BUILT_SOURCES = ai-icon.h
 
-noinst_HEADERS = serverconnection.h serverplayer.h servereventhandler.h game.h \
-	serverplayerexception.h ai-icon.h
+noinst_HEADERS = ai-icon.h game.h serverconnection.h servereventhandler.h serverplayerexception.h \
+	serverplayer.h 
 
 nmm_server_CPPFLAGS = $(GSL)
 
@@ -35,8 +35,8 @@ endif
 
 nmm_server_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/engine $(POPT_CFLAGS)
-nmm_server_SOURCES = main.cpp serverconnection.cpp serverplayer.cpp servereventhandler.cpp \
-	game.cpp serverplayerexception.cpp
+nmm_server_SOURCES = game.cpp main.cpp serverconnection.cpp servereventhandler.cpp \
+	serverplayer.cpp serverplayerexception.cpp
 nmm_server_LDADD = ../common/libnetmaumaucommon.la ../engine/libengine.la $(POPT_LIBS)
 
 if RC

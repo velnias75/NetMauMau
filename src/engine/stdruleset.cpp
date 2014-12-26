@@ -88,7 +88,7 @@ bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 	if(accepted && playedCard->getRank() == NetMauMau::Common::ICard::SEVEN) {
 		m_takeCardCount += 2;
 	} else if(accepted && playedCard->getRank() == NetMauMau::Common::ICard::JACK &&
-			  (player->getCardCount() > 1 && m_curPlayers >= 2)) {
+			  (m_curPlayers > 2 || player->getCardCount() > 1)) {
 		m_jackSuit = player->getJackChoice(uncoveredCard ? uncoveredCard : playedCard, playedCard);
 		m_jackMode = true;
 	}
@@ -115,6 +115,10 @@ std::size_t StdRuleSet::takeCards(const NetMauMau::Common::ICard *playedCard) co
 
 void StdRuleSet::hasTakenCards() {
 	m_takeCardCount = 0;
+}
+
+std::size_t StdRuleSet::initialCardCount() const {
+	return 5;
 }
 
 bool StdRuleSet::suspendIfNoMatchingCard() const {

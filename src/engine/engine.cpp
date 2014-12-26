@@ -168,26 +168,27 @@ bool Engine::distributeCards() throw(Common::Exception::SocketException) {
 
 	if(m_state == NOCARDS || m_state == ACCEPT_PLAYERS) {
 
+		std::vector<std::vector<Common::ICard *> > cards(m_players.size());
+
+		for(std::size_t i = 0; i < m_ruleset->initialCardCount(); ++i) {
+
+			if(m_talon->empty()) return false;
+
+			for(PLAYERS::size_type j = 0; j < m_players.size(); ++j) {
+				cards[j].push_back(m_talon->top());
+				m_talon->pop();
+			}
+		}
+
 		PLAYERS::const_iterator pi(m_players.begin());
 		const PLAYERS::const_iterator &pe(m_players.end());
 
-		for(; pi != pe; ++pi) {
+		for(std::size_t k = 0; pi != pe; ++pi, ++k) {
 
 			Player::IPlayer *p = *pi;
 
-			std::vector<Common::ICard *> cards;
-			cards.reserve(5);
-
-			for(std::size_t i = 0; i < 5; ++i) {
-				if(m_talon->empty()) return false;
-
-				cards.push_back(m_talon->top());
-				m_talon->pop();
-			}
-
-			p->receiveCardSet(cards);
-			m_eventHandler.cardsDistributed(p, cards);
-
+			p->receiveCardSet(cards[k]);
+			m_eventHandler.cardsDistributed(p, cards[k]);
 		}
 
 		m_turn = 1;
@@ -277,9 +278,8 @@ bool Engine::nextTurn() {
 		const bool csuspend = m_ruleset->hasToSuspend();
 		const Common::ICard::SUIT js = m_ruleset->getJackSuit();
 
-		assert(uc->getRank() != Common::ICard::JACK ||
-			   (uc->getRank() == Common::ICard::JACK && (m_jackMode || m_initialJack) &&
-				js != Common::ICard::SUIT_ILLEGAL));
+		assert(uc->getRank() != Common::ICard::JACK || (uc->getRank() == Common::ICard::JACK &&
+				((m_jackMode || m_initialJack) && js != Common::ICard::SUIT_ILLEGAL)));
 
 		Common::ICard *pc = !csuspend ? player->requestCard(uc, (m_jackMode || m_initialJack)
 							? &js : 0L) : 0L;
@@ -368,6 +368,8 @@ sevenRule:
 					PLAYERS::iterator f(m_players.begin());
 					std::advance(f, m_nxtPlayer);
 					const PLAYERS::iterator nxt = m_players.erase(f);
+
+					m_ruleset->setCurPlayers(m_players.size());
 
 					m_nxtPlayer = nxt != m_players.end() ? std::distance(m_players.begin(), nxt)
 								  : 0;

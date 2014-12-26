@@ -45,6 +45,7 @@ public:
 	virtual bool hasToSuspend() const _PURE;
 	virtual void hasSuspended();
 
+	virtual std::size_t initialCardCount() const _CONST;
 	virtual bool suspendIfNoMatchingCard() const _CONST;
 	virtual bool takeIfLost() const _CONST;
 

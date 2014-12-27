@@ -1,3 +1,9 @@
+netmaumau (0.8) UNRELEASED; urgency=low
+
+  * 
+
+ -- Heiko Schäfer <heiko@rangun.de>  Sat, 27 Dec 2014 10:10:33 +0100
+
 netmaumau (0.7) precise; urgency=low
 
   * implemented ace rounds

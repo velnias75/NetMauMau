@@ -20,8 +20,8 @@
 IDI_ICON1               ICON    DISCARDABLE     "@top_srcdir@/netmaumau.ico"
 
 1 VERSIONINFO
- FILEVERSION 0,0,7,0
- PRODUCTVERSION 0,0,7,0
+ FILEVERSION 0,0,8,0
+ PRODUCTVERSION 0,0,8,0
  FILEFLAGSMASK 0x17L
 #ifndef NDEBUG
  FILEFLAGS 0x1L
@@ -40,7 +40,7 @@ BEGIN
             VALUE "FileDescription", "NetMauMau server"
 			VALUE "FileVersion", "@PACKAGE_VERSION@"
 			VALUE "InternalName", "@PACKAGE_TARNAME@"
-            VALUE "LegalCopyright", "© 2014 Heiko Schäfer"
+            VALUE "LegalCopyright", "© @BUILD_YEAR@ Heiko Schäfer"
             VALUE "OriginalFilename", "nmm-sever.exe"
 			VALUE "ProductName", "@PACKAGE_STRING@ server"
 			VALUE "ProductVersion", "@PACKAGE_VERSION@"

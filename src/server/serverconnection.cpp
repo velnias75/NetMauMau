@@ -226,7 +226,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						info.maj = getMajorFromHello(rHello, dot, spc);
 						info.min = getMinorFromHello(rHello, dot);
 
-						const uint32_t cver = (info.maj << 16u) | info.min;
+						const uint32_t cver = MAKE_VERSION(info.maj, info.min);
 						const uint32_t minver = getMinClientVersion();
 						const uint32_t maxver = getServerVersion();
 
@@ -392,8 +392,8 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 					const PLAYERINFOS &pi(getRegisteredPlayers());
 					const uint32_t cver = rHello.length() > 10 ?
-										  (getMajorFromHello(rHello, dot, spc) << 16u) |
-										  getMinorFromHello(rHello, dot) : 0;
+										  MAKE_VERSION(getMajorFromHello(rHello, dot, spc),
+													   getMinorFromHello(rHello, dot)) : 0;
 
 					for(PLAYERINFOS::const_iterator i(pi.begin()); i != pi.end(); ++i) {
 

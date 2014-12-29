@@ -466,8 +466,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 
 uint32_t AbstractClientV05::getClientProtocolVersion() {
-	return (static_cast<uint16_t>(SERVER_VERSION_MAJOR) << 16u) |
-		   static_cast<uint16_t>(SERVER_VERSION_MINOR);
+	return MAKE_VERSION(SERVER_VERSION_MAJOR, SERVER_VERSION_MINOR);
 }
 
 uint32_t AbstractClientV05::parseProtocolVersion(const std::string &ver) {
@@ -479,7 +478,7 @@ uint32_t AbstractClientV05::parseProtocolVersion(const std::string &ver) {
 		const uint16_t maj = std::strtoul(ver.substr(0, p).c_str(), NULL, 10);
 		const uint16_t min = std::strtoul(ver.substr(p + 1).c_str(), NULL, 10);
 
-		return (maj << 16u) | min;
+		return MAKE_VERSION(maj, min);
 	}
 
 	return 0;

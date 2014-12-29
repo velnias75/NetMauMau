@@ -34,6 +34,22 @@
 #include <mswsock.h>
 #endif
 
+/**
+ * @defgroup util Utilities
+ *
+ * @def MAKE_VERSION(maj, min)
+ * @hideinitializer
+ * @ingroup util
+ *
+ * Computes the corresponding version number integer
+ *
+ * @param maj the major of the version number
+ * @param min the minor of the version number
+ *
+ * @since 0.8
+ */
+#define MAKE_VERSION(maj, min) ((static_cast<uint16_t>(maj) << 16u) | static_cast<uint16_t>(min))
+
 namespace NetMauMau {
 
 namespace Common {

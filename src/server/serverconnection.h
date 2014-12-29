@@ -65,8 +65,7 @@ public:
 	}
 
 	inline static uint32_t getServerVersion() {
-		return (static_cast<uint16_t>(SERVER_VERSION_MAJOR) << 16u) |
-			   static_cast<uint16_t>(SERVER_VERSION_MINOR);
+		return MAKE_VERSION(SERVER_VERSION_MAJOR, SERVER_VERSION_MINOR);
 	}
 
 	inline uint32_t getMinClientVersion() const {

@@ -468,11 +468,8 @@ int main(int argc, const char **argv) {
 			minPlayers = std::min<std::size_t>(5, numAI + minPlayers);
 		}
 
-		Server::Connection con(aceRound ? std::max(7,
-							   static_cast<uint16_t>(MIN_MAJOR) << 16u |
-							   static_cast<uint16_t>(MIN_MINOR)) :
-							   static_cast<uint16_t>(MIN_MAJOR) << 16u |
-							   static_cast<uint16_t>(MIN_MINOR), port, *host ? host : NULL);
+		Server::Connection con(aceRound ? std::max(7, MAKE_VERSION(MIN_MAJOR, MIN_MINOR)) :
+							   MAKE_VERSION(MIN_MAJOR, MIN_MINOR), port, *host ? host : NULL);
 
 		ultimate = (!aiOpponent && minPlayers > 2) ? ultimate : numAI > 1;
 

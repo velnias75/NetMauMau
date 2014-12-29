@@ -47,6 +47,7 @@ namespace Common {
  */
 
 /**
+ * @ingroup util
  * @brief Get an array of the four @c SUIT symbols
  *
  * @return the four @c SUIT symbols
@@ -54,6 +55,7 @@ namespace Common {
 _EXPORT const std::string *getSuitSymbols() _CONST;
 
 /**
+ * @ingroup util
  * @brief Converts a @c SUIT symbol to a ANSI color representation
  *
  * @param suit the @c SUIT symbol
@@ -62,6 +64,7 @@ _EXPORT const std::string *getSuitSymbols() _CONST;
 _EXPORT std::string ansiSuit(const std::string &suit);
 
 /**
+ * @ingroup util
  * @brief Converts a symbol to a NetMauMau::Common::ICard::SUIT
  *
  * @param symbol the symbol
@@ -70,6 +73,7 @@ _EXPORT std::string ansiSuit(const std::string &suit);
 _EXPORT NetMauMau::Common::ICard::SUIT symbolToSuit(const std::string &symbol);
 
 /**
+ * @ingroup util
  * @brief Converts a NetMauMau::Common::ICard::SUIT to a symbol
  *
  * @param suit the @c SUIT to convert
@@ -88,6 +92,7 @@ _EXPORT std::string suitToSymbol(NetMauMau::Common::ICard::SUIT suit, bool ansi,
  */
 
 /**
+ * @ingroup util
  * @brief Parses a textual description
  *
  * Parses a textual description and stores the suit and the rank into the pointers,
@@ -102,6 +107,7 @@ _EXPORT _NOUNUSED bool parseCardDesc(const std::string &desc, NetMauMau::Common:
 									 NetMauMau::Common::ICard::RANK *rank) _NONNULL(2, 3);
 
 /**
+ * @ingroup util
  * @brief Creates a card description
  *
  * @param suite the @c SUIT
@@ -120,6 +126,7 @@ _EXPORT std::string createCardDesc(NetMauMau::Common::ICard::SUIT suite,
  */
 
 /**
+ * @ingroup util
  * @brief Gets an ordinal number for a @c SUIT
  *
  * The ordinals follow the Skat and Doppelkopf order\n
@@ -131,6 +138,7 @@ _EXPORT std::string createCardDesc(NetMauMau::Common::ICard::SUIT suite,
 _EXPORT unsigned int suitOrderPosition(NetMauMau::Common::ICard::SUIT suit) _CONST;
 
 /**
+ * @ingroup util
  * @brief Gets an ordinal number for a @c RANK
  *
  * @param rank the @c RANK to get the ordinal for
@@ -139,6 +147,7 @@ _EXPORT unsigned int suitOrderPosition(NetMauMau::Common::ICard::SUIT suit) _CON
 _EXPORT unsigned int rankOrderPosition(NetMauMau::Common::ICard::RANK rank) _CONST;
 
 /**
+ * @ingroup util
  * @brief Checks if two cards are equal
  *
  * @param x a card
@@ -149,6 +158,7 @@ _EXPORT unsigned int rankOrderPosition(NetMauMau::Common::ICard::RANK rank) _CON
 _EXPORT bool cardEqual(const NetMauMau::Common::ICard *x, const NetMauMau::Common::ICard *y);
 
 /**
+ * @ingroup util
  * @brief Checks if a card comes before another
  *
  * Useful for sorting with suit first than rank
@@ -161,6 +171,7 @@ _EXPORT bool cardEqual(const NetMauMau::Common::ICard *x, const NetMauMau::Commo
 _EXPORT bool cardLess(const NetMauMau::Common::ICard *x, const NetMauMau::Common::ICard *y);
 
 /**
+ * @ingroup util
  * @brief Checks if a card comes before another
  *
  * Useful for sorting with rank first than suit
@@ -182,6 +193,7 @@ _EXPORT bool cardGreater(const NetMauMau::Common::ICard *x, const NetMauMau::Com
  */
 
 /**
+ * @ingroup util
  * @brief Checks if the a card is of @c SUIT
  *
  * @param card the card to check
@@ -192,6 +204,7 @@ _EXPORT bool cardGreater(const NetMauMau::Common::ICard *x, const NetMauMau::Com
 _EXPORT bool isSuit(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::SUIT suit);
 
 /**
+ * @ingroup util
  * @brief Checks if the a card is of @c RANK
  *
  * @param card the card to check
@@ -202,6 +215,7 @@ _EXPORT bool isSuit(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICa
 _EXPORT bool isRank(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::RANK rank);
 
 /**
+ * @ingroup util
  * @brief Finds the first card of a given @c SUIT
  *
  * @tparam Iterator an iterator
@@ -221,6 +235,7 @@ typename Iterator::value_type findSuit(NetMauMau::Common::ICard::SUIT suit, Iter
 }
 
 /**
+ * @ingroup util
  * @brief Finds the first card of a given @c RANK
  *
  * @tparam Iterator an iterator
@@ -240,6 +255,7 @@ typename Iterator::value_type findRank(NetMauMau::Common::ICard::RANK rank, Iter
 }
 
 /**
+ * @ingroup util
  * @brief Finds the first card equal to a given card
  *
  * @tparam Iterator an iterator
@@ -266,6 +282,7 @@ typename Iterator::value_type findCard(typename Iterator::value_type card, Itera
  */
 
 /**
+ * @ingroup util
  * @brief Gets an <em>illegal card</em> card to trigger special actions
  *
  * @see NetMauMau::Client::AbstractClient::playCard()
@@ -296,6 +313,7 @@ _EXPORT NetMauMau::Common::ICard *getIllegalCard() _CONST;
 _EXPORT std::size_t getCardPoints(NetMauMau::Common::ICard::RANK rank) _CONST;
 
 /**
+ * @ingroup util
  * @brief Gets the executable name of the server
  *
  * @note on non-Windows systems it returns the full path to the executable

@@ -165,6 +165,7 @@ public:
 	throw(NetMauMau::Common::Exception::SocketException);
 
 	/**
+	 * @ingroup util
 	 * @brief Returns the version of the client's implemented protocol version
 	 *
 	 * You can retrieve major and minor version as following: @code
@@ -177,6 +178,7 @@ public:
 	static uint32_t getClientProtocolVersion() _CONST;
 
 	/**
+	 * @ingroup util
 	 * @brief Parses a version string and returns the resulting protocol version
 	 *
 	 * @param version the protocol version as string
@@ -187,6 +189,7 @@ public:
 	static uint32_t parseProtocolVersion(const std::string &version);
 
 	/**
+	 * @ingroup util
 	 * @brief Checks if an player image is uploadable to the server
 	 *
 	 * @note it is possible that the server rejects the image anyway if configured to use
@@ -201,6 +204,7 @@ public:
 	static bool isPlayerImageUploadable(const unsigned char *pngData, std::size_t pngDataLen);
 
 	/**
+	 * @ingroup util
 	 * @brief Gets the default port of the server
 	 *
 	 * @return the default port of the server
@@ -215,6 +219,7 @@ public:
 	std::string getPlayerName() const;
 
 	/**
+	 * @ingroup util
 	 * @brief Gets the compiled in default AI player name
 	 *
 	 * @return the compiled in default AI player name
@@ -634,6 +639,10 @@ protected:
 	 * @brief Creates an @c AbstractClientV08 instance
 	 *
 	 * @copydetails AbstractClientV07(const std::string &, const std::string &, uint16_t)
+	 *
+	 * @param clientVersion the protocol version the client understands
+	 *
+	 * @since 0.8
 	 */
 	AbstractClientV08(const std::string &player, const std::string &server, uint16_t port,
 					  uint32_t clientVersion);
@@ -643,6 +652,10 @@ protected:
 	 *
 	 * @copydetails AbstractClientV07(const std::string &, const unsigned char *,
 	 *				  std::size_t, const std::string &, uint16_t)
+	 *
+	 * @param clientVersion the protocol version the client understands
+	 *
+	 * @since 0.8
 	 */
 	AbstractClientV08(const std::string &player, const unsigned char *pngData,
 					  std::size_t pngDataLen, const std::string &server, uint16_t port,

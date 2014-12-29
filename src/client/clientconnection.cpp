@@ -183,7 +183,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	if(_pimpl->hello(&maj, &min)) {
 
-		const uint32_t sver = (maj << 16u) | min;
+		const uint32_t sver = MAKE_VERSION(maj, min);
 		const uint32_t mver = NetMauMau::Client::AbstractClient::getClientProtocolVersion();
 
 		if(mver >= sver) {
@@ -248,16 +248,12 @@ throw(NetMauMau::Common::Exception::SocketException) {
 						"the connection", getSocketFD());
 			} else if((status[0] == 'V' && status[1] == 'M')) {
 				throw Exception::VersionMismatchException(
-					(static_cast<uint16_t>(maj) << 16u) | static_cast<uint16_t>(min),
-					(static_cast<uint16_t>(_pimpl->m_clientVersion) << 16u) |
-					static_cast<uint16_t>(_pimpl->m_clientVersion), getSocketFD());
+					MAKE_VERSION(maj, min), _pimpl->m_clientVersion, getSocketFD());
 			}
 
 		} else {
 			throw Exception::VersionMismatchException(
-				(static_cast<uint16_t>(maj) << 16u) | static_cast<uint16_t>(min),
-				(static_cast<uint16_t>(_pimpl->m_clientVersion) << 16u) |
-				static_cast<uint16_t>(_pimpl->m_clientVersion), getSocketFD());
+				MAKE_VERSION(maj, min), _pimpl->m_clientVersion, getSocketFD());
 		}
 
 	} else {

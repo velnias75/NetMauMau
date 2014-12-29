@@ -282,7 +282,7 @@ bool Engine::nextTurn() {
 				((m_jackMode || m_initialJack) && js != Common::ICard::SUIT_ILLEGAL)));
 
 		Common::ICard *pc = !csuspend ? player->requestCard(uc, (m_jackMode || m_initialJack)
-							? &js : 0L) : 0L;
+							? &js : 0L, m_ruleset->takeCardCount()) : 0L;
 
 		if(m_initialJack && !pc) m_jackMode = true;
 
@@ -306,7 +306,7 @@ sevenRule:
 				}
 
 			} else if(pc->getSuit() == Common::ICard::SUIT_ILLEGAL) {
-				pc = player->requestCard(uc, m_jackMode ? &js : 0L);
+				pc = player->requestCard(uc, m_jackMode ? &js : 0L, m_ruleset->takeCardCount());
 				goto sevenRule;
 			}
 
@@ -325,7 +325,8 @@ sevenRule:
 
 				const Common::ICard::SUIT js2 = m_ruleset->getJackSuit();
 
-				if((!(pc = player->requestCard(uc, m_jackMode ? &js2 : 0L)))) {
+				if((!(pc = player->requestCard(uc, m_jackMode ? &js2 : 0L,
+											   m_ruleset->takeCardCount())))) {
 
 					bool decidedSuspend = false;
 

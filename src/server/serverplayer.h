@@ -45,7 +45,8 @@ public:
 	virtual void receiveCardSet(const CARDS &cards) throw(Common::Exception::SocketException);
 
 	virtual Common::ICard *requestCard(const Common::ICard *uncoveredCard,
-									   const Common::ICard::SUIT *jackSuit) const;
+									   const Common::ICard::SUIT *jackSuit,
+									   std::size_t takeCount) const;
 	virtual REASON getNoCardReason() const _CONST;
 	virtual bool cardAccepted(const Common::ICard *playedCard)
 	throw(NetMauMau::Common::Exception::SocketException);

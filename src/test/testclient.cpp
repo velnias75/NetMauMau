@@ -46,7 +46,8 @@ const std::string BOLD_OFF;
 
 TestClient::TestClient(const std::string &pName, const std::string &server, uint16_t port,
 					   const unsigned char *pngData, std::size_t pngDataLen)
-	: NetMauMau::Client::AbstractClient(pName, pngData, pngDataLen, server, port), m_myCards() {}
+	: NetMauMau::Client::AbstractClient(pName, pngData, pngDataLen, server, port,
+										getClientProtocolVersion()), m_myCards() {}
 
 TestClient::~TestClient() {}
 
@@ -84,7 +85,7 @@ void TestClient::stats(const STATS &s) const {
 	if(mau) std::cout << "\a";
 }
 
-NetMauMau::Common::ICard *TestClient::playCard(const CARDS &cards) const {
+NetMauMau::Common::ICard *TestClient::playCard(const CARDS &cards, std::size_t) const {
 
 	std::size_t pos;
 

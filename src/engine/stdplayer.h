@@ -45,7 +45,8 @@ public:
 	virtual void receiveCardSet(const CARDS &cards);
 
 	virtual Common::ICard *requestCard(const Common::ICard *uncoveredCard,
-									   const Common::ICard::SUIT *jackSuit) const;
+									   const Common::ICard::SUIT *jackSuit,
+									   std::size_t takeCount) const;
 	virtual Common::ICard::SUIT getJackChoice(const Common::ICard *uncoveredCard,
 			const Common::ICard *playedCard) const;
 

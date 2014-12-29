@@ -30,6 +30,8 @@ public:
 	virtual ~TestClient();
 
 protected:
+	using NetMauMau::Client::AbstractClient::playCard;
+
 	virtual void unknownServerMessage(std::string message) const;
 
 	virtual void message(const std::string &msg) const;
@@ -38,7 +40,7 @@ protected:
 	virtual void stats(const STATS &stats) const;
 	virtual void gameOver() const;
 
-	virtual NetMauMau::Common::ICard *playCard(const CARDS &cards) const;
+	virtual NetMauMau::Common::ICard *playCard(const CARDS &cards, std::size_t takeCount) const;
 	virtual NetMauMau::Common::ICard::SUIT getJackSuitChoice() const;
 	virtual bool getAceRoundChoice() const _CONST;
 

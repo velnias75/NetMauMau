@@ -79,7 +79,6 @@ struct pointSum : std::binary_function<std::size_t, NetMauMau::Common::ICard *, 
 		return i + c->getPoints();
 	}
 };
-
 #pragma GCC diagnostic pop
 
 }
@@ -250,8 +249,9 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 							   std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit),
 											suitCount[p].suit));
 
-				const CARDS::value_type f = NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN,
-											myCards.begin(), myCards.end());
+				const CARDS::value_type f =
+					NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN, myCards.begin(),
+												myCards.end());
 
 				if(f) {
 					m_powerSuit = f->getSuit();
@@ -387,7 +387,7 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 }
 
 NetMauMau::Common::ICard *StdPlayer::requestCard(const NetMauMau::Common::ICard *uc,
-		const NetMauMau::Common::ICard::SUIT *js) const {
+		const NetMauMau::Common::ICard::SUIT *js, std::size_t) const {
 
 	if(m_ruleset) {
 		if(m_cards.size() == 1 && !(uc->getRank() == NetMauMau::Common::ICard::JACK &&

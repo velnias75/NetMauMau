@@ -33,12 +33,14 @@ namespace NetMauMau {
 namespace Client {
 
 class IPlayerPicListener;
+class ConnectionImpl;
 
 /**
  * @brief Handles the connection from the client to a server
  */
-class _EXPORT Connection : public Common::AbstractConnection {
+class Connection : public Common::AbstractConnection {
 	DISALLOW_COPY_AND_ASSIGN(Connection)
+	friend class ConnectionImpl;
 public:
 	using AbstractConnection::connect;
 
@@ -64,6 +66,8 @@ public:
 	Connection(const std::string &pName, const std::string &server, uint16_t port);
 	virtual ~Connection();
 
+	void setClientVersion(uint32_t clientVersion);
+
 	virtual void connect(const IPlayerPicListener *l, const unsigned char *pngData,
 						 std::size_t pngDataLen) throw(Common::Exception::SocketException);
 	CAPABILITIES capabilities() throw(NetMauMau::Common::Exception::SocketException);
@@ -80,11 +84,7 @@ protected:
 	virtual std::string wireError(const std::string &err) const;
 
 private:
-	bool hello(uint16_t *maj = 0L, uint16_t *min = 0L) throw(Common::Exception::SocketException);
-
-private:
-	std::string m_pName;
-	const timeval *m_timeout;
+	ConnectionImpl *const _pimpl;
 };
 
 _EXPORT bool operator<(const std::string &, const Connection::PLAYERINFO &) _PURE;

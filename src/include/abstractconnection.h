@@ -38,6 +38,8 @@ namespace NetMauMau {
 
 namespace Common {
 
+class AbstractConnectionImpl;
+
 /**
  * @brief Abstract connection class
  *
@@ -45,6 +47,7 @@ namespace Common {
  */
 class _EXPORT AbstractConnection : public AbstractSocket {
 	DISALLOW_COPY_AND_ASSIGN(AbstractConnection)
+	friend class AbstractConnectionImpl;
 public:
 	typedef struct _EXPORT _info {
 		_info();
@@ -57,6 +60,9 @@ public:
 	} INFO;
 
 	typedef struct _nameSockFD {
+		_nameSockFD();
+		_nameSockFD(const std::string &name, const std::string &playerPic, SOCKET sockfd,
+					uint32_t clientVersion);
 		~_nameSockFD();
 		std::string name;
 		mutable std::string playerPic;
@@ -85,8 +91,8 @@ protected:
 	AbstractConnection(const char *server, uint16_t port);
 
 	void registerPlayer(const NAMESOCKFD &nfd);
-	const PLAYERINFOS &getRegisteredPlayers() const _CONST;
-	const std::vector<std::string> &getAIPlayers() const _CONST;
+	const PLAYERINFOS &getRegisteredPlayers() const _PURE;
+	const std::vector<std::string> &getAIPlayers() const _PURE;
 
 	static bool isHello(std::string::size_type dot, std::string::size_type spc) _CONST;
 	static bool isValidHello(std::string::size_type dot, std::string::size_type spc,
@@ -97,8 +103,7 @@ protected:
 	static uint16_t getMinorFromHello(const std::string &hello, std::string::size_type dot);
 
 private:
-	PLAYERINFOS m_registeredPlayers;
-	std::vector<std::string> m_aiPlayers;
+	AbstractConnectionImpl *const _pimpl;
 };
 
 }

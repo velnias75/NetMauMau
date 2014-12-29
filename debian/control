@@ -13,30 +13,31 @@ Homepage: https://github.com/velnias75/NetMauMau/
 Package: netmaumau-server
 Architecture: any
 Suggests: nmm-qt-client
-Depends: libnetmaumaucommon0 (>= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Depends: libnetmaumaucommon1 (>= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: Server for the popular card game Mau Mau - server
  Provides a server for the popular card game NetMauMau. Up to 5 players can 
  play against each other, or against up to 4 tactical AI opponents.
 
 Package: netmaumau-client
 Architecture: any
-Depends: libnetmaumaucommon0 (>= ${binary:Version}), libnetmaumauclient2 (>= ${binary:Version}),
+Depends: libnetmaumaucommon1 (>= ${binary:Version}), libnetmaumauclient3 (>= ${binary:Version}),
  ${shlibs:Depends}, ${misc:Depends}
 Description: Server for the popular card game Mau Mau - CLI client
  A simple CLI client for the NetMauMau server.
  
-Package: libnetmaumaucommon0
+Package: libnetmaumaucommon1
+Replaces: libnetmaumaucommon0
 Architecture: any
 Section: libs
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Server for the popular card game Mau Mau - common library
  Common functions shared between the NetMauMau server and NetMauMau clients.
 
-Package: libnetmaumauclient2
+Package: libnetmaumauclient3
 Architecture: any
 Section: libs
-Depends: libnetmaumaucommon0 (>= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-Replaces: libnetmaumauclient0, libnetmaumauclient1
+Depends: libnetmaumaucommon1 (>= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Replaces: libnetmaumauclient0, libnetmaumauclient1, libnetmaumauclient2
 Description: Server for the popular card game Mau Mau - client library
  Functions for connecting to a NetMauMau server.
 
@@ -44,7 +45,7 @@ Package: netmaumau-dev
 Architecture: any
 Section: devel
 Suggests: netmaumau-server
-Depends: libnetmaumaucommon0 (= ${binary:Version}), libnetmaumauclient2 (= ${binary:Version}), 
+Depends: libnetmaumaucommon1 (= ${binary:Version}), libnetmaumauclient3 (= ${binary:Version}), 
  ${misc:Depends}
 Description: Server for the popular card game Mau Mau - developer files
  Files and documentation for developing a client for the NetMauMau server.
@@ -53,7 +54,7 @@ Package: netmaumau-dbg
 Architecture: any
 Section: debug
 Depends: netmaumau-server (= ${binary:Version}), netmaumau-client (= ${binary:Version}), 
- libnetmaumaucommon0 (= ${binary:Version}), libnetmaumauclient2 (= ${binary:Version}), 
+ libnetmaumaucommon1 (= ${binary:Version}), libnetmaumauclient3 (= ${binary:Version}), 
  ${misc:Depends}
 Description: Server for the popular card game Mau Mau - debugger symbols
  Debugger symbols for the NetMauMau package

@@ -34,6 +34,8 @@
 #endif
 
 #include "abstractsocket.h"
+#include "abstractsocketimpl.h"
+
 #include "errorstring.h"
 #include "logger.h"
 
@@ -65,18 +67,20 @@ using namespace NetMauMau::Common;
 
 volatile bool AbstractSocket::m_interrupt = false;
 
-AbstractSocket::AbstractSocket(const char *server, uint16_t port) : m_server(server ? server : ""),
-	m_port(port), m_sfd(-1), m_wireError() {}
+AbstractSocket::AbstractSocket(const char *server, uint16_t port)
+	: _pimpl(new AbstractSocketImpl(server, port)) {}
 
 AbstractSocket::~AbstractSocket() {
-	if(m_sfd != INVALID_SOCKET) {
-		shutdown(m_sfd, SHUT_RDWR);
+	if(_pimpl->m_sfd != INVALID_SOCKET) {
+		shutdown(_pimpl->m_sfd, SHUT_RDWR);
 #ifndef _WIN32
-		close(m_sfd);
+		close(_pimpl->m_sfd);
 #else
-		closesocket(m_sfd);
+		closesocket(_pimpl->m_sfd);
 #endif
 	}
+
+	delete _pimpl;
 }
 
 void AbstractSocket::connect() throw(Exception::SocketException) {
@@ -92,7 +96,7 @@ void AbstractSocket::connect() throw(Exception::SocketException) {
 	char portS[256];
 	int s;
 
-	std::snprintf(portS, 255, "%u", m_port);
+	std::snprintf(portS, 255, "%u", _pimpl->m_port);
 	std::memset(&hints, 0, sizeof(struct addrinfo));
 
 #ifdef _WIN32
@@ -107,34 +111,35 @@ void AbstractSocket::connect() throw(Exception::SocketException) {
 	hints.ai_addr = NULL;
 	hints.ai_next = NULL;
 
-	if((s = getaddrinfo(m_server.empty() ? 0L : m_server.c_str(), portS, &hints, &result)) != 0) {
-		throw Exception::SocketException(gai_strerror(s), m_sfd, errno);
+	if((s = getaddrinfo(_pimpl->m_server.empty() ? 0L : _pimpl->m_server.c_str(), portS, &hints,
+						&result)) != 0) {
+		throw Exception::SocketException(gai_strerror(s), _pimpl->m_sfd, errno);
 	}
 
 	for(rp = result; rp != NULL; rp = rp->ai_next) {
 
-		m_sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+		_pimpl->m_sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
 
-		if(m_sfd == INVALID_SOCKET) continue;
+		if(_pimpl->m_sfd == INVALID_SOCKET) continue;
 
-		if(wire(m_sfd, rp->ai_addr, rp->ai_addrlen)) {
+		if(wire(_pimpl->m_sfd, rp->ai_addr, rp->ai_addrlen)) {
 			break;
 		} else {
-			m_wireError = NetMauMau::Common::errorString();
+			_pimpl->m_wireError = NetMauMau::Common::errorString();
 		}
 
 #ifndef _WIN32
-		close(m_sfd);
+		close(_pimpl->m_sfd);
 #else
-		closesocket(m_sfd);
+		closesocket(_pimpl->m_sfd);
 #endif
 	}
 
 	freeaddrinfo(result);
 
 	if(rp == NULL) {
-		m_sfd = INVALID_SOCKET;
-		throw Exception::SocketException(wireError(m_wireError));
+		_pimpl->m_sfd = INVALID_SOCKET;
+		throw Exception::SocketException(wireError(_pimpl->m_wireError));
 	}
 
 }
@@ -305,6 +310,10 @@ void AbstractSocket::checkSocket(SOCKET fd) throw(Exception::SocketException) {
 		throw Exception::SocketException(NetMauMau::Common::errorString(ret == -1 ? errno :
 										 error_code), fd, ret == -1 ? errno : error_code);
 	}
+}
+
+SOCKET AbstractSocket::getSocketFD() const {
+	return _pimpl->m_sfd;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

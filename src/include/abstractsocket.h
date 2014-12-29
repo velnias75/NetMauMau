@@ -22,8 +22,8 @@
  * @author Heiko Schäfer <heiko@rangun.de>
  */
 
-#ifndef NETMAUMAU_SOCKET_H
-#define NETMAUMAU_SOCKET_H
+#ifndef NETMAUMAU_ABSTRACTSOCKET_H
+#define NETMAUMAU_ABSTRACTSOCKET_H
 
 #include <stdint.h>
 
@@ -43,11 +43,14 @@ namespace NetMauMau {
 
 namespace Common {
 
+class AbstractSocketImpl;
+
 /**
  * @brief tbw
  */
 class _EXPORT AbstractSocket {
 	DISALLOW_COPY_AND_ASSIGN(AbstractSocket)
+	friend class AbstractSocketImpl;
 public:
 	virtual ~AbstractSocket();
 
@@ -73,22 +76,18 @@ protected:
 	std::size_t recv(void *buf, std::size_t len, SOCKET fd) throw(Exception::SocketException);
 	static void send(const void *buf, std::size_t len, SOCKET fd) throw(Exception::SocketException);
 
-	inline SOCKET getSocketFD() const {
-		return m_sfd;
-	}
+	SOCKET getSocketFD() const _PURE;
 
 private:
+	AbstractSocketImpl *const _pimpl;
+
 	volatile static bool m_interrupt;
-	const std::string m_server;
-	const uint16_t m_port;
-	SOCKET m_sfd;
-	std::string m_wireError;
 };
 
 }
 
 }
 
-#endif /* NETMAUMAU_SOCKET_H */
+#endif /* NETMAUMAU_ABSTRACTSOCKET_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

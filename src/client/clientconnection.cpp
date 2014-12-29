@@ -35,6 +35,7 @@
 #endif
 
 #include "clientconnection.h"
+#include "clientconnectionimpl.h"
 
 #include "base64.h"
 #include "errorstring.h"
@@ -54,8 +55,10 @@
 using namespace NetMauMau::Client;
 
 Connection::Connection(const std::string &pName, const std::string &server, uint16_t port) :
-	AbstractConnection(server.c_str(), port), m_pName(pName), m_timeout(0L) {
-	if(m_pName.length() > MAX_PNAME - 1) m_pName = m_pName.substr(0, MAX_PNAME - 1);
+	AbstractConnection(server.c_str(), port), _pimpl(new ConnectionImpl(this, pName, 0L, 2)) {
+	if(_pimpl->m_pName.length() > MAX_PNAME - 1) {
+		_pimpl->m_pName = _pimpl->m_pName.substr(0, MAX_PNAME - 1);
+	}
 }
 
 Connection::~Connection() {
@@ -65,58 +68,24 @@ Connection::~Connection() {
 #else
 	close(getSocketFD());
 #endif
+
+	delete _pimpl;
+}
+
+void Connection::setClientVersion(uint32_t clientVersion) {
+	_pimpl->m_clientVersion = clientVersion;
 }
 
 void Connection::setTimeout(struct timeval *timeout) {
-	m_timeout = timeout;
+	_pimpl->m_timeout = timeout;
 }
-
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-#pragma GCC diagnostic push
-bool Connection::hello(uint16_t *maj, uint16_t *min)
-throw(NetMauMau::Common::Exception::SocketException) {
-
-	NetMauMau::Common::AbstractConnection::connect();
-
-	fd_set rfds;
-	int pret = -1;
-
-	FD_ZERO(&rfds);
-	FD_SET(getSocketFD(), &rfds);
-
-	timeval tv = { m_timeout ? m_timeout->tv_sec : 0, m_timeout ? m_timeout->tv_usec : 0 };
-
-	if(!m_timeout || (pret = ::select(getSocketFD() + 1, &rfds, NULL, NULL, &tv)) > 0) {
-
-		const std::string rHello = read(getSocketFD());
-		const std::string::size_type spc = rHello.find(' ');
-		const std::string::size_type dot = rHello.find('.');
-
-		const bool isServerHello = isHello(dot, spc);
-
-		if(isServerHello && maj) *maj = getMajorFromHello(rHello, dot, spc);
-
-		if(isServerHello && min) *min = getMinorFromHello(rHello, dot);
-
-		return isValidHello(dot, spc, rHello, PACKAGE_NAME);
-
-	} else if(pret == -1 && errno != EINTR) {
-		throw NetMauMau::Common::Exception::SocketException(NetMauMau::Common::errorString(),
-				getSocketFD(), errno);
-	} else if(pret == -1 && errno == EINTR) {
-		throw Exception::ShutdownException("Server is shutting down", getSocketFD());
-	} else {
-		throw Exception::TimeoutException("Timeout while connecting to server", getSocketFD());
-	}
-}
-#pragma GCC diagnostic pop
 
 Connection::PLAYERINFOS Connection::playerList(const IPlayerPicListener *hdl, bool playerPNG)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	PLAYERINFOS plv;
 
-	if(hello()) {
+	if(_pimpl->hello()) {
 
 		if(playerPNG) {
 			std::ostringstream os;
@@ -182,7 +151,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	Connection::CAPABILITIES caps;
 
-	if(hello()) {
+	if(_pimpl->hello()) {
 
 		send("CAP", 3, getSocketFD());
 
@@ -212,15 +181,17 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	uint16_t maj = 0, min = 0;
 
-	if(hello(&maj, &min)) {
+	if(_pimpl->hello(&maj, &min)) {
 
 		const uint32_t sver = (maj << 16u) | min;
-		const uint32_t mver = AbstractClient::getClientProtocolVersion();
+		const uint32_t mver = NetMauMau::Client::AbstractClient::getClientProtocolVersion();
 
 		if(mver >= sver) {
 
 			std::ostringstream os;
-			os << PACKAGE_NAME << ' ' << SERVER_VERSION_MAJOR << '.' << SERVER_VERSION_MINOR;
+			os << PACKAGE_NAME << ' '
+			   << static_cast<uint16_t>(_pimpl->m_clientVersion << 16u) << '.'
+			   << static_cast<uint16_t>(_pimpl->m_clientVersion);
 
 			send(os.str().c_str(), os.str().length(), getSocketFD());
 
@@ -228,10 +199,10 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			recv(name, 4, getSocketFD());
 
 			if(!strncmp(name, "NAME", 4)) {
-				send(m_pName.c_str(), m_pName.length(), getSocketFD());
+				send(_pimpl->m_pName.c_str(), _pimpl->m_pName.length(), getSocketFD());
 			} else if(!strncmp(name, "NAMP", 4)) {
 				if(!(data && len)) {
-					send(m_pName.c_str(), m_pName.length(), getSocketFD());
+					send(_pimpl->m_pName.c_str(), _pimpl->m_pName.length(), getSocketFD());
 				} else {
 					try {
 
@@ -240,7 +211,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 						if(!base64png.empty()) {
 
 							std::ostringstream osp;
-							osp << "+" << m_pName << '\0' << base64png.length() << '\0'
+							osp << "+" << _pimpl->m_pName << '\0' << base64png.length() << '\0'
 								<< base64png;
 
 							send(osp.str().c_str(), osp.str().length(), getSocketFD());
@@ -250,19 +221,19 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 							if(std::strtoul(ack, NULL, 10) == base64png.length()) {
 								send("OK", 2, getSocketFD());
-								l->uploadSucceded(m_pName);
+								l->uploadSucceded(_pimpl->m_pName);
 							} else {
 								send("NO", 2, getSocketFD());
-								l->uploadFailed(m_pName);
+								l->uploadFailed(_pimpl->m_pName);
 							}
 
 						} else {
-							send(m_pName.c_str(), m_pName.length(), getSocketFD());
-							l->uploadFailed(m_pName);
+							send(_pimpl->m_pName.c_str(), _pimpl->m_pName.length(), getSocketFD());
+							l->uploadFailed(_pimpl->m_pName);
 						}
 
 					} catch(const NetMauMau::Common::Exception::SocketException &) {
-						l->uploadFailed(m_pName);
+						l->uploadFailed(_pimpl->m_pName);
 					}
 				}
 			} else {
@@ -278,15 +249,15 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			} else if((status[0] == 'V' && status[1] == 'M')) {
 				throw Exception::VersionMismatchException(
 					(static_cast<uint16_t>(maj) << 16u) | static_cast<uint16_t>(min),
-					(static_cast<uint16_t>(SERVER_VERSION_MAJOR) << 16u) |
-					static_cast<uint16_t>(SERVER_VERSION_MINOR), getSocketFD());
+					(static_cast<uint16_t>(_pimpl->m_clientVersion) << 16u) |
+					static_cast<uint16_t>(_pimpl->m_clientVersion), getSocketFD());
 			}
 
 		} else {
 			throw Exception::VersionMismatchException(
 				(static_cast<uint16_t>(maj) << 16u) | static_cast<uint16_t>(min),
-				(static_cast<uint16_t>(SERVER_VERSION_MAJOR) << 16u) |
-				static_cast<uint16_t>(SERVER_VERSION_MINOR), getSocketFD());
+				(static_cast<uint16_t>(_pimpl->m_clientVersion) << 16u) |
+				static_cast<uint16_t>(_pimpl->m_clientVersion), getSocketFD());
 		}
 
 	} else {

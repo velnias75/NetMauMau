@@ -344,7 +344,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 								}
 							}
 
-							const NAMESOCKFD nsf = { info.name, playerPic, cfd, cver };
+							const NAMESOCKFD nsf(info.name, playerPic, cfd, cver);
 
 							registerPlayer(nsf);
 							send("OK", 2, cfd);
@@ -482,42 +482,16 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 	return accepted;
 }
 
+NetMauMau::Common::AbstractConnection::NAMESOCKFD
+Connection::getPlayerInfo(const std::string &name) const {
+	const PLAYERINFOS::const_iterator &f(std::find_if(getRegisteredPlayers().begin(),
+										 getRegisteredPlayers().end(), std::bind2nd(_isPlayer(),
+												 name)));
+	return f != getRegisteredPlayers().end() ? *f : NAMESOCKFD();
+}
+
 void Connection::sendVersionedMessage(const Connection::VERSIONEDMESSAGE &vm) const
 throw(NetMauMau::Common::Exception::SocketException) {
-
-#if 0
-
-	PLAYERINFOS sortedPI(getRegisteredPlayers());
-	std::sort(sortedPI.begin(), sortedPI.end(), _playerClientversionLess());
-
-	for(VERSIONEDMESSAGE::const_iterator j(vm.begin()); j != vm.end(); ++j) {
-
-		const PLAYERINFOS::iterator &a(std::find_if(sortedPI.begin(), sortedPI.end(),
-									   std::bind2nd(std::not2(_playerClientversionLess2()),
-											   j->first)));
-
-		const PLAYERINFOS::iterator &b(std::find_if(sortedPI.begin(), sortedPI.end(),
-									   std::bind2nd(_playerClientversionLess2(), j->first)));
-
-		const PLAYERINFOS::difference_type fdsNum = std::distance(a, b);
-		PLAYERINFOS::difference_type l = 0;
-		int fds[fdsNum];
-
-		for(PLAYERINFOS::iterator k(a); l < fdsNum; ++k, ++l) {
-			fds[l] = k->sockfd;
-			k = sortedPI.erase(k);
-		}
-
-		std::string msg(j->second);
-		const bool wantPic = msg.substr(j->second.length() - 9) == "VM_ADDPIC";
-
-		for(PLAYERINFOS::const_iterator i(getPlayers().begin()); i != getPlayers().end(); ++i) {
-			write(fds, fdsNum, wantPic ? msg.replace(j->second.length() - 9,
-					std::string::npos, i->playerPic.empty() ? "-" : i->playerPic) : msg);
-		}
-	}
-
-#endif
 
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {

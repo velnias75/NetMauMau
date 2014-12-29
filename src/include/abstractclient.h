@@ -51,12 +51,18 @@ namespace NetMauMau {
 /// @brief Classes and functions used by clients only
 namespace Client {
 
+class AbstractClientV05Impl;
+
 /**
  * @brief %Client interface to communicate with the server
  */
 class _EXPORT AbstractClientV05 : protected IPlayerPicListener {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV05)
+
+	friend class AbstractClientV05Impl;
 	friend class AbstractClientV07;
+	friend class AbstractClientV08;
+
 public:
 	/// @copydoc Connection::CAPABILITIES
 	typedef Connection::CAPABILITIES CAPABILITIES;
@@ -525,19 +531,14 @@ protected:
 
 private:
 	typedef enum { OK, NOT_UNDERSTOOD, BREAK } PIRET;
+
 	virtual PIRET playInternal(std::string &msg, std::size_t *cturn, bool *initCardShown,
 							   std::string &cjackSuit,
 							   const NetMauMau::Common::ICard **lastPlayedCard)
 	throw(NetMauMau::Common::Exception::SocketException);
 
 private:
-	Connection m_connection;
-	const std::string m_pName;
-	unsigned char *m_pngData;
-	std::size_t m_pngDataLen;
-	CARDS m_cards;
-	const Common::ICard *m_openCard;
-	bool m_disconnectNow;
+	AbstractClientV05Impl *const _pimpl;
 };
 
 /**
@@ -547,8 +548,8 @@ private:
  */
 class _EXPORT AbstractClientV07 : public AbstractClientV05 {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV07)
+	friend class AbstractClientV08;
 protected:
-
 	/**
 	 * @brief Creates an @c AbstractClientV07 instance
 	 *
@@ -608,6 +609,9 @@ protected:
 
 	/// @}
 
+public:
+	virtual ~AbstractClientV07();
+
 private:
 	using AbstractClientV05::playInternal;
 
@@ -615,6 +619,65 @@ private:
 			bool *initCardShown, std::string &cjackSuit, const Common::ICard **lastPlayedCard)
 	throw(NetMauMau::Common::Exception::SocketException);
 };
+
+/**
+ * @brief %Client interface to communicate with the server
+ *
+ * @since 0.8
+ */
+class _EXPORT AbstractClientV08 : public AbstractClientV07 {
+	DISALLOW_COPY_AND_ASSIGN(AbstractClientV08)
+protected:
+	using AbstractClientV07::playCard;
+
+	/**
+	 * @brief Creates an @c AbstractClientV08 instance
+	 *
+	 * @copydetails AbstractClientV07(const std::string &, const std::string &, uint16_t)
+	 */
+	AbstractClientV08(const std::string &player, const std::string &server, uint16_t port,
+					  uint32_t clientVersion);
+
+	/**
+	 * @brief Creates an @c AbstractClientV08 instance
+	 *
+	 * @copydetails AbstractClientV07(const std::string &, const unsigned char *,
+	 *				  std::size_t, const std::string &, uint16_t)
+	 */
+	AbstractClientV08(const std::string &player, const unsigned char *pngData,
+					  std::size_t pngDataLen, const std::string &server, uint16_t port,
+					  uint32_t clientVersion);
+
+	virtual Common::ICard *playCard(const CARDS &cards) const;
+
+	/**
+	* @name Server requests
+	* @{
+	*/
+
+	/**
+	 * @brief The server requests a card to play
+	 *
+	 * @copydetails AbstractClientV05::playCard(const CARDS &cards)
+	 *
+	 * If @c takeCount is > @c 0 the client can use @c Common::getIllegalCard to retrive the
+	 * cards first
+	 *
+	 * @param takeCount the amount of cards the player has to take
+	 */
+	virtual Common::ICard *playCard(const CARDS &cards, std::size_t takeCount) const = 0;
+
+	/// @}
+
+	virtual ~AbstractClientV08();
+
+private:
+	virtual PIRET playInternal(std::string &msg, std::size_t *cturn, bool *initCardShown,
+							   std::string &cjackSuit,
+							   const NetMauMau::Common::ICard **lastPlayedCard)
+	throw(NetMauMau::Common::Exception::SocketException);
+};
+
 
 /**
  * @brief Alias to the current client interface to communicate with the server
@@ -633,10 +696,10 @@ private:
  * @note Starting with version 0.6 and with *libmagic* enabled, the server checks if the player
  * images are really in the PNG format
  *
- * @see AbstractClientV07
+ * @see AbstractClientV08
  *
  */
-typedef AbstractClientV07 AbstractClient;
+typedef AbstractClientV08 AbstractClient;
 
 }
 

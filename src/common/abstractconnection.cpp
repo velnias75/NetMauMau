@@ -31,6 +31,7 @@
 #include <cerrno>
 
 #include "abstractconnection.h"
+#include "abstractconnectionimpl.h"
 
 #include "errorstring.h"
 
@@ -63,41 +64,49 @@ AbstractConnection::_info::_info() : sockfd(-1), name(), host(), port(0), maj(0)
 
 AbstractConnection::_info::~_info() {}
 
+AbstractConnection::_nameSockFD::_nameSockFD(const std::string &n, const std::string &pp,
+		SOCKET sfd, uint32_t cv) : name(n), playerPic(pp), sockfd(sfd), clientVersion(cv) {}
+
+AbstractConnection::_nameSockFD::_nameSockFD() : name(), playerPic(), sockfd(INVALID_SOCKET),
+	clientVersion(0) {}
+
 AbstractConnection::_nameSockFD::~_nameSockFD() {}
 
 AbstractConnection::AbstractConnection(const char *server, uint16_t port) :
-	AbstractSocket(server, port), m_registeredPlayers() {}
+	AbstractSocket(server, port), _pimpl(new AbstractConnectionImpl()) {}
 
-AbstractConnection::~AbstractConnection() {}
+AbstractConnection::~AbstractConnection() {
+	delete _pimpl;
+}
 
 void AbstractConnection::registerPlayer(const NAMESOCKFD &nfd) {
-	m_registeredPlayers.push_back(nfd);
+	_pimpl->m_registeredPlayers.push_back(nfd);
 }
 
 const AbstractConnection::PLAYERINFOS &AbstractConnection::getRegisteredPlayers() const {
-	return m_registeredPlayers;
+	return _pimpl->m_registeredPlayers;
 }
 
 std::string AbstractConnection::getPlayerName(SOCKET sockfd) const {
 
-	const PLAYERINFOS::const_iterator &f(std::find_if(m_registeredPlayers.begin(),
-										 m_registeredPlayers.end(),
+	const PLAYERINFOS::const_iterator &f(std::find_if(_pimpl->m_registeredPlayers.begin(),
+										 _pimpl->m_registeredPlayers.end(),
 										 std::bind2nd(_isSocketFD(), sockfd)));
 
-	return f != m_registeredPlayers.end() ? f->name : "";
+	return f != _pimpl->m_registeredPlayers.end() ? f->name : "";
 }
 
 void AbstractConnection::removePlayer(SOCKET sockfd) {
 
-	const PLAYERINFOS::iterator &f(std::find_if(m_registeredPlayers.begin(),
-								   m_registeredPlayers.end(),
+	const PLAYERINFOS::iterator &f(std::find_if(_pimpl->m_registeredPlayers.begin(),
+								   _pimpl->m_registeredPlayers.end(),
 								   std::bind2nd(_isSocketFD(), sockfd)));
 
-	if(f != m_registeredPlayers.end()) m_registeredPlayers.erase(f);
+	if(f != _pimpl->m_registeredPlayers.end()) _pimpl->m_registeredPlayers.erase(f);
 }
 
 void AbstractConnection::addAIPlayers(const std::vector<std::string> &aiPlayers) {
-	m_aiPlayers.insert(m_aiPlayers.end(), aiPlayers.begin(), aiPlayers.end());
+	_pimpl->m_aiPlayers.insert(_pimpl->m_aiPlayers.end(), aiPlayers.begin(), aiPlayers.end());
 }
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
@@ -127,18 +136,18 @@ void AbstractConnection::wait(long ms) throw(Exception::SocketException) {
 #pragma GCC diagnostic pop
 
 const std::vector<std::string> &AbstractConnection::getAIPlayers() const {
-	return m_aiPlayers;
+	return _pimpl->m_aiPlayers;
 }
 
 void AbstractConnection::reset() throw() {
 
-	for(PLAYERINFOS::const_iterator i(m_registeredPlayers.begin()); i != m_registeredPlayers.end();
-			++i) {
+	for(PLAYERINFOS::const_iterator i(_pimpl->m_registeredPlayers.begin());
+			i != _pimpl-> m_registeredPlayers.end(); ++i) {
 		close(i->sockfd);
 	}
 
-	m_registeredPlayers.clear();
-	m_aiPlayers.clear();
+	_pimpl->m_registeredPlayers.clear();
+	_pimpl->m_aiPlayers.clear();
 }
 
 bool AbstractConnection::isHello(std::string::size_type dot, std::string::size_type spc) {

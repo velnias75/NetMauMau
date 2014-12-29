@@ -108,9 +108,13 @@ void StdRuleSet::hasSuspended() {
 	m_hasSuspended = true;
 }
 
+std::size_t StdRuleSet::takeCardCount() const {
+	return m_takeCardCount;
+}
+
 std::size_t StdRuleSet::takeCards(const NetMauMau::Common::ICard *playedCard) const {
 	return (playedCard && playedCard->getRank() == NetMauMau::Common::ICard::SEVEN) ? 0 :
-		   m_takeCardCount;
+		   takeCardCount();
 }
 
 void StdRuleSet::hasTakenCards() {

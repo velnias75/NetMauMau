@@ -17,6 +17,8 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cstdio>
+
 #include "serverplayer.h"
 
 #include "serverplayerexception.h"
@@ -82,7 +84,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 void Player::shuffleCards() {}
 
 NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *uncoveredCard,
-		const NetMauMau::Common::ICard::SUIT *s) const {
+		const NetMauMau::Common::ICard::SUIT *s, std::size_t takeCount) const {
 
 	try {
 
@@ -108,6 +110,19 @@ NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *un
 		}
 
 		m_connection.write(m_sockfd, "PLAYCARDEND");
+
+		if(m_connection.getPlayerInfo(getName()).clientVersion >= 8) {
+
+			char cc[20];
+
+#ifndef _WIN32
+			std::snprintf(cc, 20, "%zu", takeCount);
+#else
+			std::snprintf(cc, 20, "%lu", (unsigned long)takeCount);
+#endif
+
+			m_connection.write(m_sockfd, cc);
+		}
 
 		const std::string offeredCard = m_connection.read(m_sockfd);
 

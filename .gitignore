@@ -76,3 +76,7 @@ src/server/nmm-server.1
 src/test/testimg.h
 gsl.h2m
 netmaumau.h2m
+V*.xml
+abi_dumps/
+compat_reports/
+

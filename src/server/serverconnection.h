@@ -50,6 +50,8 @@ public:
 		return getRegisteredPlayers();
 	}
 
+	NAMESOCKFD getPlayerInfo(const std::string &name) const;
+
 	void sendVersionedMessage(const VERSIONEDMESSAGE &vm) const
 	throw(Common::Exception::SocketException);
 

@@ -29,7 +29,7 @@ namespace Client {
 class Connection;
 
 class ConnectionImpl {
-	DISALLOW_COPY_AND_ASSIGN(ConnectionImpl);
+	DISALLOW_COPY_AND_ASSIGN(ConnectionImpl)
 public:
 	ConnectionImpl(Connection *piface, const std::string &pName, const timeval *timeout,
 				   uint32_t clientVersion);

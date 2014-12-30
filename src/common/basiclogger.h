@@ -1,11 +1,11 @@
 /**
  * basiclogger.h - template for basic logging functionality
  *
- * $Revision: 3314 $ $Author: heiko $
+ * $Revision: 3430 $ $Author: heiko $
  *
  * (c) 2012-2014 Heiko Schäfer <heiko@rangun.de>
  *
- * LICENCE is inherited by the project using this file
+ * LICENSE is inherited by the project using this file
  *
  **/
 
@@ -189,7 +189,7 @@ private:
 
 template<class OIter>
 class IPostLogger {
-	DISALLOW_COPY_AND_ASSIGN(IPostLogger);
+	DISALLOW_COPY_AND_ASSIGN(IPostLogger)
 public:
 	inline virtual ~IPostLogger() {}
 

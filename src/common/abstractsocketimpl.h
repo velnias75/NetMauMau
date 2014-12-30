@@ -29,7 +29,7 @@ namespace NetMauMau {
 namespace Common {
 
 class AbstractSocketImpl {
-	DISALLOW_COPY_AND_ASSIGN(AbstractSocketImpl);
+	DISALLOW_COPY_AND_ASSIGN(AbstractSocketImpl)
 public:
 	AbstractSocketImpl(const char *server, uint16_t port);
 	~AbstractSocketImpl();

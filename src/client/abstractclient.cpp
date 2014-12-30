@@ -474,11 +474,8 @@ uint32_t AbstractClientV05::parseProtocolVersion(const std::string &ver) {
 	const std::string::size_type p = ver.find('.');
 
 	if(p != std::string::npos) {
-
-		const uint16_t maj = std::strtoul(ver.substr(0, p).c_str(), NULL, 10);
-		const uint16_t min = std::strtoul(ver.substr(p + 1).c_str(), NULL, 10);
-
-		return MAKE_VERSION(maj, min);
+		return MAKE_VERSION(std::strtoul(ver.substr(0, p).c_str(), NULL, 10),
+							std::strtoul(ver.substr(p + 1).c_str(), NULL, 10));
 	}
 
 	return 0;

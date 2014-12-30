@@ -32,6 +32,8 @@ static inline bool is_base64(NetMauMau::Common::BYTE c) {
 	return (std::isalnum(c) || (c == '+') || (c == '/'));
 }
 
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic push
 std::string NetMauMau::Common::base64_encode(BYTE const *buf, unsigned int bufLen) {
 
 	std::string ret;
@@ -136,5 +138,6 @@ NetMauMau::Common::base64_decode(std::string const &encoded_string) {
 
 	return ret;
 }
+#pragma GCC diagnostic pop
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

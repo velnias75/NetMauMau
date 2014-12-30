@@ -27,7 +27,7 @@ namespace NetMauMau {
 namespace Common {
 
 class AbstractConnectionImpl {
-	DISALLOW_COPY_AND_ASSIGN(AbstractConnectionImpl);
+	DISALLOW_COPY_AND_ASSIGN(AbstractConnectionImpl)
 public:
 	AbstractConnectionImpl();
 	~AbstractConnectionImpl();

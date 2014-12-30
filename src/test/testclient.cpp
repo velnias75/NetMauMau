@@ -59,7 +59,7 @@ void TestClient::error(const std::string &msg) const {
 	message(BOLD_ON + RED_ON + "ERROR: " + msg + RED_OFF + BOLD_OFF);
 }
 
-void TestClient::unknownServerMessage(std::string msg) const {
+void TestClient::unknownServerMessage(const std::string &msg) const {
 	message(std::string("Unknown server message: \"") + msg + "\"");
 }
 

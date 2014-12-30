@@ -532,7 +532,7 @@ protected:
 	 *
 	 * @param message the unknown message
 	 */
-	virtual void unknownServerMessage(std::string message) const = 0;
+	virtual void unknownServerMessage(const std::string &msg) const = 0;
 
 private:
 	typedef enum { OK, NOT_UNDERSTOOD, BREAK } PIRET;

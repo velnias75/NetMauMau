@@ -32,7 +32,7 @@ public:
 protected:
 	using NetMauMau::Client::AbstractClient::playCard;
 
-	virtual void unknownServerMessage(std::string message) const;
+	virtual void unknownServerMessage(const std::string &msg) const;
 
 	virtual void message(const std::string &msg) const;
 	virtual void error(const std::string &msg) const;

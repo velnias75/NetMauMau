@@ -37,10 +37,6 @@
 #include "base64.h"
 #include "logger.h"
 
-namespace {
-
-}
-
 using namespace NetMauMau::Client;
 
 AbstractClientV08::AbstractClientV08(const std::string &player, const std::string &server,

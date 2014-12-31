@@ -85,7 +85,7 @@ void TestClient::stats(const STATS &s) const {
 	if(mau) std::cout << "\a";
 }
 
-NetMauMau::Common::ICard *TestClient::playCard(const CARDS &cards, std::size_t) const {
+NetMauMau::Common::ICard *TestClient::playCard(const CARDS &cards, std::size_t tc) const {
 
 	std::size_t pos;
 
@@ -99,11 +99,12 @@ NetMauMau::Common::ICard *TestClient::playCard(const CARDS &cards, std::size_t) 
 
 		std::cout << "Choose card:" << std::endl;
 		std::cout << " 0) Suspend turn" << std::endl;
-		std::cout << " 1) Take cards and choose again" << std::endl;
+
+		if(tc) std::cout << " 1) Take " << tc << " cards and choose again" << std::endl;
 
 		for(CARDS::const_iterator i(m_myCards.begin()); i != m_myCards.end(); ++i) {
 			if(NetMauMau::Common::findCard(*i, possibleCards.begin(), possibleCards.end())) {
-				std::cout << std::setw(2) << (pos + 2) << std::setw(0) << ") "
+				std::cout << std::setw(2) << (pos + (tc ? 2 : 1)) << std::setw(0) << ") "
 						  << (*i)->description(true) << std::endl;
 				++pos;
 			} else {
@@ -115,15 +116,15 @@ NetMauMau::Common::ICard *TestClient::playCard(const CARDS &cards, std::size_t) 
 		std::cout << "Choose: ";
 		std::cin >> pos;
 
-	} while(pos > possibleCards.size() + 1);
+	} while(pos > possibleCards.size() + (tc ? 1 : 0));
 
 	if(!pos) {
 		return 0;
-	} else if(pos == 1) {
+	} else if(tc && pos == 1) {
 		return NetMauMau::Common::getIllegalCard();
 	}
 
-	return possibleCards.at(pos - 2);
+	return possibleCards.at(pos - (tc ? 2 : 1));
 
 }
 

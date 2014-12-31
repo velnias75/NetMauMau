@@ -1,6 +1,6 @@
 bin_PROGRAMS = nmm-server
 
-EXTRA_DIST = Tuyul.PNG create_ai_icon.sh
+EXTRA_DIST = KS.PNG create_ai_icon.sh
 
 man1_MANS = 
 

@@ -42,7 +42,7 @@ AC_ARG_ENABLE([ai-name], [AS_HELP_STRING([--enable-ai-name], [default name of AI
 
 AC_ARG_ENABLE([ai-image], [AS_HELP_STRING([--enable-ai-image], [path to image of AI player])],
   [ AM_CONDITIONAL([BRANDING], [ true ]) AC_SUBST([AI_IMAGE], [$enable_ai_image]) ],
-  [ AM_CONDITIONAL([BRANDING], [ false ]) AC_SUBST([AI_IMAGE], [\$\(top_srcdir\)/src/server/Tuyul.PNG])])
+  [ AM_CONDITIONAL([BRANDING], [ false ]) AC_SUBST([AI_IMAGE], [\$\(top_srcdir\)/src/server/KS.PNG])])
 
 AC_ARG_ENABLE([pidfile], [AS_HELP_STRING([--enable-pidfile], [enables creation of pid file])],
   [ AM_CONDITIONAL([PIDFILE], [ test x$enable_pidfile = xyes ]) ],

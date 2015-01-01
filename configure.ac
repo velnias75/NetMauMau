@@ -42,7 +42,7 @@ AC_ARG_ENABLE([ai-name], [AS_HELP_STRING([--enable-ai-name], [default name of AI
 
 AC_ARG_ENABLE([ai-image], [AS_HELP_STRING([--enable-ai-image], [path to image of AI player])],
   [ AM_CONDITIONAL([BRANDING], [ true ]) AC_SUBST([AI_IMAGE], [$enable_ai_image]) ],
-  [ AM_CONDITIONAL([BRANDING], [ false ]) AC_SUBST([AI_IMAGE], [\$\(top_srcdir\)/src/server/KS.PNG])])
+  [ AM_CONDITIONAL([BRANDING], [ false ]) AC_SUBST([AI_IMAGE], [\$\(top_srcdir\)/src/server/images/KS.PNG])])
 
 AC_ARG_ENABLE([pidfile], [AS_HELP_STRING([--enable-pidfile], [enables creation of pid file])],
   [ AM_CONDITIONAL([PIDFILE], [ test x$enable_pidfile = xyes ]) ],
@@ -161,4 +161,5 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_FILES([src/server/netmaumau.rc doc/client.dox netmaumau.h2m])
 
 AC_OUTPUT([Makefile src/include/Makefile src/Makefile src/common/Makefile src/engine/Makefile 
-  src/server/Makefile src/client/Makefile src/test/Makefile doc/Makefile])
+  src/server/Makefile src/server/images/Makefile src/client/Makefile src/test/Makefile 
+  doc/Makefile])

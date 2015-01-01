@@ -4,16 +4,24 @@ Priority: extra
 Maintainer: Heiko Schäfer <heiko@rangun.de>
 Build-Depends: cdbs, debhelper (>= 9), dh-autoreconf, autotools-dev, pkg-config, debconf,
  libpopt-dev (>= 1.10), doxygen (>= 1.8.0), graphviz, automake1.11, help2man, vim-common,
- libmagic-dev, libgsl0-dev
+ libmagic-dev, libgsl0-dev, lsb-release
 Standards-Version: 3.9.4
 Homepage: https://github.com/velnias75/NetMauMau/
 #Vcs-Git: https://git@github.com:velnias75/NetMauMau.git
 #Vcs-Browser: https://github.com/velnias75/NetMauMau/
 
+Package: netmaumau-server-common
+Architecture: all
+Depends: ${misc:Depends}
+Description: Server for the popular card game Mau Mau - common server files
+ Provides a server for the popular card game NetMauMau. Up to 5 players can 
+ play against each other, or against up to 4 tactical AI opponents.
+ 
 Package: netmaumau-server
 Architecture: any
 Suggests: nmm-qt-client
-Depends: libnetmaumaucommon1 (>= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Depends: netmaumau-server-common (>= ${source:Version}), libnetmaumaucommon1 (>= ${binary:Version}), 
+ ${shlibs:Depends}, ${misc:Depends}
 Description: Server for the popular card game Mau Mau - server
  Provides a server for the popular card game NetMauMau. Up to 5 players can 
  play against each other, or against up to 4 tactical AI opponents.

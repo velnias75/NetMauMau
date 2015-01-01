@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -22,6 +22,8 @@
 
 #include "linkercontrol.h"
 
+#include "icard.h"
+
 namespace NetMauMau {
 
 namespace Player {
@@ -33,6 +35,7 @@ class IAceRoundListener {
 public:
 	virtual ~IAceRoundListener() {}
 
+	virtual Common::ICard::RANK getAceRoundRank() const = 0;
 	virtual void aceRoundStarted(const Player::IPlayer *player) const = 0;
 	virtual void aceRoundEnded(const Player::IPlayer *player) const = 0;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -54,7 +54,7 @@ bool StdRuleSet::checkCard(const NetMauMau::Common::ICard *uncoveredCard,
 	if(!uncoveredCard || !playedCard) return false;
 
 	return (m_aceRound && m_aceRoundPlayer) ?
-		   (playedCard->getRank() == NetMauMau::Common::ICard::ACE) :
+		   (playedCard->getRank() == m_arl->getAceRoundRank()) :
 		   ((playedCard->getRank() == NetMauMau::Common::ICard::JACK
 			 && uncoveredCard->getRank() != NetMauMau::Common::ICard::JACK) ||
 			((((isJackMode() && getJackSuit() == playedCard->getSuit()) ||
@@ -69,7 +69,7 @@ bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 						   const NetMauMau::Common::ICard *playedCard, bool /*ai*/) {
 
 	if(m_aceRound && uncoveredCard && (!m_aceRoundPlayer || m_aceRoundPlayer == player) &&
-			playedCard->getRank() == NetMauMau::Common::ICard::ACE) {
+			playedCard->getRank() == m_arl->getAceRoundRank()) {
 
 		const bool acrCont = m_aceRoundPlayer;
 
@@ -135,6 +135,10 @@ bool StdRuleSet::takeIfLost() const {
 
 bool StdRuleSet::isAceRoundPossible() const {
 	return m_aceRound;
+}
+
+NetMauMau::Common::ICard::RANK StdRuleSet::getAceRoundRank() const {
+	return m_arl ? m_arl->getAceRoundRank() : NetMauMau::Common::ICard::RANK_ILLEGAL;
 }
 
 bool StdRuleSet::isAceRound() const {

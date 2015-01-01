@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -42,7 +42,7 @@ std::size_t countAI(const std::string *aiNames) {
 using namespace NetMauMau::Server;
 
 Game::Game(NetMauMau::Event::IEventHandler &evtHdlr, long aiDelay, bool aiPlayer,
-		   const std::string *aiNames, bool aceRound) : m_engine(evtHdlr, aiDelay,
+		   const std::string *aiNames, char aceRound) : m_engine(evtHdlr, aiDelay,
 					   !aiPlayer || countAI(aiNames) > 1, aceRound), m_aiOpponent(aiPlayer),
 	m_aiPlayers(), m_players() {
 

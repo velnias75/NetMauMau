@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -37,7 +37,7 @@ int main(int, char **) {
 #endif
 
 	TestEventHandler evHdlr;
-	Engine engine(evHdlr, 0L, false, true);
+	Engine engine(evHdlr, 0L, false, 'A');
 
 	Player::StdPlayer p1("Cathy");
 	Player::StdPlayer p2("Tarik");

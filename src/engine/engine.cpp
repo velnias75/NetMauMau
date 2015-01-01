@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -68,12 +68,14 @@ const GSLRNG<std::ptrdiff_t> RNG;
 
 using namespace NetMauMau;
 
-Engine::Engine(Event::IEventHandler &eventHandler, long aiDelay, bool nextMessage, bool aceRound) :
+Engine::Engine(Event::IEventHandler &eventHandler, long aiDelay, bool nextMessage, char aceRound) :
 	m_eventHandler(eventHandler), m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)),
 	m_ruleset(new RuleSet::StdRuleSet(aceRound ? this : 0L)), m_players(), m_nxtPlayer(0),
 	m_turn(1), m_curTurn(0), m_delRuleSet(true), m_jackMode(false), m_initialChecked(false),
 	m_nextMessage(nextMessage), m_ultimate(false), m_initialJack(false), m_alwaysWait(false),
-	m_initialNextMessage(nextMessage), m_aiDelay(aiDelay) {
+	m_initialNextMessage(nextMessage), m_aiDelay(aiDelay), m_aceRoundRank(aceRound == 'A' ?
+			Common::ICard::ACE : (aceRound == 'Q' ? Common::ICard::QUEEN : (aceRound == 'K' ?
+								  Common::ICard::KING : Common::ICard::RANK_ILLEGAL))) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
 }
@@ -83,7 +85,8 @@ Engine::Engine(Event::IEventHandler &eventHandler, long aiDelay, RuleSet::IRuleS
 	m_talon(new Talon(this)), m_ruleset(ruleset), m_players(), m_nxtPlayer(0), m_turn(1),
 	m_curTurn(0), m_delRuleSet(false), m_jackMode(false), m_initialChecked(false),
 	m_nextMessage(nextMessage), m_ultimate(false), m_initialJack(false), m_alwaysWait(false),
-	m_initialNextMessage(nextMessage), m_aiDelay(aiDelay) {
+	m_initialNextMessage(nextMessage), m_aiDelay(aiDelay),
+	m_aceRoundRank(Common::ICard::RANK_ILLEGAL) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
 }
@@ -524,6 +527,10 @@ void Engine::shuffled() const {
 	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
 		(*i)->talonShuffled();
 	}
+}
+
+Common::ICard::RANK Engine::getAceRoundRank() const {
+	return m_aceRoundRank;
 }
 
 void Engine::aceRoundStarted(const Player::IPlayer *player) const

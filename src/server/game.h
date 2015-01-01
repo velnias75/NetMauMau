@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -48,7 +48,7 @@ public:
 	typedef enum { ACCEPTED, REFUSED, ACCEPTED_READY, REFUSED_FULL } COLLECT_STATE;
 
 	Game(Event::IEventHandler &evtHdlr, long aiDelay, bool aiPlayer = false,
-		 const std::string *aiName = 0L, bool aceRound = false);
+		 const std::string *aiName = 0L, char aceRound = 0);
 	~Game();
 
 	COLLECT_STATE collectPlayers(std::size_t minPlayers, Player::IPlayer *player);

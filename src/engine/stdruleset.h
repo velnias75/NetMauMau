@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -54,6 +54,7 @@ public:
 	virtual void hasTakenCards();
 
 	virtual bool isAceRoundPossible() const _PURE;
+	virtual Common::ICard::RANK getAceRoundRank() const;
 
 	virtual bool isAceRound() const;
 	virtual bool isJackMode() const _PURE;

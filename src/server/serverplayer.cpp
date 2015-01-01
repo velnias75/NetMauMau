@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -97,7 +97,7 @@ NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *un
 			if(s && (*i)->getSuit() != *s) continue;
 
 			const bool accepted = getRuleSet()->isAceRound() ?
-								  (*i)->getRank() == NetMauMau::Common::ICard::ACE :
+								  (*i)->getRank() == getRuleSet()->getAceRoundRank() :
 								  getRuleSet()->checkCard(*i, uncoveredCard);
 
 			const bool jack = ((*i)->getRank() == NetMauMau::Common::ICard::JACK &&

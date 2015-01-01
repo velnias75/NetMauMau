@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -96,6 +96,7 @@ char *user  = DP_USER;
 char *grp = DP_GROUP;
 char *dpErr = 0L;
 const char *interface;
+char *arRank = "ACE";
 #endif
 #pragma GCC diagnostic pop
 
@@ -106,8 +107,9 @@ poptOption poptOptions[] = {
 	},
 	{ "ultimate", 'u', POPT_ARG_NONE, NULL, 'u', "Play until last player wins", NULL },
 	{
-		"ace-round", 'a', POPT_ARG_NONE, NULL, 'a', "Enable ace rounds (requires all clients " \
-		"to be at least of version 0.7)", NULL
+		"ace-round", 'a', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT | POPT_ARGFLAG_OPTIONAL,
+		&arRank, 'a', "Enable ace rounds (requires all clients to be at least of version 0.7)",
+		"ACE|QUEEN|KING"
 	},
 	{
 		"ai-name", 'A', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &aiName, 'A',
@@ -386,6 +388,15 @@ int main(int argc, const char **argv) {
 
 		case 'a':
 			aceRound = true;
+
+			if(arRank && !(::toupper(arRank[0]) == 'A' || ::toupper(arRank[0]) == 'Q' ||
+						   ::toupper(arRank[0]) == 'K')) {
+				logError("\'" << arRank << "\' is not a valid ace round rank. " \
+						 "Valid ranks are ACE, KING, or QUEEN.");
+				poptFreeContext(pctx);
+				return EXIT_FAILURE;
+			}
+
 			break;
 
 		case 'I':
@@ -484,13 +495,16 @@ int main(int argc, const char **argv) {
 			con.connect();
 
 			Server::EventHandler evtHdlr(con);
-			Server::Game game(evtHdlr, ::labs(aiDelay), aiOpponent, aiNames, aceRound);
+			Server::Game game(evtHdlr, ::labs(aiDelay), aiOpponent, aiNames,
+							  static_cast<char>(aceRound ? ::toupper(arRank ? arRank[0] : 'A') :
+													0));
 
 			Server::Connection::CAPABILITIES caps;
 			caps.insert(std::make_pair("SERVER_VERSION", PACKAGE_VERSION));
 			caps.insert(std::make_pair("AI_OPPONENT", aiOpponent ? "true" : "false"));
 			caps.insert(std::make_pair("ULTIMATE", ultimate ? "true" : "false"));
-			caps.insert(std::make_pair("ACEROUND", aceRound ? "true" : "false"));
+			caps.insert(std::make_pair("ACEROUND", aceRound ? std::string(1, ::toupper(arRank[0]))
+									   : "false"));
 
 			if(aiOpponent) caps.insert(std::make_pair("AI_NAME", aiNames[0]));
 

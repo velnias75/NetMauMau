@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -313,7 +313,7 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 					}
 
 				} else if(!((m_ruleset->isAceRoundPossible() && (bestCard = hasRankPath(uc,
-							 suitCount[i].suit, NetMauMau::Common::ICard::ACE, myCards))) ||
+							 suitCount[i].suit, m_ruleset->getAceRoundRank(), myCards))) ||
 							(bestCard = hasRankPath(uc, suitCount[i].suit,
 													NetMauMau::Common::ICard::EIGHT, myCards)))) {
 
@@ -357,13 +357,13 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 
 		m_tryAceRound = std::count_if(myCards.begin(), myCards.end(),
 									  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-											  NetMauMau::Common::ICard::ACE)) >
+											  m_ruleset->getAceRoundRank())) >
 						(m_tryAceRound ? 0 : 1);
 
 		if(m_tryAceRound) {
 			std::partition(myCards.begin(), myCards.end(),
 						   std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-										NetMauMau::Common::ICard::ACE));
+										m_ruleset->getAceRoundRank()));
 			return *myCards.begin();
 		}
 	}
@@ -469,7 +469,7 @@ bool StdPlayer::getAceRoundChoice() const {
 bool StdPlayer::isAceRoundAllowed() const {
 	return std::count_if(getPlayerCards().begin(), getPlayerCards().end(),
 						 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-									  NetMauMau::Common::ICard::ACE)) > 1;
+									  m_ruleset->getAceRoundRank())) > 1;
 }
 
 NetMauMau::Common::ICard::SUIT StdPlayer::getMaxPlayedOffSuit(CARDS::difference_type *count) const {

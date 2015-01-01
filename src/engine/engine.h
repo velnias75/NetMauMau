@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -57,7 +57,7 @@ public:
 	typedef std::vector<Player::IPlayer *> PLAYERS;
 
 	Engine(Event::IEventHandler &eventHandler, long aiDelay = 1000L, bool nextMessage = true,
-		   bool aceRound = false);
+		   char aceRound = 0);
 	Engine(Event::IEventHandler &eventHandler, long aiDelay, RuleSet::IRuleSet *ruleset,
 		   bool nextMessage = true);
 
@@ -102,6 +102,7 @@ protected:
 	throw(Common::Exception::SocketException);
 	virtual void shuffled() const;
 
+	virtual Common::ICard::RANK getAceRoundRank() const _PURE;
 	virtual void aceRoundStarted(const Player::IPlayer *player) const
 	throw(Common::Exception::SocketException);
 	virtual void aceRoundEnded(const Player::IPlayer *player)
@@ -149,6 +150,8 @@ private:
 
 	const bool m_initialNextMessage;
 	const long m_aiDelay;
+
+	const Common::ICard::RANK m_aceRoundRank;
 };
 
 }

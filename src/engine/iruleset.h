@@ -54,6 +54,7 @@ public:
 	virtual bool takeIfLost() const = 0;
 
 	virtual bool isAceRoundPossible() const = 0;
+	virtual Common::ICard::RANK getAceRoundRank() const = 0;
 
 	virtual bool isAceRound() const = 0;
 	virtual bool isJackMode() const = 0;

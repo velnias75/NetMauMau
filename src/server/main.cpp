@@ -91,12 +91,12 @@ char *host = bind;
 char *aiName = AI_NAME;
 std::string aiNames[4];
 long aiDelay = 1000L;
+char *arRank = "ACE";
 #ifndef _WIN32
 char *user  = DP_USER;
 char *grp = DP_GROUP;
 char *dpErr = 0L;
 const char *interface;
-char *arRank = "ACE";
 #endif
 #pragma GCC diagnostic pop
 
@@ -503,8 +503,8 @@ int main(int argc, const char **argv) {
 			caps.insert(std::make_pair("SERVER_VERSION", PACKAGE_VERSION));
 			caps.insert(std::make_pair("AI_OPPONENT", aiOpponent ? "true" : "false"));
 			caps.insert(std::make_pair("ULTIMATE", ultimate ? "true" : "false"));
-			caps.insert(std::make_pair("ACEROUND", aceRound ? std::string(1, ::toupper(arRank[0]))
-									   : "false"));
+			caps.insert(std::make_pair("ACEROUND", aceRound ? std::string(1, arRank ?
+									   ::toupper(arRank[0]) : 'A') : "false"));
 
 			if(aiOpponent) caps.insert(std::make_pair("AI_NAME", aiNames[0]));
 

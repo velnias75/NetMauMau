@@ -47,7 +47,7 @@ endif
 
 .DELETE_ON_ERROR:
 ai-icon.h: $(AI_IMAGE)
-	base64 -w0 $< | $(SHELL) $(srcdir)/create_ai_icon.sh 'ai_icon_data' > $(builddir)/$(@F)
+	$(BASE64) $< | $(B64_TR) | $(SHELL) $(srcdir)/create_ai_icon.sh 'ai_icon_data' > $(builddir)/$(@F)
 
 %.rc.lo: %.rc
 	$(LIBTOOL) --tag=RC --mode=compile $(RC) $< -o $@

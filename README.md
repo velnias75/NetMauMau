@@ -125,19 +125,20 @@ the first player.
 
 * **Queen** (5 points)
 
-   there is no special rule for that rank
+   the same as for **Ace rounds** but with *Queen* if enabled with `--ace-round=QUEEN|-aq`
 
 * **King** (6 points)
 
-   there is no special rule for that rank
+   the same as for **Ace rounds** but with *King* if enabled with `--ace-round=KING|-ak`
 
 * **Ace** (11 points)
 
-   if the **Ace rounds** are enabled (`--ace-round|-a`), a player can, if there
+   if the **Ace rounds** are enabled (`--ace-round=ACE|-aa`), a player can, if there
    are two or more *Aces* on hand, start an **Ace round**. Within the 
    **Ace round**  other players can only play out *Aces* or have to suspend and 
    take a card. The player can stop the **Ace round** at any time. The 
-   **Ace round** is also stopped if the player plays the last *Ace*
+   **Ace round** is also stopped if the player plays the last *Ace*.
+   Otherwise *Ace* has no special rule.
 
 * **Jack** (20 points)
 

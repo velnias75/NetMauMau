@@ -599,6 +599,8 @@ protected:
 	/**
 	 * @brief An ace round was started by a player
 	 *
+	 * @see CAPABILITIES for getting the ace round rank
+	 *
 	 * @param player the player starting the ace round
 	 * @since 0.7
 	 */
@@ -606,6 +608,8 @@ protected:
 
 	/**
 	 * @brief An ace round was ended by a player
+	 *
+	 * @see CAPABILITIES for getting the ace round rank
 	 *
 	 * @param player the player ending the ace round
 	 * @since 0.7

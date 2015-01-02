@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -90,6 +90,18 @@ public:
 
 	/**
 	 * @brief Key/value map of the server capabilities
+	 *
+	 * Key            | Value
+	 * -------------- | -----
+	 * ACEROUND       | `false` if no *ace rounds* are enabled, else `A`, `Q` or `K` for the *rank*
+	 * AI_NAME        | name of the first AI player
+	 * AI_OPPONENT    | `true` if the AI opponent is enabled
+	 * CUR_PLAYERS    | amount of current players joined
+	 * MAX_PLAYERS    | amount of players needed to start the game
+	 * MIN_VERSION    | minimum version of client that can connect
+	 * SERVER_VERSION | version of the server
+	 * ULTIMATE       | `true` if running in ultimate mode, `false` otherwise
+	 *
 	 */
 	typedef std::map<std::string, std::string> CAPABILITIES;
 

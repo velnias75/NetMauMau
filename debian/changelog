@@ -1,4 +1,10 @@
-netmaumau (0.8) precise; urgency=low
+netmaumau (0.9) UNRELEASED; urgency=low
+
+  * 
+
+ -- Heiko Schäfer <heiko@rangun.de>  Sat, 03 Jan 2015 13:41:29 +0100
+
+netmaumau (0.8) UNRELEASED; urgency=low
 
   * implemented take card count on play card request
   * implemented https://github.com/velnias75/NetMauMau/issues/14

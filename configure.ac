@@ -100,6 +100,7 @@ See the
 .mso www.tmac
 .URL \"http://www.gnu.org/software/gsl/manual/html_node/Random-number-environment-variables.html\" \"GSL Manual\" \" for more information\"" > gsl.h2m ], 
   [ AM_CONDITIONAL([GSL], [ false ])] )
+PKG_CHECK_MODULES([LIBSQLITE], [sqlite3 >= 3.4.2])
 
 # Checks for header files.
 AC_HEADER_STDBOOL
@@ -161,6 +162,6 @@ AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_FILES([src/server/netmaumau.rc doc/client.dox netmaumau.h2m])
 
-AC_OUTPUT([Makefile src/include/Makefile src/Makefile src/common/Makefile src/engine/Makefile 
-  src/server/Makefile src/server/images/Makefile src/client/Makefile src/test/Makefile 
-  doc/Makefile])
+AC_OUTPUT([Makefile src/include/Makefile src/Makefile src/common/Makefile src/sqlite/Makefile
+  src/engine/Makefile src/server/Makefile src/server/images/Makefile src/client/Makefile 
+  src/test/Makefile doc/Makefile])

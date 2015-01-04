@@ -42,6 +42,7 @@
 #include "ai-icon.h"
 #include "base64.h"
 #include "logger.h"
+#include "sqlite.h"
 
 namespace {
 
@@ -350,6 +351,8 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 							registerPlayer(nsf);
 							send("OK", 2, cfd);
 							accepted = PLAY;
+
+							NetMauMau::DB::SQLite::getInstance().addPlayer(info);
 
 						} else {
 

@@ -62,10 +62,11 @@
 #include <popt.h>
 
 #include "game.h"
+#include "sqlite.h"
+#include "logger.h"
 #include "serverplayer.h"
 #include "serverconnection.h"
 #include "servereventhandler.h"
-#include "logger.h"
 
 #ifndef DP_USER
 #define DP_USER "nobody"
@@ -463,6 +464,8 @@ int main(int argc, const char **argv) {
 	sa.sa_flags = SA_RESETHAND;
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGTERM, &sa, NULL);
+
+	NetMauMau::DB::SQLite::getInstance();
 
 	if(!dropPrivileges(user, grp)) {
 

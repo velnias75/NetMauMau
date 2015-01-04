@@ -14,6 +14,8 @@ Prerequisites
 
 * GNU Scientific Library >= 1.9 (*optionally*, for better random number generator)
 
+* sqlite3
+
 Setting up the build environment
 --------------------------------
 

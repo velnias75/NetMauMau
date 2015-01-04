@@ -36,10 +36,11 @@ nmm_server_CPPFLAGS += -DNOH2M
 endif
 
 nmm_server_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
-	-I$(top_srcdir)/src/engine $(POPT_CFLAGS)
+	-I$(top_srcdir)/src/engine -I$(top_srcdir)/src/sqlite $(POPT_CFLAGS)
 nmm_server_SOURCES = game.cpp main.cpp serverconnection.cpp servereventhandler.cpp \
 	serverplayer.cpp serverplayerexception.cpp
-nmm_server_LDADD = ../common/libnetmaumaucommon.la ../engine/libengine.la $(POPT_LIBS)
+nmm_server_LDADD = ../common/libnetmaumaucommon.la ../engine/libengine.la ../sqlite/libsqlite.la \
+	$(POPT_LIBS)
 
 if RC
 nmm_server_LDADD += netmaumau.rc.lo

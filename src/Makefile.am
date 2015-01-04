@@ -1,2 +1,1 @@
-SUBDIRS = include common engine server client test
-
+SUBDIRS = include common sqlite engine server client test

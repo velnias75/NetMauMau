@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -36,6 +36,8 @@ namespace Server {
 class Connection : public Common::AbstractConnection {
 	DISALLOW_COPY_AND_ASSIGN(Connection)
 public:
+	using Common::AbstractConnection::getPlayerInfo;
+
 	typedef enum { NONE, PLAY, CAP, REFUSED, PLAYERLIST } ACCEPT_STATE;
 	typedef std::map<uint32_t, std::string, std::greater<uint32_t> > VERSIONEDMESSAGE;
 
@@ -45,6 +47,8 @@ public:
 	virtual void connect() throw(Common::Exception::SocketException);
 
 	int wait(timeval *tv = NULL);
+
+	virtual void removePlayer(SOCKET sockfd);
 
 	inline const PLAYERINFOS &getPlayers() const {
 		return getRegisteredPlayers();
@@ -73,6 +77,8 @@ public:
 	}
 
 	void clearPlayerPictures() const;
+
+	virtual void reset() throw();
 
 protected:
 	virtual bool wire(SOCKET sockfd, const struct sockaddr *addr, socklen_t addrlen) const;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -148,13 +148,15 @@ void TestEventHandler::playerWins(const NetMauMau::Player::IPlayer *player, std:
 			  << (m_isatty ? BLUE_OFF : "") << std::endl;
 }
 
-void TestEventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std::size_t,
-								  std::size_t pointFactor) const
+std::size_t TestEventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std::size_t,
+		std::size_t pointFactor) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << PLAYER << (m_isatty ? BOLD_ON : "") << "has lost with "
 			  << (player->getPoints() * pointFactor) << " points in hand :-("
 			  << (m_isatty ? BOLD_OFF : "") << std::endl;
+
+	return player->getPoints() * pointFactor;
 }
 
 void TestEventHandler::aceRoundStarted(const NetMauMau::Player::IPlayer *player)

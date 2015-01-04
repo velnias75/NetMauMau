@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -66,8 +66,8 @@ public:
 
 	virtual void playerWins(const Player::IPlayer *player, std::size_t turn,
 							bool ultimate) const throw(Common::Exception::SocketException);
-	virtual void playerLost(const Player::IPlayer *player, std::size_t turn,
-							std::size_t pointFactor) const
+	virtual std::size_t playerLost(const Player::IPlayer *player, std::size_t turn,
+								   std::size_t pointFactor) const
 	throw(Common::Exception::SocketException);
 	virtual void playerPlaysCard(const Player::IPlayer *player, const Common::ICard *playedCard,
 								 const Common::ICard *uncoveredCard) const

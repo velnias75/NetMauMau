@@ -52,6 +52,7 @@ const std::string &AIDefaultIcon(reinterpret_cast<const char *>(ai_icon_data));
 #pragma GCC diagnostic push
 struct _isPlayer : public std::binary_function < NetMauMau::Common::AbstractConnection::NAMESOCKFD,
 		std::string, bool > {
+
 	bool operator()(const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsd,
 					const std::string &player) const {
 		return nsd.name == player;
@@ -88,6 +89,8 @@ Connection::~Connection() {
 
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
+
+		NetMauMau::DB::SQLite::getInstance().logOutPlayer(*i);
 
 		try {
 			send("BYE", 3, i->sockfd);
@@ -486,11 +489,18 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 	return accepted;
 }
 
+void Connection::removePlayer(SOCKET sockfd) {
+	NetMauMau::DB::SQLite::getInstance().logOutPlayer(getPlayerInfo(sockfd));
+	NetMauMau::Common::AbstractConnection::removePlayer(sockfd);
+}
+
 NetMauMau::Common::AbstractConnection::NAMESOCKFD
 Connection::getPlayerInfo(const std::string &name) const {
+
 	const PLAYERINFOS::const_iterator &f(std::find_if(getRegisteredPlayers().begin(),
 										 getRegisteredPlayers().end(), std::bind2nd(_isPlayer(),
 												 name)));
+
 	return f != getRegisteredPlayers().end() ? *f : NAMESOCKFD();
 }
 
@@ -575,6 +585,16 @@ void Connection::intercept() throw(NetMauMau::Common::Exception::SocketException
 bool Connection::isPNG(const std::string &pic) {
 	const std::vector<NetMauMau::Common::BYTE> &pngData(NetMauMau::Common::base64_decode(pic));
 	return !(pngData.empty() || !NetMauMau::Common::checkPNG(pngData.data(), pngData.size()));
+}
+
+void Connection::reset() throw() {
+
+	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
+			i != getRegisteredPlayers().end(); ++i) {
+		NetMauMau::DB::SQLite::getInstance().logOutPlayer(*i);
+	}
+
+	AbstractConnection::reset();
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -21,10 +21,10 @@
 
 #include "game.h"
 #include "logger.h"
-#include "abstractconnection.h"
+#include "sqlite.h"
+#include <ieventhandler.h>
 
 namespace {
-const char *GAMEREADY = "Ready for new game...";
 
 std::size_t countAI(const std::string *aiNames) {
 
@@ -44,7 +44,7 @@ using namespace NetMauMau::Server;
 Game::Game(NetMauMau::Event::IEventHandler &evtHdlr, long aiDelay, bool aiPlayer,
 		   const std::string *aiNames, char aceRound) : m_engine(evtHdlr, aiDelay,
 					   !aiPlayer || countAI(aiNames) > 1, aceRound), m_aiOpponent(aiPlayer),
-	m_aiPlayers(), m_players() {
+	m_aiPlayers(), m_players(), m_gameIndex(0LL) {
 
 	m_players.reserve(50);
 
@@ -70,7 +70,7 @@ Game::Game(NetMauMau::Event::IEventHandler &evtHdlr, long aiDelay, bool aiPlayer
 		m_engine.setAlwaysWait(aiAdded > 1);
 	}
 
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << GAMEREADY);
+	gameReady();
 }
 
 Game::~Game() {
@@ -92,6 +92,9 @@ Game::COLLECT_STATE Game::collectPlayers(std::size_t minPlayers,
 	if(m_engine.getPlayerCount() < std::max<std::size_t>(2, minPlayers)) {
 
 		if(!addPlayer(player)) return REFUSED;
+
+		NetMauMau::DB::SQLite::getInstance().addPlayerToGame(m_gameIndex,
+				m_engine.getEventHandler().getConnection()->getPlayerInfo(player->getSerial()));
 
 		if(m_engine.getPlayerCount() == std::max<std::size_t>(2, minPlayers)) {
 			return ACCEPTED_READY;
@@ -160,7 +163,13 @@ void Game::reset(bool playerLost) throw() {
 		}
 	}
 
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << GAMEREADY);
+	gameReady();
+}
+
+void Game::gameReady() {
+	NetMauMau::DB::SQLite::getInstance().gameEnded(m_gameIndex);
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Ready for new game...");
+	m_engine.setGameId(m_gameIndex = NetMauMau::DB::SQLite::getInstance().newGame());
 }
 
 void Game::shutdown() const throw() {

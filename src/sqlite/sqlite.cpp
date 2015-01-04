@@ -37,4 +37,40 @@ bool SQLite::addPlayer(const NetMauMau::Common::AbstractConnection::INFO &info) 
 	return _pimpl->addPlayer(info);
 }
 
+bool SQLite::logOutPlayer(const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsf) const {
+	return _pimpl->logOutPlayer(nsf);
+}
+
+long long int SQLite::newGame() const {
+	return _pimpl->newGame();
+}
+
+bool SQLite::gameEnded(long long int gameIndex) const {
+	return _pimpl->gameEnded(gameIndex);
+}
+
+bool SQLite::addPlayerToGame(long long int gid,
+							 const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsf) const {
+	return _pimpl->addPlayerToGame(gid, nsf);
+}
+
+bool SQLite::turn(long long int gameIndex, std::size_t t) const {
+	return _pimpl->turn(gameIndex, t);
+}
+
+bool SQLite::gamePlayStarted(long long int gameIndex) const {
+	return _pimpl->gamePlayStarted(gameIndex);
+}
+
+bool SQLite::playerLost(long long int gameIndex,
+						const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsf,
+						time_t time, std::size_t points) const {
+	return _pimpl->playerLost(gameIndex, nsf, time, points);
+}
+
+bool SQLite::playerWins(long long int gameIndex,
+						const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsf) const {
+	return _pimpl->playerWins(gameIndex, nsf);
+}
+
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

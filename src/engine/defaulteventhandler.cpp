@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -102,17 +102,19 @@ throw(NetMauMau::Common::Exception::SocketException) {}
 void DefaultEventHandler::playerWins(const NetMauMau::Player::IPlayer *, std::size_t, bool) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
-void DefaultEventHandler::playerLost(const NetMauMau::Player::IPlayer *, std::size_t,
-									 std::size_t) const
-throw(NetMauMau::Common::Exception::SocketException) {}
+std::size_t DefaultEventHandler::playerLost(const NetMauMau::Player::IPlayer *, std::size_t,
+		std::size_t) const
+throw(NetMauMau::Common::Exception::SocketException) {
+	return 0;
+}
 
 void DefaultEventHandler::nextPlayer(const NetMauMau::Player::IPlayer *) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
-void DefaultEventHandler::aceRoundStarted(const NetMauMau::Player::IPlayer *) 
+void DefaultEventHandler::aceRoundStarted(const NetMauMau::Player::IPlayer *)
 throw(NetMauMau::Common::Exception::SocketException) {}
 
-void DefaultEventHandler::aceRoundEnded(const NetMauMau::Player::IPlayer *) 
+void DefaultEventHandler::aceRoundEnded(const NetMauMau::Player::IPlayer *)
 throw(NetMauMau::Common::Exception::SocketException) {}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

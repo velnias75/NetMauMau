@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -41,7 +41,7 @@ public:
 	virtual ~IPlayer() {}
 
 	virtual std::string getName() const = 0;
-	virtual int getSerial() const = 0;
+	virtual int  getSerial() const = 0;
 	virtual bool isAIPlayer() const = 0;
 	virtual bool isAlive() const = 0;
 

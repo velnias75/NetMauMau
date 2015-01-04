@@ -38,6 +38,17 @@ public:
 	static SQLite &getInstance();
 
 	bool addPlayer(const Common::AbstractConnection::INFO &info) const;
+	bool logOutPlayer(const Common::AbstractConnection::NAMESOCKFD &nsf) const;
+	long long int newGame() const;
+	bool gameEnded(long long int gameIndex) const;
+	bool addPlayerToGame(long long int gid,
+						 const Common::AbstractConnection::NAMESOCKFD &nsf) const;
+	bool turn(long long int gameIndex, std::size_t turn) const;
+	bool gamePlayStarted(long long int gameIndex) const;
+	bool playerLost(long long int gameIndex, const Common::AbstractConnection::NAMESOCKFD &nsf,
+					time_t time, std::size_t points) const;
+	bool playerWins(long long int gameIndex, const Common::AbstractConnection::NAMESOCKFD &nsf)
+	const;
 
 private:
 	SQLite();

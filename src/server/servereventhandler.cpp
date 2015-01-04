@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -192,8 +192,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 }
 
-void EventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std::size_t,
-							  std::size_t pointFactor) const
+std::size_t EventHandler::playerLost(const NetMauMau::Player::IPlayer *player, std::size_t,
+									 std::size_t pointFactor) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::string pl("PLAYERLOST");
@@ -208,6 +208,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	versionedMessage.insert(std::make_pair(3, vm_new.str()));
 
 	m_connection.sendVersionedMessage(versionedMessage);
+
+	return player->getPoints() * pointFactor;
 }
 
 void EventHandler::playerPlaysCard(const NetMauMau::Player::IPlayer *player,

@@ -63,12 +63,20 @@ public:
 
 	virtual ~Engine();
 
+	inline const Event::IEventHandler &getEventHandler() const {
+		return m_eventHandler;
+	}
+
 	inline void setAlwaysWait(bool wait) {
 		m_alwaysWait = wait;
 	}
 
 	inline void setUltimate(bool ultimate) {
 		m_ultimate = ultimate;
+	}
+
+	inline void setGameId(long long int gameIndex) {
+		m_gameIndex = gameIndex;
 	}
 
 	bool addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketException);
@@ -152,6 +160,8 @@ private:
 	const long m_aiDelay;
 
 	const Common::ICard::RANK m_aceRoundRank;
+
+	long long int m_gameIndex;
 };
 
 }

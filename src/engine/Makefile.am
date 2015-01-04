@@ -13,7 +13,8 @@ libeventhandler_la_CXXFLAGS = -fno-exceptions -I$(top_srcdir)/src/common -I$(top
 libeventhandler_la_SOURCES = defaulteventhandler.cpp
 
 libengine_private_la_CPPFLAGS = $(GSL)
-libengine_private_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include $(GSL_CFLAGS)
+libengine_private_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include \
+	-I$(top_srcdir)/src/sqlite $(GSL_CFLAGS)
 libengine_private_la_SOURCES = engine.cpp stdplayer.cpp
 
 libengine_la_CPPFLAGS = $(GSL)

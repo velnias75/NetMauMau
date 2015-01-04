@@ -585,6 +585,8 @@ int main(int argc, const char **argv) {
 				updatePlayerCap(caps, game.getPlayerCount(), con, aiOpponent);
 			}
 
+			NetMauMau::DB::SQLite::getInstance().gameEnded(-1LL);
+
 		} catch(const Common::Exception::SocketException &e) {
 			logError(e.what());
 			return EXIT_FAILURE;

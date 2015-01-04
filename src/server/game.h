@@ -63,12 +63,14 @@ public:
 
 private:
 	bool addPlayer(Player::IPlayer *player);
+	void gameReady();
 
 private:
 	Engine m_engine;
 	const bool m_aiOpponent;
 	std::vector<Player::StdPlayer *> m_aiPlayers;
 	std::vector<Player::IPlayer *> m_players;
+	long long int m_gameIndex;
 };
 
 }

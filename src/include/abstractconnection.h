@@ -107,13 +107,14 @@ public:
 
 	virtual ~AbstractConnection();
 
+	NAMESOCKFD  getPlayerInfo(SOCKET sockfd) const;
 	std::string getPlayerName(SOCKET sockfd) const;
-	void removePlayer(SOCKET sockfd);
+	virtual void removePlayer(SOCKET sockfd);
 
 	void addAIPlayers(const std::vector<std::string> &aiPlayers);
 	void wait(long ms) throw(Exception::SocketException);
 
-	void reset() throw();
+	virtual void reset() throw();
 
 protected:
 	AbstractConnection(const char *server, uint16_t port);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -87,13 +87,17 @@ const AbstractConnection::PLAYERINFOS &AbstractConnection::getRegisteredPlayers(
 	return _pimpl->m_registeredPlayers;
 }
 
-std::string AbstractConnection::getPlayerName(SOCKET sockfd) const {
+AbstractConnection::NAMESOCKFD AbstractConnection::getPlayerInfo(SOCKET sockfd) const {
 
 	const PLAYERINFOS::const_iterator &f(std::find_if(_pimpl->m_registeredPlayers.begin(),
 										 _pimpl->m_registeredPlayers.end(),
 										 std::bind2nd(_isSocketFD(), sockfd)));
 
-	return f != _pimpl->m_registeredPlayers.end() ? f->name : "";
+	return f != _pimpl->m_registeredPlayers.end() ? *f : NAMESOCKFD();
+}
+
+std::string AbstractConnection::getPlayerName(SOCKET sockfd) const {
+	return getPlayerInfo(sockfd).name;
 }
 
 void AbstractConnection::removePlayer(SOCKET sockfd) {

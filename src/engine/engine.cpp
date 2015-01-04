@@ -32,12 +32,12 @@
 #include "engine.h"
 
 #include "talon.h"
+#include "sqlite.h"
 #include "logger.h"
 #include "iplayer.h"
 #include "cardtools.h"
 #include "stdruleset.h"
 #include "ieventhandler.h"
-#include "abstractconnection.h"
 
 #if defined(HAVE_GSL)
 #include <random_gen.h>
@@ -75,7 +75,8 @@ Engine::Engine(Event::IEventHandler &eventHandler, long aiDelay, bool nextMessag
 	m_nextMessage(nextMessage), m_ultimate(false), m_initialJack(false), m_alwaysWait(false),
 	m_initialNextMessage(nextMessage), m_aiDelay(aiDelay), m_aceRoundRank(aceRound == 'A' ?
 			Common::ICard::ACE : (aceRound == 'Q' ? Common::ICard::QUEEN : (aceRound == 'K' ?
-								  Common::ICard::KING : Common::ICard::RANK_ILLEGAL))) {
+								  Common::ICard::KING : Common::ICard::RANK_ILLEGAL))),
+	m_gameIndex(0LL) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
 }
@@ -86,7 +87,7 @@ Engine::Engine(Event::IEventHandler &eventHandler, long aiDelay, RuleSet::IRuleS
 	m_curTurn(0), m_delRuleSet(false), m_jackMode(false), m_initialChecked(false),
 	m_nextMessage(nextMessage), m_ultimate(false), m_initialJack(false), m_alwaysWait(false),
 	m_initialNextMessage(nextMessage), m_aiDelay(aiDelay),
-	m_aceRoundRank(Common::ICard::RANK_ILLEGAL) {
+	m_aceRoundRank(Common::ICard::RANK_ILLEGAL), m_gameIndex(0LL) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
 }
@@ -248,9 +249,15 @@ bool Engine::nextTurn() {
 		Player::IPlayer *player = m_players[m_nxtPlayer];
 
 		if(m_curTurn != m_turn) {
+
+			DB::SQLite::getInstance().turn(m_gameIndex, m_turn);
+
 			m_eventHandler.turn(m_turn);
 
 			if(m_turn == 1) {
+
+				DB::SQLite::getInstance().gamePlayStarted(m_gameIndex);
+
 				Common::ICard *ic = m_talon->uncoverCard();
 				m_eventHandler.initialCard(ic);
 				cardPlayed(ic);
@@ -385,13 +392,28 @@ sevenRule:
 							takeCards(m_players[m_nxtPlayer], Common::getIllegalCard());
 						}
 
-						m_eventHandler.playerLost(m_players[m_nxtPlayer], m_turn, m_ruleset->
-												  lostPointFactor(m_talon->getUncoveredCard()));
+						Common::AbstractConnection *con = m_eventHandler.getConnection();
+
+						DB::SQLite::getInstance().
+						playerLost(m_gameIndex, con ?
+								   con->getPlayerInfo(m_players[m_nxtPlayer]->getSerial()) :
+								   Common::AbstractConnection::NAMESOCKFD(m_players[m_nxtPlayer]->
+										   getName(), "", m_players[m_nxtPlayer]->getSerial(), 0),
+								   std::time(0L), m_eventHandler.playerLost(m_players[m_nxtPlayer],
+										   m_turn, m_ruleset->lostPointFactor(m_talon->
+												   getUncoveredCard())));
 
 						m_state = FINISHED;
 					}
 
 					m_eventHandler.playerWins(player, m_turn, m_ultimate);
+
+					Common::AbstractConnection *con = m_eventHandler.getConnection();
+
+					DB::SQLite::getInstance().
+					playerWins(m_gameIndex, con ? con->getPlayerInfo(player->getSerial()) :
+							   Common::AbstractConnection::NAMESOCKFD(player->getName(), "",
+									   player->getSerial(), 0));
 
 				} else if(player->isAIPlayer() && ((pc->getRank() == Common::ICard::EIGHT) ||
 												   m_alwaysWait)) {

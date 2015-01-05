@@ -394,14 +394,17 @@ sevenRule:
 
 						Common::AbstractConnection *con = m_eventHandler.getConnection();
 
+						const Common::AbstractConnection::NAMESOCKFD nsf =
+							(!con || m_players[m_nxtPlayer]->isAIPlayer()) ?
+							Common::AbstractConnection::NAMESOCKFD(m_players[m_nxtPlayer]->
+									getName(), "", m_players[m_nxtPlayer]->getSerial(), 0)
+							: con->getPlayerInfo(m_players[m_nxtPlayer]->getSerial());
+
 						DB::SQLite::getInstance().
-						playerLost(m_gameIndex, con ?
-								   con->getPlayerInfo(m_players[m_nxtPlayer]->getSerial()) :
-								   Common::AbstractConnection::NAMESOCKFD(m_players[m_nxtPlayer]->
-										   getName(), "", m_players[m_nxtPlayer]->getSerial(), 0),
-								   std::time(0L), m_eventHandler.playerLost(m_players[m_nxtPlayer],
-										   m_turn, m_ruleset->lostPointFactor(m_talon->
-												   getUncoveredCard())));
+						playerLost(m_gameIndex, nsf, std::time(0L),
+								   m_eventHandler.playerLost(m_players[m_nxtPlayer], m_turn,
+															 m_ruleset->lostPointFactor(m_talon->
+																	 getUncoveredCard())));
 
 						m_state = FINISHED;
 					}
@@ -410,10 +413,13 @@ sevenRule:
 
 					Common::AbstractConnection *con = m_eventHandler.getConnection();
 
+					const Common::AbstractConnection::NAMESOCKFD nsf =
+						(!con || player->isAIPlayer()) ?
+						Common::AbstractConnection::NAMESOCKFD(player->getName(), "",
+								player->getSerial(), 0) : con->getPlayerInfo(player->getSerial());
+
 					DB::SQLite::getInstance().
-					playerWins(m_gameIndex, con ? con->getPlayerInfo(player->getSerial()) :
-							   Common::AbstractConnection::NAMESOCKFD(player->getName(), "",
-									   player->getSerial(), 0));
+					playerWins(m_gameIndex, nsf);
 
 				} else if(player->isAIPlayer() && ((pc->getRank() == Common::ICard::EIGHT) ||
 												   m_alwaysWait)) {

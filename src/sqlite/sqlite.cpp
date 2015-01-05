@@ -33,6 +33,10 @@ SQLite &SQLite::getInstance() {
 	return instance;
 }
 
+bool SQLite::addAIPlayer(const NetMauMau::Player::IPlayer *ai) const {
+	return _pimpl->addAIPlayer(ai);
+}
+
 bool SQLite::addPlayer(const NetMauMau::Common::AbstractConnection::INFO &info) const {
 	return _pimpl->addPlayer(info);
 }

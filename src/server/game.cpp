@@ -97,6 +97,17 @@ Game::COLLECT_STATE Game::collectPlayers(std::size_t minPlayers,
 				m_engine.getEventHandler().getConnection()->getPlayerInfo(player->getSerial()));
 
 		if(m_engine.getPlayerCount() == std::max<std::size_t>(2, minPlayers)) {
+
+			for(std::vector <NetMauMau::Player::StdPlayer * >::const_iterator i(m_aiPlayers.begin());
+					i != m_aiPlayers.end(); ++i) {
+
+				NetMauMau::DB::SQLite::getInstance().addAIPlayer(m_aiPlayers.back());
+				NetMauMau::DB::SQLite::getInstance().addPlayerToGame(m_gameIndex,
+						NetMauMau::Common::AbstractConnection::NAMESOCKFD((*i)->getName(), "",
+								INVALID_SOCKET, MAKE_VERSION(SERVER_VERSION_MAJOR,
+										SERVER_VERSION_MINOR)));
+			}
+
 			return ACCEPTED_READY;
 		} else {
 			return ACCEPTED;
@@ -151,8 +162,15 @@ void Game::reset(bool playerLost) throw() {
 
 			for(std::vector<NetMauMau::Player::StdPlayer *>::const_iterator i(m_aiPlayers.begin());
 					i != m_aiPlayers.end(); ++i) {
+
 				(*i)->resetJackState();
 				(*i)->reset();
+
+				NetMauMau::DB::SQLite::getInstance().
+				logOutPlayer(NetMauMau::Common::AbstractConnection::NAMESOCKFD((*i)->getName(), "",
+							 INVALID_SOCKET, MAKE_VERSION(SERVER_VERSION_MAJOR,
+									 SERVER_VERSION_MINOR)));
+
 				m_engine.addPlayer(*i);
 			}
 

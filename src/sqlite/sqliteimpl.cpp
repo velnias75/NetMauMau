@@ -166,6 +166,19 @@ bool SQLiteImpl::exec(const std::string &sql) const {
 	return false;
 }
 
+bool SQLiteImpl::addAIPlayer(const NetMauMau::Player::IPlayer *ai) const {
+
+	std::ostringstream sql;
+
+	sql << "BEGIN; INSERT OR IGNORE INTO players (name) VALUES(\'" << ai->getName() << "\');"
+		<< "INSERT INTO clients (sock, host, port, version, log_in, playerid) SELECT "
+		<< INVALID_SOCKET << ", \'" << PACKAGE_STRING << "\', 0,"
+		<< MAKE_VERSION(SERVER_VERSION_MAJOR, SERVER_VERSION_MINOR) << "," << std::time(0L)
+		<< ", id FROM players WHERE name = \'" << ai->getName()  << "\'; END TRANSACTION;";
+
+	return exec(sql.str());
+}
+
 bool SQLiteImpl::addPlayer(const NetMauMau::Common::AbstractConnection::INFO &info) const {
 
 	std::ostringstream sql;

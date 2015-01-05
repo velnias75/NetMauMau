@@ -26,6 +26,10 @@
 
 namespace NetMauMau {
 
+namespace Player {
+class IPlayer;
+}
+
 namespace DB {
 
 class SQLiteImpl;
@@ -37,6 +41,7 @@ public:
 
 	static SQLite &getInstance();
 
+	bool addAIPlayer(const NetMauMau::Player::IPlayer *ai) const;
 	bool addPlayer(const Common::AbstractConnection::INFO &info) const;
 	bool logOutPlayer(const Common::AbstractConnection::NAMESOCKFD &nsf) const;
 	long long int newGame() const;

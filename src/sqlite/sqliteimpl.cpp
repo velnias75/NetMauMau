@@ -78,7 +78,13 @@ const char *SCHEMA =
 	"SELECT p.id, p.name, ((CASE WHEN ws.score IS NULL THEN 0 ELSE ws.score END) - " \
 	"(CASE WHEN ls.score IS NULL THEN 0 ELSE ls.score END)) score FROM players p " \
 	"LEFT OUTER JOIN win_scores ws ON ws.id = p.id LEFT OUTER JOIN lost_scores ls " \
-	"ON ls.id = p.id ORDER BY score DESC;";
+	"ON ls.id = p.id ORDER BY score DESC;" \
+	"CREATE VIEW IF NOT EXISTS \"total_scores_abs\" AS " \
+	"SELECT p.id, p.name, ((SELECT ABS(MIN(sq.score)) FROM total_scores sq " \
+	"WHERE sq.score < 0) + ((CASE WHEN ws.score IS NULL THEN 0 ELSE ws.score END) - " \
+	"(CASE WHEN ls.score IS NULL THEN 0 ELSE ls.score END))) ascore FROM players p " \
+	"LEFT OUTER JOIN win_scores ws ON ws.id = p.id LEFT OUTER JOIN lost_scores ls " \
+	"ON ls.id = p.id /*WHERE ascore > 0*/ ORDER BY ascore DESC;";
 }
 
 using namespace NetMauMau::DB;
@@ -161,7 +167,7 @@ bool SQLiteImpl::exec(const std::string &sql) const {
 	}
 
 	if(err) {
-		logWarning(err);
+		logWarning("SQLite: " << err);
 		sqlite3_free(err);
 	}
 

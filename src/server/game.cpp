@@ -101,7 +101,7 @@ Game::COLLECT_STATE Game::collectPlayers(std::size_t minPlayers,
 			for(std::vector <NetMauMau::Player::StdPlayer * >::const_iterator i(m_aiPlayers.begin());
 					i != m_aiPlayers.end(); ++i) {
 
-				NetMauMau::DB::SQLite::getInstance().addAIPlayer(m_aiPlayers.back());
+				NetMauMau::DB::SQLite::getInstance().addAIPlayer(*i);
 				NetMauMau::DB::SQLite::getInstance().addPlayerToGame(m_gameIndex,
 						NetMauMau::Common::AbstractConnection::NAMESOCKFD((*i)->getName(), "",
 								INVALID_SOCKET, MAKE_VERSION(SERVER_VERSION_MAJOR,

@@ -35,11 +35,12 @@
 namespace {
 const char *SCHEMA =
 	"CREATE TABLE IF NOT EXISTS \"meta\" (" \
-	"dbver INTEGER," \
-	"date INTEGER, CONSTRAINT unq UNIQUE(dbver, date) );"\
+	"dbver INTEGER UNIQUE," \
+	"date INTEGER );"\
 	"CREATE TABLE IF NOT EXISTS \"players\" (" \
 	"id INTEGER PRIMARY KEY AUTOINCREMENT," \
 	"name TEXT NOT NULL UNIQUE );" \
+	"CREATE INDEX IF NOT EXISTS \"playername_index\" ON players (name ASC);" \
 	"CREATE TABLE IF NOT EXISTS \"clients\" (" \
 	"id INTEGER PRIMARY KEY AUTOINCREMENT," \
 	"sock INTEGER NOT NULL," \
@@ -49,7 +50,10 @@ const char *SCHEMA =
 	"log_in INTEGER NOT NULL," \
 	"log_out INTEGER," \
 	"playerid INTEGER NOT NULL," \
-	"gameid INTEGER);" \
+	"gameid INTEGER );" \
+	"CREATE INDEX IF NOT EXISTS \"player_index\" ON clients (playerid ASC);" \
+	"CREATE INDEX IF NOT EXISTS \"game_index\" ON clients (gameid ASC);" \
+	"CREATE INDEX IF NOT EXISTS \"player_game_index\" ON clients (playerid ASC, gameid ASC);" \
 	"CREATE TABLE IF NOT EXISTS \"games\" (" \
 	"id INTEGER PRIMARY KEY AUTOINCREMENT," \
 	"server_start INTEGER NOT NULL," \
@@ -69,7 +73,7 @@ const char *SCHEMA =
 	"SELECT p.id, p.name, SUM(g.score) score, " \
 	"ROUND(AVG(g.score)) avg, (SELECT COUNT(id) FROM clients cc WHERE cc.playerid = p.id) cnt " \
 	"FROM clients c JOIN players p ON p.id = c.playerid JOIN games g ON g.id = c.gameid " \
-	"WHERE g.win_player = p.id GROUP by p.id ORDER BY AVG(g.score);"
+	"WHERE g.win_player = p.id GROUP by p.id ORDER BY AVG(g.score) DESC;"
 	"CREATE VIEW IF NOT EXISTS \"total_scores\" AS " \
 	"SELECT p.id, p.name, ((CASE WHEN ws.score IS NULL THEN 0 ELSE ws.score END) - " \
 	"(CASE WHEN ls.score IS NULL THEN 0 ELSE ls.score END)) score FROM players p " \
@@ -271,7 +275,7 @@ bool SQLiteImpl::playerWins(long long int gameIndex,
 							const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsf) const {
 	std::ostringstream sql;
 	sql << "UPDATE games SET win_player = (SELECT id FROM players WHERE name = \'"
-		<< nsf.name << "\')" << " WHERE " << "id = " << gameIndex << ";";
+		<< nsf.name << "\')" << " WHERE " << "id = " << gameIndex << " AND win_player IS NULL;";
 	return exec(sql.str());
 }
 

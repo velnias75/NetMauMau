@@ -34,6 +34,9 @@
 
 namespace {
 const char *SCHEMA =
+	"CREATE TABLE IF NOT EXISTS \"meta\" (" \
+	"dbver INTEGER," \
+	"date INTEGER, CONSTRAINT unq UNIQUE(dbver, date) );"\
 	"CREATE TABLE IF NOT EXISTS \"players\" (" \
 	"id INTEGER PRIMARY KEY AUTOINCREMENT," \
 	"name TEXT NOT NULL UNIQUE );" \
@@ -56,7 +59,22 @@ const char *SCHEMA =
 	"win_player INTEGER," \
 	"lost_player INTEGER," \
 	"lost_time INTEGER," \
-	"score INTEGER DEFAULT 0 );";
+	"score INTEGER DEFAULT 0 );" \
+	"CREATE VIEW IF NOT EXISTS \"lost_scores\" AS " \
+	"SELECT p.id, p.name, SUM(g.score) score, " \
+	"ROUND(AVG(g.score)) avg, (SELECT COUNT(id) FROM clients cc WHERE cc.playerid = p.id) cnt " \
+	"FROM clients c JOIN players p ON p.id = c.playerid JOIN games g ON g.id = c.gameid " \
+	"WHERE g.lost_player = p.id GROUP by p.id ORDER BY AVG(g.score);" \
+	"CREATE VIEW IF NOT EXISTS \"win_scores\" AS " \
+	"SELECT p.id, p.name, SUM(g.score) score, " \
+	"ROUND(AVG(g.score)) avg, (SELECT COUNT(id) FROM clients cc WHERE cc.playerid = p.id) cnt " \
+	"FROM clients c JOIN players p ON p.id = c.playerid JOIN games g ON g.id = c.gameid " \
+	"WHERE g.win_player = p.id GROUP by p.id ORDER BY AVG(g.score);"
+	"CREATE VIEW IF NOT EXISTS \"total_scores\" AS " \
+	"SELECT p.id, p.name, ((CASE WHEN ws.score IS NULL THEN 0 ELSE ws.score END) - " \
+	"(CASE WHEN ls.score IS NULL THEN 0 ELSE ls.score END)) score FROM players p " \
+	"LEFT OUTER JOIN win_scores ws ON ws.id = p.id LEFT OUTER JOIN lost_scores ls " \
+	"ON ls.id = p.id ORDER BY score DESC;";
 }
 
 using namespace NetMauMau::DB;
@@ -75,19 +93,38 @@ SQLiteImpl::SQLiteImpl() : m_db(0L) {
 		}
 	}
 
+#ifdef NDEBUG
+
 	if(!getuid() || home) {
 
 		std::string db(getuid() ? std::string(home).append("/."PACKAGE_NAME"/")
 					   .append(PACKAGE_NAME".db").c_str() : DBDIR "/" PACKAGE_NAME".db");
+#else
+	std::string db(BUILDDIR"/"PACKAGE_NAME"-dbg.db");
+	logDebug("SQLite-DB is located at: " << db);
+#endif
 
 		if(sqlite3_open(db.c_str(), &m_db) != SQLITE_ERROR) {
-			sqlite3_exec(m_db, SCHEMA, NULL, NULL, NULL);
+
+			exec(SCHEMA);
+
+			std::ostringstream sql;
+			sql << "INSERT OR IGNORE INTO meta (dbver, date) VALUES ("
+				<< MAKE_VERSION(SERVER_VERSION_MAJOR, SERVER_VERSION_MINOR)
+				<< "," << std::time(0L) << ");";
+
+			exec(sql.str());
+
 		} else {
 			logDebug(sqlite3_errmsg(m_db));
 			sqlite3_close(m_db);
 			m_db = 0L;
 		}
+
+#ifdef NDEBUG
 	}
+
+#endif
 
 #endif
 }
@@ -95,7 +132,18 @@ SQLiteImpl::SQLiteImpl() : m_db(0L) {
 SQLiteImpl::~SQLiteImpl() {
 #ifndef _WIN32
 
-	if(m_db) sqlite3_close(m_db);
+	if(m_db) {
+
+		std::ostringstream sql;
+
+		sql << "DELETE FROM games WHERE game_start IS NULL AND turns IS NULL "
+			<< "AND win_player IS NULL AND lost_player IS NULL AND lost_time IS NULL;";
+
+		exec(sql.str());
+		exec("VACUUM;");
+
+		sqlite3_close(m_db);
+	}
 
 #endif
 }

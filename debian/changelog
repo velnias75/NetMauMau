@@ -1,8 +1,8 @@
 netmaumau (0.9) UNRELEASED; urgency=low
 
-  * 
+  * added sqlite database for collecting scores and other stats
 
- -- Heiko Schäfer <heiko@rangun.de>  Sat, 03 Jan 2015 13:41:29 +0100
+ -- Heiko Schäfer <heiko@rangun.de>  Tue, 06 Jan 2015 05:46:01 +0100
 
 netmaumau (0.8) UNRELEASED; urgency=low
 

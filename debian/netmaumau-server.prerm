@@ -22,7 +22,7 @@ case "$1" in
     rm -rf /var/games/netmaumau/NetMauMau.db
     ;;
 
-    failed-upgrade)
+    upgrade|failed-upgrade)
     ;;
 
     *)

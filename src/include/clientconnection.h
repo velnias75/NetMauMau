@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -45,6 +45,33 @@ public:
 	using AbstractConnection::connect;
 
 	/**
+	 * @brief the score
+	 */
+	typedef struct {
+		std::string name; ///< name of the player
+		long long int score; ///< score of the player
+	} SCORE;
+
+	/**
+	 * @brief a @c vector of scores
+	 */
+	typedef std::vector<SCORE> SCORES;
+
+	/**
+	 * @brief The type of scores
+	 */
+	struct SCORE_TYPE {
+		/**
+		 * @brief The type of scores enumeration
+		 */
+		enum _scoreType {
+			NORM, ///< The scores are <em>normal</em>, this means they can contain negative
+			/// values as well
+			ABS ///< The scores are <em>absolute</em>, this means they contain only values >= 0
+		};
+	};
+
+	/**
 	 * @brief Holds the name as well as the PNG data of the player image
 	 */
 	typedef struct {
@@ -73,6 +100,8 @@ public:
 	CAPABILITIES capabilities() throw(NetMauMau::Common::Exception::SocketException);
 	PLAYERINFOS playerList(const IPlayerPicListener *hdl,
 						   bool playerPNG) throw(Common::Exception::SocketException);
+	SCORES getScores(SCORE_TYPE::_scoreType type, std::size_t limit)
+	throw(Common::Exception::SocketException);
 
 	void setTimeout(struct timeval *timeout);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -40,6 +40,7 @@
 #include "base64.h"
 #include "errorstring.h"
 #include "abstractclient.h"
+#include "scoresexception.h"
 #include "timeoutexception.h"
 #include "shutdownexception.h"
 #include "playerlistexception.h"
@@ -174,6 +175,73 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 
 	return caps;
+}
+
+Connection::SCORES Connection::getScores(SCORE_TYPE::_scoreType type, std::size_t limit)
+throw(NetMauMau::Common::Exception::SocketException) {
+
+	try {
+
+		const CAPABILITIES &c(capabilities());
+		const CAPABILITIES::const_iterator &f(c.find("HAVE_SCORES"));
+
+		if(f != c.end() && f->second == "true") {
+
+			SCORES scores;
+
+			if(_pimpl->hello()) {
+
+				std::ostringstream os;
+				os << "SCORES ";
+
+				switch(type) {
+				case SCORE_TYPE::NORM:
+					os << "NORM ";
+					break;
+
+				default:
+					os << "ABS ";
+					break;
+				}
+
+				os << limit;
+
+				send(os.str().c_str(), os.str().length(), getSocketFD());
+
+				std::string score;
+				*this >> score;
+
+				while(score != "SCORESEND") {
+
+					const std::string::size_type p = score.find('=');
+
+					if(p != std::string::npos) {
+
+						SCORE sc = {
+							score.substr(0, p),
+							std::strtoll(score.substr(p + 1).c_str(), NULL, 10)
+						};
+
+						scores.push_back(sc);
+					}
+
+					*this >> score;
+				}
+
+			} else {
+				throw Exception::ScoresException("Unable to get scores", getSocketFD());
+			}
+
+			return scores;
+		}
+
+	} catch(const Exception::ScoresException &) {
+		throw;
+	} catch(const NetMauMau::Common::Exception::SocketException &e) {
+		throw Exception::ScoresException(e.what(), getSocketFD());
+	}
+
+	return SCORES();
 }
 
 void Connection::connect(const IPlayerPicListener *l, const unsigned char *data, std::size_t len)

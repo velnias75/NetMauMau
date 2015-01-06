@@ -1,8 +1,8 @@
 pkginclude_HEADERS = abstractclient.h abstractconnection.h abstractsocket.h \
 	capabilitiesexception.h cardtools.h clientconnection.h connectionrejectedexception.h \
 	icard.h iplayerpiclistener.h linkercontrol.h nonetmaumauserverexception.h \
-	playerlistexception.h protocolerrorexception.h shutdownexception.h socketexception.h \
-	timeoutexception.h versionmismatchexception.h 
+	playerlistexception.h protocolerrorexception.h scoresexception.h shutdownexception.h \
+	socketexception.h timeoutexception.h versionmismatchexception.h 
 
 if BRANDING
 	

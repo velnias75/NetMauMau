@@ -38,9 +38,9 @@ class SQLite {
 	DISALLOW_COPY_AND_ASSIGN(SQLite)
 public:
 	typedef struct {
-		unsigned long long int id;
+		long long int id;
 		std::string name;
-		unsigned long long int score;
+		long long int score;
 	} SCORE;
 
 	typedef std::vector<SCORE> SCORES;

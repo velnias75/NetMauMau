@@ -15,7 +15,7 @@ libnetmaumauclient_la_SOURCES = abstractclient.cpp abstractclientv05impl.cpp \
 	capabilitiesexception.cpp clientconnection.cpp clientconnectionimpl.cpp \
 	connectionrejectedexception.cpp interceptederrorexception.cpp \
 	nonetmaumauserverexception.cpp playerlistexception.cpp protocolerrorexception.cpp \
-	shutdownexception.cpp timeoutexception.cpp versionmismatchexception.cpp 
+	scoresexception.cpp shutdownexception.cpp timeoutexception.cpp versionmismatchexception.cpp 
 libnetmaumauclient_la_LDFLAGS = -nodefaultlibs -nostartfiles -no-undefined \
 	-version-info 3:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
 libnetmaumauclient_la_LIBADD = libnetmaumauclient_private.la ../common/libnetmaumaucommon.la

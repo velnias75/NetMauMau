@@ -38,7 +38,7 @@ class Connection : public Common::AbstractConnection {
 public:
 	using Common::AbstractConnection::getPlayerInfo;
 
-	typedef enum { NONE, PLAY, CAP, REFUSED, PLAYERLIST } ACCEPT_STATE;
+	typedef enum { NONE, PLAY, CAP, REFUSED, PLAYERLIST, SCORES } ACCEPT_STATE;
 	typedef std::map<uint32_t, std::string, std::greater<uint32_t> > VERSIONEDMESSAGE;
 
 	Connection(uint32_t minVer, uint16_t port = SERVER_PORT, const char *server = NULL);

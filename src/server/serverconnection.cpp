@@ -221,7 +221,8 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 				const std::string rHello = read(cfd);
 
-				if(rHello != "CAP" && rHello.substr(0, 10) != "PLAYERLIST") {
+				if(rHello != "CAP" && rHello.substr(0, 10) != "PLAYERLIST" &&
+						rHello.substr(0, 6) != "SCORES") {
 
 					const std::string::size_type spc = rHello.find(' ');
 					const std::string::size_type dot = rHello.find('.');
@@ -440,6 +441,38 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 #endif
 
 					accepted = PLAYERLIST;
+
+				} else if(rHello.substr(0, 6) == "SCORES") {
+
+					const NetMauMau::DB::SQLite::SCORE_TYPE st =
+						rHello.substr(7, rHello.find(' ', 7) - 7) == "ABS" ?
+						NetMauMau::DB::SQLite::ABS : NetMauMau::DB::SQLite::NORM;
+
+					const std::size_t limit = std::strtoul(rHello.substr(rHello.rfind(' ')).c_str(),
+														   NULL, 10);
+
+					const
+					NetMauMau::DB::SQLite::SCORES &scores(NetMauMau::DB::SQLite::getInstance().
+														  getScores(st, limit));
+
+					std::ostringstream osscores;
+
+					for(NetMauMau::DB::SQLite::SCORES::const_iterator i(scores.begin());
+							i != scores.end(); ++i) {
+						osscores << i->name << '=' << i->score << '\0';
+					}
+
+					osscores << "SCORESEND" << '\0';
+
+					send(osscores.str().c_str(), osscores.str().length(), cfd);
+
+					shutdown(cfd, SHUT_RDWR);
+#ifndef _WIN32
+					close(cfd);
+#else
+					closesocket(cfd);
+#endif
+					accepted = SCORES;
 
 				} else {
 

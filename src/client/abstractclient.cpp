@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -38,6 +38,17 @@
 #include "logger.h"
 
 using namespace NetMauMau::Client;
+
+AbstractClientV09::AbstractClientV09(const std::string &player, const std::string &server,
+									 uint16_t port, uint32_t clientVersion)
+	: AbstractClientV08(player, server, port, clientVersion) {}
+
+AbstractClientV09::AbstractClientV09(const std::string &player, const unsigned char *pngData,
+									 std::size_t pngDataLen, const std::string &server,
+									 uint16_t port, uint32_t clientVersion)
+	: AbstractClientV08(player, pngData, pngDataLen, server, port, clientVersion) {}
+
+AbstractClientV09::~AbstractClientV09() {}
 
 AbstractClientV08::AbstractClientV08(const std::string &player, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
@@ -495,6 +506,13 @@ void AbstractClientV05::uploadFailed(const std::string &) const throw() {}
 
 NetMauMau::Common::ICard *AbstractClientV08::playCard(const AbstractClientV05::CARDS &cards) const {
 	return playCard(cards, 0);
+}
+
+AbstractClientV09::SCORES AbstractClientV09::getScores(SCORE_TYPE::_scoreType type,
+		std::size_t limit, timeval *timeout)
+throw(NetMauMau::Common::Exception::SocketException) {
+	_pimpl->m_connection.setTimeout(timeout);
+	return _pimpl->m_connection.getScores(type, limit);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

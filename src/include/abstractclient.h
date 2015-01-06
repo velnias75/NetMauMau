@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -62,6 +62,7 @@ class _EXPORT AbstractClientV05 : protected IPlayerPicListener {
 	friend class AbstractClientV05Impl;
 	friend class AbstractClientV07;
 	friend class AbstractClientV08;
+	friend class AbstractClientV09;
 
 public:
 	/// @copydoc Connection::CAPABILITIES
@@ -554,6 +555,7 @@ private:
 class _EXPORT AbstractClientV07 : public AbstractClientV05 {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV07)
 	friend class AbstractClientV08;
+	friend class AbstractClientV09;
 protected:
 	/**
 	 * @brief Creates an @c AbstractClientV07 instance
@@ -636,6 +638,7 @@ private:
  */
 class _EXPORT AbstractClientV08 : public AbstractClientV07 {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV08)
+	friend class AbstractClientV09;
 protected:
 	using AbstractClientV07::playCard;
 
@@ -695,6 +698,90 @@ private:
 	throw(NetMauMau::Common::Exception::SocketException);
 };
 
+/**
+ * @brief %Client interface to communicate with the server
+ *
+ * @since 0.9
+ */
+class _EXPORT AbstractClientV09 : public AbstractClientV08 {
+	DISALLOW_COPY_AND_ASSIGN(AbstractClientV09)
+public:
+	// cppcheck-suppress variableHidingTypedef
+	typedef Connection::SCORE SCORE; ///< @copydoc Connection::SCORE
+	typedef Connection::SCORES SCORES; ///< @copydoc Connection::SCORES
+	typedef Connection::SCORE_TYPE SCORE_TYPE; ///< @copydoc Connection::SCORE_TYPE
+
+	/**
+	 * @name Server query methods
+	 * @{
+	 */
+
+	/**
+	 * @brief Gets the scores from the server
+	 *
+	 * Example usage code: @code
+	 * // ...
+	 *
+	 * MyClient *m_client = new MyClient(); // subclass of AbstractClient
+	 *
+	 * // for the top 5 normal scores (including scores below 0)
+	 * const MyClient::SCORES &scores(m_client->getScores(MyClient::SCORE_TYPE::NORM, 5));
+	 *
+	 * for(MyClient::SCORES::const_iterator i(scores.begin()); i != scores.end(); ++i) {
+	 *		// do something with i->name and i->score
+	 * }
+	 *
+	 * // ...
+	 * @endcode
+	 *
+	 * @note if no scores are available (currently Windows servers) or the server never served
+	 * a game, the scores vector is empty
+	 *
+	 * @throws Exception::ScoresException if the scores couldn't get received
+	 *
+	 * @param type type of scores
+	 * @param limit limit the result
+	 * @param timeout throw a @c Exception::TimeoutException on exceeding @c timeout
+	 * @return the scores
+	 */
+	SCORES getScores(SCORE_TYPE::_scoreType type = SCORE_TYPE::ABS, std::size_t limit = 10,
+					 timeval *timeout = 0L)  throw(NetMauMau::Common::Exception::SocketException);
+
+	/// @}
+
+protected:
+	/**
+	 * @brief Creates an @c AbstractClientV09 instance
+	 *
+	 * @copydetails AbstractClientV07(const std::string &, const unsigned char *,
+	 *				  std::size_t, const std::string &, uint16_t)
+	 * @copydetails AbstractClientV08(const std::string &, const std::string &, uint16_t)
+	 *
+	 * @param clientVersion the protocol version the client understands
+	 *
+	 * @since 0.9
+	 */
+	AbstractClientV09(const std::string &player, const std::string &server, uint16_t port,
+					  uint32_t clientVersion);
+
+	/**
+	 * @brief Creates an @c AbstractClientV09 instance
+	 *
+	 * @copydetails AbstractClientV07(const std::string &, const unsigned char *,
+	 *				  std::size_t, const std::string &, uint16_t)
+	 * @copydetails AbstractClientV08(const std::string &, const unsigned char *,
+	 *				  std::size_t, const std::string &, uint16_t)
+	 *
+	 * @param clientVersion the protocol version the client understands
+	 *
+	 * @since 0.9
+	 */
+	AbstractClientV09(const std::string &player, const unsigned char *pngData,
+					  std::size_t pngDataLen, const std::string &server, uint16_t port,
+					  uint32_t clientVersion);
+
+	virtual ~AbstractClientV09();
+};
 
 /**
  * @brief Alias to the current client interface to communicate with the server
@@ -713,10 +800,10 @@ private:
  * @note Starting with version 0.6 and with *libmagic* enabled, the server checks if the player
  * images are really in the PNG format
  *
- * @see AbstractClientV08
+ * @see AbstractClientV09
  *
  */
-typedef AbstractClientV08 AbstractClient;
+typedef AbstractClientV09 AbstractClient;
 
 }
 

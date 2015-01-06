@@ -33,6 +33,18 @@ SQLite &SQLite::getInstance() {
 	return instance;
 }
 
+std::string SQLite::getDBFilename() const {
+	return SQLiteImpl::getDBFilename();
+}
+
+SQLite::SCORES SQLite::getScores(SQLite::SCORE_TYPE type) const {
+	return _pimpl->getScores(type, 0);
+}
+
+SQLite::SCORES SQLite::getScores(SCORE_TYPE type, std::size_t limit) const {
+	return _pimpl->getScores(type, limit);
+}
+
 bool SQLite::addAIPlayer(const NetMauMau::Player::IPlayer *ai) const {
 	return _pimpl->addAIPlayer(ai);
 }

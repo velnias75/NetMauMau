@@ -508,6 +508,9 @@ int main(int argc, const char **argv) {
 			caps.insert(std::make_pair("ULTIMATE", ultimate ? "true" : "false"));
 			caps.insert(std::make_pair("ACEROUND", aceRound ? std::string(1, arRank ?
 									   ::toupper(arRank[0]) : 'A') : "false"));
+			caps.insert(std::make_pair("HAVE_SCORES",
+									   DB::SQLite::getInstance().getDBFilename().empty() ? "false"
+									   : "true"));
 
 			if(aiOpponent) caps.insert(std::make_pair("AI_NAME", aiNames[0]));
 

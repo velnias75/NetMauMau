@@ -37,9 +37,23 @@ class SQLiteImpl;
 class SQLite {
 	DISALLOW_COPY_AND_ASSIGN(SQLite)
 public:
+	typedef struct {
+		unsigned long long int id;
+		std::string name;
+		unsigned long long int score;
+	} SCORE;
+
+	typedef std::vector<SCORE> SCORES;
+	typedef enum { NORM, ABS } SCORE_TYPE;
+
 	~SQLite();
 
 	static SQLite &getInstance();
+
+	std::string getDBFilename() const;
+
+	SCORES getScores(SCORE_TYPE type) const;
+	SCORES getScores(SCORE_TYPE type, std::size_t limit) const;
 
 	bool addAIPlayer(const NetMauMau::Player::IPlayer *ai) const;
 	bool addPlayer(const Common::AbstractConnection::INFO &info) const;

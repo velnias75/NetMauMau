@@ -1,9 +1,9 @@
 /**
  * basiclogger.h - template for basic logging functionality
  *
- * $Revision: 3430 $ $Author: heiko $
+ * $Revision: 3480 $ $Author: heiko $
  *
- * (c) 2012-2014 Heiko Schäfer <heiko@rangun.de>
+ * (c) 2012-2015 Heiko Schäfer <heiko@rangun.de>
  *
  * LICENSE is inherited by the project using this file
  *
@@ -35,6 +35,10 @@
 
 #ifndef LOGGER_NULL
 #define LOGGER_NULL "(null)"
+#endif
+
+#ifndef LLOGGER_NULL
+#define LLOGGER_NULL L"(null)"
 #endif
 
 #ifndef LOGGER_PREFIX
@@ -435,14 +439,14 @@ BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const std::string *msg) {
 
 template<class OIter>
 BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const char *s) {
-	std::string sc(s);
+	std::string sc(s ? s : LOGGER_NULL);
 	getMessageStream() << logString(sc.begin(), sc.end());
 	return *this;
 }
 
 template<class OIter>
 BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const wchar_t *s) {
-	getMessageStream() << s;
+	getMessageStream() << (s ? s : LLOGGER_NULL);
 	return *this;
 }
 

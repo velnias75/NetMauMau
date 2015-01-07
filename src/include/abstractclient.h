@@ -740,12 +740,17 @@ public:
 	 * @throws Exception::ScoresException if the scores couldn't get received
 	 *
 	 * @param type type of scores
-	 * @param limit limit the result
+	 * @param limit limit the result, @c 0 disables the limit
 	 * @param timeout throw a @c Exception::TimeoutException on exceeding @c timeout
 	 * @return the scores
+	 *
+	 * @since 0.9
 	 */
 	SCORES getScores(SCORE_TYPE::_scoreType type = SCORE_TYPE::ABS, std::size_t limit = 10,
-					 timeval *timeout = 0L)  throw(NetMauMau::Common::Exception::SocketException);
+					 timeval *timeout = 0L) throw(NetMauMau::Common::Exception::SocketException);
+
+	/// @overload
+	SCORES getScores(timeval *timeout) throw(NetMauMau::Common::Exception::SocketException);
 
 	/// @}
 

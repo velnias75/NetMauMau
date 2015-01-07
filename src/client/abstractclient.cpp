@@ -508,6 +508,11 @@ NetMauMau::Common::ICard *AbstractClientV08::playCard(const AbstractClientV05::C
 	return playCard(cards, 0);
 }
 
+AbstractClientV09::SCORES AbstractClientV09::getScores(timeval *timeout)
+throw(NetMauMau::Common::Exception::SocketException) {
+	return getScores(SCORE_TYPE::ABS, 10, timeout);
+}
+
 AbstractClientV09::SCORES AbstractClientV09::getScores(SCORE_TYPE::_scoreType type,
 		std::size_t limit, timeval *timeout)
 throw(NetMauMau::Common::Exception::SocketException) {

@@ -104,6 +104,7 @@ PKG_CHECK_MODULES([LIBSQLITE], [sqlite3 >= 3.4.2])
 
 # Checks for header files.
 AC_HEADER_STDBOOL
+AC_CHECK_HEADERS([sys/time.h])
 AC_CHECK_HEADERS([magic.h])
 AC_CHECK_HEADERS([poll.h])
 AC_CHECK_HEADERS([netdb.h])
@@ -122,6 +123,7 @@ AC_TYPE_PID_T
 AC_C_INLINE
 
 # Checks for library functions.
+AC_CHECK_FUNCS([mkdir])
 AC_CHECK_FUNCS([initstate])
 AC_CHECK_FUNCS([strtoul])
 AC_CHECK_FUNCS([memset])

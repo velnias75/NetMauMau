@@ -24,6 +24,14 @@
 
 #include "abstractconnection.h"
 
+#ifndef _WCONST
+#if _WIN32
+#define _WCONST _CONST
+#else
+#define _WCONST
+#endif
+#endif
+
 namespace NetMauMau {
 
 namespace Player {
@@ -58,7 +66,7 @@ public:
 	bool addAIPlayer(const NetMauMau::Player::IPlayer *ai) const;
 	bool addPlayer(const Common::AbstractConnection::INFO &info) const;
 	bool logOutPlayer(const Common::AbstractConnection::NAMESOCKFD &nsf) const;
-	long long int newGame() const;
+	long long int newGame() const _WCONST;
 	bool gameEnded(long long int gameIndex) const;
 	bool addPlayerToGame(long long int gid,
 						 const Common::AbstractConnection::NAMESOCKFD &nsf) const;

@@ -30,14 +30,18 @@
 
 #if _WIN32
 #define WSTATIC_S static
-#else
-#define WSTATIC_S
-#endif
-
-#if _WIN32
 #define WSTATIC_E
 #else
+#define WSTATIC_S
 #define WSTATIC_E const
+#endif
+
+#ifndef _WCONST
+#if _WIN32
+#define _WCONST _CONST
+#else
+#define _WCONST
+#endif
 #endif
 
 namespace NetMauMau {
@@ -52,7 +56,7 @@ class SQLiteImpl {
 	DISALLOW_COPY_AND_ASSIGN(SQLiteImpl)
 public:
 	SQLiteImpl();
-	~SQLiteImpl();
+	~SQLiteImpl() _WCONST;
 
 	static std::string getDBFilename();
 
@@ -62,7 +66,7 @@ public:
 	bool addPlayer(const Common::AbstractConnection::INFO &info) const;
 	bool logOutPlayer(const Common::AbstractConnection::NAMESOCKFD &nsf) const;
 
-	WSTATIC_S long long int newGame() WSTATIC_E;
+	WSTATIC_S long long int newGame() WSTATIC_E _WCONST;
 
 	WSTATIC_S bool gameEnded(long long int gameIndex) WSTATIC_E;
 	bool addPlayerToGame(long long int gid,
@@ -75,7 +79,7 @@ public:
 	const;
 
 private:
-	WSTATIC_S bool exec(const std::string &sql) WSTATIC_E;
+	WSTATIC_S bool exec(const std::string &sql) WSTATIC_E _WCONST;
 
 private:
 #ifndef _WIN32

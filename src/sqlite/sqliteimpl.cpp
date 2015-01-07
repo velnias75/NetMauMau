@@ -168,7 +168,7 @@ SQLiteImpl::~SQLiteImpl() {
 
 std::string SQLiteImpl::getDBFilename() {
 
-#ifndef _WIN32
+#if !defined(_WIN32) && defined(HAVE_MKDIR)
 #ifdef NDEBUG
 
 	const char *home = getenv("HOME");
@@ -198,7 +198,8 @@ std::string SQLiteImpl::getDBFilename() {
 
 bool SQLiteImpl::exec(const std::string &sql) WSTATIC {
 #ifndef _WIN32
-	char *err;
+	
+	char *err = 0L;
 
 	if(m_db && sqlite3_exec(m_db, sql.c_str(), NULL, NULL, &err) == SQLITE_OK) {
 		return true;
@@ -223,7 +224,7 @@ SQLite::SCORES SQLiteImpl::getScores(SQLite::SCORE_TYPE type, std::size_t limit)
 
 	if(m_db) {
 
-		char *err;
+		char *err = 0L;
 		std::ostringstream sql;
 
 		sql << "SELECT * FROM " << (type == SQLite::NORM ? "total_scores" : "total_scores_abs");

@@ -367,12 +367,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 										 << " to client failed: " << e.what());
 							}
 
-							shutdown(cfd, SHUT_RDWR);
-#ifndef _WIN32
-							close(cfd);
-#else
-							closesocket(cfd);
-#endif
+							shutdown(cfd);
 							accepted = REFUSED;
 						}
 					} else {
@@ -385,12 +380,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 							logDebug("Sending NO to client failed: " << e.what());
 						}
 
-						shutdown(cfd, SHUT_RDWR);
-#ifndef _WIN32
-						close(cfd);
-#else
-						closesocket(cfd);
-#endif
+						shutdown(cfd);
 					}
 
 				} else if(rHello.substr(0, 10) == "PLAYERLIST") {
@@ -433,17 +423,12 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 					send(cver >= 4 ? "PLAYERLISTEND\0-\0" : "PLAYERLISTEND\0",
 						 cver >= 4 ? 16 : 14, cfd);
 
-					shutdown(cfd, SHUT_RDWR);
-#ifndef _WIN32
-					close(cfd);
-#else
-					closesocket(cfd);
-#endif
-
+					shutdown(cfd);
 					accepted = PLAYERLIST;
 
 				} else if(rHello.substr(0, 6) == "SCORES") {
 
+#ifndef _WIN32
 					const NetMauMau::DB::SQLite::SCORE_TYPE st =
 						rHello.substr(7, rHello.find(' ', 7) - 7) == "ABS" ?
 						NetMauMau::DB::SQLite::ABS : NetMauMau::DB::SQLite::NORM;
@@ -454,24 +439,24 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 					const
 					NetMauMau::DB::SQLite::SCORES &scores(NetMauMau::DB::SQLite::getInstance().
 														  getScores(st, limit));
+#endif
 
 					std::ostringstream osscores;
+
+#ifndef _WIN32
 
 					for(NetMauMau::DB::SQLite::SCORES::const_iterator i(scores.begin());
 							i != scores.end(); ++i) {
 						osscores << i->name << '=' << i->score << '\0';
 					}
 
+#endif
+
 					osscores << "SCORESEND" << '\0';
 
 					send(osscores.str().c_str(), osscores.str().length(), cfd);
 
-					shutdown(cfd, SHUT_RDWR);
-#ifndef _WIN32
-					close(cfd);
-#else
-					closesocket(cfd);
-#endif
+					shutdown(cfd);
 					accepted = SCORES;
 
 				} else {
@@ -486,40 +471,31 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 					send(oscap.str().c_str(), oscap.str().length(), cfd);
 
-					shutdown(cfd, SHUT_RDWR);
-#ifndef _WIN32
-					close(cfd);
-#else
-					closesocket(cfd);
-#endif
-
+					shutdown(cfd);
 					accepted = CAP;
 				}
 
 			} else {
-				shutdown(cfd, SHUT_RDWR);
-#ifndef _WIN32
-				close(cfd);
-#else
-				closesocket(cfd);
-#endif
-
+				shutdown(cfd);
 				throw NetMauMau::Common::Exception::SocketException(gai_strerror(err), -1, errno);
 			}
 
 		} catch(const NetMauMau::Common::Exception::SocketException &) {
-			shutdown(cfd, SHUT_RDWR);
-#ifndef _WIN32
-			close(cfd);
-#else
-			closesocket(cfd);
-#endif
-
+			shutdown(cfd);
 			throw;
 		}
 	}
 
 	return accepted;
+}
+
+void Connection::shutdown(SOCKET cfd) {
+	::shutdown(cfd, SHUT_RDWR);
+#ifndef _WIN32
+	close(cfd);
+#else
+	closesocket(cfd);
+#endif
 }
 
 void Connection::removePlayer(SOCKET sockfd) {

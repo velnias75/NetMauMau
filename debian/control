@@ -12,6 +12,7 @@ Homepage: https://github.com/velnias75/NetMauMau/
 
 Package: netmaumau-server-common
 Architecture: all
+Recommends: xinetd
 Depends: ${misc:Depends}
 Description: Server for the popular card game Mau Mau - common server files
  Provides a server for the popular card game NetMauMau. Up to 5 players can 

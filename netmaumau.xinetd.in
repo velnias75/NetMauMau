@@ -1,0 +1,14 @@
+service netmaumau
+{
+	disable		= no
+	per_source	= 1
+	port		= 8899
+	socket_type	= stream
+	protocol	= tcp
+	user		= root
+	server		= @bindir@/nmm-server
+	server_args	= --inetd
+	type		= UNLISTED
+	wait		= yes
+	instances	= 1
+}

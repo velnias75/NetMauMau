@@ -1,10 +1,20 @@
 SUBDIRS = src doc
 
+xinetddir = $(sysconfdir)/xinetd.d
+xinetd_DATA = netmaumau
+
 ACLOCAL_AMFLAGS = -I m4
 
-EXTRA_DIST = COPYING netmaumau.ico
+EXTRA_DIST = COPYING netmaumau.ico netmaumau.xinetd.in
+
+CLEANFILES = netmaumau
+
+DISTCLEANFILES = NetMauMau-dbg.db
 
 AM_DISTCHECK_CONFIGURE_FLAGS = --disable-client --enable-cli-client --enable-pidfile
+
+netmaumau: $(top_srcdir)/netmaumau.xinetd.in
+	$(AM_V_GEN)$(SED) -e 's|@bindir[@]|$(bindir)|g' < $< > $@
 
 if CHECKCPP
 # suppression template: // cppcheck-suppress {id}

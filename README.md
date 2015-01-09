@@ -33,7 +33,7 @@ A *sample **xinetd** service configuration* can look as following:
 	    protocol = tcp
 	    user = root
 	    server = /usr/bin/nmm-server
-	    server_args = --inetd --port=8899
+	    server_args = --inetd
 	    type = UNLISTED
 	    wait = yes
 	    instances = 1

@@ -16,6 +16,29 @@ Prerequisites
 
 * sqlite3
 
+(x)inetd support
+----------------
+
+On *Linux/BSD systems* you can let start the server on demand as well, by adding it as service to 
+**(x)inetd**.
+
+A *sample **xinetd** service configuration* can look as following:
+
+    service netmaumau
+    {
+	    disable = no
+	    per_source = 1
+	    port = 8899
+	    socket_type = stream
+	    protocol = tcp
+	    user = root
+	    server = /usr/bin/nmm-server
+	    server_args = --inetd --port=8899
+	    type = UNLISTED
+	    wait = yes
+	    instances = 1
+    }
+
 Setting up the build environment
 --------------------------------
 

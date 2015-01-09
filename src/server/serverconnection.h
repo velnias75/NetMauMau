@@ -41,10 +41,10 @@ public:
 	typedef enum { NONE, PLAY, CAP, REFUSED, PLAYERLIST, SCORES } ACCEPT_STATE;
 	typedef std::map<uint32_t, std::string, std::greater<uint32_t> > VERSIONEDMESSAGE;
 
-	Connection(uint32_t minVer, uint16_t port = SERVER_PORT, const char *server = NULL);
+	Connection(uint32_t minVer, bool inetd, uint16_t port = SERVER_PORT, const char *server = NULL);
 	virtual ~Connection();
 
-	virtual void connect() throw(Common::Exception::SocketException);
+	virtual void connect(bool inetd) throw(Common::Exception::SocketException);
 
 	int wait(timeval *tv = NULL);
 
@@ -92,6 +92,7 @@ private:
 private:
 	CAPABILITIES m_caps;
 	uint32_t m_clientMinVer;
+	bool m_inetd;
 };
 
 }

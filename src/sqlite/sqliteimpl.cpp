@@ -58,6 +58,7 @@ int scoresCallback(void *arg, int cols, char **col_text, char **) {
 }
 
 const char *SCHEMA =
+	"PRAGMA journal_mode=OFF;" \
 	"CREATE TABLE IF NOT EXISTS \"meta\" (" \
 	"dbver INTEGER UNIQUE," \
 	"date INTEGER );"\

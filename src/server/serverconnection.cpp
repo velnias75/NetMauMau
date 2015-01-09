@@ -82,8 +82,8 @@ struct _playerClientversionLess2 :
 
 using namespace NetMauMau::Server;
 
-Connection::Connection(uint32_t minVer, uint16_t port, const char *server)
-	: AbstractConnection(server, port), m_caps(), m_clientMinVer(minVer) {}
+Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *server)
+	: AbstractConnection(server, port), m_caps(), m_clientMinVer(minVer), m_inetd(inetd) {}
 
 Connection::~Connection() {
 
@@ -120,9 +120,9 @@ std::string Connection::wireError(const std::string &err) const {
 	return std::string("could not bind") + (!err.empty() ? ": " : "") + (!err.empty() ? err : "");
 }
 
-void Connection::connect() throw(NetMauMau::Common::Exception::SocketException) {
+void Connection::connect(bool inetd) throw(NetMauMau::Common::Exception::SocketException) {
 
-	AbstractConnection::connect();
+	AbstractConnection::connect(inetd);
 
 	if(listen(getSocketFD(), SOMAXCONN)) {
 		throw NetMauMau::Common::Exception::SocketException(NetMauMau::Common::errorString(),

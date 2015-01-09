@@ -80,6 +80,7 @@ namespace {
 
 bool aceRound = false;
 bool ultimate = false;
+bool inetd = false;
 std::size_t minPlayers = 1;
 uint16_t port = SERVER_PORT;
 
@@ -120,6 +121,12 @@ poptOption poptOptions[] = {
 		"ai-delay", 'D', POPT_ARG_LONG | POPT_ARGFLAG_SHOW_DEFAULT, &aiDelay,
 		0, "Delay after AI turns", "MILLISECONDS"
 	},
+#ifndef _WIN32
+	{
+		"inetd", 0,  POPT_ARG_NONE,  NULL, 'i',
+		"Put the server in a mode suitable for (x)inetd", NULL
+	},
+#endif
 	{ "bind", 'b', POPT_ARG_STRING, &host, 0, "Bind to HOST", "HOST" },
 #ifndef _WIN32
 	{ "iface", 'I', POPT_ARG_STRING, &interface, 'I', "Bind to INTERFACE", "INTERFACE" },
@@ -156,6 +163,7 @@ void updatePlayerCap(NetMauMau::Server::Connection::CAPABILITIES &caps, std::siz
 volatile bool interrupt = false;
 
 void sh_interrupt(int) {
+
 	logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Server is about to shut down");
 	NetMauMau::Server::EventHandler::setInterrupted();
 	interrupt = true;
@@ -387,6 +395,10 @@ int main(int argc, const char **argv) {
 			ultimate = true;
 			break;
 
+		case 'i':
+			inetd = true;
+			break;
+
 		case 'a':
 			aceRound = true;
 
@@ -426,6 +438,8 @@ int main(int argc, const char **argv) {
 	}
 
 	poptFreeContext(pctx);
+
+	if(inetd) NetMauMau::Common::Logger::setSilentMask(0xFF);
 
 #ifndef HAVE_ARC4RANDOM_UNIFORM
 #if HAVE_INITSTATE
@@ -483,7 +497,8 @@ int main(int argc, const char **argv) {
 		}
 
 		Server::Connection con(aceRound ? std::max(7, MAKE_VERSION(MIN_MAJOR, MIN_MINOR)) :
-							   MAKE_VERSION(MIN_MAJOR, MIN_MINOR), port, *host ? host : NULL);
+							   MAKE_VERSION(MIN_MAJOR, MIN_MINOR), false, port,
+							   *host ? host : NULL);
 
 		ultimate = (!aiOpponent && minPlayers > 2) ? ultimate : numAI > 1;
 
@@ -495,7 +510,7 @@ int main(int argc, const char **argv) {
 
 		try {
 
-			con.connect();
+			con.connect(inetd);
 
 			Server::EventHandler evtHdlr(con);
 			Server::Game game(evtHdlr, ::labs(aiDelay), aiOpponent, aiNames,
@@ -570,8 +585,14 @@ int main(int argc, const char **argv) {
 
 									refuse = true;
 									game.start(ultimate);
-									updatePlayerCap(caps, game.getPlayerCount(), con, aiOpponent);
-									refuse = false;
+
+									if(!inetd) {
+										updatePlayerCap(caps, game.getPlayerCount(), con,
+														aiOpponent);
+										refuse = false;
+									} else {
+										break;
+									}
 								}
 
 							} else {

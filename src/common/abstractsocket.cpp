@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -83,7 +83,7 @@ AbstractSocket::~AbstractSocket() {
 	delete _pimpl;
 }
 
-void AbstractSocket::connect() throw(Exception::SocketException) {
+void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 
 #ifdef _WIN32
 
@@ -91,57 +91,61 @@ void AbstractSocket::connect() throw(Exception::SocketException) {
 
 #endif
 
-	struct addrinfo hints;
-	struct addrinfo *result, *rp = NULL;
-	char portS[256];
-	int s;
+	if(!inetd) {
 
-	std::snprintf(portS, 255, "%u", _pimpl->m_port);
-	std::memset(&hints, 0, sizeof(struct addrinfo));
+		struct addrinfo hints;
+		struct addrinfo *result, *rp = NULL;
+		char portS[256];
+		int s;
+
+		std::snprintf(portS, 255, "%u", _pimpl->m_port);
+		std::memset(&hints, 0, sizeof(struct addrinfo));
 
 #ifdef _WIN32
-	hints.ai_family = AF_INET;
+		hints.ai_family = AF_INET;
 #else
-	hints.ai_family = AF_UNSPEC;
+		hints.ai_family = AF_UNSPEC;
 #endif
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_PASSIVE;
-	hints.ai_protocol = 0;
-	hints.ai_canonname = NULL;
-	hints.ai_addr = NULL;
-	hints.ai_next = NULL;
+		hints.ai_socktype = SOCK_STREAM;
+		hints.ai_flags = AI_PASSIVE;
+		hints.ai_protocol = 0;
+		hints.ai_canonname = NULL;
+		hints.ai_addr = NULL;
+		hints.ai_next = NULL;
 
-	if((s = getaddrinfo(_pimpl->m_server.empty() ? 0L : _pimpl->m_server.c_str(), portS, &hints,
-						&result)) != 0) {
-		throw Exception::SocketException(gai_strerror(s), _pimpl->m_sfd, errno);
-	}
-
-	for(rp = result; rp != NULL; rp = rp->ai_next) {
-
-		_pimpl->m_sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
-
-		if(_pimpl->m_sfd == INVALID_SOCKET) continue;
-
-		if(wire(_pimpl->m_sfd, rp->ai_addr, rp->ai_addrlen)) {
-			break;
-		} else {
-			_pimpl->m_wireError = NetMauMau::Common::errorString();
+		if((s = getaddrinfo(_pimpl->m_server.empty() ? 0L : _pimpl->m_server.c_str(), portS, &hints,
+							&result)) != 0) {
+			throw Exception::SocketException(gai_strerror(s), _pimpl->m_sfd, errno);
 		}
 
+		for(rp = result; rp != NULL; rp = rp->ai_next) {
+
+			_pimpl->m_sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+
+			if(_pimpl->m_sfd == INVALID_SOCKET) continue;
+
+			if(wire(_pimpl->m_sfd, rp->ai_addr, rp->ai_addrlen)) {
+				break;
+			} else {
+				_pimpl->m_wireError = NetMauMau::Common::errorString();
+			}
+
 #ifndef _WIN32
-		close(_pimpl->m_sfd);
+			close(_pimpl->m_sfd);
 #else
-		closesocket(_pimpl->m_sfd);
+			closesocket(_pimpl->m_sfd);
 #endif
+		}
+
+		freeaddrinfo(result);
+
+		if(rp == NULL) {
+			_pimpl->m_sfd = INVALID_SOCKET;
+			throw Exception::SocketException(wireError(_pimpl->m_wireError));
+		}
+	} else {
+		_pimpl->m_sfd = fileno(stdin);
 	}
-
-	freeaddrinfo(result);
-
-	if(rp == NULL) {
-		_pimpl->m_sfd = INVALID_SOCKET;
-		throw Exception::SocketException(wireError(_pimpl->m_wireError));
-	}
-
 }
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"

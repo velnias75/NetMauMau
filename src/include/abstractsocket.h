@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -54,7 +54,7 @@ class _EXPORT AbstractSocket {
 public:
 	virtual ~AbstractSocket();
 
-	virtual void connect() throw(Exception::SocketException);
+	virtual void connect(bool inetd = false) throw(Exception::SocketException);
 
 	std::string read(SOCKET fd, std::size_t len = 1024) throw(Exception::SocketException);
 	static void write(SOCKET fd, const std::string &msg) throw(Exception::SocketException);

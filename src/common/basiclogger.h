@@ -1,7 +1,7 @@
 /**
  * basiclogger.h - template for basic logging functionality
  *
- * $Revision: 3480 $ $Author: heiko $
+ * $Revision: 3496 $ $Author: heiko $
  *
  * (c) 2012-2015 Heiko Schäfer <heiko@rangun.de>
  *
@@ -253,17 +253,13 @@ BasicLogger<OIter>::~BasicLogger() {
 	pthread_mutex_lock(&_basicLoggerLock);
 #endif
 
-	if(!m_silent) {
+	if(!m_noNewline) m_msg << std::endl;
 
-		if(!m_noNewline) {
-			m_msg << std::endl;
-		}
+	logString s = m_msg.str();
 
-		logString s = m_msg.str();
-		std::copy(s.begin(), s.end(), m_out);
+	if(!m_silent) std::copy(s.begin(), s.end(), m_out);
 
-		if(m_postLogger) m_postLogger->postAction(s);
-	}
+	if(m_postLogger) m_postLogger->postAction(s);
 
 #ifndef BASICLOGGER_NO_PTHREADS
 	pthread_mutex_unlock(&_basicLoggerLock);

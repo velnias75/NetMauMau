@@ -22,7 +22,7 @@ Prerequisites
 On *Linux/BSD systems* you can let start the server on demand as well, by adding it as service to 
 **(x)inetd**.
 
-A *sample **xinetd** service configuration* can look as following:
+A *sample* **xinetd** *service configuration* can look as following:
 
     service netmaumau
     {

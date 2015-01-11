@@ -48,6 +48,10 @@ AC_ARG_ENABLE([pidfile], [AS_HELP_STRING([--enable-pidfile], [enables creation o
   [ AM_CONDITIONAL([PIDFILE], [ test x$enable_pidfile = xyes ]) ],
   [ AM_CONDITIONAL([PIDFILE], [ false ]) ])
 
+AC_ARG_ENABLE([xinetd], [AS_HELP_STRING([--disable-xinetd], [disables creation and installation of the xinetd service])],
+  [ AM_CONDITIONAL([XINETD], [ test x$enable_xinetd = xyes ]) ],
+  [ AM_CONDITIONAL([XINETD], [ true ]) ])
+
 PKG_PROG_PKG_CONFIG([0.22])
 
 # Checks for programs.
@@ -163,6 +167,8 @@ AC_SUBST([NO_RTTI_FLAGS])
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_FILES([src/server/netmaumau.rc doc/client.dox netmaumau.h2m])
+
+AC_MSG_RESULT([You may want to install a client too: https://github.com/velnias75/NetMauMau-Qt-Client])
 
 AC_OUTPUT([Makefile src/include/Makefile src/Makefile src/common/Makefile src/sqlite/Makefile
   src/engine/Makefile src/server/Makefile src/server/images/Makefile src/client/Makefile 

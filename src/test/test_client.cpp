@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -21,6 +21,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
+#include <iomanip>
 
 #include <popt.h>
 
@@ -112,6 +113,23 @@ int main(int argc, const char **argv) {
 
 		} else {
 			client.play(&tv);
+
+			const Client::Connection::SCORES &scores(client.getScores());
+
+			if(!scores.empty()) {
+
+				std::cout << std::endl << "Top ten hall of fame:" << std::endl;
+
+				int j = 1;
+
+				for(Client::Connection::SCORES::const_iterator i(scores.begin()); i != scores.end();
+						++i, ++j) {
+
+					std::cout << std::setw(2) << j << std::setw(0) << ") " << BOLD_ON
+							  << std::setw(25) << i->name << std::setw(0) << ": " << BOLD_OFF
+							  << i->score << std::endl;
+				}
+			}
 		}
 
 	} catch(const Common::Exception::SocketException &e) {

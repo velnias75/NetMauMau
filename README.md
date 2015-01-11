@@ -58,6 +58,7 @@ A proof of concept Qt client can be found at
 
 Binary releases
 ===============
+[![Download NetMauMau](https://img.shields.io/sourceforge/dm/netmaumau.svg)](https://sourceforge.net/projects/netmaumau/files/latest/download)
 
 Gentoo
 ------
@@ -92,8 +93,7 @@ Debian 7
 
 Windows
 -------
-[https://sourceforge.net/projects/netmaumau/](https://sourceforge.net/projects/netmaumau/)
-
+[![Download NetMauMau](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/netmaumau/files/latest/download)
 
 Rules
 =====

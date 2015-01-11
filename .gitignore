@@ -80,3 +80,7 @@ V*.xml
 abi_dumps/
 compat_reports/
 logs/
+*-dbg.db
+netmaumau
+src/sqlite/.deps/
+src/sqlite/.libs/

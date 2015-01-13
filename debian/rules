@@ -39,6 +39,6 @@ DEB_DH_BUILDDEB_ARGS_DEFAULT := -- -z9 -Zxz
 DEB_DH_INSTALL_SOURCEDIR = debian/tmp
 DEB_DH_AUTORECONF_ARGS = --as-needed
 DH_ALWAYS_EXCLUDE=.svn
-DEB_DH_INSTALL_ARGS_DEFAULT = --list-missing -Xclient-api-doc -X.la -Xnmm-server.1
+DEB_DH_INSTALL_ARGS_DEFAULT = --list-missing -Xclient-api-doc -X.la -Xnmm-server.1 -Xai_img
 DEB_DH_MAKESHLIBS_ARGS_netmaumau-server = -n
 DEB_DH_STRIP_ARGS_DEFAULT = --dbg-package=netmaumau-dbg -n

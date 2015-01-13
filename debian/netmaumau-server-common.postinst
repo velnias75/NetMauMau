@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst script for netmaumau-server
+# postinst script for netmaumau-server-common
 #
 # see: dh_installdeb(1)
 
@@ -20,7 +20,15 @@ set -e
 
 case "$1" in
     configure)
-	chown nobody:nogroup /var/games/netmaumau
+	if [ ! -e /usr/share/netmaumau/ai_img1.png ]; then \
+		ln -s /usr/share/netmaumau/QS.PNG /usr/share/netmaumau/ai_img1.png; \
+        fi
+	if [ ! -e /usr/share/netmaumau/ai_img2.png ]; then \
+                ln -s /usr/share/netmaumau/KC.PNG /usr/share/netmaumau/ai_img2.png; \
+        fi
+	if [ ! -e /usr/share/netmaumau/ai_img3.png ]; then \
+                ln -s /usr/share/netmaumau/QC.PNG /usr/share/netmaumau/ai_img3.png; \
+        fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

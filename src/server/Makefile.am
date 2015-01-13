@@ -35,6 +35,7 @@ if !GENMAN
 nmm_server_CPPFLAGS += -DNOH2M
 endif
 
+nmm_server_CPPFLAGS += -DPKGDATADIR="\"$(pkgdatadir)\""
 nmm_server_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/engine -I$(top_srcdir)/src/sqlite $(POPT_CFLAGS)
 nmm_server_SOURCES = game.cpp main.cpp serverconnection.cpp servereventhandler.cpp \

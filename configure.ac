@@ -56,6 +56,7 @@ PKG_PROG_PKG_CONFIG([0.22])
 
 # Checks for programs.
 AC_PROG_CXX
+AC_PROG_LN_S
 AX_CHECK_BASE64
 AC_CHECK_PROGS([HELP2MAN], [help2man])
 AC_CHECK_PROGS([DOXYGEN],  [doxygen])

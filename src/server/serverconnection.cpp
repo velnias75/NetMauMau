@@ -32,6 +32,11 @@
 #include <unistd.h>
 #endif
 
+#if defined(HAVE_SYS_STAT_H) && defined(HAVE_SYS_TYPES_H)
+#include <sys/stat.h>
+#include <sys/types.h>
+#endif
+
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
 #endif
@@ -83,7 +88,72 @@ struct _playerClientversionLess2 :
 using namespace NetMauMau::Server;
 
 Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *server)
-	: AbstractConnection(server, port), m_caps(), m_clientMinVer(minVer), m_inetd(inetd) {}
+	: AbstractConnection(server, port), m_caps(), m_clientMinVer(minVer), m_inetd(inetd),
+	  m_aiPlayerImages(new(std::nothrow) const std::string*[4]()) {
+
+#if !defined(_WIN32) && (defined(HAVE_SYS_STAT_H) && defined(HAVE_SYS_TYPES_H))
+
+	struct stat s;
+
+	const std::string dataDir(PKGDATADIR"/ai_img");
+
+	for(int i = 0; i < 4; ++i) {
+
+		m_aiPlayerImages[i] = 0L;
+
+		const char *fname = std::string(dataDir).append(1, 0x30 + i).append(".png").c_str();
+
+		if(stat(fname, &s) != -1) {
+
+			FILE *in = std::fopen(fname, "rb");
+
+			if(in) {
+
+				NetMauMau::Common::BYTE *picData =
+					new(std::nothrow) NetMauMau::Common::BYTE[s.st_size]();
+
+				NetMauMau::Common::BYTE *ptr = picData;
+
+				if(picData) {
+
+					std::size_t r;
+
+					while((r = std::fread(ptr, s.st_size, sizeof(NetMauMau::Common::BYTE), in))) {
+						ptr += r;
+					}
+
+					if(std::feof(in)) {
+
+						if(NetMauMau::Common::checkPNG(picData, s.st_size)) {
+							m_aiPlayerImages[i] = new(std::nothrow)
+							std::string(NetMauMau::Common::base64_encode(picData, s.st_size));
+						} else {
+							logWarning("Image for AI player " << i << ": " << fname
+									   << " is not a PNG image; discarding it");
+						}
+
+					} else {
+						logWarning("Error reading image for AI player " << i << ": " << fname
+								   << ": " << std::strerror(errno));
+					}
+
+					delete [] picData;
+				}
+
+				std::fclose(in);
+
+			} else {
+				logWarning("Couldn't read image for AI player " << i << ": " << fname);
+			}
+		}
+	}
+
+#else
+
+	for(int i = 0; i < 4; ++i) m_aiPlayerImages[i] = 0L;
+
+#endif
+}
 
 Connection::~Connection() {
 
@@ -102,6 +172,10 @@ Connection::~Connection() {
 		closesocket(i->sockfd);
 #endif
 	}
+
+	for(int i = 0; i < 4; ++i) delete m_aiPlayerImages[i];
+
+	delete [] m_aiPlayerImages;
 }
 
 bool Connection::wire(SOCKET sockfd, const struct sockaddr *addr, socklen_t addrlen) const {
@@ -406,15 +480,22 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						send(piz.c_str(), piz.length(), cfd);
 					}
 
+					std::size_t j = 0;
+
 					for(std::vector<std::string>::const_iterator i(getAIPlayers().begin());
-							i != getAIPlayers().end(); ++i) {
+							i != getAIPlayers().end(); ++i, ++j) {
 
 						std::string piz(*i);
 						piz.append(1, 0);
 
 						if(cver >= 4) {
-							piz.reserve(piz.length() + AIDefaultIcon.length() + 1);
-							piz.append(AIDefaultIcon).append(1, 0);
+							piz.reserve(piz.length() + (m_aiPlayerImages[j] &&
+														!m_aiPlayerImages[j]->empty() ?
+														m_aiPlayerImages[j]->length() :
+														AIDefaultIcon.length()) + 1);
+
+							piz.append(m_aiPlayerImages[j] && !m_aiPlayerImages[j]->empty() ?
+									   (*m_aiPlayerImages[j]) : AIDefaultIcon).append(1, 0);
 						}
 
 						send(piz.c_str(), piz.length(), cfd);

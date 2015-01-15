@@ -115,7 +115,8 @@ poptOption poptOptions[] = {
 	},
 	{
 		"ai-name", 'A', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &aiName, 'A',
-		"Set the name of one AI player. Can be given up to 4 times", "NAME"
+		"Set the name of one AI player. Can be given up to 4 times. " \
+		"Whitespaces can get substituted by \'%\', \'%\' itself by \"%%\"", "NAME"
 	},
 	{
 		"ai-delay", 'D', POPT_ARG_LONG | POPT_ARGFLAG_SHOW_DEFAULT, &aiDelay,
@@ -158,6 +159,28 @@ void updatePlayerCap(NetMauMau::Server::Connection::CAPABILITIES &caps, std::siz
 	os << count - (aiOpponent ? 1 : 0);
 	caps["CUR_PLAYERS"] = os.str();
 	con.setCapabilities(caps);
+}
+
+char *inetdParsedString(char *str) {
+	if(str) {
+
+		char *ptr = str;
+
+		while(*ptr) {
+			if(*ptr == '%' && (*(ptr + 1) && *(ptr + 1) != '%')) {
+				*ptr = ' ';
+			} else if(*ptr == '%' && (*(ptr + 1) && *(ptr + 1) == '%')) {
+				std::strncpy(ptr, ptr + 1, std::strlen(ptr + 1) + 1);
+			}
+
+			++ptr;
+		}
+
+		return str;
+
+	} else {
+		return 0L;
+	}
 }
 
 volatile bool interrupt = false;
@@ -309,7 +332,7 @@ int main(int argc, const char **argv) {
 		case 'A':
 
 			if(std::count_if(aiNames, aiNames + numAI, std::bind2nd(std::equal_to<std::string>(),
-							 aiName))) {
+							 inetdParsedString(aiName)))) {
 				logWarning("Duplicate AI player name: \"" << aiName << "\"");
 			} else if(numAI < 4) {
 				aiNames[numAI++] = aiName;

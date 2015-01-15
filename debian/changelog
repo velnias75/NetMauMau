@@ -1,8 +1,9 @@
 netmaumau (0.10) precise; urgency=low
 
   * installing links to ai_imgN.png for customizing AI images
+  * added whitespace substitution for xinetd
 
- -- Heiko Schäfer <heiko@rangun.de>  Tue, 13 Jan 2015 11:39:52 +0100
+ -- Heiko Schäfer <heiko@rangun.de>  Thu, 15 Jan 2015 08:12:34 +0100
 
 netmaumau (0.9) UNRELEASED; urgency=low
 

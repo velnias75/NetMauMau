@@ -101,7 +101,7 @@ Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *s
 
 		m_aiPlayerImages[i] = 0L;
 
-		const char *fname = std::string(dataDir).append(1, 0x30 + i).append(".png").c_str();
+		char *fname = strdup(std::string(dataDir).append(1, 0x30 + i).append(".png").c_str());
 
 		if(stat(fname, &s) != -1) {
 
@@ -145,7 +145,10 @@ Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *s
 			} else {
 				logWarning("Couldn't read image for AI player " << i << ": " << fname);
 			}
-		}
+
+		} else logDebug("Can't stat " << fname << ": " << std::strerror(errno));
+
+		free(fname);
 	}
 
 #else

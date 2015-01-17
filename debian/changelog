@@ -1,3 +1,9 @@
+netmaumau (0.11) UNRELEASED; urgency=low
+
+  * 
+
+ -- Heiko Schäfer <heiko@rangun.de>  Sat, 17 Jan 2015 11:09:07 +0100
+
 netmaumau (0.10) precise; urgency=low
 
   * installing links to ai_imgN.png for customizing AI images

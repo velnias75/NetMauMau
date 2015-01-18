@@ -180,7 +180,7 @@ again:
 
 		while(len > 0) {
 
-			ssize_t i = ::recv(fd, ptr, len, 0);
+			ssize_t i = ::recv(fd, reinterpret_cast<char *>(ptr), len, 0);
 
 			if(i < 0) throw Exception::SocketException(NetMauMau::Common::errorString(), fd, errno);
 

@@ -192,9 +192,9 @@ std::string SQLiteImpl::getDBFilename() {
 #else
 	return(BUILDDIR"/"PACKAGE_NAME"-dbg.db");
 #endif
-#else
-	return std::string();
 #endif
+
+	return std::string();
 }
 
 bool SQLiteImpl::exec(const std::string &sql) WSTATIC {

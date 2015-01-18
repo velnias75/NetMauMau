@@ -132,7 +132,9 @@ void AbstractConnection::wait(long ms) throw(Exception::SocketException) {
 		} else if(sret > 0) {
 			intercept();
 #if _POSIX_C_SOURCE >= 200112L && defined(__linux)
-			ms = tv.tv_sec * 1000L + tv.tv_usec;
+
+			if(!(ms = tv.tv_sec * 1000L + tv.tv_usec)) sret = 0;
+
 #endif
 		}
 	}

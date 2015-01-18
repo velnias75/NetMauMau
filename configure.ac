@@ -57,9 +57,6 @@ PKG_PROG_PKG_CONFIG([0.22])
 # Checks for programs.
 AC_PROG_CXX
 AX_CHECK_CLANG
-if test x$CLANG == xyes; then
-AC_MSG_WARN([clang is currently *NOT* supported. See https://github.com/velnias75/NetMauMau/issues/21])
-fi
 AC_PROG_LN_S
 AX_CHECK_BASE64
 AC_CHECK_PROGS([HELP2MAN], [help2man])

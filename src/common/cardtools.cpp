@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -38,10 +38,14 @@ const std::string SERVER_EXE(std::string(NMM_EXE_PATH).append(1, '/').append(NMM
 const std::string SERVER_EXE(NMM_EXE_NAME);
 #endif
 
+#ifndef __clang__
 #pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
 #pragma GCC diagnostic push
+#endif
 const std::string SUIT[] = { "\u2666", "\u2665", "\u2660", "\u2663" };
+#ifndef __clang__
 #pragma GCC diagnostic pop
+#endif
 
 class _ICARD : public NetMauMau::Common::ICard {
 	DISALLOW_COPY_AND_ASSIGN(_ICARD)
@@ -165,7 +169,9 @@ std::size_t NetMauMau::Common::getCardPoints(ICard::RANK v) {
 		return 0;
 	}
 
+#ifndef __clang__
 	return 0;
+#endif
 }
 
 unsigned int NetMauMau::Common::suitOrderPosition(NetMauMau::Common::ICard::SUIT s) {

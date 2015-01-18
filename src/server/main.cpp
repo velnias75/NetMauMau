@@ -519,7 +519,7 @@ int main(int argc, const char **argv) {
 			minPlayers = std::min<std::size_t>(5, numAI + minPlayers);
 		}
 
-		Server::Connection con(aceRound ? std::max(7, MAKE_VERSION(MIN_MAJOR, MIN_MINOR)) :
+		Server::Connection con(aceRound ? std::max(7u, MAKE_VERSION(MIN_MAJOR, MIN_MINOR)) :
 							   MAKE_VERSION(MIN_MAJOR, MIN_MINOR), false, port,
 							   *host ? host : NULL);
 

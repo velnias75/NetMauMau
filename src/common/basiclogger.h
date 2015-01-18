@@ -1,7 +1,7 @@
 /**
  * basiclogger.h - template for basic logging functionality
  *
- * $Revision: 3496 $ $Author: heiko $
+ * $Revision: 3544 $ $Author: heiko $
  *
  * (c) 2012-2015 Heiko Schäfer <heiko@rangun.de>
  *
@@ -231,12 +231,18 @@ BasicLogger<OIter>::BasicLogger(const OIter &out, const BasicLogger<OIter>::LEVE
 
 	m_msg.precision(0);
 
+#ifdef __EXCEPTIONS
+
 	try {
+#endif
 		initMessageString();
+#ifdef __EXCEPTIONS
 	} catch(const std::bad_alloc &) {
 		std::set_new_handler(hdl);
 		throw "Error initialising logger!";
 	}
+
+#endif
 
 	std::set_new_handler(hdl);
 

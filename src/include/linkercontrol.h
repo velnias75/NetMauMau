@@ -1,9 +1,9 @@
 /*
  * linkercontrol.h - a common header for controlling visibility of functions and methods
  *
- * $Revision: 2751 $ $Author: heiko $
+ * $Revision: 3544 $ $Author: heiko $
  *
- * (c) 2012-2014 Heiko Schäfer <heiko@hgl.rangun.de>
+ * (c) 2012-2015 Heiko Schäfer <heiko@hgl.rangun.de>
  *
  * LICENCE is inherited by project using this file
  *
@@ -76,8 +76,15 @@ namespace Commons {
 #define _NOUNUSED __attribute__ ((warn_unused_result))
 #endif
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wvariadic-macros"
+#endif
 #ifndef _NONNULL
 #define _NONNULL(...) __attribute__ ((nonnull (__VA_ARGS__)))
+#endif
+#ifdef __clang__
+#pragma clang diagnostic pop
 #endif
 
 #ifndef _NONNULL_RETURN

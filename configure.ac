@@ -56,6 +56,7 @@ PKG_PROG_PKG_CONFIG([0.22])
 
 # Checks for programs.
 AC_PROG_CXX
+AX_CHECK_CLANG
 AC_PROG_LN_S
 AX_CHECK_BASE64
 AC_CHECK_PROGS([HELP2MAN], [help2man])
@@ -153,9 +154,11 @@ AC_DEFINE([MAXPICBYTES], [1048576], [maximum size of player image in bytes (base
 AC_DEFINE_UNQUOTED([SERVER_VERSION_MAJOR], [${SERVER_VERSION_MAJOR}], [server version major])
 AC_DEFINE_UNQUOTED([SERVER_VERSION_MINOR], [${SERVER_VERSION_MINOR}], [server version minor])
 
+if test x$CLANG = xyes; then VISIBILITY=hidden; else VISIBILITY=internal; fi
+
 LDFLAGS="-Wl,--as-needed ${LDFLAGS}"
 CFLAGS="${CFLAGS} -std=gnu99 -fvisibility-inlines-hidden"
-CXXFLAGS="${CXXFLAGS} -std=gnu++98 -fvisibility=internal -fvisibility-inlines-hidden -fstrict-aliasing"
+CXXFLAGS="${CXXFLAGS} -std=gnu++98 -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
 CPPFLAGS="${CPPFLAGS} -DBASICLOGGER_NO_PTHREADS -D_GLIBCXX_VISIBILITY=0"
 NO_RTTI_FLAGS="-fno-rtti -fno-exceptions"
 

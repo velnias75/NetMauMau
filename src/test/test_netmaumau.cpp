@@ -33,7 +33,7 @@ using namespace NetMauMau;
 int main(int, char **) {
 
 #ifndef HAVE_ARC4RANDOM_UNIFORM
-	std::srand(std::time(0L));
+	std::srand(static_cast<unsigned int>(std::time(0L)));
 #endif
 
 	TestEventHandler evHdlr;

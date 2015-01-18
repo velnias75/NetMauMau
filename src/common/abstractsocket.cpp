@@ -176,7 +176,7 @@ again:
 
 		}
 
-		char *ptr = static_cast<char *>(buf);
+		unsigned char *ptr = static_cast<unsigned char *>(buf);
 
 		while(len > 0) {
 
@@ -186,12 +186,12 @@ again:
 
 			ptr += i;
 
-			if(i < static_cast<ssize_t>(len)) break;
+			if(static_cast<std::size_t>(i) < len) break;
 
-			len -= i;
+			len -= static_cast<std::size_t>(i);
 		}
 
-		total = (ptr - static_cast<char *>(buf));
+		total = static_cast<std::size_t>(ptr - static_cast<unsigned char *>(buf));
 	}
 
 	return total;
@@ -235,7 +235,7 @@ void AbstractSocket::send(const void *buf, std::size_t len,
 		if(i < 0) throw Exception::SocketException(NetMauMau::Common::errorString(), fd, errno);
 
 		ptr += i;
-		len -= i;
+		len -= static_cast<std::size_t>(i);
 	}
 }
 

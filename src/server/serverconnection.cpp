@@ -118,15 +118,18 @@ Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *s
 
 					std::size_t r;
 
-					while((r = std::fread(ptr, s.st_size, sizeof(NetMauMau::Common::BYTE), in))) {
+					while((r = std::fread(ptr, static_cast<std::size_t>(s.st_size),
+										  sizeof(NetMauMau::Common::BYTE), in))) {
 						ptr += r;
 					}
 
 					if(std::feof(in)) {
 
-						if(NetMauMau::Common::checkPNG(picData, s.st_size)) {
+						if(NetMauMau::Common::checkPNG(picData,
+													   static_cast<std::size_t>(s.st_size))) {
 							m_aiPlayerImages[i] = new(std::nothrow)
-							std::string(NetMauMau::Common::base64_encode(picData, s.st_size));
+							std::string(NetMauMau::Common::base64_encode(picData,
+										static_cast<std::size_t>(s.st_size)));
 						} else {
 							logWarning("Image for AI player " << i << ": " << fname
 									   << " is not a PNG image; discarding it");

@@ -382,7 +382,8 @@ sevenRule:
 
 					m_ruleset->setCurPlayers(m_players.size());
 
-					m_nxtPlayer = nxt != m_players.end() ? std::distance(m_players.begin(), nxt)
+					m_nxtPlayer = nxt != m_players.end() ?
+								  static_cast<std::size_t>(std::distance(m_players.begin(), nxt))
 								  : 0;
 
 					if(!hasPlayers()) {

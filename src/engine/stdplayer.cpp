@@ -89,13 +89,15 @@ bool StdPlayer::m_jackPlayed = false;
 
 bool StdPlayer::_hasRankPath::operator()(const NetMauMau::Common::ICard *c) const {
 
+	bool hrp = false;
+
 	if(c->getRank() != rank) {
 		for(CARDS::const_iterator i(mCards.begin()); i != mCards.end(); ++i) {
-			return hasRankPath(c, (*i)->getSuit(), rank, mCards);
+			if((hrp = hasRankPath(c, (*i)->getSuit(), rank, mCards))) break;
 		}
 	}
 
-	return false;
+	return hrp;
 }
 
 StdPlayer::StdPlayer(const std::string &name) : m_name(name), m_cards(), m_cardsTaken(false),
@@ -370,16 +372,19 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 
 	if(!noJack && (!bestCard || m_powerSuit != NetMauMau::Common::ICard::SUIT_ILLEGAL)) {
 
-		const CARDS::size_type jackCnt = std::count_if(myCards.begin(), myCards.end(),
-										 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-												 NetMauMau::Common::ICard::JACK));
+		const CARDS::size_type jackCnt =
+			static_cast<CARDS::size_type>(std::count_if(myCards.begin(), myCards.end(),
+										  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+												  NetMauMau::Common::ICard::JACK)));
 
 		if(jackCnt) {
 			std::partition(myCards.begin(), myCards.end(),
 						   std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
 										NetMauMau::Common::ICard::JACK));
 
-			bestCard = myCards[NetMauMau::Common::genRandom<CARDS::difference_type>(jackCnt)];
+			bestCard = myCards[static_cast<std::size_t>
+							   (NetMauMau::Common::genRandom<CARDS::difference_type>
+								(static_cast<CARDS::difference_type>(jackCnt)))];
 		}
 	}
 
@@ -450,8 +455,8 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICard *uncoveredCard,
 	NetMauMau::Common::ICard::SUIT s = findJackChoice();
 
 	if(s == NetMauMau::Common::ICard::SUIT_ILLEGAL) {
-		while(((s = SUIT[NetMauMau::Common::genRandom<std::size_t>(4)]) == uncoveredCard->getSuit()
-				|| s == playedCard->getSuit()));
+		while(((s = SUIT[NetMauMau::Common::genRandom<std::ptrdiff_t>(4)]) ==
+				uncoveredCard->getSuit() || s == playedCard->getSuit()));
 	}
 
 	assert(s != NetMauMau::Common::ICard::SUIT_ILLEGAL);
@@ -543,7 +548,7 @@ std::size_t StdPlayer::getCardCount() const {
 }
 
 std::size_t StdPlayer::getPoints() const {
-	return std::accumulate(m_cards.begin(), m_cards.end(), 0, pointSum());
+	return static_cast<std::size_t>(std::accumulate(m_cards.begin(), m_cards.end(), 0, pointSum()));
 }
 
 const StdPlayer::CARDS &StdPlayer::getPlayerCards() const {

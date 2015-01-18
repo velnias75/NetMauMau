@@ -467,7 +467,7 @@ int main(int argc, const char **argv) {
 #ifndef HAVE_ARC4RANDOM_UNIFORM
 #if HAVE_INITSTATE
 	char istate[256];
-	initstate(std::time(0L), istate, 256);
+	initstate(static_cast<unsigned int>(std::time(0L)), istate, 256);
 #else
 	std::srand(std::time(0L));
 #endif
@@ -498,7 +498,7 @@ int main(int argc, const char **argv) {
 	std::memset(&sa, 0, sizeof(struct sigaction));
 
 	sa.sa_handler = sh_interrupt;
-	sa.sa_flags = SA_RESETHAND;
+	sa.sa_flags = static_cast<int>(SA_RESETHAND);
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGTERM, &sa, NULL);
 

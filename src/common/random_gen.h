@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -47,7 +47,8 @@ template<typename T>
 class GSLRNG {
 	DISALLOW_COPY_AND_ASSIGN(GSLRNG)
 public:
-	GSLRNG(long unsigned int seed = std::time(0L)) : m_rng(gsl_rng_alloc(gsl_rng_ranlxs2)) {
+	GSLRNG(long unsigned int seed = static_cast<long unsigned int>(std::time(0L))) :
+		m_rng(gsl_rng_alloc(gsl_rng_ranlxs2)) {
 
 		if(m_rng) gsl_rng_set(m_rng, seed);
 

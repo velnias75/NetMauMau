@@ -16,6 +16,7 @@ config.sub
 configure
 configure.scan
 debug
+clang
 depcomp
 install-sh
 ltmain.sh

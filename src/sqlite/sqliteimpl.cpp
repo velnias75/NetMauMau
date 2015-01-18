@@ -40,7 +40,7 @@ namespace {
 
 int scoresCallback(void *arg, int cols, char **col_text, char **) {
 
-	if(cols == 3) {
+	if(cols == 3 && col_text[0] && col_text[2]) {
 
 		NetMauMau::DB::SQLite::SCORES *res = static_cast<NetMauMau::DB::SQLite::SCORES *>(arg);
 		NetMauMau::DB::SQLite::SCORE sc = {
@@ -54,7 +54,7 @@ int scoresCallback(void *arg, int cols, char **col_text, char **) {
 		return 0;
 	}
 
-	return -1;
+	return !(col_text[0] && col_text[2]) ? 0 : -1;
 }
 
 const char *SCHEMA =
@@ -199,7 +199,7 @@ std::string SQLiteImpl::getDBFilename() {
 
 bool SQLiteImpl::exec(const std::string &sql) WSTATIC {
 #ifndef _WIN32
-	
+
 	char *err = 0L;
 
 	if(m_db && sqlite3_exec(m_db, sql.c_str(), NULL, NULL, &err) == SQLITE_OK) {

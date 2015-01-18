@@ -57,6 +57,9 @@ PKG_PROG_PKG_CONFIG([0.22])
 # Checks for programs.
 AC_PROG_CXX
 AX_CHECK_CLANG
+if test x$CLANG == xyes; then
+AC_MSG_WARN([clang is currently *NOT* supported. See https://github.com/velnias75/NetMauMau/issues/21])
+fi
 AC_PROG_LN_S
 AX_CHECK_BASE64
 AC_CHECK_PROGS([HELP2MAN], [help2man])
@@ -160,7 +163,10 @@ LDFLAGS="-Wl,--as-needed ${LDFLAGS}"
 CFLAGS="${CFLAGS} -std=gnu99 -fvisibility-inlines-hidden"
 CXXFLAGS="${CXXFLAGS} -std=gnu++98 -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
 CPPFLAGS="${CPPFLAGS} -DBASICLOGGER_NO_PTHREADS -D_GLIBCXX_VISIBILITY=0"
-NO_RTTI_FLAGS="-fno-rtti -fno-exceptions"
+NO_EXCEPTIONS="-fno-exceptions" ;
+NO_RTTI_FLAGS="-fno-rtti -fno-exceptions" ;
+  
+if test x$CLANG = xyes; then CXXFLAGS="-fexceptions -frtti ${CXXFLAGS}" ; fi
 
 AC_SUBST([LDFLAGS])
 AC_SUBST([CFLAGS])

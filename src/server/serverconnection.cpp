@@ -149,7 +149,9 @@ Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *s
 				logWarning("Couldn't read image for AI player " << i << ": " << fname);
 			}
 
-		} else logDebug("Can't stat " << fname << ": " << std::strerror(errno));
+		} else if(errno != ENOENT) {
+			logWarning("Can't stat " << fname << ": " << std::strerror(errno));
+		}
 
 		free(fname);
 	}

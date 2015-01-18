@@ -37,7 +37,7 @@ bool DefaultEventHandler::shutdown() const {
 	return false;
 }
 
-void DefaultEventHandler::reset() {}
+void DefaultEventHandler::reset() throw() {}
 
 void DefaultEventHandler::message(const std::string &, const std::vector<std::string> &) const
 throw(NetMauMau::Common::Exception::SocketException) {}

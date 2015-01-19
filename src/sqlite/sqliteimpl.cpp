@@ -193,8 +193,11 @@ std::string SQLiteImpl::getDBFilename() {
 	return(BUILDDIR"/"PACKAGE_NAME"-dbg.db");
 #endif
 #endif
-
+	
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunreachable-code"
 	return std::string();
+#pragma GCC diagnostic pop
 }
 
 bool SQLiteImpl::exec(const std::string &sql) WSTATIC {

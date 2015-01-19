@@ -37,8 +37,8 @@
 #include "clientconnection.h"
 #include "clientconnectionimpl.h"
 
-#include "base64.h"
 #include "errorstring.h"
+#include "base64bridge.h"
 #include "abstractclient.h"
 #include "scoresexception.h"
 #include "timeoutexception.h"
@@ -55,11 +55,15 @@
 
 using namespace NetMauMau::Client;
 
-Connection::Connection(const std::string &pName, const std::string &server, uint16_t port) :
-	AbstractConnection(server.c_str(), port), _pimpl(new ConnectionImpl(this, pName, 0L, 2)) {
-	if(_pimpl->m_pName.length() > MAX_PNAME - 1) {
-		_pimpl->m_pName = _pimpl->m_pName.substr(0, MAX_PNAME - 1);
-	}
+Connection::Connection(const std::string &pName, const std::string &server, uint16_t port)
+	: AbstractConnection(server.c_str(), port), _pimpl(new ConnectionImpl(this, pName, 0L, 2)) {
+	init();
+}
+
+Connection::Connection(const std::string &pName, const std::string &server, uint16_t port,
+					   BASE64RAII &base64) : AbstractConnection(server.c_str(), port),
+	_pimpl(new ConnectionImpl(this, pName, 0L, 2, base64)) {
+	init();
 }
 
 Connection::~Connection() {
@@ -71,6 +75,12 @@ Connection::~Connection() {
 #endif
 
 	delete _pimpl;
+}
+
+void Connection::init() {
+	if(_pimpl->m_pName.length() > MAX_PNAME - 1) {
+		_pimpl->m_pName = _pimpl->m_pName.substr(0, MAX_PNAME - 1);
+	}
 }
 
 void Connection::setClientVersion(uint32_t clientVersion) {
@@ -108,18 +118,19 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		while(pl != "PLAYERLISTEND") {
 
-			const std::vector<NetMauMau::Common::BYTE> &pp(NetMauMau::Common::base64_decode(pic));
+			const std::vector<unsigned char> &pp((_pimpl->m_base64.
+												  operator const IBase64 * ())->decode(pic));
 
 			if(playerPNG) hdl->endReceivePlayerPicture(pl);
 
-			NetMauMau::Common::BYTE *ppd = 0L;
+			unsigned char *ppd = 0L;
 
 			if(!pic.empty() && pic != "-") {
 
-				ppd = new(std::nothrow) NetMauMau::Common::BYTE[pp.size()];
+				ppd = new(std::nothrow) unsigned char[pp.size()];
 
 				if(ppd) {
-					std::memcpy(ppd, pp.data(), pp.size() * sizeof(NetMauMau::Common::BYTE));
+					std::memcpy(ppd, pp.data(), pp.size() * sizeof(unsigned char));
 				} else {
 					pic = "-";
 				}
@@ -272,9 +283,12 @@ throw(NetMauMau::Common::Exception::SocketException) {
 				if(!(data && len)) {
 					send(_pimpl->m_pName.c_str(), _pimpl->m_pName.length(), getSocketFD());
 				} else {
+
 					try {
 
-						const std::string &base64png(NetMauMau::Common::base64_encode(data, len));
+						const std::string
+						&base64png((_pimpl->m_base64.operator const IBase64 * ())->encode(data,
+								   len));
 
 						if(!base64png.empty()) {
 
@@ -377,6 +391,25 @@ throw(NetMauMau::Common::Exception::SocketException) {
 Connection &Connection::operator<<(const std::string &msg)
 throw(NetMauMau::Common::Exception::SocketException) {
 	send(msg.c_str(), msg.length(), getSocketFD());
+	return *this;
+}
+
+Connection::_base64RAII::_base64RAII() : m_base64(0L) {}
+
+Connection::_base64RAII::_base64RAII(const IBase64 *base64) : m_base64(base64) {}
+
+Connection::_base64RAII::~_base64RAII() {
+	delete m_base64;
+}
+
+Connection::_base64RAII::operator const IBase64 *() {
+	return m_base64 ? m_base64 : (m_base64 = new Base64Bridge());
+}
+
+Connection::_base64RAII &Connection::_base64RAII::operator=(const IBase64 *b) {
+	if(m_base64) delete m_base64;
+
+	m_base64 = b;
 	return *this;
 }
 

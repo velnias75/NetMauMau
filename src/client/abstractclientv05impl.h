@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -26,8 +26,11 @@ namespace NetMauMau {
 
 namespace Client {
 
+class IBase64;
+
 class AbstractClientV05Impl {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV05Impl)
+
 public:
 	AbstractClientV05Impl(const std::string &pName, const std::string &server, uint16_t port,
 						  const unsigned char *pngData, std::size_t pngDataLen);
@@ -43,6 +46,9 @@ public:
 	void sendPlayedCard(const NetMauMau::Common::ICard **lastPlayedCard)
 	throw(NetMauMau::Common::Exception::SocketException);
 
+	static const IBase64 *getBase64();
+	static void setBase64(const IBase64 *base64);
+
 public:
 	Connection m_connection;
 	const std::string m_pName;
@@ -51,6 +57,9 @@ public:
 	AbstractClient::CARDS m_cards;
 	const Common::ICard *m_openCard;
 	bool m_disconnectNow;
+
+private:
+	static Connection::BASE64RAII m_base64;
 };
 
 }

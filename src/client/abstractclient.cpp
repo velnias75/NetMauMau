@@ -32,12 +32,36 @@
 #include "interceptederrorexception.h"
 #include "abstractclientv05impl.h"
 #include "clientcardfactory.h"
+#include "base64bridge.h"
 #include "cardtools.h"
 #include "pngcheck.h"
-#include "base64.h"
 #include "logger.h"
 
 using namespace NetMauMau::Client;
+
+AbstractClientV11::AbstractClientV11(const std::string &player, const unsigned char *pngData,
+									 std::size_t pngDataLen, const std::string &server,
+									 uint16_t port, uint32_t clientVersion)
+	: AbstractClientV09(player, pngData, pngDataLen, server, port, clientVersion) {}
+
+AbstractClientV11::AbstractClientV11(const std::string &player, const unsigned char *pngData,
+									 std::size_t pngDataLen, const std::string &server,
+									 uint16_t port, uint32_t clientVersion, const IBase64 *base64)
+	: AbstractClientV09(player, pngData, pngDataLen, server, port, clientVersion) {
+	AbstractClientV05Impl::setBase64(base64);
+}
+
+AbstractClientV11::AbstractClientV11(const std::string &player, const std::string &server,
+									 uint16_t port, uint32_t clientVersion, const IBase64 *base64)
+	: AbstractClientV09(player, server, port, clientVersion) {
+	AbstractClientV05Impl::setBase64(base64);
+}
+
+AbstractClientV11::AbstractClientV11(const std::string &player, const std::string &server,
+									 uint16_t port, uint32_t clientVersion)
+	: AbstractClientV09(player, server, port, clientVersion) {}
+
+AbstractClientV11::~AbstractClientV11() {}
 
 AbstractClientV09::AbstractClientV09(const std::string &player, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
@@ -264,8 +288,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		_pimpl->m_connection >> plPic;
 
-		const std::vector<NetMauMau::Common::BYTE>
-		&plPicPng(NetMauMau::Common::base64_decode(plPic));
+		const std::vector<unsigned char> &plPicPng(_pimpl->getBase64()->decode(plPic));
 
 		endReceivePlayerPicture(msg);
 
@@ -494,7 +517,15 @@ uint16_t AbstractClientV05::getDefaultPort() {
 
 bool AbstractClientV05::isPlayerImageUploadable(const unsigned char *pngData,
 		std::size_t pngDataLen) {
-	const std::string &base64png(NetMauMau::Common::base64_encode(pngData, pngDataLen));
+	return AbstractClientV11::isPlayerImageUploadable(pngData, pngDataLen, 0L);
+}
+
+bool AbstractClientV11::isPlayerImageUploadable(const unsigned char *pngData,
+		std::size_t pngDataLen, const IBase64 *base64) {
+
+	if(base64) AbstractClientV05Impl::setBase64(base64);
+
+	const std::string &base64png(AbstractClientV05Impl::getBase64()->encode(pngData, pngDataLen));
 	return !base64png.empty() && base64png.size() <= MAXPICBYTES &&
 		   NetMauMau::Common::checkPNG(pngData, pngDataLen);
 }

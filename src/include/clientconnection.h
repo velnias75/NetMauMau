@@ -34,6 +34,7 @@ namespace Client {
 
 class IPlayerPicListener;
 class ConnectionImpl;
+class IBase64;
 
 /**
  * @brief Handles the connection from the client to a server
@@ -90,7 +91,25 @@ public:
 	 */
 	typedef std::vector<PLAYERINFO> PLAYERINFOS;
 
+	typedef struct _base64RAII {
+	private:
+		DISALLOW_COPY_AND_ASSIGN(_base64RAII)
+	public:
+		_base64RAII();
+		explicit _base64RAII(const IBase64 *base64);
+		~_base64RAII();
+
+		operator const IBase64 *();
+
+		_base64RAII &operator=(const IBase64 *);
+
+	private:
+		const IBase64 *m_base64;
+	} BASE64RAII;
+
 	Connection(const std::string &pName, const std::string &server, uint16_t port);
+	Connection(const std::string &pName, const std::string &server, uint16_t port,
+			   BASE64RAII &base64);
 	virtual ~Connection();
 
 	void setClientVersion(uint32_t clientVersion);
@@ -111,6 +130,9 @@ public:
 protected:
 	virtual bool wire(SOCKET sockfd, const struct sockaddr *addr, socklen_t addrlen) const;
 	virtual std::string wireError(const std::string &err) const;
+
+private:
+	void init();
 
 private:
 	ConnectionImpl *const _pimpl;

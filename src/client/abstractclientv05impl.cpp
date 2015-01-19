@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -31,14 +31,17 @@ struct cardEqualsDescription : public std::binary_function < NetMauMau::Common::
 		return c->description() == d;
 	}
 };
+
 #pragma GCC diagnostic pop
 }
 
 using namespace NetMauMau::Client;
 
+Connection::BASE64RAII AbstractClientV05Impl::m_base64;
+
 AbstractClientV05Impl::AbstractClientV05Impl(const std::string &pName, const std::string &server,
 		uint16_t port, const unsigned char *pngData, std::size_t pngDataLen) :
-	m_connection(pName, server, port), m_pName(pName),
+	m_connection(pName, server, port, m_base64), m_pName(pName),
 	m_pngData(new(std::nothrow) unsigned char[pngDataLen]()), m_pngDataLen(pngDataLen),
 	m_cards(), m_openCard(0L), m_disconnectNow(false) {
 
@@ -113,6 +116,14 @@ AbstractClientV05Impl::getCards(const AbstractClient::CARDS &mCards,
 	}
 
 	return cards;
+}
+
+const IBase64 *AbstractClientV05Impl::getBase64() {
+	return m_base64;
+}
+
+void AbstractClientV05Impl::setBase64(const IBase64 *base64) {
+	m_base64 = base64;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

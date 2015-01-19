@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -28,14 +28,22 @@
 
 #include "shutdownexception.h"
 #include "timeoutexception.h"
-#include "clientconnection.h"
 #include "errorstring.h"
+
+namespace {
+NetMauMau::Client::Connection::BASE64RAII DEFAULTBASE64;
+}
 
 using namespace NetMauMau::Client;
 
 ConnectionImpl::ConnectionImpl(Connection *piface, const std::string &pName,
 							   const timeval *timeout, uint32_t clientVersion) : _piface(piface),
-	m_pName(pName), m_timeout(timeout), m_clientVersion(clientVersion) {}
+	m_pName(pName), m_timeout(timeout), m_clientVersion(clientVersion), m_base64(DEFAULTBASE64) {}
+
+ConnectionImpl::ConnectionImpl(Connection *piface, const std::string &pName,
+							   const timeval *timeout, uint32_t clientVersion,
+							   Connection::BASE64RAII &base64) : _piface(piface),
+	m_pName(pName), m_timeout(timeout), m_clientVersion(clientVersion), m_base64(base64) {}
 
 ConnectionImpl::~ConnectionImpl() {}
 

@@ -52,6 +52,7 @@ namespace NetMauMau {
 namespace Client {
 
 class AbstractClientV05Impl;
+class IBase64;
 
 /**
  * @brief %Client interface to communicate with the server
@@ -63,6 +64,7 @@ class _EXPORT AbstractClientV05 : protected IPlayerPicListener {
 	friend class AbstractClientV07;
 	friend class AbstractClientV08;
 	friend class AbstractClientV09;
+	friend class AbstractClientV11;
 
 public:
 	/// @copydoc Connection::CAPABILITIES
@@ -789,6 +791,78 @@ protected:
 };
 
 /**
+ * @brief %Client interface to communicate with the server
+ *
+ * @since 0.11
+ */
+class _EXPORT AbstractClientV11 : public AbstractClientV09 {
+	DISALLOW_COPY_AND_ASSIGN(AbstractClientV11)
+
+public:
+	/**
+	 * @ingroup util
+	 * @copydoc AbstractClientV05::isPlayerImageUploadable(const unsigned char *, std::size_t)
+	 *
+	 * @since 0.11
+	 */
+	static bool isPlayerImageUploadable(const unsigned char *pngData, std::size_t pngDataLen,
+										const IBase64 *base64);
+
+protected:
+	/**
+	 * @brief Creates an @c AbstractClientV11 instance
+	 *
+	 * @copydetails AbstractClientV09(const std::string &, const unsigned char *,
+	 *				  std::size_t, const std::string &, uint16_t)
+	 *
+	 * @since 0.11
+	 */
+	AbstractClientV11(const std::string &player, const std::string &server, uint16_t port,
+					  uint32_t clientVersion);
+
+	/**
+	 * @brief Creates an @c AbstractClientV11 instance
+	 *
+	 * @copydetails AbstractClientV09(const std::string &, const unsigned char *,
+	 *				  std::size_t, const std::string &, uint16_t)
+	 *
+	 * @param base64 interface to a custom implementation of @c IBase64
+	 *
+	 * @since 0.11
+	 */
+	AbstractClientV11(const std::string &player, const std::string &server, uint16_t port,
+					  uint32_t clientVersion, const IBase64 *base64);
+
+	/**
+	 * @brief Creates an @c AbstractClientV11 instance
+	 *
+	 * @copydetails AbstractClientV09(const std::string &, const unsigned char *,
+	 *				  std::size_t, const std::string &, uint16_t)
+	 *
+	 * @param base64 interface to a custom implementation of @c IBase64
+	 *
+	 * @since 0.11
+	 */
+	AbstractClientV11(const std::string &player, const unsigned char *pngData,
+					  std::size_t pngDataLen, const std::string &server, uint16_t port,
+					  uint32_t clientVersion, const IBase64 *base64);
+
+	/**
+	* @brief Creates an @c AbstractClientV11 instance
+	*
+	* @copydetails AbstractClientV09(const std::string &, const unsigned char *,
+	*				  std::size_t, const std::string &, uint16_t)
+	*
+	* @since 0.11
+	*/
+	AbstractClientV11(const std::string &player, const unsigned char *pngData,
+					  std::size_t pngDataLen, const std::string &server, uint16_t port,
+					  uint32_t clientVersion);
+
+	virtual ~AbstractClientV11();
+};
+
+/**
  * @brief Alias to the current client interface to communicate with the server
  *
  * In your client subclass @c AbstractClient and implement all pure virtual methods. In the
@@ -805,10 +879,10 @@ protected:
  * @note Starting with version 0.6 and with *libmagic* enabled, the server checks if the player
  * images are really in the PNG format
  *
- * @see AbstractClientV09
+ * @see AbstractClientV11
  *
  */
-typedef AbstractClientV09 AbstractClient;
+typedef AbstractClientV11 AbstractClient;
 
 }
 

@@ -23,18 +23,19 @@
 #include <sys/time.h>
 
 #include "socketexception.h"
+#include "clientconnection.h"
 
 namespace NetMauMau {
 
 namespace Client {
-
-class Connection;
 
 class ConnectionImpl {
 	DISALLOW_COPY_AND_ASSIGN(ConnectionImpl)
 public:
 	ConnectionImpl(Connection *piface, const std::string &pName, const timeval *timeout,
 				   uint32_t clientVersion);
+	ConnectionImpl(Connection *piface, const std::string &pName, const timeval *timeout,
+				   uint32_t clientVersion, Connection::BASE64RAII &base64);
 	~ConnectionImpl();
 
 	bool hello(uint16_t *maj = 0L, uint16_t *min = 0L) throw(Common::Exception::SocketException);
@@ -45,6 +46,7 @@ public:
 	std::string m_pName;
 	const timeval *m_timeout;
 	uint32_t m_clientVersion;
+	Connection::BASE64RAII &m_base64;
 };
 
 }

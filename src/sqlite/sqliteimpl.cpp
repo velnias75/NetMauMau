@@ -167,6 +167,8 @@ SQLiteImpl::~SQLiteImpl() {
 #endif
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunreachable-code"
 std::string SQLiteImpl::getDBFilename() {
 
 #if !defined(_WIN32) && defined(HAVE_MKDIR)
@@ -193,12 +195,10 @@ std::string SQLiteImpl::getDBFilename() {
 	return(BUILDDIR"/"PACKAGE_NAME"-dbg.db");
 #endif
 #endif
-	
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunreachable-code"
+
 	return std::string();
-#pragma GCC diagnostic pop
 }
+#pragma GCC diagnostic pop
 
 bool SQLiteImpl::exec(const std::string &sql) WSTATIC {
 #ifndef _WIN32

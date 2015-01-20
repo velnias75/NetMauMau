@@ -799,23 +799,30 @@ class _EXPORT AbstractClientV11 : public AbstractClientV09 {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV11)
 
 public:
+
+	/**
+	 * @name Server query methods
+	 * @{
+	 */
+
 	/**
 	 * @ingroup util
 	 * @copydoc AbstractClientV05::isPlayerImageUploadable(const unsigned char *, std::size_t)
+	 *
+	 * @param base64 interface to a custom implementation of @c IBase64
 	 *
 	 * @since 0.11
 	 */
 	static bool isPlayerImageUploadable(const unsigned char *pngData, std::size_t pngDataLen,
 										const IBase64 *base64);
 
+	/// @}
+
 protected:
 	/**
 	 * @brief Creates an @c AbstractClientV11 instance
 	 *
-	 * @copydetails AbstractClientV09(const std::string &, const unsigned char *,
-	 *				  std::size_t, const std::string &, uint16_t)
-	 *
-	 * @since 0.11
+	 * @copydetails AbstractClientV08(const std::string &, const std::string &, uint16_t, uint32_t)
 	 */
 	AbstractClientV11(const std::string &player, const std::string &server, uint16_t port,
 					  uint32_t clientVersion);
@@ -823,8 +830,7 @@ protected:
 	/**
 	 * @brief Creates an @c AbstractClientV11 instance
 	 *
-	 * @copydetails AbstractClientV09(const std::string &, const unsigned char *,
-	 *				  std::size_t, const std::string &, uint16_t)
+	 * @copydetails AbstractClientV09(const std::string &, const std::string &, uint16_t, uint32_t)
 	 *
 	 * @param base64 interface to a custom implementation of @c IBase64
 	 *
@@ -836,8 +842,8 @@ protected:
 	/**
 	 * @brief Creates an @c AbstractClientV11 instance
 	 *
-	 * @copydetails AbstractClientV09(const std::string &, const unsigned char *,
-	 *				  std::size_t, const std::string &, uint16_t)
+	 * @copydetails AbstractClientV09(const std::string &, const unsigned char *, std::size_t,
+	 * 									const std::string &, uint16_t, uint32_t)
 	 *
 	 * @param base64 interface to a custom implementation of @c IBase64
 	 *
@@ -848,13 +854,12 @@ protected:
 					  uint32_t clientVersion, const IBase64 *base64);
 
 	/**
-	* @brief Creates an @c AbstractClientV11 instance
-	*
-	* @copydetails AbstractClientV09(const std::string &, const unsigned char *,
-	*				  std::size_t, const std::string &, uint16_t)
-	*
-	* @since 0.11
-	*/
+	 * @brief Creates an @c AbstractClientV11 instance
+	 *
+	 * @copydetails AbstractClientV09(const std::string &, const unsigned char *,
+	 *				  std::size_t, const std::string &, uint16_t, uint32_t)
+	 *
+	 */
 	AbstractClientV11(const std::string &player, const unsigned char *pngData,
 					  std::size_t pngDataLen, const std::string &server, uint16_t port,
 					  uint32_t clientVersion);

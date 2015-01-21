@@ -39,6 +39,18 @@ A *sample* **xinetd** *service configuration* can look as following:
 	    instances = 1
     }
 
+Windows service
+---------------
+
+If you want to start the *NetMauMau server* at system start, you can install the *NetMauMau server* as service. I recommend following workflow:
+
+ * Download [NSSM](http://nssm.cc/)
+ * In the console (`cmd.exe`) run `nssm install`
+ * Choose `nmm-server.exe` and add the arguments as you like :)
+
+Before updating *NetMauMau* you'll need to stop the service if running: `sc stop <ServiceName>` or `services.msc`
+
+
 Setting up the build environment
 --------------------------------
 
@@ -89,7 +101,6 @@ Add the repository to your system:
 Debian 7
 --------
 [http://download.opensuse.org/repositories/home:/velnias/Debian_7.0](http://download.opensuse.org/repositories/home:/velnias/Debian_7.0)
-
 
 Windows
 -------

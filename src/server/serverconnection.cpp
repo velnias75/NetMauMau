@@ -42,16 +42,19 @@
 #endif
 
 #include "serverconnection.h"
+
+#include "defaultplayerimage.h"
 #include "errorstring.h"
 #include "pngcheck.h"
-#include "ai-icon.h"
 #include "base64.h"
 #include "logger.h"
 #include "sqlite.h"
 
 namespace {
-
-const std::string AIDefaultIcon(reinterpret_cast<const char *>(ai_icon_data), sizeof(ai_icon_data));
+const std::string aiBase64
+(NetMauMau::Common::base64_encode(reinterpret_cast<const NetMauMau::Common::BYTE *>
+								  (NetMauMau::Common::DefaultPlayerImage.c_str()),
+								  NetMauMau::Common::DefaultPlayerImage.length()));
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
@@ -497,13 +500,15 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						piz.append(1, 0);
 
 						if(cver >= 4) {
+
 							piz.reserve(piz.length() + (m_aiPlayerImages[j] &&
 														!m_aiPlayerImages[j]->empty() ?
 														m_aiPlayerImages[j]->length() :
-														AIDefaultIcon.length()) + 1);
+														aiBase64.length())
+										+ 1);
 
 							piz.append(m_aiPlayerImages[j] && !m_aiPlayerImages[j]->empty() ?
-									   (*m_aiPlayerImages[j]) : AIDefaultIcon).append(1, 0);
+									   (*m_aiPlayerImages[j]) : aiBase64).append(1, 0);
 						}
 
 						send(piz.c_str(), piz.length(), cfd);

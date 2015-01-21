@@ -1,8 +1,4 @@
-SUBDIRS = images
-
 bin_PROGRAMS = nmm-server
-
-EXTRA_DIST = create_ai_icon.sh
 
 man1_MANS = 
 
@@ -16,13 +12,11 @@ else
 GSL=
 endif
 
-MAINTAINERCLEANFILES = ai-icon.h $(bin_PROGRAMS).1
+MAINTAINERCLEANFILES = $(bin_PROGRAMS).1
 
 DISTCLEANFILES = $(man1_MANS)
 
-BUILT_SOURCES = ai-icon.h
-
-noinst_HEADERS = ai-icon.h game.h serverconnection.h servereventhandler.h serverplayerexception.h \
+noinst_HEADERS = game.h serverconnection.h servereventhandler.h serverplayerexception.h \
 	serverplayer.h 
 
 nmm_server_CPPFLAGS = $(GSL)
@@ -46,11 +40,8 @@ nmm_server_LDADD = ../common/libnetmaumaucommon.la ../engine/libengine.la ../sql
 if RC
 nmm_server_LDADD += netmaumau.rc.lo
 endif
-
+	
 .DELETE_ON_ERROR:
-ai-icon.h: $(AI_IMAGE)
-	$(BASE64) $< | $(B64_TR) | $(SHELL) $(srcdir)/create_ai_icon.sh 'ai_icon_data' > $(builddir)/$(@F)
-
 %.rc.lo: %.rc
 	$(LIBTOOL) --tag=RC --mode=compile $(RC) $< -o $@
 

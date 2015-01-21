@@ -803,7 +803,10 @@ RECURSIVE              = YES
 # run.
 
 EXCLUDE                = "@abs_top_srcdir@/src/client/interceptederrorexception.h" \
+                         "@abs_top_srcdir@/src/client/abstractclientv05impl.h" \
+                         "@abs_top_srcdir@/src/client/clientconnectionimpl.h" \
                          "@abs_top_srcdir@/src/client/clientcardfactory.h" \
+                         "@abs_top_srcdir@/src/client/base64bridge.h" \
                          "@abs_top_srcdir@/src/engine" \
                          "@abs_top_srcdir@/src/server" \
                          "@abs_top_srcdir@/src/test" \
@@ -811,6 +814,10 @@ EXCLUDE                = "@abs_top_srcdir@/src/client/interceptederrorexception.
                          "@abs_top_srcdir@/src/include/linkercontrol.h" \
                          "@abs_top_srcdir@/src/include/iplayerpiclistener.h" \
                          "@abs_top_srcdir@/src/common/icardfactory.h" \
+                         "@abs_top_srcdir@/src/common/errorstring.h" \
+                         "@abs_top_srcdir@/src/common/abstractconnectionimpl.h" \
+                         "@abs_top_srcdir@/src/common/abstractsocketimpl.h" \
+                         "@abs_top_srcdir@/src/common/pngcheck.h" \
                          "@abs_top_srcdir@/src/common/iplayer.h" \
                          "@abs_top_srcdir@/src/common/stdplayer.h" \
                          "@abs_top_srcdir@/src/common/basiclogger.h" \

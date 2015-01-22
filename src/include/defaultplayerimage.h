@@ -34,10 +34,6 @@ namespace Common {
 * @ingroup util
 * @brief @c std::string containing the default player image in PNG format
 *
-* <tt>#include &lt;defaultplayerimage.h&gt;</tt>
-*
-* @code std::string img = NetMauMau::Common::DefaultPlayerImage; @endcode
-*
 * @since 0.11
 */
 extern const std::string DefaultPlayerImage;

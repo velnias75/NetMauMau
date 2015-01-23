@@ -502,6 +502,27 @@ int main(int argc, const char **argv) {
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGTERM, &sa, NULL);
 
+#ifdef HAVE_LIBRT
+
+	timer_t timerid;
+	struct sigevent sev;
+	struct itimerspec its;
+
+	if(inetd) {
+
+		sev.sigev_notify = SIGEV_SIGNAL;
+		sev.sigev_signo = SIGRTMIN;
+		sev.sigev_value.sival_ptr = &timerid;
+
+		if(timer_create(CLOCK_REALTIME, &sev, &timerid) != -1) {
+			sigaction(SIGRTMIN, &sa, NULL);
+		} else {
+			logWarning("Could not create timer for idle shutdown");
+		}
+	}
+
+#endif
+
 	NetMauMau::DB::SQLite::getInstance();
 
 	if(!dropPrivileges(user, grp)) {
@@ -607,15 +628,51 @@ int main(int argc, const char **argv) {
 								if(cs == Server::Game::ACCEPTED_READY) {
 
 									refuse = true;
+#ifdef HAVE_LIBRT
+
+									if(inetd) {
+
+										its.it_value.tv_sec = 0;
+										its.it_value.tv_nsec = 0;
+										its.it_interval.tv_sec = 0;
+										its.it_interval.tv_nsec = 0;
+
+										if(timer_settime(timerid, 0, &its, NULL) == -1) {
+											logWarning("Could not disarm idle timer");
+										} else {
+											logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) <<
+													"Idle timer disarmed");
+										}
+									}
+
+#endif
+
 									game.start(ultimate);
 
+#ifdef HAVE_LIBRT
+
 									if(!inetd) {
+#endif
 										updatePlayerCap(caps, game.getPlayerCount(), con,
 														aiOpponent);
-										refuse = false;
+#ifdef HAVE_LIBRT
 									} else {
-										break;
+
+										its.it_value.tv_sec = 60;
+										its.it_value.tv_nsec = 0;
+										its.it_interval.tv_sec = 0;
+										its.it_interval.tv_nsec = 0;
+
+										if(timer_settime(timerid, 0, &its, NULL) == -1) {
+											logWarning("Could not arm idle timer");
+										} else {
+											logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) <<
+													"Idle timer armed");
+										}
 									}
+
+#endif
+									refuse = false;
 								}
 
 							} else {

@@ -153,6 +153,8 @@ void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 std::size_t AbstractSocket::recv(void *buf, std::size_t len,
 								 SOCKET fd) throw(Exception::SocketException) {
 
+	if(!len) throw Exception::SocketException("Attempt to read zero length data", fd);
+
 	checkSocket(fd);
 
 	std::size_t total = 0;
@@ -223,6 +225,8 @@ std::string AbstractSocket::read(SOCKET fd, std::size_t len) throw(Exception::So
 
 void AbstractSocket::send(const void *buf, std::size_t len,
 						  SOCKET fd) throw(Exception::SocketException) {
+
+	if(!len) throw Exception::SocketException("Attempt to send zero length data", fd);
 
 	checkSocket(fd);
 

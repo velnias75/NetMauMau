@@ -98,6 +98,8 @@ Add the repository to your system:
 
 `sudo add-apt-repository ppa:velnias/velnias`
 
+PlayDeb.net offers [binaries](http://www.playdeb.net/game/NetMauMau) too.
+
 Debian 7
 --------
 [http://download.opensuse.org/repositories/home:/velnias/Debian_7.0](http://download.opensuse.org/repositories/home:/velnias/Debian_7.0)

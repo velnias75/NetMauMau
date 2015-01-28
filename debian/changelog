@@ -1,3 +1,9 @@
+netmaumau (0.12) UNRELEASED; urgency=low
+
+  * fixed Ace/King/Queen round bug, allowing to start the round at any time
+
+ -- Heiko Schäfer <heiko@rangun.de>  Wed, 28 Jan 2015 13:00:38 +0100
+
 netmaumau (0.11) precise; urgency=low
 
   * improved AI opponent

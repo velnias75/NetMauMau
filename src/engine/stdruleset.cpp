@@ -68,8 +68,11 @@ bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 						   const NetMauMau::Common::ICard *uncoveredCard,
 						   const NetMauMau::Common::ICard *playedCard, bool /*ai*/) {
 
-	if(m_aceRound && uncoveredCard && (!m_aceRoundPlayer || m_aceRoundPlayer == player) &&
-			playedCard->getRank() == m_arl->getAceRoundRank()) {
+	const bool accepted = uncoveredCard ? checkCard(uncoveredCard, playedCard) : true;
+
+	if(accepted && (m_aceRound && uncoveredCard && (!m_aceRoundPlayer ||
+					m_aceRoundPlayer == player) && playedCard->getRank() ==
+					m_arl->getAceRoundRank())) {
 
 		const bool acrCont = m_aceRoundPlayer;
 
@@ -79,8 +82,6 @@ bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 			m_arl->aceRoundEnded(player);
 		}
 	}
-
-	const bool accepted = uncoveredCard ? checkCard(uncoveredCard, playedCard) : true;
 
 	m_hasToSuspend = accepted && playedCard->getRank() == NetMauMau::Common::ICard::EIGHT;
 	m_hasSuspended = false;

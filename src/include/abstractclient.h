@@ -149,6 +149,7 @@ public:
 	 * @throw Common::Exception::SocketException if the connection failed
 	 * @throw Client::Exception::PlayerlistException if the player list cannot get retrieved
 	 * @throw Client::Exception::TimeoutException if the connection attempt timed out
+	 * @throw Client::Exception::CapabilitiesException if called within a running game
 	 *
 	 * @return the list of currently registered player names
 	 *
@@ -739,7 +740,8 @@ public:
 	 * @note if no scores are available (currently Windows servers) or the server never served
 	 * a game, the scores vector is empty
 	 *
-	 * @throws Exception::ScoresException if the scores couldn't get received
+	 * @throws Exception::ScoresException if the scores couldn't get received or called within
+	 * a running game
 	 *
 	 * @param type type of scores
 	 * @param limit limit the result, @c 0 disables the limit

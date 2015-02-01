@@ -57,6 +57,7 @@ public:
 	AbstractClient::CARDS m_cards;
 	const Common::ICard *m_openCard;
 	bool m_disconnectNow;
+	bool m_playing;
 
 private:
 	static Connection::BASE64RAII m_base64;

@@ -1,16 +1,22 @@
+netmaumau (0.13) UNRELEASED; urgency=low
+
+  * 
+
+ -- Heiko Schäfer <heiko@rangun.de>  Sun, 01 Feb 2015 10:23:42 +0100
+
 netmaumau (0.12) UNRELEASED; urgency=low
 
   * fixed Ace/King/Queen round bug, allowing to start the round at any time
 
  -- Heiko Schäfer <heiko@rangun.de>  Wed, 28 Jan 2015 13:00:38 +0100
 
-netmaumau (0.11) precise; urgency=low
+netmaumau (0.11) UNRELEASED; urgency=low
 
   * improved AI opponent
 
  -- Heiko Schäfer <heiko@rangun.de>  Sun, 18 Jan 2015 09:29:01 +0100
 
-netmaumau (0.10) precise; urgency=low
+netmaumau (0.10) UNRELEASED; urgency=low
 
   * installing links to ai_imgN.png for customizing AI images
   * added whitespace substitution for xinetd

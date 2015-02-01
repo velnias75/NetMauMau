@@ -43,7 +43,7 @@ AbstractClientV05Impl::AbstractClientV05Impl(const std::string &pName, const std
 		uint16_t port, const unsigned char *pngData, std::size_t pngDataLen) :
 	m_connection(pName, server, port, m_base64), m_pName(pName),
 	m_pngData(new(std::nothrow) unsigned char[pngDataLen]()), m_pngDataLen(pngDataLen),
-	m_cards(), m_openCard(0L), m_disconnectNow(false) {
+	m_cards(), m_openCard(0L), m_disconnectNow(false), m_playing(false) {
 
 	if(m_pngData && m_pngDataLen) {
 		std::memcpy(m_pngData, pngData, pngDataLen);

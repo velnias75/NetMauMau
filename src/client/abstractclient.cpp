@@ -30,8 +30,10 @@
 #include "abstractclient.h"
 
 #include "interceptederrorexception.h"
+#include "capabilitiesexception.h"
 #include "abstractclientv05impl.h"
 #include "clientcardfactory.h"
+#include "scoresexception.h"
 #include "base64bridge.h"
 #include "cardtools.h"
 #include "pngcheck.h"
@@ -130,6 +132,11 @@ void AbstractClientV05::disconnect() {
 
 Connection::CAPABILITIES AbstractClientV05::capabilities(timeval *timeout)
 throw(NetMauMau::Common::Exception::SocketException) {
+
+	if(_pimpl->m_playing) {
+		throw Exception::CapabilitiesException("attempt to get capabilities in running game");
+	}
+
 	_pimpl->m_connection.setTimeout(timeout);
 	return _pimpl->m_connection.capabilities();
 }
@@ -167,6 +174,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	bool initCardShown = false;
 	std::string msg, cjackSuit;
 	std::size_t cturn = 0;
+
+	_pimpl->m_playing = true;
 
 	while(!_pimpl->m_disconnectNow) {
 
@@ -206,6 +215,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		}
 	}
 
+	_pimpl->m_playing = false;
 	_pimpl->m_disconnectNow = false;
 }
 
@@ -547,6 +557,9 @@ throw(NetMauMau::Common::Exception::SocketException) {
 AbstractClientV09::SCORES AbstractClientV09::getScores(SCORE_TYPE::_scoreType type,
 		std::size_t limit, timeval *timeout)
 throw(NetMauMau::Common::Exception::SocketException) {
+
+	if(_pimpl->m_playing) throw Exception::ScoresException("Attempt to get scores in running game");
+
 	_pimpl->m_connection.setTimeout(timeout);
 	return _pimpl->m_connection.getScores(type, limit);
 }

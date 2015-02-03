@@ -16,6 +16,8 @@ Prerequisites
 
 * sqlite3
 
+* libtool
+
 (x)inetd support
 ----------------
 

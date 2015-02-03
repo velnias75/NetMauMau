@@ -296,7 +296,7 @@ protected:
 	//@}
 
 	/**
-	 * @name Sever events
+	 * @name Server events
 	 * @{
 	 */
 
@@ -925,7 +925,19 @@ protected:
 
 	virtual ~AbstractClientV13();
 
+	/**
+	 * @name Server events
+	 * @{
+	 */
+
+	/**
+	 * @brief Indicates the direction has changed
+	 *
+	 * @since 0.13
+	 */
 	virtual void directionChanged() const = 0;
+
+	/// @}
 
 private:
 	virtual PIRET playInternal(std::string &msg, std::size_t *cturn, bool *initCardShown,

@@ -98,6 +98,7 @@ public:
 	 * AI_NAME        | name of the first AI player
 	 * AI_OPPONENT    | `true` if the AI opponent is enabled
 	 * CUR_PLAYERS    | amount of current players joined
+	 * DIRCHANGE      | `true` if direction changes are allowed, `false` otherwise
 	 * HAVE_SCORES    | `true` if the server can provide scores, `false` otherwise
 	 * MAX_PLAYERS    | amount of players needed to start the game
 	 * MIN_VERSION    | minimum version of client that can connect

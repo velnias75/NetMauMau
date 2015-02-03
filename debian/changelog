@@ -1,8 +1,8 @@
-netmaumau (0.13) UNRELEASED; urgency=low
+netmaumau (0.13) precise; urgency=low
 
-  * 
+  * direction change implemented
 
- -- Heiko Schäfer <heiko@rangun.de>  Sun, 01 Feb 2015 10:23:42 +0100
+ -- Heiko Schäfer <heiko@rangun.de>  Tue, 03 Feb 2015 12:56:58 +0100
 
 netmaumau (0.12) UNRELEASED; urgency=low
 

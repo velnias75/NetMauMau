@@ -28,10 +28,11 @@
 
 using namespace NetMauMau::RuleSet;
 
-StdRuleSet::StdRuleSet(const NetMauMau::IAceRoundListener *l) : IRuleSet(), m_hasToSuspend(false),
-	m_hasSuspended(false), m_takeCardCount(0), m_jackMode(false),
+StdRuleSet::StdRuleSet(bool dirChangePossible, const NetMauMau::IAceRoundListener *l) : IRuleSet(),
+	m_hasToSuspend(false), m_hasSuspended(false), m_takeCardCount(0), m_jackMode(false),
 	m_jackSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL), m_aceRound(l), m_aceRoundPlayer(0L),
-	m_arl(l), m_curPlayers(0) {}
+	m_arl(l), m_curPlayers(0), m_dirChange(false), m_dirChangeIsSuspend(false),
+	m_dirChangePossible(dirChangePossible) {}
 
 StdRuleSet::~StdRuleSet() {}
 
@@ -81,9 +82,14 @@ bool StdRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 		} else if(acrCont) {
 			m_arl->aceRoundEnded(player);
 		}
+
+	} else if(accepted && isDirChange(playedCard)) {
+		m_dirChange = true;
 	}
 
-	m_hasToSuspend = accepted && playedCard->getRank() == NetMauMau::Common::ICard::EIGHT;
+	m_hasToSuspend = accepted && (playedCard->getRank() == NetMauMau::Common::ICard::EIGHT ||
+								  (isDirChange(playedCard) && m_dirChangeIsSuspend));
+
 	m_hasSuspended = false;
 
 	if(accepted && playedCard->getRank() == NetMauMau::Common::ICard::SEVEN) {
@@ -154,6 +160,22 @@ void StdRuleSet::setJackModeOff() {
 	m_jackMode = false;
 }
 
+bool StdRuleSet::isDirChange(const NetMauMau::Common::ICard *playedCard) const {
+	return m_dirChangePossible && playedCard->getRank() == NetMauMau::Common::ICard::NINE;
+}
+
+bool StdRuleSet::hasDirChange() const {
+	return m_dirChange;
+}
+
+void StdRuleSet::dirChanged() {
+	m_dirChange = false;
+}
+
+void StdRuleSet::setDirChangeIsSuspend(bool suspend) {
+	m_dirChangeIsSuspend = suspend;
+}
+
 NetMauMau::Common::ICard::SUIT StdRuleSet::getJackSuit() const {
 	return m_jackSuit == NetMauMau::Common::ICard::SUIT_ILLEGAL ?
 		   NetMauMau::Common::symbolToSuit(NetMauMau::Common::getSuitSymbols()
@@ -168,6 +190,8 @@ void StdRuleSet::reset() throw() {
 	m_jackSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
 	m_aceRoundPlayer = 0L;
 	m_curPlayers = 0;
+	m_dirChange = false;
+	m_dirChangeIsSuspend = false;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

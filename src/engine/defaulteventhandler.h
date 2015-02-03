@@ -43,6 +43,8 @@ public:
 	virtual void error(const std::string &msg, const std::vector<std::string> &except) const
 	throw(Common::Exception::SocketException) _CONST;
 
+	virtual void directionChange() const throw(Common::Exception::SocketException) _CONST;
+
 	virtual void acceptingPlayers() const throw(Common::Exception::SocketException) _CONST;
 	virtual void stats(const Engine::PLAYERS &m_players) const
 	throw(Common::Exception::SocketException) _CONST;

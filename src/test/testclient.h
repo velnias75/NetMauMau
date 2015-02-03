@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -39,6 +39,8 @@ protected:
 	virtual void turn(std::size_t turn) const;
 	virtual void stats(const STATS &stats) const;
 	virtual void gameOver() const;
+
+	virtual void directionChanged() const _CONST;
 
 	virtual NetMauMau::Common::ICard *playCard(const CARDS &cards, std::size_t takeCount) const;
 	virtual NetMauMau::Common::ICard::SUIT getJackSuitChoice() const;

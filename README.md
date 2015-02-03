@@ -157,7 +157,9 @@ the first player.
 
 * **Nine** (3 points)
 
-   there is no special rule for that rank
+   if more than two players joined the game and enabled with `--direction-change|-d`,
+   than a change of direction is performed. If the player count drops to two, this card 
+   get the same meaning like *Eight*. Else there is no special rule for that rank
 
 * **Ten** (4 points)
 

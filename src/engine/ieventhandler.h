@@ -57,6 +57,8 @@ public:
 					   const std::vector<std::string> &except = std::vector<std::string>()) const
 	throw(Common::Exception::SocketException) = 0;
 
+	virtual void directionChange() const throw(Common::Exception::SocketException) = 0;
+
 	virtual void acceptingPlayers() const throw(Common::Exception::SocketException) = 0;
 	virtual void stats(const Engine::PLAYERS &m_players) const
 	throw(Common::Exception::SocketException) = 0;

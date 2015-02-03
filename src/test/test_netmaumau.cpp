@@ -37,7 +37,7 @@ int main(int, char **) {
 #endif
 
 	TestEventHandler evHdlr;
-	Engine engine(evHdlr, 0L, false, 'A');
+	Engine engine(evHdlr, 0L, false, 'A', true);
 
 	Player::StdPlayer p1("Cathy");
 	Player::StdPlayer p2("Tarik");

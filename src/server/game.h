@@ -47,7 +47,7 @@ public:
 
 	typedef enum { ACCEPTED, REFUSED, ACCEPTED_READY, REFUSED_FULL } COLLECT_STATE;
 
-	Game(Event::IEventHandler &evtHdlr, long aiDelay, bool aiPlayer = false,
+	Game(Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange, bool aiPlayer = false,
 		 const std::string *aiName = 0L, char aceRound = 0);
 	~Game();
 

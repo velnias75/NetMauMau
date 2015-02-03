@@ -41,6 +41,26 @@
 
 using namespace NetMauMau::Client;
 
+AbstractClientV13::AbstractClientV13(const std::string &player, const unsigned char *pngData,
+									 std::size_t pngDataLen, const std::string &server,
+									 uint16_t port, uint32_t clientVersion)
+	: AbstractClientV11(player, pngData, pngDataLen, server, port, clientVersion) {}
+
+AbstractClientV13::AbstractClientV13(const std::string &player, const unsigned char *pngData,
+									 std::size_t pngDataLen, const std::string &server,
+									 uint16_t port, uint32_t clientVersion, const IBase64 *base64)
+	: AbstractClientV11(player, pngData, pngDataLen, server, port, clientVersion, base64) {}
+
+AbstractClientV13::AbstractClientV13(const std::string &player, const std::string &server,
+									 uint16_t port, uint32_t clientVersion, const IBase64 *base64)
+	: AbstractClientV11(player, server, port, clientVersion, base64) {}
+
+AbstractClientV13::AbstractClientV13(const std::string &player, const std::string &server,
+									 uint16_t port, uint32_t clientVersion)
+	: AbstractClientV11(player, server, port, clientVersion) {}
+
+AbstractClientV13::~AbstractClientV13() {}
+
 AbstractClientV11::AbstractClientV11(const std::string &player, const unsigned char *pngData,
 									 std::size_t pngDataLen, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
@@ -217,6 +237,27 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	_pimpl->m_playing = false;
 	_pimpl->m_disconnectNow = false;
+}
+
+AbstractClientV05::PIRET AbstractClientV13::playInternal(std::string &msg, std::size_t *cturn,
+		bool *initCardShown, std::string &cjackSuit,
+		const NetMauMau::Common::ICard **lastPlayedCard)
+throw(NetMauMau::Common::Exception::SocketException) {
+
+	PIRET ret = AbstractClientV11::playInternal(msg, cturn, initCardShown, cjackSuit,
+				lastPlayedCard);
+
+	if(ret == NOT_UNDERSTOOD) {
+		if(!_pimpl->m_disconnectNow && msg == "DIRCHANGE") {
+			directionChanged();
+		} else {
+			return NOT_UNDERSTOOD;
+		}
+
+		return OK;
+	}
+
+	return ret;
 }
 
 AbstractClientV05::PIRET AbstractClientV07::playInternal(std::string &msg, std::size_t *cturn,

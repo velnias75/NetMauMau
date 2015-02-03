@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -66,6 +66,8 @@ void TestClient::unknownServerMessage(const std::string &msg) const {
 void TestClient::gameOver() const {
 	std::cout << "Game over!" << std::endl;
 }
+
+void TestClient::directionChanged() const {}
 
 void TestClient::turn(std::size_t t) const {
 	std::cout << "Turn #" << t << std::endl;

@@ -45,6 +45,9 @@ throw(NetMauMau::Common::Exception::SocketException) {}
 void DefaultEventHandler::error(const std::string &, const std::vector<std::string> &) const
 throw(NetMauMau::Common::Exception::SocketException) {}
 
+void DefaultEventHandler::directionChange() const
+throw(NetMauMau::Common::Exception::SocketException) {}
+
 void DefaultEventHandler::acceptingPlayers() const
 throw(NetMauMau::Common::Exception::SocketException) {}
 

@@ -31,7 +31,7 @@ namespace RuleSet {
 class StdRuleSet : public IRuleSet {
 	DISALLOW_COPY_AND_ASSIGN(StdRuleSet)
 public:
-	StdRuleSet(const IAceRoundListener *l = 0L);
+	StdRuleSet(bool dirChangePossible, const IAceRoundListener *l = 0L);
 	virtual ~StdRuleSet();
 
 	virtual void checkInitial(const Player::IPlayer *player, const Common::ICard *playedCard);
@@ -53,6 +53,10 @@ public:
 	virtual std::size_t takeCards(const Common::ICard *playedCard) const;
 	virtual void hasTakenCards();
 
+	virtual bool hasDirChange() const _PURE;
+	virtual void dirChanged();
+	virtual void setDirChangeIsSuspend(bool suspend);
+
 	virtual bool isAceRoundPossible() const _PURE;
 	virtual Common::ICard::RANK getAceRoundRank() const;
 
@@ -66,6 +70,9 @@ public:
 
 	virtual void reset() throw();
 
+protected:
+	virtual bool isDirChange(const Common::ICard *playedCard) const;
+
 private:
 	bool m_hasToSuspend;
 	bool m_hasSuspended;
@@ -76,6 +83,9 @@ private:
 	const Player::IPlayer *m_aceRoundPlayer;
 	const IAceRoundListener *m_arl;
 	std::size_t m_curPlayers;
+	bool m_dirChange;
+	bool m_dirChangeIsSuspend;
+	bool m_dirChangePossible;
 };
 
 }

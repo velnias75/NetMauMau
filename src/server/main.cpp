@@ -78,6 +78,7 @@
 
 namespace {
 
+bool dirChange = false;
 bool aceRound = false;
 bool ultimate = false;
 bool inetd = false;
@@ -108,6 +109,7 @@ poptOption poptOptions[] = {
 		'p', "Set amount of players", "AMOUNT"
 	},
 	{ "ultimate", 'u', POPT_ARG_NONE, NULL, 'u', "Play until last player wins", NULL },
+	{ "direction-change", 'd', POPT_ARG_NONE, NULL, 'd', "Allow direction changes", NULL },
 	{
 		"ace-round", 'a', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT | POPT_ARGFLAG_OPTIONAL,
 		&arRank, 'a', "Enable ace rounds (requires all clients to be at least of version 0.7)",
@@ -418,6 +420,10 @@ int main(int argc, const char **argv) {
 			ultimate = true;
 			break;
 
+		case 'd':
+			dirChange = true;
+			break;
+
 		case 'i':
 			inetd = true;
 			break;
@@ -557,7 +563,7 @@ int main(int argc, const char **argv) {
 			con.connect(inetd);
 
 			Server::EventHandler evtHdlr(con);
-			Server::Game game(evtHdlr, ::labs(aiDelay), aiOpponent, aiNames,
+			Server::Game game(evtHdlr, ::labs(aiDelay), dirChange, aiOpponent, aiNames,
 							  static_cast<char>(aceRound ? ::toupper(arRank ? arRank[0] : 'A') :
 													0));
 
@@ -570,6 +576,7 @@ int main(int argc, const char **argv) {
 			caps.insert(std::make_pair("HAVE_SCORES",
 									   DB::SQLite::getInstance().getDBFilename().empty() ? "false"
 									   : "true"));
+			caps.insert(std::make_pair("DIRCHANGE", dirChange ? "true" : "false"));
 
 			if(aiOpponent) caps.insert(std::make_pair("AI_NAME", aiNames[0]));
 

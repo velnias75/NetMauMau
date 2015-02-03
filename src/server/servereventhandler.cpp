@@ -92,6 +92,19 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	message_internal("ERROR", msg, except);
 }
 
+void EventHandler::directionChange() const throw(NetMauMau::Common::Exception::SocketException) {
+
+	Connection::VERSIONEDMESSAGE versionedMessage;
+
+	std::ostringstream vm_old;
+	vm_old << "MESSAGE" << '\0' << "Direction has changed";
+
+	versionedMessage.insert(std::make_pair(0, vm_old.str()));
+	versionedMessage.insert(std::make_pair(13, "DIRCHANGE"));
+
+	m_connection.sendVersionedMessage(versionedMessage);
+}
+
 void EventHandler::playerAdded(const NetMauMau::Player::IPlayer *player) const
 throw(NetMauMau::Common::Exception::SocketException) {
 

@@ -49,6 +49,8 @@ public:
 	virtual void error(const std::string &msg, const std::vector<std::string> &except) const
 	throw(Common::Exception::SocketException);
 
+	virtual void directionChange() const throw(Common::Exception::SocketException);
+
 	virtual void playerAdded(const Player::IPlayer *player) const
 	throw(Common::Exception::SocketException);
 	virtual void playerRejected(const Player::IPlayer *player) const

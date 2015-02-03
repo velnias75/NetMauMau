@@ -56,8 +56,8 @@ class _EXPORT Engine : protected ITalonChange, protected IAceRoundListener {
 public:
 	typedef std::vector<Player::IPlayer *> PLAYERS;
 
-	Engine(Event::IEventHandler &eventHandler, long aiDelay = 1000L, bool nextMessage = true,
-		   char aceRound = 0);
+	Engine(Event::IEventHandler &eventHandler, bool dirChange, long aiDelay = 1000L,
+		   bool nextMessage = true, char aceRound = 0);
 	Engine(Event::IEventHandler &eventHandler, long aiDelay, RuleSet::IRuleSet *ruleset,
 		   bool nextMessage = true);
 
@@ -162,6 +162,8 @@ private:
 	const Common::ICard::RANK m_aceRoundRank;
 
 	long long int m_gameIndex;
+
+	bool m_dirChangeEnabled;
 };
 
 }

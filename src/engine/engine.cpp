@@ -68,15 +68,15 @@ const GSLRNG<std::ptrdiff_t> RNG;
 
 using namespace NetMauMau;
 
-Engine::Engine(Event::IEventHandler &eventHandler, long aiDelay, bool nextMessage, char aceRound) :
-	m_eventHandler(eventHandler), m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)),
-	m_ruleset(new RuleSet::StdRuleSet(aceRound ? this : 0L)), m_players(), m_nxtPlayer(0),
-	m_turn(1), m_curTurn(0), m_delRuleSet(true), m_jackMode(false), m_initialChecked(false),
-	m_nextMessage(nextMessage), m_ultimate(false), m_initialJack(false), m_alwaysWait(false),
-	m_initialNextMessage(nextMessage), m_aiDelay(aiDelay), m_aceRoundRank(aceRound == 'A' ?
-			Common::ICard::ACE : (aceRound == 'Q' ? Common::ICard::QUEEN : (aceRound == 'K' ?
-								  Common::ICard::KING : Common::ICard::RANK_ILLEGAL))),
-	m_gameIndex(0LL) {
+Engine::Engine(Event::IEventHandler &eventHandler,  bool dirChange, long aiDelay, bool nextMessage,
+			   char aceRound) : m_eventHandler(eventHandler), m_state(ACCEPT_PLAYERS),
+	m_talon(new Talon(this)), m_ruleset(new RuleSet::StdRuleSet(dirChange, aceRound ? this : 0L)),
+	m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_delRuleSet(true), m_jackMode(false),
+	m_initialChecked(false), m_nextMessage(nextMessage), m_ultimate(false), m_initialJack(false),
+	m_alwaysWait(false), m_initialNextMessage(nextMessage), m_aiDelay(aiDelay),
+	m_aceRoundRank(aceRound == 'A' ? Common::ICard::ACE : (aceRound == 'Q' ? Common::ICard::QUEEN :
+				   (aceRound == 'K' ? Common::ICard::KING : Common::ICard::RANK_ILLEGAL))),
+	m_gameIndex(0LL), m_dirChangeEnabled(false) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
 }
@@ -87,7 +87,7 @@ Engine::Engine(Event::IEventHandler &eventHandler, long aiDelay, RuleSet::IRuleS
 	m_curTurn(0), m_delRuleSet(false), m_jackMode(false), m_initialChecked(false),
 	m_nextMessage(nextMessage), m_ultimate(false), m_initialJack(false), m_alwaysWait(false),
 	m_initialNextMessage(nextMessage), m_aiDelay(aiDelay),
-	m_aceRoundRank(Common::ICard::RANK_ILLEGAL), m_gameIndex(0LL) {
+	m_aceRoundRank(Common::ICard::RANK_ILLEGAL), m_gameIndex(0LL), m_dirChangeEnabled(false) {
 	m_players.reserve(5);
 	m_eventHandler.acceptingPlayers();
 }
@@ -124,6 +124,8 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 		if(f == m_players.end() && m_players.size() <= m_ruleset->getMaxPlayers()) {
 
 			m_players.push_back(player);
+
+			m_dirChangeEnabled = m_players.size() > 2;
 
 			if(player->isAIPlayer()) {
 
@@ -439,6 +441,26 @@ sevenRule:
 				m_ruleset->setJackModeOff();
 				m_jackMode = false;
 			}
+		}
+
+		if(m_ruleset->hasDirChange()) {
+
+			if(m_dirChangeEnabled && m_players.size() > 2) {
+
+				std::reverse(m_players.begin(), m_players.end());
+
+				m_nxtPlayer = static_cast<std::size_t>(std::distance(m_players.begin(),
+													   std::find(m_players.begin(), m_players.end(),
+															   player)));
+				assert(m_nxtPlayer <= m_players.size());
+
+				m_eventHandler.directionChange();
+
+			} else if(m_dirChangeEnabled) {
+				m_ruleset->setDirChangeIsSuspend(true);
+			}
+
+			m_ruleset->dirChanged();
 		}
 
 		if(!won) m_nxtPlayer = (m_nxtPlayer + 1) >= m_players.size() ? 0 : m_nxtPlayer + 1;

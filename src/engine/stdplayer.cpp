@@ -261,8 +261,12 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 									   NetMauMau::Common::findRank(NetMauMau::Common::ICard::NINE,
 											   myCards.begin(), myCards.end()) : 0L;
 
-		bestCard = nine ? nine : NetMauMau::Common::findRank(NetMauMau::Common::ICard::EIGHT,
-				   myCards.begin(), myCards.end());
+		const CARDS::value_type seven = NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN,
+										myCards.begin(), myCards.end());
+
+		bestCard = nine ? nine : seven ? seven :
+				   NetMauMau::Common::findRank(NetMauMau::Common::ICard::EIGHT, myCards.begin(),
+											   myCards.end());
 	}
 
 	if(!bestCard && !noJack && m_playerHasFewCards && std::count_if(myCards.begin(), myCards.end(),

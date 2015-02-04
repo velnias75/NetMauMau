@@ -279,7 +279,8 @@ bool Engine::nextTurn() {
 			m_initialJack = m_ruleset->isJackMode();
 			m_initialChecked = true;
 
-			if(uc->getRank() == Common::ICard::EIGHT && getAICount()) {
+			if((uc->getRank() == Common::ICard::EIGHT || (uc->getRank() == Common::ICard::NINE &&
+					m_ruleset->getDirChangeIsSuspend())) && getAICount()) {
 				Common::AbstractConnection *con = m_eventHandler.getConnection();
 
 				if(con) con->wait(m_aiDelay);
@@ -426,7 +427,9 @@ sevenRule:
 					DB::SQLite::getInstance().
 					playerWins(m_gameIndex, nsf);
 
-				} else if(player->isAIPlayer() && ((pc->getRank() == Common::ICard::EIGHT) ||
+				} else if(player->isAIPlayer() && ((pc->getRank() == Common::ICard::EIGHT ||
+													(pc->getRank() == Common::ICard::NINE &&
+													 m_ruleset->getDirChangeIsSuspend())) ||
 												   m_alwaysWait)) {
 
 					Common::AbstractConnection *con = m_eventHandler.getConnection();

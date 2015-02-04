@@ -172,6 +172,10 @@ void StdRuleSet::dirChanged() {
 	m_dirChange = false;
 }
 
+bool StdRuleSet::getDirChangeIsSuspend() const {
+	return m_dirChangeIsSuspend;
+}
+
 void StdRuleSet::setDirChangeIsSuspend(bool suspend) {
 	m_dirChangeIsSuspend = suspend;
 }

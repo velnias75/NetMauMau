@@ -121,6 +121,7 @@ private:
 
 	void informAIStat() const;
 	std::size_t getAICount() const;
+	void setDirChangeIsSuspend(bool b);
 
 	void suspends(Player::IPlayer *p, const Common::ICard *uc = NULL) const;
 	void takeCards(Player::IPlayer *player, const Common::ICard *card) const

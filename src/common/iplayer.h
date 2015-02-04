@@ -60,7 +60,11 @@ public:
 	virtual bool cardAccepted(const Common::ICard *playedCard) = 0;
 	virtual void cardPlayed(Common::ICard *playedCard) = 0;
 	virtual void informAIStat(const IPlayer *player, std::size_t count) = 0;
+	virtual void setNeighbourCardCount(std::size_t playerCount, std::size_t leftCount,
+									   std::size_t rightCount) = 0;
+	virtual void setDirChangeEnabled(bool dirChangeEnabled) = 0;
 	virtual void talonShuffled() = 0;
+	virtual void setNineIsEight(bool b) = 0;
 
 	virtual REASON getNoCardReason() const = 0;
 

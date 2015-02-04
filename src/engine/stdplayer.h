@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -55,7 +55,11 @@ public:
 	virtual bool cardAccepted(const Common::ICard *playedCard);
 	virtual void cardPlayed(Common::ICard *playedCard);
 	virtual void informAIStat(const IPlayer *player, std::size_t count);
+	virtual void setNeighbourCardCount(std::size_t playerCount,
+									   std::size_t leftCount, std::size_t rightCount);
+	virtual void setDirChangeEnabled(bool dirChangeEnabled);
 	virtual void talonShuffled();
+	virtual void setNineIsEight(bool b);
 
 	virtual REASON getNoCardReason() const _PURE;
 
@@ -80,13 +84,15 @@ private:
 #pragma GCC diagnostic push
 	struct _hasRankPath : std::unary_function<Common::ICard *, bool> {
 
-		_hasRankPath(const CARDS &c, NetMauMau::Common::ICard::RANK r) : mCards(c), rank(r) {}
+		_hasRankPath(const CARDS &c, NetMauMau::Common::ICard::RANK r, bool nie) : mCards(c),
+			rank(r), nineIsEight(nie) {}
 
 		bool operator()(const Common::ICard *c) const;
 
 	private:
 		const CARDS &mCards;
 		const NetMauMau::Common::ICard::RANK rank;
+		bool nineIsEight;
 	};
 #pragma GCC diagnostic pop
 
@@ -108,7 +114,8 @@ private:
 	Common::ICard::SUIT getMaxPlayedOffSuit(CARDS::difference_type *count = 0L) const;
 
 	static Common::ICard *hasRankPath(const NetMauMau::Common::ICard *uc, Common::ICard::SUIT s,
-									  NetMauMau::Common::ICard::RANK r, const CARDS &cards);
+									  NetMauMau::Common::ICard::RANK r, const CARDS &cards,
+									  bool nineIsEight);
 
 	Common::ICard *findBestCard(const Common::ICard *uc, const Common::ICard::SUIT *js,
 								bool noJack) const;
@@ -125,6 +132,11 @@ private:
 	mutable Common::ICard::SUIT m_powerSuit;
 	mutable bool m_powerPlay;
 	mutable bool m_tryAceRound;
+	bool m_nineIsEight;
+	std::size_t m_leftCount;
+	std::size_t m_rightCount;
+	bool m_dirChgEnabled;
+	std::size_t m_playerCount;
 
 	static bool m_jackPlayed;
 };

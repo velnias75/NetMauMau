@@ -68,7 +68,7 @@ const GSLRNG<std::ptrdiff_t> RNG;
 
 using namespace NetMauMau;
 
-Engine::Engine(Event::IEventHandler &eventHandler,  bool dirChange, long aiDelay, bool nextMessage,
+Engine::Engine(Event::IEventHandler &eventHandler, bool dirChange, long aiDelay, bool nextMessage,
 			   char aceRound) : m_eventHandler(eventHandler), m_state(ACCEPT_PLAYERS),
 	m_talon(new Talon(this)), m_ruleset(new RuleSet::StdRuleSet(dirChange, aceRound ? this : 0L)),
 	m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_delRuleSet(true), m_jackMode(false),
@@ -194,6 +194,8 @@ bool Engine::distributeCards() throw(Common::Exception::SocketException) {
 			Player::IPlayer *p = *pi;
 
 			p->receiveCardSet(cards[k]);
+			p->setDirChangeEnabled(m_dirChangeEnabled);
+
 			m_eventHandler.cardsDistributed(p, cards[k]);
 		}
 
@@ -457,13 +459,19 @@ sevenRule:
 				m_eventHandler.directionChange();
 
 			} else if(m_dirChangeEnabled) {
-				m_ruleset->setDirChangeIsSuspend(true);
+				setDirChangeIsSuspend(true);
 			}
 
 			m_ruleset->dirChanged();
 		}
 
-		if(!won) m_nxtPlayer = (m_nxtPlayer + 1) >= m_players.size() ? 0 : m_nxtPlayer + 1;
+		if(!won) {
+			const std::size_t leftCount = player->getCardCount();
+			m_nxtPlayer = (m_nxtPlayer + 1) >= m_players.size() ? 0 : m_nxtPlayer + 1;
+			const std::size_t rightCount = m_players[(m_nxtPlayer + 1) >= m_players.size() ? 0 :
+										   m_nxtPlayer + 1]->getCardCount();
+			m_players[m_nxtPlayer]->setNeighbourCardCount(m_players.size(), leftCount, rightCount);
+		}
 
 		if(!m_nxtPlayer) ++m_turn;
 
@@ -601,6 +609,14 @@ void Engine::informAIStat() const {
 				if(*i != *j)(*i)->informAIStat(*j, (*j)->getCardCount());
 			}
 		}
+	}
+}
+
+void Engine::setDirChangeIsSuspend(bool b) {
+	m_ruleset->setDirChangeIsSuspend(b);
+
+	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
+		(*i)->setNineIsEight(b);
 	}
 }
 

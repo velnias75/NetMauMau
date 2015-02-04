@@ -79,6 +79,21 @@ struct pointSum : std::binary_function<std::size_t, NetMauMau::Common::ICard *, 
 		return i + c->getPoints();
 	}
 };
+
+struct _isSpecialRank : std::binary_function < NetMauMau::Common::ICard *,
+		NetMauMau::Common::ICard::RANK, bool > {
+
+	_isSpecialRank(bool nineIsEight) : m_nineIsEight(nineIsEight) {}
+
+	bool operator()(const NetMauMau::Common::ICard *c, NetMauMau::Common::ICard::RANK r) const {
+		return m_nineIsEight && r == NetMauMau::Common::ICard::EIGHT ?
+			   (c->getRank() == NetMauMau::Common::ICard::EIGHT ||
+				c->getRank() == NetMauMau::Common::ICard::NINE) : c->getRank() == r;
+	}
+
+private:
+	bool m_nineIsEight;
+};
 #pragma GCC diagnostic pop
 
 }
@@ -93,7 +108,7 @@ bool StdPlayer::_hasRankPath::operator()(const NetMauMau::Common::ICard *c) cons
 
 	if(c->getRank() != rank) {
 		for(CARDS::const_iterator i(mCards.begin()); i != mCards.end(); ++i) {
-			if((hrp = hasRankPath(c, (*i)->getSuit(), rank, mCards))) break;
+			if((hrp = hasRankPath(c, (*i)->getSuit(), rank, mCards, nineIsEight))) break;
 		}
 	}
 
@@ -102,7 +117,8 @@ bool StdPlayer::_hasRankPath::operator()(const NetMauMau::Common::ICard *c) cons
 
 StdPlayer::StdPlayer(const std::string &name) : m_name(name), m_cards(), m_cardsTaken(false),
 	m_ruleset(0), m_playerHasFewCards(false), m_powerSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL),
-	m_powerPlay(false), m_tryAceRound(false) {
+	m_powerPlay(false), m_tryAceRound(false), m_nineIsEight(false), m_leftCount(0), m_rightCount(0),
+	m_dirChgEnabled(false), m_playerCount(0) {
 	m_cards.reserve(32);
 }
 
@@ -116,6 +132,9 @@ void StdPlayer::reset() throw() {
 	m_powerSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
 	m_cardsTaken = false;
 	m_powerPlay = false;
+	m_nineIsEight = false;
+	m_leftCount = m_rightCount = m_playerCount = 0;
+	m_dirChgEnabled = false;
 	m_cards.clear();
 }
 
@@ -179,15 +198,15 @@ void StdPlayer::countSuits(SUITCOUNT *suitCount, const CARDS &myCards) const {
 
 NetMauMau::Common::ICard *
 StdPlayer::hasRankPath(const NetMauMau::Common::ICard *uc, NetMauMau::Common::ICard::SUIT s,
-					   NetMauMau::Common::ICard::RANK r, const CARDS &cards) {
+					   NetMauMau::Common::ICard::RANK r, const CARDS &cards, bool nineIsEight) {
 
 	CARDS mCards(cards);
 
 	if(mCards.size() > 1) {
 
-		const CARDS::iterator &e(std::partition(mCards.begin(), mCards.end(),
-												std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-														r)));
+		const CARDS::iterator
+		&e(std::partition(mCards.begin(), mCards.end(), std::bind2nd(_isSpecialRank(nineIsEight),
+						  r)));
 
 		if(std::distance(mCards.begin(), e)) {
 
@@ -232,6 +251,18 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 			bestCard = NetMauMau::Common::getIllegalCard();
 			m_cardsTaken = true;
 		}
+	}
+
+	if(!bestCard && m_playerCount > 2 && m_rightCount < getCardCount() &&
+			std::count_if(m_playedOutCards.begin(), m_playedOutCards.end(),
+						  std::bind2nd(playedOutRank(), NetMauMau::Common::ICard::SEVEN))) {
+
+		const CARDS::value_type nine = m_dirChgEnabled ?
+									   NetMauMau::Common::findRank(NetMauMau::Common::ICard::NINE,
+											   myCards.begin(), myCards.end()) : 0L;
+
+		bestCard = nine ? nine : NetMauMau::Common::findRank(NetMauMau::Common::ICard::EIGHT,
+				   myCards.begin(), myCards.end());
 	}
 
 	if(!bestCard && !noJack && m_playerHasFewCards && std::count_if(myCards.begin(), myCards.end(),
@@ -315,9 +346,10 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 					}
 
 				} else if(!((m_ruleset->isAceRoundPossible() && (bestCard = hasRankPath(uc,
-							 suitCount[i].suit, m_ruleset->getAceRoundRank(), myCards))) ||
-							(bestCard = hasRankPath(uc, suitCount[i].suit,
-													NetMauMau::Common::ICard::EIGHT, myCards)))) {
+							 suitCount[i].suit, m_ruleset->getAceRoundRank(), myCards,
+							 m_nineIsEight))) || (bestCard = hasRankPath(uc, suitCount[i].suit,
+												  NetMauMau::Common::ICard::EIGHT, myCards,
+												  m_nineIsEight)))) {
 
 					std::sort(myCards.begin(), e, cardGreater());
 
@@ -507,7 +539,8 @@ NetMauMau::Common::ICard::SUIT StdPlayer::getMaxPlayedOffSuit(CARDS::difference_
 NetMauMau::Common::ICard::SUIT StdPlayer::findJackChoice() const {
 
 	const CARDS::const_iterator &f(std::find_if(m_cards.begin(), m_cards.end(),
-								   _hasRankPath(m_cards, NetMauMau::Common::ICard::EIGHT)));
+								   _hasRankPath(m_cards, NetMauMau::Common::ICard::EIGHT,
+										   m_nineIsEight)));
 
 	if(f != m_cards.end()) {
 		return (*f)->getSuit();
@@ -543,6 +576,10 @@ void StdPlayer::talonShuffled() {
 	m_playedOutCards.clear();
 }
 
+void StdPlayer::setNineIsEight(bool b) {
+	m_nineIsEight = b;
+}
+
 std::size_t StdPlayer::getCardCount() const {
 	return m_cards.size();
 }
@@ -557,6 +594,17 @@ const StdPlayer::CARDS &StdPlayer::getPlayerCards() const {
 
 void StdPlayer::informAIStat(const IPlayer *, std::size_t count) {
 	m_playerHasFewCards = count < 3;
+}
+
+void StdPlayer::setNeighbourCardCount(std::size_t playerCount, std::size_t leftCount,
+									  std::size_t rightCount) {
+	m_leftCount = leftCount;
+	m_rightCount = rightCount;
+	m_playerCount = playerCount;
+}
+
+void StdPlayer::setDirChangeEnabled(bool dirChangeEnabled) {
+	m_dirChgEnabled = dirChangeEnabled;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

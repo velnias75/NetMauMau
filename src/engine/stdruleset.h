@@ -55,7 +55,7 @@ public:
 
 	virtual bool hasDirChange() const _PURE;
 	virtual void dirChanged();
-	virtual bool getDirChangeIsSuspend() const;
+	virtual bool getDirChangeIsSuspend() const _PURE;
 	virtual void setDirChangeIsSuspend(bool suspend);
 
 	virtual bool isAceRoundPossible() const _PURE;

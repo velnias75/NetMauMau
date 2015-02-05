@@ -136,6 +136,8 @@ private:
 
 	void checkPlayersAlive() const throw(Common::Exception::SocketException);
 
+	long getAIDelay() const;
+
 private:
 	Event::IEventHandler &m_eventHandler;
 

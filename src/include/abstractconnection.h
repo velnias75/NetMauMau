@@ -117,6 +117,8 @@ public:
 	void addAIPlayers(const std::vector<std::string> &aiPlayers);
 	void wait(long ms) throw(Exception::SocketException);
 
+	bool hasHumanPlayers() const _PURE;
+
 	virtual void reset() throw();
 
 protected:

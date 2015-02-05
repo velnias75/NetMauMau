@@ -175,4 +175,14 @@ uint16_t AbstractConnection::getMinorFromHello(const std::string &hello,
 	return (uint16_t)std::strtoul(hello.substr(dot + 1).c_str(), NULL, 10);
 }
 
+bool AbstractConnection::hasHumanPlayers() const {
+
+	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
+			i != getRegisteredPlayers().end(); ++i) {
+		if(i->sockfd != INVALID_SOCKET) return true;
+	}
+
+	return false;
+}
+
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

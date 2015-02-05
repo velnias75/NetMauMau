@@ -234,7 +234,7 @@ void Engine::suspends(Player::IPlayer *p, const Common::ICard *uc) const {
 
 	Common::AbstractConnection *con = m_eventHandler.getConnection();
 
-	if(p->isAIPlayer() && m_alwaysWait && con) con->wait(m_aiDelay);
+	if(p->isAIPlayer() && m_alwaysWait && con) con->wait(getAIDelay());
 }
 
 bool Engine::nextTurn() {
@@ -283,7 +283,7 @@ bool Engine::nextTurn() {
 					m_ruleset->getDirChangeIsSuspend())) && getAICount()) {
 				Common::AbstractConnection *con = m_eventHandler.getConnection();
 
-				if(con) con->wait(m_aiDelay);
+				if(con) con->wait(getAIDelay());
 			}
 		}
 
@@ -434,7 +434,7 @@ sevenRule:
 
 					Common::AbstractConnection *con = m_eventHandler.getConnection();
 
-					if(con) con->wait(m_aiDelay);
+					if(con) con->wait(getAIDelay());
 				}
 			}
 
@@ -650,6 +650,12 @@ void Engine::checkPlayersAlive() const throw(Common::Exception::SocketException)
 	for(PLAYERS::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
 		if(!(*i)->isAlive()) throw Common::Exception::SocketException((*i)->getName() + " is dead");
 	}
+}
+
+long int Engine::getAIDelay() const {
+	const Common::AbstractConnection *con = m_eventHandler.getConnection();
+	return (con && !con->hasHumanPlayers()) ? 0L :
+		   DB::SQLite::getInstance().getDBFilename().empty() ? 0L : m_aiDelay;
 }
 
 void Engine::reset() throw() {

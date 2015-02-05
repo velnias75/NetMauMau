@@ -524,7 +524,6 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 				} else if(rHello.substr(0, 6) == "SCORES") {
 
-#ifndef _WIN32
 					const NetMauMau::DB::SQLite::SCORE_TYPE st =
 						rHello.substr(7, rHello.find(' ', 7) - 7) == "ABS" ?
 						NetMauMau::DB::SQLite::ABS : NetMauMau::DB::SQLite::NORM;
@@ -535,18 +534,13 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 					const
 					NetMauMau::DB::SQLite::SCORES &scores(NetMauMau::DB::SQLite::getInstance().
 														  getScores(st, limit));
-#endif
 
 					std::ostringstream osscores;
-
-#ifndef _WIN32
 
 					for(NetMauMau::DB::SQLite::SCORES::const_iterator i(scores.begin());
 							i != scores.end(); ++i) {
 						osscores << i->name << '=' << i->score << '\0';
 					}
-
-#endif
 
 					osscores << "SCORESEND" << '\0';
 

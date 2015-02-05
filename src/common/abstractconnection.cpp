@@ -60,7 +60,8 @@ struct _isSocketFD :
 
 using namespace NetMauMau::Common;
 
-AbstractConnection::_info::_info() : sockfd(-1), name(), host(), port(0), maj(0), min(0) {}
+AbstractConnection::_info::_info() : sockfd(INVALID_SOCKET), name(), host(), port(0), maj(0), 
+		min(0) {}
 
 AbstractConnection::_info::~_info() {}
 

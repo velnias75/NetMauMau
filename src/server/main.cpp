@@ -534,8 +534,9 @@ int main(int argc, const char **argv) {
 	if(!dropPrivileges(user, grp)) {
 
 #else
-	signal(SIGINT, sh_interrupt);
+	NetMauMau::DB::SQLite::getInstance();
 
+	signal(SIGINT, sh_interrupt);
 #endif
 
 		const bool aiOpponent = minPlayers <= 1;

@@ -22,27 +22,9 @@
 
 #include <string>
 
-#ifndef _WIN32
 #include <sqlite3.h>
-#endif
 
 #include "sqlite.h"
-
-#if _WIN32
-#define WSTATIC_S static
-#define WSTATIC_E
-#else
-#define WSTATIC_S
-#define WSTATIC_E const
-#endif
-
-#ifndef _WCONST
-#if _WIN32
-#define _WCONST _CONST
-#else
-#define _WCONST
-#endif
-#endif
 
 namespace NetMauMau {
 
@@ -56,37 +38,33 @@ class SQLiteImpl {
 	DISALLOW_COPY_AND_ASSIGN(SQLiteImpl)
 public:
 	SQLiteImpl();
-	~SQLiteImpl() _WCONST;
+	~SQLiteImpl();
 
 	static std::string getDBFilename();
 
 	SQLite::SCORES getScores(SQLite::SCORE_TYPE type, std::size_t limit) const;
 
-	WSTATIC_S bool addAIPlayer(const NetMauMau::Player::IPlayer *ai) WSTATIC_E;
+	bool addAIPlayer(const NetMauMau::Player::IPlayer *ai) const;
 	bool addPlayer(const Common::AbstractConnection::INFO &info) const;
 	bool logOutPlayer(const Common::AbstractConnection::NAMESOCKFD &nsf) const;
 
-	WSTATIC_S long long int newGame() WSTATIC_E _WCONST;
+	long long int newGame();
 
-	WSTATIC_S bool gameEnded(long long int gameIndex) WSTATIC_E;
+	bool gameEnded(long long int gameIndex) const;
 	bool addPlayerToGame(long long int gid,
 						 const Common::AbstractConnection::NAMESOCKFD &nsf) const;
-	WSTATIC_S bool turn(long long int gameIndex, std::size_t turn) WSTATIC_E;
-	WSTATIC_S bool gamePlayStarted(long long int gameIndex) WSTATIC_E;
+	bool turn(long long int gameIndex, std::size_t turn) const;
+	bool gamePlayStarted(long long int gameIndex) const;
 	bool playerLost(long long int gameIndex, const Common::AbstractConnection::NAMESOCKFD &nsf,
 					time_t time, std::size_t points) const;
 	bool playerWins(long long int gameIndex, const Common::AbstractConnection::NAMESOCKFD &nsf)
 	const;
 
 private:
-	WSTATIC_S bool exec(const std::string &sql) WSTATIC_E _WCONST;
+	bool exec(const std::string &sql) const;
 
 private:
-#ifndef _WIN32
 	sqlite3 *m_db;
-#else
-	char *m_db;
-#endif
 };
 
 }

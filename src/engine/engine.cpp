@@ -654,8 +654,7 @@ void Engine::checkPlayersAlive() const throw(Common::Exception::SocketException)
 
 long int Engine::getAIDelay() const {
 	const Common::AbstractConnection *con = m_eventHandler.getConnection();
-	return (con && !con->hasHumanPlayers()) ? 0L :
-		   DB::SQLite::getInstance().getDBFilename().empty() ? 0L : m_aiDelay;
+	return (con && !con->hasHumanPlayers()) ? 0L : m_aiDelay;
 }
 
 void Engine::reset() throw() {

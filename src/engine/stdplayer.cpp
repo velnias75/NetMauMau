@@ -27,6 +27,7 @@
 #include "cardtools.h"
 #include "random_gen.h"
 #include "stdcardfactory.h"
+#include "socketexception.h"
 
 namespace {
 
@@ -147,7 +148,7 @@ std::string StdPlayer::getName() const {
 }
 
 int StdPlayer::getSerial() const {
-	return -1;
+	return INVALID_SOCKET;
 }
 
 bool StdPlayer::isAIPlayer() const {

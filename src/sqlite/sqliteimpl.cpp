@@ -33,9 +33,6 @@
 #include "iplayer.h"
 #include "logger.h"
 
-#ifndef _WIN32
-#define WSTATIC const
-
 namespace {
 
 int scoresCallback(void *arg, int cols, char **col_text, char **) {
@@ -57,8 +54,14 @@ int scoresCallback(void *arg, int cols, char **col_text, char **) {
 	return !(col_text[0] && col_text[2]) ? 0 : -1;
 }
 
+#ifndef _WIN32
+#define JOURNAL "PRAGMA journal_mode=OFF;"
+#else
+#define JOURNAL
+#endif
+
 const char *SCHEMA =
-	"PRAGMA journal_mode=OFF;" \
+	JOURNAL
 	"CREATE TABLE IF NOT EXISTS \"meta\" (" \
 	"dbver INTEGER UNIQUE," \
 	"date INTEGER );"\
@@ -111,15 +114,10 @@ const char *SCHEMA =
 	"LEFT OUTER JOIN win_scores ws ON ws.id = p.id LEFT OUTER JOIN lost_scores ls " \
 	"ON ls.id = p.id /*WHERE ascore > 0*/ ORDER BY ascore DESC;";
 }
-#else
-#define WSTATIC
-#endif
 
 using namespace NetMauMau::DB;
 
 SQLiteImpl::SQLiteImpl() : m_db(0L) {
-
-#ifndef _WIN32
 
 	const std::string &db(getDBFilename());
 
@@ -144,12 +142,9 @@ SQLiteImpl::SQLiteImpl() : m_db(0L) {
 			m_db = 0L;
 		}
 	}
-
-#endif
 }
 
 SQLiteImpl::~SQLiteImpl() {
-#ifndef _WIN32
 
 	if(m_db) {
 
@@ -163,8 +158,6 @@ SQLiteImpl::~SQLiteImpl() {
 
 		sqlite3_close(m_db);
 	}
-
-#endif
 }
 
 #pragma GCC diagnostic push
@@ -196,12 +189,34 @@ std::string SQLiteImpl::getDBFilename() {
 #endif
 #endif
 
+#ifndef _WIN32
 	return std::string();
+#else
+	char buffer[MAX_PATH];
+
+	strcpy(buffer, getenv("APPDATA"));
+
+	//if(GetModuleFileName(NULL, buffer, MAX_PATH)) {
+	if(strlen(buffer)) {
+
+		char drive[_MAX_DRIVE];
+		char dir[_MAX_DIR];
+		char fname[_MAX_FNAME];
+		char ext[_MAX_EXT];
+
+		_splitpath(buffer, drive, dir, fname, ext);
+		_makepath(buffer, drive, dir, PACKAGE_NAME, "db");
+
+		return std::string(buffer);
+	} else {
+		return std::string();
+	}
+
+#endif
 }
 #pragma GCC diagnostic pop
 
-bool SQLiteImpl::exec(const std::string &sql) WSTATIC {
-#ifndef _WIN32
+bool SQLiteImpl::exec(const std::string &sql) const {
 
 	char *err = 0L;
 
@@ -215,14 +230,9 @@ bool SQLiteImpl::exec(const std::string &sql) WSTATIC {
 	}
 
 	return false;
-#else
-	return true;
-#endif
 }
 
 SQLite::SCORES SQLiteImpl::getScores(SQLite::SCORE_TYPE type, std::size_t limit) const {
-
-#ifndef _WIN32
 
 	SQLite::SCORES res;
 
@@ -244,22 +254,17 @@ SQLite::SCORES SQLiteImpl::getScores(SQLite::SCORE_TYPE type, std::size_t limit)
 	}
 
 	return res;
-#else
-	return SQLite::SCORES();
-#endif
 }
 
-bool SQLiteImpl::addAIPlayer(const NetMauMau::Player::IPlayer *ai) WSTATIC {
+bool SQLiteImpl::addAIPlayer(const NetMauMau::Player::IPlayer *ai) const {
 
 	std::ostringstream sql;
 
-#ifndef _WIN32
 	sql << "BEGIN; INSERT OR IGNORE INTO players (name) VALUES(\'" << ai->getName() << "\');"
-	<< "INSERT INTO clients (sock, host, port, version, log_in, playerid) SELECT "
-	<< INVALID_SOCKET << ", \'" << PACKAGE_STRING << "\', 0,"
-	<< MAKE_VERSION(SERVER_VERSION_MAJOR, SERVER_VERSION_MINOR) << "," << std::time(0L)
-	<< ", id FROM players WHERE name = \'" << ai->getName()  << "\'; END TRANSACTION;";
-#endif
+		<< "INSERT INTO clients (sock, host, port, version, log_in, playerid) SELECT "
+		<< INVALID_SOCKET << ", \'" << PACKAGE_STRING << "\', 0,"
+		<< MAKE_VERSION(SERVER_VERSION_MAJOR, SERVER_VERSION_MINOR) << "," << std::time(0L)
+		<< ", id FROM players WHERE name = \'" << ai->getName()  << "\'; END TRANSACTION;";
 
 	return exec(sql.str());
 }
@@ -268,13 +273,11 @@ bool SQLiteImpl::addPlayer(const NetMauMau::Common::AbstractConnection::INFO &in
 
 	std::ostringstream sql;
 
-#ifndef _WIN32
 	sql << "BEGIN; INSERT OR IGNORE INTO players (name) VALUES(\'" << info.name << "\');"
 		<< "INSERT INTO clients (sock, host, port, version, log_in, playerid) SELECT "
 		<< info.sockfd << ",\'" << info.host << "\'," << info.port << ","
 		<< MAKE_VERSION(info.maj, info.min) << "," << std::time(0L)
 		<< ", id FROM players WHERE name = \'" << info.name  << "\'; END TRANSACTION;";
-#endif
 
 	return exec(sql.str());
 }
@@ -283,42 +286,31 @@ bool SQLiteImpl::logOutPlayer(const NetMauMau::Common::AbstractConnection::NAMES
 
 	std::ostringstream sql;
 
-#ifndef _WIN32
 	sql << "UPDATE clients SET log_out = " << std::time(0L) << " WHERE sock = " << nsf.sockfd
 		<< " AND log_out IS NULL AND playerid IN (SELECT id FROM players WHERE name = \'"
 		<< nsf.name << "\');";
-#endif
 
 	return exec(sql.str());
 }
 
-long long int SQLiteImpl::newGame() WSTATIC {
+long long int SQLiteImpl::newGame() {
 
-#ifndef _WIN32
 	std::ostringstream sql;
 
 	sql << "INSERT INTO games (server_start) VALUES (" << std::time(0L) << ");";
 
 	return exec(sql.str()) ? (m_db ? sqlite3_last_insert_rowid(m_db) : 0LL) : 0LL;
-#else
-	return 0LL;
-#endif
-
 }
 
-bool SQLiteImpl::gameEnded(long long int gameIndex) WSTATIC {
+bool SQLiteImpl::gameEnded(long long int gameIndex) const {
 
 	std::ostringstream sql;
-
-#ifndef _WIN32
 
 	if(gameIndex >= 0) {
 		sql << "UPDATE games SET end = " << std::time(0L) << " WHERE id = " << gameIndex << ";";
 	} else {
 		sql << "UPDATE games SET end = " << std::time(0L) << " WHERE end IS NULL;";
 	}
-
-#endif
 
 	return exec(sql.str());
 }
@@ -329,33 +321,27 @@ const {
 
 	std::ostringstream sql;
 
-#ifndef _WIN32
 	sql << "UPDATE clients SET gameid = " << gid << " WHERE sock = " << nsf.sockfd
 		<< " AND playerid IN (SELECT id FROM players WHERE name = \'" << nsf.name
 		<< "\') AND log_out IS NULL;";
-#endif
 
 	return exec(sql.str());
 }
 
-bool SQLiteImpl::turn(long long int gameIndex, std::size_t t) WSTATIC {
+bool SQLiteImpl::turn(long long int gameIndex, std::size_t t) const {
 
 	std::ostringstream sql;
 
-#ifndef _WIN32
 	sql << "UPDATE games SET turns = " << t << " WHERE id = " << gameIndex << ";";
-#endif
 
 	return exec(sql.str());
 }
 
-bool SQLiteImpl::gamePlayStarted(long long int gameIndex) WSTATIC {
+bool SQLiteImpl::gamePlayStarted(long long int gameIndex) const {
 
 	std::ostringstream sql;
 
-#ifndef _WIN32
 	sql << "UPDATE games SET game_start = " << std::time(0L) << " WHERE id = " << gameIndex << ";";
-#endif
 
 	return exec(sql.str());
 }
@@ -365,11 +351,9 @@ bool SQLiteImpl::playerLost(long long int gameIndex,
 							time_t time, std::size_t points) const {
 	std::ostringstream sql;
 
-#ifndef _WIN32
 	sql << "UPDATE games SET lost_time = " << time << ", score = " << points
 		<< ", lost_player = (SELECT id FROM players WHERE name = \'" << nsf.name << "\')"
 		<< " WHERE " << "id = " << gameIndex << ";";
-#endif
 
 	return exec(sql.str());
 }
@@ -378,10 +362,8 @@ bool SQLiteImpl::playerWins(long long int gameIndex,
 							const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsf) const {
 	std::ostringstream sql;
 
-#ifndef _WIN32
 	sql << "UPDATE games SET win_player = (SELECT id FROM players WHERE name = \'"
 		<< nsf.name << "\')" << " WHERE " << "id = " << gameIndex << " AND win_player IS NULL;";
-#endif
 
 	return exec(sql.str());
 }

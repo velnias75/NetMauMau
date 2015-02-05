@@ -54,14 +54,8 @@ int scoresCallback(void *arg, int cols, char **col_text, char **) {
 	return !(col_text[0] && col_text[2]) ? 0 : -1;
 }
 
-#ifndef _WIN32
-#define JOURNAL "PRAGMA journal_mode=OFF;"
-#else
-#define JOURNAL
-#endif
-
 const char *SCHEMA =
-	JOURNAL
+	"PRAGMA journal_mode=OFF;" \
 	"CREATE TABLE IF NOT EXISTS \"meta\" (" \
 	"dbver INTEGER UNIQUE," \
 	"date INTEGER );"\

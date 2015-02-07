@@ -104,7 +104,15 @@ PlayDeb.net offers [binaries](http://www.playdeb.net/game/NetMauMau) too.
 
 Debian 7
 --------
-[http://download.opensuse.org/repositories/home:/velnias/Debian_7.0](http://download.opensuse.org/repositories/home:/velnias/Debian_7.0)
+* insert following line into `/etc/apt/sources.list`
+
+    `deb http://download.opensuse.org/repositories/home:/velnias/Debian_7.0 /`
+
+* *(optionally)* add the GPG-key
+
+    `wget -O- http://sourceforge.net/projects/netmaumau/files/debian-apt.asc | apt-key add -`
+
+* run `apt-get update` 
 
 Windows
 -------

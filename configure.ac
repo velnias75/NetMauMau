@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.61])
-AC_INIT([NetMauMau], [0.13], [heiko@rangun.de], [netmaumau], [https://github.com/velnias75/NetMauMau])
+AC_INIT([NetMauMau], [0.14], [heiko@rangun.de], [netmaumau], [https://github.com/velnias75/NetMauMau])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
 AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip tar-pax no-installinfo no-texinfo.tex])
 AM_MAINTAINER_MODE
@@ -36,13 +36,23 @@ AC_ARG_ENABLE([apidoc], [AS_HELP_STRING([--disable-apidoc], [disables generation
   [ AM_CONDITIONAL([GENDOX], [ test x$enable_apidoc = xyes ]) ],
   [ AM_CONDITIONAL([GENDOX], [ true ]) ])
 
-AC_ARG_ENABLE([ai-name], [AS_HELP_STRING([--enable-ai-name], [default name of AI player])],
-  [ AC_DEFINE_UNQUOTED([AI_NAME], ["$enable_ai_name"], [default name of AI player]) ],
-  [ AC_DEFINE([AI_NAME], ["Computer"], [default name of AI player])])
+AC_ARG_ENABLE([ai-name], [AS_HELP_STRING([--enable-ai-name], [default name of AI player])])
+
+if test "x$enable_ai_name" != "xno"; then
+  AC_DEFINE_UNQUOTED([AI_NAME], ["$enable_ai_name"], [default name of AI player])
+else
+  AC_DEFINE([AI_NAME], ["Computer"], [default name of AI player])
+fi
 
 AC_ARG_ENABLE([ai-image], [AS_HELP_STRING([--enable-ai-image], [path to image of AI player])],
-  [ AM_CONDITIONAL([BRANDING], [ true ]) AC_SUBST([AI_IMAGE], [$enable_ai_image]) ],
-  [ AM_CONDITIONAL([BRANDING], [ false ]) AC_SUBST([AI_IMAGE], [\$\(top_srcdir\)/src/images/KS.PNG])])
+  [ AM_CONDITIONAL([BRANDING], [ test x$enable_ai_image != xno ]) ],
+  [ AM_CONDITIONAL([BRANDING], [ false ]) ])
+
+if test "x$enable_ai_image" != "xno"; then
+  AC_SUBST([AI_IMAGE], [$enable_ai_image])
+else
+  AC_SUBST([AI_IMAGE], [\$\(top_srcdir\)/src/images/KS.PNG])
+fi
 
 AC_ARG_ENABLE([pidfile], [AS_HELP_STRING([--enable-pidfile], [enables creation of pid file])],
   [ AM_CONDITIONAL([PIDFILE], [ test x$enable_pidfile = xyes ]) ],

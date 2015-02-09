@@ -22,7 +22,7 @@
 #include "game.h"
 #include "logger.h"
 #include "sqlite.h"
-#include <ieventhandler.h>
+#include "ieventhandler.h"
 
 namespace {
 
@@ -103,7 +103,7 @@ Game::COLLECT_STATE Game::collectPlayers(std::size_t minPlayers,
 
 				NetMauMau::DB::SQLite::getInstance().addAIPlayer(*i);
 				NetMauMau::DB::SQLite::getInstance().addPlayerToGame(m_gameIndex,
-						NetMauMau::Common::AbstractConnection::NAMESOCKFD((*i)->getName(), "",
+						NetMauMau::Common::IConnection::NAMESOCKFD((*i)->getName(), "",
 								INVALID_SOCKET, MAKE_VERSION(SERVER_VERSION_MAJOR,
 										SERVER_VERSION_MINOR)));
 			}
@@ -167,7 +167,7 @@ void Game::reset(bool playerLost) throw() {
 				(*i)->reset();
 
 				NetMauMau::DB::SQLite::getInstance().
-				logOutPlayer(NetMauMau::Common::AbstractConnection::NAMESOCKFD((*i)->getName(), "",
+				logOutPlayer(NetMauMau::Common::IConnection::NAMESOCKFD((*i)->getName(), "",
 							 INVALID_SOCKET, MAKE_VERSION(SERVER_VERSION_MAJOR,
 									 SERVER_VERSION_MINOR)));
 

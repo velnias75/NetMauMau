@@ -17,8 +17,8 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_SERVERCONNECTION_H
-#define NETMAUMAU_SERVERCONNECTION_H
+#ifndef NETMAUMAU_SERVER_SERVERCONNECTION_H
+#define NETMAUMAU_SERVER_SERVERCONNECTION_H
 
 #if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
 #include "config.h"
@@ -36,6 +36,7 @@ namespace Server {
 class Connection : public Common::AbstractConnection {
 	DISALLOW_COPY_AND_ASSIGN(Connection)
 public:
+	using Common::AbstractConnection::wait;
 	using Common::AbstractConnection::getPlayerInfo;
 
 	typedef enum { NONE, PLAY, CAP, REFUSED, PLAYERLIST, SCORES } ACCEPT_STATE;
@@ -100,6 +101,6 @@ private:
 
 }
 
-#endif /* NETMAUMAU_SERVERCONNECTION_H */
+#endif /* NETMAUMAU_SERVER_SERVERCONNECTION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

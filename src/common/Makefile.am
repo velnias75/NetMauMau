@@ -32,4 +32,4 @@ libnetmaumaucommon_la_SOURCES = abstractconnection.cpp abstractconnectionimpl.cp
 	abstractsocket.cpp abstractsocketimpl.cpp base64.cpp logger.cpp socketexception.cpp
 libnetmaumaucommon_la_LIBADD = libnetmaumaucommon_private.la
 libnetmaumaucommon_la_LDFLAGS = -nodefaultlibs -nostartfiles \
-	-version-info 2:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
+	-version-info 3:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)

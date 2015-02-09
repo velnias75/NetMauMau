@@ -17,8 +17,8 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_DEFAULTEVENTHANDLER_H
-#define NETMAUMAU_DEFAULTEVENTHANDLER_H
+#ifndef NETMAUMAU_EVENT_DEFAULTEVENTHANDLER_H
+#define NETMAUMAU_EVENT_DEFAULTEVENTHANDLER_H
 
 #include "ieventhandler.h"
 
@@ -32,7 +32,7 @@ public:
 	DefaultEventHandler();
 	virtual ~DefaultEventHandler();
 
-	virtual Common::AbstractConnection *getConnection() const _CONST;
+	virtual Common::IConnection *getConnection() const;
 	virtual void gameAboutToStart() const _CONST;
 	virtual void gameOver() const throw(Common::Exception::SocketException) _CONST;
 	virtual bool shutdown() const _CONST;
@@ -94,6 +94,6 @@ public:
 
 }
 
-#endif /* NETMAUMAU_DEFAULTEVENTHANDLER_H */
+#endif /* NETMAUMAU_EVENT_DEFAULTEVENTHANDLER_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -22,12 +22,11 @@
 
 #include "icard.h"
 #include "engine.h"
-#include "socketexception.h"
 
 namespace NetMauMau {
 
 namespace Common {
-class AbstractConnection;
+class IConnection;
 }
 
 namespace Player {
@@ -43,7 +42,7 @@ public:
 
 	virtual ~IEventHandler() {}
 
-	virtual Common::AbstractConnection *getConnection() const = 0;
+	virtual Common::IConnection *getConnection() const = 0;
 	virtual void gameAboutToStart() const = 0;
 	virtual void gameOver() const throw(Common::Exception::SocketException) = 0;
 	virtual bool shutdown() const = 0;

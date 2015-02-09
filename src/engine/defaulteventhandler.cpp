@@ -19,14 +19,16 @@
 
 #include "defaulteventhandler.h"
 
+#include "nullconnection.h"
+
 using namespace NetMauMau::Event;
 
 DefaultEventHandler::DefaultEventHandler() : IEventHandler() {}
 
 DefaultEventHandler::~DefaultEventHandler() {}
 
-NetMauMau::Common::AbstractConnection *DefaultEventHandler::getConnection() const {
-	return 0L;
+NetMauMau::Common::IConnection *DefaultEventHandler::getConnection() const {
+	return &NetMauMau::NullConnection::getInstance();
 }
 
 void DefaultEventHandler::gameAboutToStart() const {}

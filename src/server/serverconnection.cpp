@@ -58,28 +58,28 @@ const std::string aiBase64
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-struct _isPlayer : public std::binary_function < NetMauMau::Common::AbstractConnection::NAMESOCKFD,
+struct _isPlayer : public std::binary_function < NetMauMau::Common::IConnection::NAMESOCKFD,
 		std::string, bool > {
 
-	bool operator()(const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsd,
+	bool operator()(const NetMauMau::Common::IConnection::NAMESOCKFD &nsd,
 					const std::string &player) const {
 		return nsd.name == player;
 	}
 };
 
 struct _playerClientversionLess :
-	public std::binary_function < NetMauMau::Common::AbstractConnection::PLAYERINFOS::value_type,
-		NetMauMau::Common::AbstractConnection::PLAYERINFOS::value_type, bool > {
-	bool operator()(const NetMauMau::Common::AbstractConnection::PLAYERINFOS::value_type &x,
-					const NetMauMau::Common::AbstractConnection::PLAYERINFOS::value_type &y) const {
+	public std::binary_function < NetMauMau::Common::IConnection::PLAYERINFOS::value_type,
+		NetMauMau::Common::IConnection::PLAYERINFOS::value_type, bool > {
+	bool operator()(const NetMauMau::Common::IConnection::PLAYERINFOS::value_type &x,
+					const NetMauMau::Common::IConnection::PLAYERINFOS::value_type &y) const {
 		return x.clientVersion < y.clientVersion;
 	}
 };
 
 struct _playerClientversionLess2 :
-	public std::binary_function < NetMauMau::Common::AbstractConnection::PLAYERINFOS::value_type,
+	public std::binary_function < NetMauMau::Common::IConnection::PLAYERINFOS::value_type,
 		uint32_t, bool > {
-	bool operator()(const NetMauMau::Common::AbstractConnection::PLAYERINFOS::value_type &x,
+	bool operator()(const NetMauMau::Common::IConnection::PLAYERINFOS::value_type &x,
 					uint32_t y) const {
 		return x.clientVersion < y;
 	}
@@ -593,7 +593,7 @@ void Connection::removePlayer(SOCKET sockfd) {
 	NetMauMau::Common::AbstractConnection::removePlayer(sockfd);
 }
 
-NetMauMau::Common::AbstractConnection::NAMESOCKFD
+NetMauMau::Common::IConnection::NAMESOCKFD
 Connection::getPlayerInfo(const std::string &name) const {
 
 	const PLAYERINFOS::const_iterator &f(std::find_if(getRegisteredPlayers().begin(),

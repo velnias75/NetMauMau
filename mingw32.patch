@@ -1,6 +1,6 @@
-diff -uNr netmaumau-0.13.orig/configure.ac netmaumau-0.13/configure.ac
---- netmaumau-0.13.orig/configure.ac	2015-02-01 15:10:54.000000000 +0100
-+++ netmaumau-0.13/configure.ac	2015-02-05 10:26:10.859434746 +0100
+diff -uNr netmaumau-0.14.orig/configure.ac netmaumau-0.14/configure.ac
+--- netmaumau-0.14.orig/configure.ac	2015-02-08 14:09:59.000000000 +0100
++++ netmaumau-0.14/configure.ac	2015-02-09 09:31:58.742103875 +0100
 @@ -7,7 +7,7 @@
  AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip tar-pax no-installinfo no-texinfo.tex])
  AM_MAINTAINER_MODE
@@ -10,7 +10,7 @@ diff -uNr netmaumau-0.13.orig/configure.ac netmaumau-0.13/configure.ac
  LT_LANG([Windows Resource])
  
  AC_SUBST([BUILD_YEAR], [`date +%Y`])
-@@ -107,6 +107,7 @@
+@@ -117,6 +117,7 @@
  .mso www.tmac
  .URL \"http://www.gnu.org/software/gsl/manual/html_node/Random-number-environment-variables.html\" \"GSL Manual\" \" for more information\"" > gsl.h2m ], 
    [ AM_CONDITIONAL([GSL], [ false ])] )
@@ -18,7 +18,7 @@ diff -uNr netmaumau-0.13.orig/configure.ac netmaumau-0.13/configure.ac
  PKG_CHECK_MODULES([LIBSQLITE], [sqlite3 >= 3.4.2])
  
  # Checks for header files.
-@@ -151,7 +152,7 @@
+@@ -161,7 +162,7 @@
  AC_SUBST([SERVER_VERSION_MAJOR])
  AC_SUBST([SERVER_VERSION_MINOR])
  
@@ -27,9 +27,9 @@ diff -uNr netmaumau-0.13.orig/configure.ac netmaumau-0.13/configure.ac
  
  AC_DEFINE_UNQUOTED([SERVER_VERSION_MAJOR], [${SERVER_VERSION_MAJOR}], [server version major])
  AC_DEFINE_UNQUOTED([SERVER_VERSION_MINOR], [${SERVER_VERSION_MINOR}], [server version minor])
-diff -uNr netmaumau-0.13.orig/src/client/Makefile.am netmaumau-0.13/src/client/Makefile.am
---- netmaumau-0.13.orig/src/client/Makefile.am	2015-01-20 04:48:06.000000000 +0100
-+++ netmaumau-0.13/src/client/Makefile.am	2015-02-05 10:24:45.509353757 +0100
+diff -uNr netmaumau-0.14.orig/src/client/Makefile.am netmaumau-0.14/src/client/Makefile.am
+--- netmaumau-0.14.orig/src/client/Makefile.am	2015-01-20 04:48:06.000000000 +0100
++++ netmaumau-0.14/src/client/Makefile.am	2015-02-09 09:31:58.742103875 +0100
 @@ -16,7 +16,7 @@
  	connectionrejectedexception.cpp interceptederrorexception.cpp \
  	nonetmaumauserverexception.cpp playerlistexception.cpp protocolerrorexception.cpp \
@@ -39,9 +39,9 @@ diff -uNr netmaumau-0.13.orig/src/client/Makefile.am netmaumau-0.13/src/client/M
  	-version-info 3:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
  libnetmaumauclient_la_LIBADD = libnetmaumauclient_private.la ../common/libnetmaumaucommon.la
  
-diff -uNr netmaumau-0.13.orig/src/common/Makefile.am netmaumau-0.13/src/common/Makefile.am
---- netmaumau-0.13.orig/src/common/Makefile.am	2015-01-23 12:06:15.000000000 +0100
-+++ netmaumau-0.13/src/common/Makefile.am	2015-02-05 10:24:45.509353757 +0100
+diff -uNr netmaumau-0.14.orig/src/common/Makefile.am netmaumau-0.14/src/common/Makefile.am
+--- netmaumau-0.14.orig/src/common/Makefile.am	2015-02-09 09:13:47.000000000 +0100
++++ netmaumau-0.14/src/common/Makefile.am	2015-02-09 09:31:58.742103875 +0100
 @@ -30,6 +30,6 @@
  libnetmaumaucommon_la_CXXFLAGS = -I$(top_srcdir)/src/include
  libnetmaumaucommon_la_SOURCES = abstractconnection.cpp abstractconnectionimpl.cpp \
@@ -50,10 +50,10 @@ diff -uNr netmaumau-0.13.orig/src/common/Makefile.am netmaumau-0.13/src/common/M
 -libnetmaumaucommon_la_LDFLAGS = -nodefaultlibs -nostartfiles \
 +libnetmaumaucommon_la_LIBADD = libnetmaumaucommon_private.la -lws2_32
 +libnetmaumaucommon_la_LDFLAGS = -static-libgcc -static-libstdc++ -no-undefined \
- 	-version-info 2:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
-diff -uNr netmaumau-0.13.orig/src/server/Makefile.am netmaumau-0.13/src/server/Makefile.am
---- netmaumau-0.13.orig/src/server/Makefile.am	2015-01-23 12:06:15.000000000 +0100
-+++ netmaumau-0.13/src/server/Makefile.am	2015-02-05 10:24:45.519353767 +0100
+ 	-version-info 3:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
+diff -uNr netmaumau-0.14.orig/src/server/Makefile.am netmaumau-0.14/src/server/Makefile.am
+--- netmaumau-0.14.orig/src/server/Makefile.am	2015-01-23 12:06:15.000000000 +0100
++++ netmaumau-0.14/src/server/Makefile.am	2015-02-09 09:31:58.742103875 +0100
 @@ -32,6 +32,7 @@
  nmm_server_CPPFLAGS += -DPKGDATADIR="\"$(pkgdatadir)\""
  nmm_server_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
@@ -62,9 +62,9 @@ diff -uNr netmaumau-0.13.orig/src/server/Makefile.am netmaumau-0.13/src/server/M
  nmm_server_SOURCES = game.cpp main.cpp serverconnection.cpp servereventhandler.cpp \
  	serverplayer.cpp serverplayerexception.cpp
  nmm_server_LDADD = ../common/libnetmaumaucommon.la ../engine/libengine.la ../sqlite/libsqlite.la \
-diff -uNr netmaumau-0.13.orig/src/sqlite/Makefile.am netmaumau-0.13/src/sqlite/Makefile.am
---- netmaumau-0.13.orig/src/sqlite/Makefile.am	2015-01-06 06:11:41.000000000 +0100
-+++ netmaumau-0.13/src/sqlite/Makefile.am	2015-02-05 10:24:45.519353767 +0100
+diff -uNr netmaumau-0.14.orig/src/sqlite/Makefile.am netmaumau-0.14/src/sqlite/Makefile.am
+--- netmaumau-0.14.orig/src/sqlite/Makefile.am	2015-01-06 06:11:41.000000000 +0100
++++ netmaumau-0.14/src/sqlite/Makefile.am	2015-02-09 09:31:58.752104301 +0100
 @@ -6,6 +6,7 @@
  	-DDBDIR=\"$(localstatedir)/$(PACKAGE)\" -DBUILDDIR=\"$(abs_top_builddir)\"
  libsqlite_la_CXXFLAGS = $(LIBSQLITE_CFLAGS) $(NO_RTTI_FLAGS)
@@ -73,9 +73,9 @@ diff -uNr netmaumau-0.13.orig/src/sqlite/Makefile.am netmaumau-0.13/src/sqlite/M
  libsqlite_la_LIBADD = $(LIBSQLITE_LIBS)
  
  install-data-local:
-diff -uNr netmaumau-0.13.orig/src/test/Makefile.am netmaumau-0.13/src/test/Makefile.am
---- netmaumau-0.13.orig/src/test/Makefile.am	2015-01-23 12:06:15.000000000 +0100
-+++ netmaumau-0.13/src/test/Makefile.am	2015-02-05 10:24:45.519353767 +0100
+diff -uNr netmaumau-0.14.orig/src/test/Makefile.am netmaumau-0.14/src/test/Makefile.am
+--- netmaumau-0.14.orig/src/test/Makefile.am	2015-01-23 12:06:15.000000000 +0100
++++ netmaumau-0.14/src/test/Makefile.am	2015-02-09 09:31:58.752104301 +0100
 @@ -29,7 +29,7 @@
  test_netmaumau_SOURCES = test_netmaumau.cpp testeventhandler.cpp
  test_netmaumau_LDADD = ../common/libnetmaumaucommon.la ../engine/libengine.la \

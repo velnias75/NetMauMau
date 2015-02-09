@@ -22,34 +22,13 @@
  * @author Heiko Schäfer <heiko@rangun.de>
  */
 
-#ifndef NETMAUMAU_ABSTRACTCONNECTION_H
-#define NETMAUMAU_ABSTRACTCONNECTION_H
+#ifndef NETMAUMAU_COMMON_ABSTRACTCONNECTION_H
+#define NETMAUMAU_COMMON_ABSTRACTCONNECTION_H
 
 #include <map>
-#include <vector>
 
+#include "iconnection.h"
 #include "abstractsocket.h"
-
-#ifdef _WIN32
-#include <mswsock.h>
-#endif
-
-/**
- * @defgroup util Utilities
- *
- * @def MAKE_VERSION(maj, min)
- * @hideinitializer
- * @ingroup util
- *
- * Computes the corresponding version number integer
- *
- * @param maj the major of the version number
- * @param min the minor of the version number
- *
- * @since 0.8
- */
-#define MAKE_VERSION(maj, min) static_cast<uint32_t>((static_cast<uint16_t>(maj) << 16u) | \
-		static_cast<uint16_t>(min))
 
 namespace NetMauMau {
 
@@ -62,33 +41,10 @@ class AbstractConnectionImpl;
  *
  * Handles all registred users.
  */
-class _EXPORT AbstractConnection : public AbstractSocket {
+class _EXPORT AbstractConnection : public AbstractSocket, public IConnection {
 	DISALLOW_COPY_AND_ASSIGN(AbstractConnection)
 	friend class AbstractConnectionImpl;
 public:
-	typedef struct _EXPORT _info {
-		_info();
-		~_info();
-		SOCKET sockfd;
-		std::string  name;
-		std::string  host;
-		uint16_t     port;
-		uint16_t maj, min;
-	} INFO;
-
-	typedef struct _nameSockFD {
-		_nameSockFD();
-		_nameSockFD(const std::string &name, const std::string &playerPic, SOCKET sockfd,
-					uint32_t clientVersion);
-		~_nameSockFD();
-		std::string name;
-		mutable std::string playerPic;
-		SOCKET sockfd;
-		uint32_t clientVersion;
-	} NAMESOCKFD;
-
-	typedef std::vector<NAMESOCKFD> PLAYERINFOS;
-
 	/**
 	 * @brief Key/value map of the server capabilities
 	 *
@@ -110,14 +66,14 @@ public:
 
 	virtual ~AbstractConnection();
 
-	NAMESOCKFD  getPlayerInfo(SOCKET sockfd) const;
-	std::string getPlayerName(SOCKET sockfd) const;
+	virtual NAMESOCKFD getPlayerInfo(SOCKET sockfd) const;
+	virtual std::string getPlayerName(SOCKET sockfd) const;
 	virtual void removePlayer(SOCKET sockfd);
 
-	void addAIPlayers(const std::vector<std::string> &aiPlayers);
-	void wait(long ms) throw(Exception::SocketException);
+	virtual void addAIPlayers(const std::vector<std::string> &aiPlayers);
+	virtual void wait(long ms) throw(Exception::SocketException);
 
-	bool hasHumanPlayers() const _PURE;
+	virtual bool hasHumanPlayers() const _PURE;
 
 	virtual void reset() throw();
 
@@ -144,6 +100,6 @@ private:
 
 }
 
-#endif /* NETMAUMAU_ABSTRACTCONNECTION_H */
+#endif /* NETMAUMAU_COMMON_ABSTRACTCONNECTION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -263,7 +263,7 @@ bool SQLiteImpl::addAIPlayer(const NetMauMau::Player::IPlayer *ai) const {
 	return exec(sql.str());
 }
 
-bool SQLiteImpl::addPlayer(const NetMauMau::Common::AbstractConnection::INFO &info) const {
+bool SQLiteImpl::addPlayer(const NetMauMau::Common::IConnection::INFO &info) const {
 
 	std::ostringstream sql;
 
@@ -276,7 +276,7 @@ bool SQLiteImpl::addPlayer(const NetMauMau::Common::AbstractConnection::INFO &in
 	return exec(sql.str());
 }
 
-bool SQLiteImpl::logOutPlayer(const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsf) const {
+bool SQLiteImpl::logOutPlayer(const NetMauMau::Common::IConnection::NAMESOCKFD &nsf) const {
 
 	std::ostringstream sql;
 
@@ -310,8 +310,7 @@ bool SQLiteImpl::gameEnded(long long int gameIndex) const {
 }
 
 bool SQLiteImpl::addPlayerToGame(long long int gid,
-								 const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsf)
-const {
+								 const NetMauMau::Common::IConnection::NAMESOCKFD &nsf) const {
 
 	std::ostringstream sql;
 
@@ -341,7 +340,7 @@ bool SQLiteImpl::gamePlayStarted(long long int gameIndex) const {
 }
 
 bool SQLiteImpl::playerLost(long long int gameIndex,
-							const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsf,
+							const NetMauMau::Common::IConnection::NAMESOCKFD &nsf,
 							time_t time, std::size_t points) const {
 	std::ostringstream sql;
 
@@ -353,7 +352,7 @@ bool SQLiteImpl::playerLost(long long int gameIndex,
 }
 
 bool SQLiteImpl::playerWins(long long int gameIndex,
-							const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsf) const {
+							const NetMauMau::Common::IConnection::NAMESOCKFD &nsf) const {
 	std::ostringstream sql;
 
 	sql << "UPDATE games SET win_player = (SELECT id FROM players WHERE name = \'"

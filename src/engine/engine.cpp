@@ -29,6 +29,16 @@
 #include <unistd.h>
 #endif
 
+#ifdef _WIN32
+#include <ws2tcpip.h>
+#ifndef SHUT_RDWR
+#define SHUT_RDWR SD_BOTH
+#endif
+#elif defined(HAVE_SYS_SOCKET_H)
+#include <sys/types.h>
+#include <sys/socket.h>
+#endif
+
 #include "engine.h"
 
 #include "talon.h"
@@ -128,10 +138,8 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 			m_dirChangeEnabled = m_players.size() > 2;
 
 			if(player->isAIPlayer()) {
-
-				Common::AbstractConnection *con = m_eventHandler.getConnection();
-
-				if(con) con->addAIPlayers(std::vector<std::string>(1, player->getName()));
+				m_eventHandler.getConnection()->addAIPlayers(std::vector<std::string>(1,
+						player->getName()));
 			}
 
 			player->setRuleSet(m_ruleset);
@@ -141,11 +149,8 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 
 		} else if(f != m_players.end()) {
 
-			Common::AbstractConnection *con = m_eventHandler.getConnection();
-
 			m_eventHandler.playerRejected(player);
-
-			if(con) con->removePlayer(player->getSerial());
+			m_eventHandler.getConnection()->removePlayer(player->getSerial());
 
 			return false;
 		}
@@ -232,9 +237,7 @@ void Engine::suspends(Player::IPlayer *p, const Common::ICard *uc) const {
 
 	m_eventHandler.playerSuspends(p, uc);
 
-	Common::AbstractConnection *con = m_eventHandler.getConnection();
-
-	if(p->isAIPlayer() && m_alwaysWait && con) con->wait(getAIDelay());
+	if(p->isAIPlayer() && m_alwaysWait) m_eventHandler.getConnection()->wait(getAIDelay());
 }
 
 bool Engine::nextTurn() {
@@ -281,9 +284,7 @@ bool Engine::nextTurn() {
 
 			if((uc->getRank() == Common::ICard::EIGHT || (uc->getRank() == Common::ICard::NINE &&
 					m_ruleset->getDirChangeIsSuspend())) && getAICount()) {
-				Common::AbstractConnection *con = m_eventHandler.getConnection();
-
-				if(con) con->wait(getAIDelay());
+				m_eventHandler.getConnection()->wait(getAIDelay());
 			}
 		}
 
@@ -398,13 +399,12 @@ sevenRule:
 							takeCards(m_players[m_nxtPlayer], Common::getIllegalCard());
 						}
 
-						Common::AbstractConnection *con = m_eventHandler.getConnection();
-
-						const Common::AbstractConnection::NAMESOCKFD nsf =
-							(!con || m_players[m_nxtPlayer]->isAIPlayer()) ?
-							Common::AbstractConnection::NAMESOCKFD(m_players[m_nxtPlayer]->
-									getName(), "", m_players[m_nxtPlayer]->getSerial(), 0)
-							: con->getPlayerInfo(m_players[m_nxtPlayer]->getSerial());
+						const Common::IConnection::NAMESOCKFD nsf =
+							(m_players[m_nxtPlayer]->isAIPlayer()) ?
+							Common::IConnection::NAMESOCKFD(m_players[m_nxtPlayer]->getName(),
+															"", m_players[m_nxtPlayer]->getSerial(),
+															0) : m_eventHandler.getConnection()->
+							getPlayerInfo(m_players[m_nxtPlayer]->getSerial());
 
 						DB::SQLite::getInstance().
 						playerLost(m_gameIndex, nsf, std::time(0L),
@@ -417,24 +417,18 @@ sevenRule:
 
 					m_eventHandler.playerWins(player, m_turn, m_ultimate);
 
-					Common::AbstractConnection *con = m_eventHandler.getConnection();
+					const Common::IConnection::NAMESOCKFD nsf = (player->isAIPlayer()) ?
+							Common::IConnection::NAMESOCKFD(player->getName(), "",
+															player->getSerial(), 0) :
+							m_eventHandler.getConnection()->getPlayerInfo(player->getSerial());
 
-					const Common::AbstractConnection::NAMESOCKFD nsf =
-						(!con || player->isAIPlayer()) ?
-						Common::AbstractConnection::NAMESOCKFD(player->getName(), "",
-								player->getSerial(), 0) : con->getPlayerInfo(player->getSerial());
-
-					DB::SQLite::getInstance().
-					playerWins(m_gameIndex, nsf);
+					DB::SQLite::getInstance().playerWins(m_gameIndex, nsf);
 
 				} else if(player->isAIPlayer() && ((pc->getRank() == Common::ICard::EIGHT ||
 													(pc->getRank() == Common::ICard::NINE &&
 													 m_ruleset->getDirChangeIsSuspend())) ||
 												   m_alwaysWait)) {
-
-					Common::AbstractConnection *con = m_eventHandler.getConnection();
-
-					if(con) con->wait(getAIDelay());
+					m_eventHandler.getConnection()->wait(getAIDelay());
 				}
 			}
 
@@ -484,57 +478,52 @@ sevenRule:
 
 		logDebug("SocketException: " << e);
 
-		Common::AbstractConnection *con = m_eventHandler.getConnection();
-		bool lostWatchingPlayer = false;
+		Common::IConnection *con = m_eventHandler.getConnection();
+		const std::string &pName(con->getPlayerName(e.sockfd()));
 
-		if(con) {
+		std::vector<std::string> ex(1, pName);
+		const PLAYERS::const_iterator &f(find(pName));
+		std::ostringstream os;
 
-			const std::string &pName(con->getPlayerName(e.sockfd()));
+		const bool lostWatchingPlayer = !pName.empty() && f == m_players.end();
 
-			std::vector<std::string> ex(1, pName);
-			const PLAYERS::const_iterator &f(find(pName));
-			std::ostringstream os;
+		if(!lostWatchingPlayer) {
 
-			lostWatchingPlayer = !pName.empty() && f == m_players.end();
+			if(!pName.empty()) {
 
-			if(!lostWatchingPlayer) {
-
-				if(!pName.empty()) {
-
-					os << "Lost connection to player \"" << pName << "\"";
-
-					try {
-						m_eventHandler.error(os.str(), ex);
-					} catch(const Common::Exception::SocketException &) {}
-
-				} else {
-					try {
-						m_eventHandler.error("Lost connection to a player", ex);
-					} catch(const Common::Exception::SocketException &) {}
-				}
-
-			} else {
+				os << "Lost connection to player \"" << pName << "\"";
 
 				try {
+					m_eventHandler.error(os.str(), ex);
+				} catch(const Common::Exception::SocketException &) {}
 
-					std::ostringstream watcher;
-					watcher << pName << " is no more watching us";
-					m_eventHandler.message(watcher.str());
-
+			} else {
+				try {
+					m_eventHandler.error("Lost connection to a player", ex);
 				} catch(const Common::Exception::SocketException &) {}
 			}
 
-			con->removePlayer(e.sockfd());
+		} else {
 
-			shutdown(e.sockfd(), SHUT_RDWR);
+			try {
+
+				std::ostringstream watcher;
+				watcher << pName << " is no more watching us";
+				m_eventHandler.message(watcher.str());
+
+			} catch(const Common::Exception::SocketException &) {}
+		}
+
+		con->removePlayer(e.sockfd());
+
+		shutdown(e.sockfd(), SHUT_RDWR);
 #ifndef _WIN32
-			close(e.sockfd());
+		close(e.sockfd());
 #else
-			closesocket(e.sockfd());
+		closesocket(e.sockfd());
 #endif
 
-			if(f != m_players.end()) removePlayer(*f);
-		}
+		if(f != m_players.end()) removePlayer(*f);
 
 		if(!lostWatchingPlayer) m_state = FINISHED;
 
@@ -653,8 +642,7 @@ void Engine::checkPlayersAlive() const throw(Common::Exception::SocketException)
 }
 
 long int Engine::getAIDelay() const {
-	const Common::AbstractConnection *con = m_eventHandler.getConnection();
-	return (con && !con->hasHumanPlayers()) ? 0L : m_aiDelay;
+	return (!m_eventHandler.getConnection()->hasHumanPlayers()) ? 0L : m_aiDelay;
 }
 
 void Engine::reset() throw() {

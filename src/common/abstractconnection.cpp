@@ -35,10 +35,6 @@
 
 #include "errorstring.h"
 
-#ifdef _WIN32
-#include <mswsock.h>
-#endif
-
 #ifndef TEMP_FAILURE_RETRY
 #define TEMP_FAILURE_RETRY
 #endif
@@ -60,21 +56,21 @@ struct _isSocketFD :
 
 using namespace NetMauMau::Common;
 
-AbstractConnection::_info::_info() : sockfd(INVALID_SOCKET), name(), host(), port(0), maj(0), 
-		min(0) {}
+IConnection::_info::_info() : sockfd(INVALID_SOCKET), name(), host(), port(0), maj(0), min(0) {}
 
-AbstractConnection::_info::~_info() {}
+IConnection::_info::~_info() {}
 
-AbstractConnection::_nameSockFD::_nameSockFD(const std::string &n, const std::string &pp,
-		SOCKET sfd, uint32_t cv) : name(n), playerPic(pp), sockfd(sfd), clientVersion(cv) {}
+IConnection::_nameSockFD::_nameSockFD(const std::string &n, const std::string &pp, SOCKET sfd,
+									  uint32_t cv) : name(n), playerPic(pp), sockfd(sfd),
+	clientVersion(cv) {}
 
-AbstractConnection::_nameSockFD::_nameSockFD() : name(), playerPic(), sockfd(INVALID_SOCKET),
+IConnection::_nameSockFD::_nameSockFD() : name(), playerPic(), sockfd(INVALID_SOCKET),
 	clientVersion(0) {}
 
-AbstractConnection::_nameSockFD::~_nameSockFD() {}
+IConnection::_nameSockFD::~_nameSockFD() {}
 
 AbstractConnection::AbstractConnection(const char *server, uint16_t port) :
-	AbstractSocket(server, port), _pimpl(new AbstractConnectionImpl()) {}
+	AbstractSocket(server, port), IConnection(), _pimpl(new AbstractConnectionImpl()) {}
 
 AbstractConnection::~AbstractConnection() {
 	delete _pimpl;

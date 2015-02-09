@@ -49,11 +49,11 @@ bool SQLite::addAIPlayer(const NetMauMau::Player::IPlayer *ai) const {
 	return _pimpl->addAIPlayer(ai);
 }
 
-bool SQLite::addPlayer(const NetMauMau::Common::AbstractConnection::INFO &info) const {
+bool SQLite::addPlayer(const NetMauMau::Common::IConnection::INFO &info) const {
 	return _pimpl->addPlayer(info);
 }
 
-bool SQLite::logOutPlayer(const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsf) const {
+bool SQLite::logOutPlayer(const NetMauMau::Common::IConnection::NAMESOCKFD &nsf) const {
 	return _pimpl->logOutPlayer(nsf);
 }
 
@@ -66,7 +66,7 @@ bool SQLite::gameEnded(long long int gameIndex) const {
 }
 
 bool SQLite::addPlayerToGame(long long int gid,
-							 const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsf) const {
+							 const NetMauMau::Common::IConnection::NAMESOCKFD &nsf) const {
 	return _pimpl->addPlayerToGame(gid, nsf);
 }
 
@@ -79,13 +79,13 @@ bool SQLite::gamePlayStarted(long long int gameIndex) const {
 }
 
 bool SQLite::playerLost(long long int gameIndex,
-						const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsf,
+						const NetMauMau::Common::IConnection::NAMESOCKFD &nsf,
 						time_t time, std::size_t points) const {
 	return _pimpl->playerLost(gameIndex, nsf, time, points);
 }
 
 bool SQLite::playerWins(long long int gameIndex,
-						const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsf) const {
+						const NetMauMau::Common::IConnection::NAMESOCKFD &nsf) const {
 	return _pimpl->playerWins(gameIndex, nsf);
 }
 

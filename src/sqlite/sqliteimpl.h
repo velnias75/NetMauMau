@@ -17,8 +17,8 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_SQLITEIMPL_H
-#define NETMAUMAU_SQLITEIMPL_H
+#ifndef NETMAUMAU_DB_SQLITEIMPL_H
+#define NETMAUMAU_DB_SQLITEIMPL_H
 
 #include <string>
 
@@ -45,20 +45,18 @@ public:
 	SQLite::SCORES getScores(SQLite::SCORE_TYPE type, std::size_t limit) const;
 
 	bool addAIPlayer(const NetMauMau::Player::IPlayer *ai) const;
-	bool addPlayer(const Common::AbstractConnection::INFO &info) const;
-	bool logOutPlayer(const Common::AbstractConnection::NAMESOCKFD &nsf) const;
+	bool addPlayer(const Common::IConnection::INFO &info) const;
+	bool logOutPlayer(const Common::IConnection::NAMESOCKFD &nsf) const;
 
 	long long int newGame();
 
 	bool gameEnded(long long int gameIndex) const;
-	bool addPlayerToGame(long long int gid,
-						 const Common::AbstractConnection::NAMESOCKFD &nsf) const;
+	bool addPlayerToGame(long long int gid, const Common::IConnection::NAMESOCKFD &nsf) const;
 	bool turn(long long int gameIndex, std::size_t turn) const;
 	bool gamePlayStarted(long long int gameIndex) const;
-	bool playerLost(long long int gameIndex, const Common::AbstractConnection::NAMESOCKFD &nsf,
+	bool playerLost(long long int gameIndex, const Common::IConnection::NAMESOCKFD &nsf,
 					time_t time, std::size_t points) const;
-	bool playerWins(long long int gameIndex, const Common::AbstractConnection::NAMESOCKFD &nsf)
-	const;
+	bool playerWins(long long int gameIndex, const Common::IConnection::NAMESOCKFD &nsf) const;
 
 private:
 	bool exec(const std::string &sql) const;
@@ -71,6 +69,6 @@ private:
 
 }
 
-#endif /* NETMAUMAU_SQLITEIMPL_H */
+#endif /* NETMAUMAU_DB_SQLITEIMPL_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

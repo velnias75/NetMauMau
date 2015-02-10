@@ -116,7 +116,7 @@ void AbstractConnection::wait(long ms) throw(Exception::SocketException) {
 
 	fd_set rfds;
 	int sret = 1;
-	timeval tv = { ms / 1000L, ms % 1000L };
+	timeval tv = { ms / 0xF4240L, ms % 0xF4240L };
 
 	while(sret > 0) {
 
@@ -130,7 +130,7 @@ void AbstractConnection::wait(long ms) throw(Exception::SocketException) {
 			intercept();
 #if _POSIX_C_SOURCE >= 200112L && defined(__linux)
 
-			if(!(ms = tv.tv_sec * 1000L + tv.tv_usec)) sret = 0;
+			if(!(ms = tv.tv_sec * 0xF4240L + tv.tv_usec)) sret = 0;
 
 #endif
 		}

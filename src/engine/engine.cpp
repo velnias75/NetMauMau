@@ -323,6 +323,11 @@ sevenRule:
 
 			} else if(pc->getSuit() == Common::ICard::SUIT_ILLEGAL) {
 				pc = player->requestCard(uc, m_jackMode ? &js : 0L, m_ruleset->takeCardCount());
+
+				if(player->isAIPlayer() || m_alwaysWait) {
+					m_eventHandler.getConnection()->wait(getAIDelay());
+				}
+
 				goto sevenRule;
 			}
 
@@ -641,7 +646,7 @@ void Engine::checkPlayersAlive() const throw(Common::Exception::SocketException)
 	}
 }
 
-long int Engine::getAIDelay() const {
+long Engine::getAIDelay() const {
 	return (!m_eventHandler.getConnection()->hasHumanPlayers()) ? 0L : m_aiDelay;
 }
 

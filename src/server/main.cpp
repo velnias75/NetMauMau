@@ -93,7 +93,7 @@ char bind[HOST_NAME_MAX] = { 0 };
 char *host = bind;
 char *aiName = AI_NAME;
 std::string aiNames[4];
-long aiDelay = 1000L;
+long aiDelay = 0xF4240L;
 char *arRank = "ACE";
 #ifndef _WIN32
 char *user  = DP_USER;

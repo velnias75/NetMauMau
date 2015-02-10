@@ -93,7 +93,7 @@ char bind[HOST_NAME_MAX] = { 0 };
 char *host = bind;
 char *aiName = AI_NAME;
 std::string aiNames[4];
-long aiDelay = 0xF4240L;
+double aiDelay = 1.0;
 char *arRank = "ACE";
 #ifndef _WIN32
 char *user  = DP_USER;
@@ -121,8 +121,8 @@ poptOption poptOptions[] = {
 		"Whitespaces can get substituted by \'%\', \'%\' itself by \"%%\"", "NAME"
 	},
 	{
-		"ai-delay", 'D', POPT_ARG_LONG | POPT_ARGFLAG_SHOW_DEFAULT, &aiDelay,
-		0, "Delay after AI turns", "MILLISECONDS"
+		"ai-delay", 'D', POPT_ARG_DOUBLE | POPT_ARGFLAG_SHOW_DEFAULT, &aiDelay,
+		0, "Delay after AI turns", "SECONDS"
 	},
 #ifndef _WIN32
 	{
@@ -564,9 +564,9 @@ int main(int argc, const char **argv) {
 			con.connect(inetd);
 
 			Server::EventHandler evtHdlr(con);
-			Server::Game game(evtHdlr, ::labs(aiDelay), dirChange, aiOpponent, aiNames,
-							  static_cast<char>(aceRound ? ::toupper(arRank ? arRank[0] : 'A') :
-													0));
+			Server::Game game(evtHdlr, static_cast<long>(::fabs(aiDelay * 1e06)), dirChange,
+							  aiOpponent, aiNames, static_cast<char>(aceRound ? ::toupper(arRank ?
+									  arRank[0] : 'A') : 0));
 
 			Server::Connection::CAPABILITIES caps;
 			caps.insert(std::make_pair("SERVER_VERSION", PACKAGE_VERSION));

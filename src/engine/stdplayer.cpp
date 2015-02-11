@@ -254,7 +254,8 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 		}
 	}
 
-	if(!bestCard && m_playerCount > 2 && m_rightCount < getCardCount() &&
+	if(!bestCard && m_playerCount > 2 && (m_rightCount < getCardCount() ||
+										  m_rightCount < m_leftCount) &&
 			std::count_if(m_playedOutCards.begin(), m_playedOutCards.end(),
 						  std::bind2nd(playedOutRank(), NetMauMau::Common::ICard::SEVEN))) {
 

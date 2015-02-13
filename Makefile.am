@@ -7,13 +7,30 @@ endif
 
 ACLOCAL_AMFLAGS = -I m4
 
-EXTRA_DIST = COPYING netmaumau.ico netmaumau.xinetd.in
+EXTRA_DIST = COPYING netmaumau.ico netmaumau.xinetd.in netmaumau.pc.in
 
 if XINETD
 CLEANFILES = netmaumau
 endif
 
 DISTCLEANFILES = $(PACKAGE_NAME)-dbg.db
+
+if ENABLE_CLIENT
+DISTCLEANFILES += netmaumau.pc
+
+pkgconfigdir = $(libdir)/pkgconfig
+nodist_pkgconfig_DATA = netmaumau.pc
+
+netmaumau.pc: $(top_srcdir)/netmaumau.pc.in
+	$(AM_V_GEN)$(SED) \
+	-e 's|@prefix[@]|$(prefix)|g' \
+	-e 's|@exec_prefix[@]|$(exec_prefix)|g' \
+	-e 's|@PACKAGE_NAME[@]|$(PACKAGE_NAME)|g' \
+	-e 's|@PACKAGE_VERSION[@]|$(PACKAGE_VERSION)|g' \
+	-e 's|@bindir[@]|$(bindir)|g' \
+	-e 's|@libdir[@]|$(libdir)|g' \
+	-e 's|@pkgincludedir[@]|$(pkgincludedir)|g' < $< > $@
+endif
 
 AM_DISTCHECK_CONFIGURE_FLAGS = --disable-client --enable-cli-client --enable-pidfile
 

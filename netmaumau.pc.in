@@ -1,0 +1,16 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+package_name=@PACKAGE_NAME@
+version=@PACKAGE_VERSION@
+
+libdir=@libdir@
+lib_name=netmaumauclient
+
+includedir=@pkgincludedir@
+
+Name: libnetmaumauclient
+Description: client library to communicate with the NetMauMau server
+URL: https://github.com/velnias75/NetMauMau/
+Version: ${version}
+Libs: -L${libdir} -lnetmaumaucommon -lnetmaumauclient
+Cflags: -I${includedir}

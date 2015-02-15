@@ -1,4 +1,5 @@
 bin_PROGRAMS = nmm-server
+noinst_LTLIBRARIES = libnmm_server_private.la
 
 man1_MANS = 
 
@@ -16,9 +17,13 @@ MAINTAINERCLEANFILES = $(bin_PROGRAMS).1
 
 DISTCLEANFILES = $(man1_MANS)
 
-noinst_HEADERS = game.h serverconnection.h servereventhandler.h serverplayerexception.h \
-	serverplayer.h 
+noinst_HEADERS = gameconfig.h game.h serverconnection.h servereventhandler.h \
+	serverplayerexception.h serverplayer.h 
 
+libnmm_server_private_la_CXXFLAGS = $(NO_RTTI_FLAGS) -I$(top_srcdir)/src/include \
+	-I$(top_srcdir)/src/engine
+libnmm_server_private_la_SOURCES = gameconfig.cpp
+	
 nmm_server_CPPFLAGS = $(GSL)
 
 if PIDFILE
@@ -34,8 +39,8 @@ nmm_server_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/engine -I$(top_srcdir)/src/sqlite $(POPT_CFLAGS)
 nmm_server_SOURCES = game.cpp main.cpp serverconnection.cpp servereventhandler.cpp \
 	serverplayer.cpp serverplayerexception.cpp
-nmm_server_LDADD = ../common/libnetmaumaucommon.la ../engine/libengine.la ../sqlite/libsqlite.la \
-	$(POPT_LIBS)
+nmm_server_LDADD = libnmm_server_private.la ../common/libnetmaumaucommon.la \
+	../engine/libengine.la ../sqlite/libsqlite.la $(POPT_LIBS)
 
 if RC
 nmm_server_LDADD += netmaumau.rc.lo

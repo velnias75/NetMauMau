@@ -21,7 +21,6 @@
 #define NETMAUMAU_ENGINE_H
 
 #include <vector>
-#include <string>
 
 #include "iaceroundlistener.h"
 #include "socketexception.h"
@@ -29,19 +28,12 @@
 
 namespace NetMauMau {
 
-class ICardFactory;
-class Talon;
+class EngineConfig;
 
-namespace Common {
-class ICard;
-}
+class Talon;
 
 namespace Event {
 class IEventHandler;
-}
-
-namespace Player {
-class IPlayer;
 }
 
 namespace RuleSet {
@@ -56,16 +48,11 @@ class _EXPORT Engine : protected ITalonChange, protected IAceRoundListener {
 public:
 	typedef std::vector<Player::IPlayer *> PLAYERS;
 
-	Engine(Event::IEventHandler &eventHandler, bool dirChange, long aiDelay = 1000L,
-		   bool nextMessage = true, char aceRound = 0);
-	Engine(Event::IEventHandler &eventHandler, long aiDelay, RuleSet::IRuleSet *ruleset,
-		   bool nextMessage = true);
+	Engine(EngineConfig &config) throw(Common::Exception::SocketException);
 
 	virtual ~Engine();
 
-	inline const Event::IEventHandler &getEventHandler() const {
-		return m_eventHandler;
-	}
+	const Event::IEventHandler &getEventHandler() const _PURE;
 
 	inline void setAlwaysWait(bool wait) {
 		m_alwaysWait = wait;
@@ -139,33 +126,23 @@ private:
 	long getAIDelay() const;
 
 private:
-	Event::IEventHandler &m_eventHandler;
+	EngineConfig &m_cfg;
 
 	STATE m_state;
-
 	Talon *m_talon;
-	RuleSet::IRuleSet *m_ruleset;
 	PLAYERS m_players;
 	std::size_t m_nxtPlayer;
 	std::size_t m_turn;
 	std::size_t m_curTurn;
 
-	const bool m_delRuleSet;
-
 	bool m_jackMode;
 	bool m_initialChecked;
-	bool m_nextMessage;
 	bool m_ultimate;
 	bool m_initialJack;
 	bool m_alwaysWait;
 
 	const bool m_initialNextMessage;
-	const long m_aiDelay;
-
-	const Common::ICard::RANK m_aceRoundRank;
-
 	long long int m_gameIndex;
-
 	bool m_dirChangeEnabled;
 };
 

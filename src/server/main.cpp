@@ -64,6 +64,7 @@
 #include "game.h"
 #include "sqlite.h"
 #include "logger.h"
+#include "gameconfig.h"
 #include "serverplayer.h"
 #include "serverconnection.h"
 #include "servereventhandler.h"
@@ -564,9 +565,11 @@ int main(int argc, const char **argv) {
 			con.connect(inetd);
 
 			Server::EventHandler evtHdlr(con);
-			Server::Game game(evtHdlr, static_cast<long>(::fabs(aiDelay * 1e06)), dirChange,
-							  aiOpponent, aiNames, static_cast<char>(aceRound ? ::toupper(arRank ?
-									  arRank[0] : 'A') : 0));
+			Server::GameConfig cfg(evtHdlr, static_cast<long>(::fabs(aiDelay * 1e06)),
+								   dirChange, aiOpponent, aiNames,
+								   static_cast<char>(aceRound ? ::toupper(arRank ?
+										   arRank[0] : 'A') : 0));
+			Server::Game game(cfg);
 
 			Server::Connection::CAPABILITIES caps;
 			caps.insert(std::make_pair("SERVER_VERSION", PACKAGE_VERSION));

@@ -26,6 +26,7 @@
 
 #include "engine.h"
 #include "stdplayer.h"
+#include "engineconfig.h"
 #include "testeventhandler.h"
 
 using namespace NetMauMau;
@@ -37,7 +38,8 @@ int main(int, char **) {
 #endif
 
 	TestEventHandler evHdlr;
-	Engine engine(evHdlr, 0L, false, 'A', true);
+	EngineConfig cfg(evHdlr, 0L, false, 'A', true);
+	Engine engine(cfg);
 
 	Player::StdPlayer p1("Cathy");
 	Player::StdPlayer p2("Tarik");

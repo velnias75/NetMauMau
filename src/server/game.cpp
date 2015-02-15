@@ -22,41 +22,26 @@
 #include "game.h"
 #include "logger.h"
 #include "sqlite.h"
+#include "gameconfig.h"
 #include "ieventhandler.h"
-
-namespace {
-
-std::size_t countAI(const std::string *aiNames) {
-
-	std::size_t cnt = 0;
-
-	for(int i = 0; i < 4; ++i) {
-		if(!aiNames[i].empty()) ++cnt;
-	}
-
-	return cnt;
-}
-
-}
 
 using namespace NetMauMau::Server;
 
-Game::Game(NetMauMau::Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange, bool aiPlayer,
-		   const std::string *aiNames, char aceRound) : m_engine(evtHdlr, dirChange, aiDelay,
-					   !aiPlayer || countAI(aiNames) > 1, aceRound), m_aiOpponent(aiPlayer),
-	m_aiPlayers(), m_players(), m_gameIndex(0LL) {
+Game::Game(GameConfig &cfg) throw(NetMauMau::Common::Exception::SocketException)
+	: m_engine(cfg.getEngineConfig()), m_cfg(cfg), m_aiPlayers(), m_players(), m_gameIndex(0LL) {
 
 	m_players.reserve(50);
 
-	if(aiPlayer) {
+	if(cfg.getAIPlayer()) {
 
 		std::size_t aiAdded = 0;
 
 		for(int i = 0; i < 4; ++i) {
 
-			if(!aiNames[i].empty()) {
+			if(!cfg.getAIName()[i].empty()) {
 
-				const std::string &aiSanName(aiNames[i][0] == '+' ? & (aiNames[i][1]) : aiNames[i]);
+				const std::string &aiSanName(cfg.getAIName()[i][0] == '+' ?
+											 & (cfg.getAIName()[i][1]) : cfg.getAIName()[i]);
 
 				if(!aiSanName.empty()) {
 					m_aiPlayers.push_back(new NetMauMau::Player::StdPlayer(aiSanName));
@@ -98,7 +83,7 @@ Game::COLLECT_STATE Game::collectPlayers(std::size_t minPlayers,
 
 		if(m_engine.getPlayerCount() == std::max<std::size_t>(2, minPlayers)) {
 
-			for(std::vector <NetMauMau::Player::StdPlayer * >::const_iterator i(m_aiPlayers.begin());
+			for(std::vector<NetMauMau::Player::StdPlayer *>::const_iterator i(m_aiPlayers.begin());
 					i != m_aiPlayers.end(); ++i) {
 
 				NetMauMau::DB::SQLite::getInstance().addAIPlayer(*i);
@@ -135,7 +120,7 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 
 	const std::size_t minPlayers = m_engine.getPlayerCount();
 
-	if(m_aiOpponent) m_engine.setFirstPlayer(m_players.back());
+	if(m_cfg.getAIPlayer()) m_engine.setFirstPlayer(m_players.back());
 
 	m_engine.distributeCards();
 	m_engine.setUltimate(ultimate);
@@ -145,7 +130,7 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 		if(!m_engine.nextTurn()) break;
 	}
 
-	if(ultimate || m_aiOpponent) m_engine.gameOver();
+	if(ultimate || m_cfg.getAIPlayer()) m_engine.gameOver();
 
 	reset(false);
 }
@@ -156,7 +141,7 @@ void Game::reset(bool playerLost) throw() {
 
 	m_engine.reset();
 
-	if(m_aiOpponent) {
+	if(m_cfg.getAIPlayer()) {
 
 		try {
 

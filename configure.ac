@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.61])
-AC_INIT([NetMauMau], [0.14], [heiko@rangun.de], [netmaumau], [https://github.com/velnias75/NetMauMau])
+AC_INIT([NetMauMau], [0.15], [heiko@rangun.de], [netmaumau], [https://github.com/velnias75/NetMauMau])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
 AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip tar-pax no-installinfo no-texinfo.tex])
 AM_MAINTAINER_MODE
@@ -23,7 +23,6 @@ AC_ARG_ENABLE([ansi], [AS_HELP_STRING([--disable-ansi], [disables ANSI support])
       CPPFLAGS="${CPPFLAGS} -DDISABLE_ANSI"
     fi
   ])
-
 AC_ARG_ENABLE([client], [AS_HELP_STRING([--disable-client], [disables build of client library])],
   [ AM_CONDITIONAL([ENABLE_CLIENT], [ test x$enable_client = xyes ]) ],
   [ AM_CONDITIONAL([ENABLE_CLIENT], [ true ]) ])

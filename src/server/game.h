@@ -17,8 +17,8 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_GAME_H
-#define NETMAUMAU_GAME_H
+#ifndef NETMAUMAU_SERVER_GAME_H
+#define NETMAUMAU_SERVER_GAME_H
 
 #if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
 #include "config.h"
@@ -35,11 +35,9 @@
 
 namespace NetMauMau {
 
-namespace Event {
-class IEventHandler;
-}
-
 namespace Server {
+
+class GameConfig;
 
 class Game {
 	DISALLOW_COPY_AND_ASSIGN(Game)
@@ -47,8 +45,7 @@ public:
 
 	typedef enum { ACCEPTED, REFUSED, ACCEPTED_READY, REFUSED_FULL } COLLECT_STATE;
 
-	Game(Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange, bool aiPlayer = false,
-		 const std::string *aiName = 0L, char aceRound = 0);
+	Game(GameConfig &gameConfig) throw(Common::Exception::SocketException);
 	~Game();
 
 	COLLECT_STATE collectPlayers(std::size_t minPlayers, Player::IPlayer *player);
@@ -67,7 +64,7 @@ private:
 
 private:
 	Engine m_engine;
-	const bool m_aiOpponent;
+	const GameConfig &m_cfg;
 	std::vector<Player::StdPlayer *> m_aiPlayers;
 	std::vector<Player::IPlayer *> m_players;
 	long long int m_gameIndex;
@@ -77,6 +74,6 @@ private:
 
 }
 
-#endif /* NETMAUMAU_GAME_H */
+#endif /* NETMAUMAU_SERVER_GAME_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -63,7 +63,7 @@ public:
 
 	virtual bool isAceRound() const;
 	virtual bool isJackMode() const _PURE;
-	virtual Common::ICard::SUIT getJackSuit() const _PURE;
+	virtual Common::ICard::SUIT getJackSuit() const;
 	virtual void setJackModeOff();
 
 	virtual std::size_t getMaxPlayers() const _CONST;

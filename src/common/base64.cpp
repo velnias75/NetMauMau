@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -59,7 +59,7 @@ std::string NetMauMau::Common::base64_encode(BYTE const *buf, unsigned int bufLe
 			char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
 			char_array_4[3] = char_array_3[2] & 0x3f;
 
-			for(i = 0; (i < 4) ; i++)
+			for(i = 0; (i < 4); i++)
 				ret += base64_chars[char_array_4[i]];
 
 			i = 0;

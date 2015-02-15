@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -27,7 +27,7 @@
 
 using namespace NetMauMau;
 
-Talon::Talon(const ITalonChange *tchg) throw() : m_talonChangeListener(tchg),
+Talon::Talon(const ITalonChange *tchg) throw() : m_allCards(), m_talonChangeListener(tchg),
 	m_cardStack(createCards()), m_uncovered() {
 	m_talonChangeListener->talonEmpty(false);
 }
@@ -75,22 +75,16 @@ Talon::CARDS Talon::createCards() const throw() {
 	cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::KING));
 	cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::ACE));
 
+	m_allCards.reserve(cards.size());
+	m_allCards.assign(cards.begin(), cards.end());
+
 	std::random_shuffle(cards.begin(), cards.end(), Common::genRandom<CARDS::difference_type>);
 
 	return cards;
 }
 
 Talon::~Talon() {
-
-	while(!empty()) {
-		delete top();
-		pop();
-	}
-
-	while(!m_uncovered.empty()) {
-		delete m_uncovered.top();
-		m_uncovered.pop();
-	}
+	for(CARDS::const_iterator i(m_allCards.begin()); i != m_allCards.end(); ++i) delete *i;
 }
 
 Common::ICard *Talon::uncoverCard() {

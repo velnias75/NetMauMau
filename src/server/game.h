@@ -63,8 +63,8 @@ private:
 	void gameReady();
 
 private:
-	Engine m_engine;
 	const GameConfig &m_cfg;
+	Engine m_engine;
 	std::vector<Player::StdPlayer *> m_aiPlayers;
 	std::vector<Player::IPlayer *> m_players;
 	long long int m_gameIndex;

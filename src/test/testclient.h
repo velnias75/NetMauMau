@@ -44,7 +44,7 @@ protected:
 
 	virtual NetMauMau::Common::ICard *playCard(const CARDS &cards, std::size_t takeCount) const;
 	virtual NetMauMau::Common::ICard::SUIT getJackSuitChoice() const;
-	virtual bool getAceRoundChoice() const _CONST;
+	virtual bool getAceRoundChoice() const;
 
 	virtual void playerJoined(const std::string &player, const unsigned char *pngData,
 							  std::size_t pngDataLen) const;
@@ -66,11 +66,11 @@ protected:
 	virtual void talonShuffled() const _CONST;
 	virtual void cardRejected(const std::string &player,
 							  const NetMauMau::Common::ICard *card) const;
-	virtual void cardAccepted(const NetMauMau::Common::ICard *card) const _CONST;
+	virtual void cardAccepted(const NetMauMau::Common::ICard *card) const;
 	virtual void jackSuit(NetMauMau::Common::ICard::SUIT suit) const;
 
-	virtual void aceRoundStarted(const std::string &player) const _CONST;
-	virtual void aceRoundEnded(const std::string &player) const _CONST;
+	virtual void aceRoundStarted(const std::string &player) const;
+	virtual void aceRoundEnded(const std::string &player) const;
 
 private:
 	mutable CARDS m_myCards;

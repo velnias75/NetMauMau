@@ -50,7 +50,7 @@ public:
 	virtual Common::ICard::SUIT getJackChoice(const Common::ICard *uncoveredCard,
 			const Common::ICard *playedCard) const;
 
-	virtual bool getAceRoundChoice() const _PURE;
+	virtual bool getAceRoundChoice() const;
 
 	virtual bool cardAccepted(const Common::ICard *playedCard);
 	virtual void cardPlayed(Common::ICard *playedCard);

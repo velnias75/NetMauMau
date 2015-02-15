@@ -126,25 +126,25 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 			m_dirChangeEnabled = m_players.size() > 2;
 
 			if(player->isAIPlayer()) {
-				m_cfg.getEventHandler().getConnection()->addAIPlayers(std::vector<std::string>(1,
+				getEventHandler().getConnection()->addAIPlayers(std::vector<std::string>(1,
 						player->getName()));
 			}
 
 			player->setRuleSet(m_cfg.getRuleSet(this));
-			m_cfg.getEventHandler().playerAdded(player);
+			getEventHandler().playerAdded(player);
 
 			return true;
 
 		} else if(f != m_players.end()) {
 
-			m_cfg.getEventHandler().playerRejected(player);
-			m_cfg.getEventHandler().getConnection()->removePlayer(player->getSerial());
+			getEventHandler().playerRejected(player);
+			getEventHandler().getConnection()->removePlayer(player->getSerial());
 
 			return false;
 		}
 
 	} else {
-		m_cfg.getEventHandler().playerRejected(player);
+		getEventHandler().playerRejected(player);
 	}
 
 	m_state = m_state != PLAYING ? NOCARDS : m_state;
@@ -189,7 +189,7 @@ bool Engine::distributeCards() throw(Common::Exception::SocketException) {
 			p->receiveCardSet(cards[k]);
 			p->setDirChangeEnabled(m_dirChangeEnabled);
 
-			m_cfg.getEventHandler().cardsDistributed(p, cards[k]);
+			getEventHandler().cardsDistributed(p, cards[k]);
 		}
 
 		m_turn = 1;
@@ -201,7 +201,7 @@ bool Engine::distributeCards() throw(Common::Exception::SocketException) {
 		return true;
 
 	} else {
-		m_cfg.getEventHandler().cardsAlreadyDistributed();
+		getEventHandler().cardsAlreadyDistributed();
 	}
 
 	return false;
@@ -212,25 +212,25 @@ void Engine::setFirstPlayer(Player::IPlayer *p) {
 }
 
 void Engine::message(const std::string &msg) const throw(Common::Exception::SocketException) {
-	m_cfg.getEventHandler().message(msg);
+	getEventHandler().message(msg);
 }
 
 void Engine::error(const std::string &msg) const throw() {
 	try {
-		m_cfg.getEventHandler().error(msg);
+		getEventHandler().error(msg);
 	} catch(const Common::Exception::SocketException &) {}
 }
 
 void Engine::suspends(Player::IPlayer *p, const Common::ICard *uc) const {
 
-	m_cfg.getEventHandler().playerSuspends(p, uc);
+	getEventHandler().playerSuspends(p, uc);
 
-	if(p->isAIPlayer() && m_alwaysWait) m_cfg.getEventHandler().getConnection()->wait(getAIDelay());
+	if(p->isAIPlayer() && m_alwaysWait) getEventHandler().getConnection()->wait(getAIDelay());
 }
 
 bool Engine::nextTurn() {
 
-	if(m_cfg.getEventHandler().shutdown() || m_state != PLAYING) return false;
+	if(getEventHandler().shutdown() || m_state != PLAYING) return false;
 
 	if(getAICount() == 1) {
 		m_alwaysWait  = false;
@@ -247,21 +247,21 @@ bool Engine::nextTurn() {
 
 			DB::SQLite::getInstance().turn(m_gameIndex, m_turn);
 
-			m_cfg.getEventHandler().turn(m_turn);
+			getEventHandler().turn(m_turn);
 
 			if(m_turn == 1) {
 
 				DB::SQLite::getInstance().gamePlayStarted(m_gameIndex);
 
 				Common::ICard *ic = m_talon->uncoverCard();
-				m_cfg.getEventHandler().initialCard(ic);
+				getEventHandler().initialCard(ic);
 				cardPlayed(ic);
 			}
 
 			m_curTurn = m_turn;
 		}
 
-		if(m_cfg.getNextMessage()) m_cfg.getEventHandler().nextPlayer(player);
+		if(m_cfg.getNextMessage()) getEventHandler().nextPlayer(player);
 
 		const Common::ICard *uc = m_talon->getUncoveredCard();
 
@@ -272,11 +272,11 @@ bool Engine::nextTurn() {
 
 			if((uc->getRank() == Common::ICard::EIGHT || (uc->getRank() == Common::ICard::NINE &&
 					m_cfg.getRuleSet(this)->getDirChangeIsSuspend())) && getAICount()) {
-				m_cfg.getEventHandler().getConnection()->wait(getAIDelay());
+				getEventHandler().getConnection()->wait(getAIDelay());
 			}
 		}
 
-		m_cfg.getEventHandler().stats(m_players);
+		getEventHandler().stats(m_players);
 		informAIStat();
 
 		const bool csuspend = m_cfg.getRuleSet(this)->hasToSuspend();
@@ -314,7 +314,7 @@ sevenRule:
 										 m_cfg.getRuleSet(this)->takeCardCount());
 
 				if(player->isAIPlayer() || m_alwaysWait) {
-					m_cfg.getEventHandler().getConnection()->wait(getAIDelay());
+					getEventHandler().getConnection()->wait(getAIDelay());
 				}
 
 				goto sevenRule;
@@ -332,7 +332,7 @@ sevenRule:
 					break;
 				}
 
-				m_cfg.getEventHandler().cardRejected(player, uc, pc);
+				getEventHandler().cardRejected(player, uc, pc);
 
 				const Common::ICard::SUIT js2 = m_cfg.getRuleSet(this)->getJackSuit();
 
@@ -348,7 +348,7 @@ sevenRule:
 					case Player::IPlayer::NOMATCH:
 						player->receiveCard(pc = m_talon->takeCard());
 
-						m_cfg.getEventHandler().playerPicksCard(player, pc);
+						getEventHandler().playerPicksCard(player, pc);
 
 						suspend = true;
 						pc = m_cfg.getRuleSet(this)->suspendIfNoMatchingCard() ||
@@ -370,11 +370,11 @@ sevenRule:
 				won = player->cardAccepted(pc);
 				m_talon->playCard(pc);
 
-				m_cfg.getEventHandler().playerPlaysCard(player, pc, uc);
+				getEventHandler().playerPlaysCard(player, pc, uc);
 
 				if((m_jackMode = m_cfg.getRuleSet(this)->isJackMode())) {
-					m_cfg.getEventHandler().playerChooseJackSuit(player,
-							m_cfg.getRuleSet(this)->getJackSuit());
+					getEventHandler().playerChooseJackSuit(player,
+														   m_cfg.getRuleSet(this)->getJackSuit());
 				}
 
 				if(won) {
@@ -401,24 +401,24 @@ sevenRule:
 							Common::IConnection::NAMESOCKFD(m_players[m_nxtPlayer]->getName(),
 															"", m_players[m_nxtPlayer]->getSerial(),
 															0) :
-							m_cfg.getEventHandler().getConnection()->
+							getEventHandler().getConnection()->
 							getPlayerInfo(m_players[m_nxtPlayer]->getSerial());
 
 						DB::SQLite::getInstance().
 						playerLost(m_gameIndex, nsf, std::time(0L),
-								   m_cfg.getEventHandler().playerLost(m_players[m_nxtPlayer],
-										   m_turn, m_cfg.getRuleSet(this)->lostPointFactor(m_talon->
-												   getUncoveredCard())));
+								   getEventHandler().playerLost(m_players[m_nxtPlayer],
+																m_turn, m_cfg.getRuleSet(this)->lostPointFactor(m_talon->
+																		getUncoveredCard())));
 
 						m_state = FINISHED;
 					}
 
-					m_cfg.getEventHandler().playerWins(player, m_turn, m_ultimate);
+					getEventHandler().playerWins(player, m_turn, m_ultimate);
 
 					const Common::IConnection::NAMESOCKFD nsf = (player->isAIPlayer()) ?
 							Common::IConnection::NAMESOCKFD(player->getName(), "",
 															player->getSerial(), 0) :
-							m_cfg.getEventHandler().getConnection()->
+							getEventHandler().getConnection()->
 							getPlayerInfo(player->getSerial());
 
 					DB::SQLite::getInstance().playerWins(m_gameIndex, nsf);
@@ -427,7 +427,7 @@ sevenRule:
 													(pc->getRank() == Common::ICard::NINE &&
 													 m_cfg.getRuleSet(this)->
 													 getDirChangeIsSuspend())) || m_alwaysWait)) {
-					m_cfg.getEventHandler().getConnection()->wait(getAIDelay());
+					getEventHandler().getConnection()->wait(getAIDelay());
 				}
 			}
 
@@ -452,7 +452,7 @@ sevenRule:
 															   player)));
 				assert(m_nxtPlayer <= m_players.size());
 
-				m_cfg.getEventHandler().directionChange();
+				getEventHandler().directionChange();
 
 			} else if(m_dirChangeEnabled) {
 				setDirChangeIsSuspend(true);
@@ -477,7 +477,7 @@ sevenRule:
 
 		logDebug("SocketException: " << e);
 
-		Common::IConnection *con = m_cfg.getEventHandler().getConnection();
+		Common::IConnection *con = getEventHandler().getConnection();
 		const std::string &pName(con->getPlayerName(e.sockfd()));
 
 		std::vector<std::string> ex(1, pName);
@@ -493,12 +493,12 @@ sevenRule:
 				os << "Lost connection to player \"" << pName << "\"";
 
 				try {
-					m_cfg.getEventHandler().error(os.str(), ex);
+					getEventHandler().error(os.str(), ex);
 				} catch(const Common::Exception::SocketException &) {}
 
 			} else {
 				try {
-					m_cfg.getEventHandler().error("Lost connection to a player", ex);
+					getEventHandler().error("Lost connection to a player", ex);
 				} catch(const Common::Exception::SocketException &) {}
 			}
 
@@ -508,7 +508,7 @@ sevenRule:
 
 				std::ostringstream watcher;
 				watcher << pName << " is no more watching us";
-				m_cfg.getEventHandler().message(watcher.str());
+				getEventHandler().message(watcher.str());
 
 			} catch(const Common::Exception::SocketException &) {}
 		}
@@ -542,7 +542,7 @@ throw(Common::Exception::SocketException) {
 			player->receiveCard(m_talon->takeCard(false));
 		}
 
-		m_cfg.getEventHandler().playerPicksCards(player, cardCount);
+		getEventHandler().playerPicksCards(player, cardCount);
 		m_cfg.getRuleSet(this)->hasTakenCards();
 
 		cardTaken();
@@ -551,12 +551,12 @@ throw(Common::Exception::SocketException) {
 
 void Engine::uncoveredCard(const Common::ICard *top) const
 throw(Common::Exception::SocketException) {
-	m_cfg.getEventHandler().uncoveredCard(top);
+	getEventHandler().uncoveredCard(top);
 }
 
 void Engine::talonEmpty(bool empty) const throw() {
 	try {
-		m_cfg.getEventHandler().talonEmpty(empty);
+		getEventHandler().talonEmpty(empty);
 	} catch(const Common::Exception::SocketException &e) {
 		logDebug(__PRETTY_FUNCTION__ << ": failed to handle event \'talonEmpty\': " << e.what());
 	}
@@ -569,7 +569,7 @@ void Engine::cardPlayed(Common::ICard *card) const {
 }
 
 void Engine::cardTaken(const Common::ICard *) const throw(Common::Exception::SocketException) {
-	m_cfg.getEventHandler().stats(m_players);
+	getEventHandler().stats(m_players);
 	informAIStat();
 }
 
@@ -623,12 +623,12 @@ std::size_t Engine::getAICount() const {
 }
 
 void Engine::gameAboutToStart() const {
-	m_cfg.getEventHandler().gameAboutToStart();
+	getEventHandler().gameAboutToStart();
 }
 
 void Engine::gameOver() const throw() {
 	try {
-		m_cfg.getEventHandler().gameOver();
+		getEventHandler().gameOver();
 	} catch(const Common::Exception::SocketException &e) {
 		logDebug(__PRETTY_FUNCTION__ << ": failed to handle event \'gameOver\': " << e.what());
 	}
@@ -641,7 +641,7 @@ void Engine::checkPlayersAlive() const throw(Common::Exception::SocketException)
 }
 
 long Engine::getAIDelay() const {
-	return (!m_cfg.getEventHandler().getConnection()->hasHumanPlayers()) ? 0L : m_cfg.getAIDelay();
+	return (!getEventHandler().getConnection()->hasHumanPlayers()) ? 0L : m_cfg.getAIDelay();
 }
 
 void Engine::reset() throw() {

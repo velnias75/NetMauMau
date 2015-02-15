@@ -123,11 +123,7 @@ StdPlayer::StdPlayer(const std::string &name) : m_name(name), m_cards(), m_cards
 	m_cards.reserve(32);
 }
 
-StdPlayer::~StdPlayer() {
-	for(CARDS::const_iterator i(m_cards.begin()); i != m_cards.end(); ++i) {
-		delete *i;
-	}
-}
+StdPlayer::~StdPlayer() {}
 
 void StdPlayer::reset() throw() {
 	m_powerSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;

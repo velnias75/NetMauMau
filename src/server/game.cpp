@@ -28,7 +28,7 @@
 using namespace NetMauMau::Server;
 
 Game::Game(GameConfig &cfg) throw(NetMauMau::Common::Exception::SocketException)
-	: m_engine(cfg.getEngineConfig()), m_cfg(cfg), m_aiPlayers(), m_players(), m_gameIndex(0LL) {
+	: m_cfg(cfg), m_engine(cfg.getEngineConfig()), m_aiPlayers(), m_players(), m_gameIndex(0LL) {
 
 	m_players.reserve(50);
 

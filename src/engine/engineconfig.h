@@ -40,9 +40,7 @@ public:
 	EngineConfig(const EngineConfig &);
 	EngineConfig(Event::IEventHandler &eventHandler, bool dirChange, long aiDelay = 1000L,
 				 bool nextMessage = true, char aceRound = 0);
-	EngineConfig(Event::IEventHandler &eventHandler, long aiDelay, RuleSet::IRuleSet *ruleset,
-				 bool nextMessage = true);
-	~EngineConfig() _CONST;
+	~EngineConfig();
 
 	Event::IEventHandler &getEventHandler() const _PURE;
 	bool getDirChange() const _PURE;
@@ -60,7 +58,6 @@ private:
 	bool m_nextMessage;
 	const Common::ICard::RANK m_aceRoundRank;
 	mutable RuleSet::IRuleSet *m_ruleset;
-	const bool m_delRuleSet;
 	const char m_aceRound;
 };
 

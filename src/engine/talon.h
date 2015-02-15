@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -37,7 +37,6 @@ class ICard;
 class Talon {
 	DISALLOW_COPY_AND_ASSIGN(Talon)
 public:
-
 	Talon(const ITalonChange *tchg) throw();
 	~Talon();
 
@@ -68,6 +67,7 @@ private:
 	CARDS createCards() const throw();
 
 private:
+	mutable CARDS m_allCards;
 	const ITalonChange *m_talonChangeListener;
 	std::stack<Common::ICard *, CARDS> m_cardStack;
 	std::stack<Common::ICard *, CARDS> m_uncovered;

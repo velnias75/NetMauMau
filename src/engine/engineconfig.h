@@ -39,7 +39,8 @@ class EngineConfig {
 public:
 	EngineConfig(const EngineConfig &);
 	EngineConfig(Event::IEventHandler &eventHandler, bool dirChange, long aiDelay = 1000L,
-				 bool nextMessage = true, char aceRound = 0, std::size_t factor = 1);
+				 bool nextMessage = true, char aceRound = 0, std::size_t factor = 1,
+				 std::size_t initialCardCount = 5);
 	~EngineConfig();
 
 	Event::IEventHandler &getEventHandler() const _PURE;
@@ -61,6 +62,7 @@ private:
 	mutable RuleSet::IRuleSet *m_ruleset;
 	const char m_aceRound;
 	const std::size_t m_talonFactor;
+	const std::size_t m_initialCardCount;
 };
 
 }

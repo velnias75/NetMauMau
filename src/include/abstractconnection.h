@@ -56,6 +56,7 @@ public:
 	 * CUR_PLAYERS    | amount of current players joined
 	 * DIRCHANGE      | `true` if direction changes are allowed, `false` otherwise
 	 * HAVE_SCORES    | `true` if the server can provide scores, `false` otherwise
+	 * INITIAL_CARDS  | if played with an amount of initial cards not equal to 5 contains the number of cards
 	 * MAX_PLAYERS    | amount of players needed to start the game
 	 * MIN_VERSION    | minimum version of client that can connect
 	 * SERVER_VERSION | version of the server

@@ -31,7 +31,8 @@ namespace RuleSet {
 class StdRuleSet : public IRuleSet {
 	DISALLOW_COPY_AND_ASSIGN(StdRuleSet)
 public:
-	StdRuleSet(bool dirChangePossible, const IAceRoundListener *l = 0L);
+	StdRuleSet(bool dirChangePossible, std::size_t initialCardCount = 5,
+			   const IAceRoundListener *l = 0L);
 	virtual ~StdRuleSet();
 
 	virtual void checkInitial(const Player::IPlayer *player, const Common::ICard *playedCard);
@@ -45,7 +46,7 @@ public:
 	virtual bool hasToSuspend() const _PURE;
 	virtual void hasSuspended();
 
-	virtual std::size_t initialCardCount() const _CONST;
+	virtual std::size_t initialCardCount() const _PURE;
 	virtual bool suspendIfNoMatchingCard() const _CONST;
 	virtual bool takeIfLost() const _CONST;
 
@@ -87,6 +88,7 @@ private:
 	bool m_dirChange;
 	bool m_dirChangeIsSuspend;
 	bool m_dirChangePossible;
+	const std::size_t m_initialCardCount;
 };
 
 }

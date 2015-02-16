@@ -24,17 +24,18 @@
 using namespace NetMauMau;
 
 EngineConfig::EngineConfig(Event::IEventHandler &eventHandler, bool dirChange, long aiDelay,
-						   bool nextMessage, char aceRound, std::size_t factor)
-	: m_eventHandler(eventHandler), m_dirChange(dirChange), m_aiDelay(aiDelay),
-	  m_nextMessage(nextMessage), m_aceRoundRank(aceRound == 'A' ? Common::ICard::ACE :
-			  (aceRound == 'Q' ? Common::ICard::QUEEN : (aceRound == 'K' ? Common::ICard::KING :
-					  Common::ICard::RANK_ILLEGAL))), m_ruleset(0L), m_aceRound(aceRound),
-	  m_talonFactor(factor) {}
+						   bool nextMessage, char aceRound, std::size_t factor,
+						   std::size_t initialCardCount) : m_eventHandler(eventHandler),
+	m_dirChange(dirChange), m_aiDelay(aiDelay), m_nextMessage(nextMessage),
+	m_aceRoundRank(aceRound == 'A' ? Common::ICard::ACE : (aceRound == 'Q' ? Common::ICard::QUEEN :
+				   (aceRound == 'K' ? Common::ICard::KING : Common::ICard::RANK_ILLEGAL))),
+	m_ruleset(0L), m_aceRound(aceRound), m_talonFactor(factor),
+	m_initialCardCount(initialCardCount) {}
 
 EngineConfig::EngineConfig(const EngineConfig &o) : m_eventHandler(o.m_eventHandler),
 	m_dirChange(o.m_dirChange), m_aiDelay(o.m_aiDelay), m_nextMessage(o.m_nextMessage),
 	m_aceRoundRank(o.m_aceRoundRank), m_ruleset(o.m_ruleset), m_aceRound(o.m_aceRound),
-	m_talonFactor(o.m_talonFactor) {}
+	m_talonFactor(o.m_talonFactor), m_initialCardCount(o.m_initialCardCount) {}
 
 EngineConfig::~EngineConfig() {
 	delete m_ruleset;
@@ -62,7 +63,7 @@ void EngineConfig::setNextMessage(bool b) {
 
 RuleSet::IRuleSet *EngineConfig::getRuleSet(const NetMauMau::IAceRoundListener *arl) const {
 	return m_ruleset ? m_ruleset : (m_ruleset = new RuleSet::StdRuleSet(m_dirChange,
-			m_aceRound ? arl : 0L));
+			m_initialCardCount, m_aceRound ? arl : 0L));
 }
 
 char EngineConfig::getAceRound() const {

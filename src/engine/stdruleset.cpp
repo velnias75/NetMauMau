@@ -28,11 +28,12 @@
 
 using namespace NetMauMau::RuleSet;
 
-StdRuleSet::StdRuleSet(bool dirChangePossible, const NetMauMau::IAceRoundListener *l) : IRuleSet(),
-	m_hasToSuspend(false), m_hasSuspended(false), m_takeCardCount(0), m_jackMode(false),
+StdRuleSet::StdRuleSet(bool dirChangePossible, std::size_t icc,
+					   const NetMauMau::IAceRoundListener *l) : IRuleSet(), m_hasToSuspend(false),
+	m_hasSuspended(false), m_takeCardCount(0), m_jackMode(false),
 	m_jackSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL), m_aceRound(l), m_aceRoundPlayer(0L),
 	m_arl(l), m_curPlayers(0), m_dirChange(false), m_dirChangeIsSuspend(false),
-	m_dirChangePossible(dirChangePossible) {}
+	m_dirChangePossible(dirChangePossible), m_initialCardCount(icc) {}
 
 StdRuleSet::~StdRuleSet() {}
 
@@ -129,7 +130,7 @@ void StdRuleSet::hasTakenCards() {
 }
 
 std::size_t StdRuleSet::initialCardCount() const {
-	return 5;
+	return m_initialCardCount;
 }
 
 bool StdRuleSet::suspendIfNoMatchingCard() const {

@@ -80,6 +80,7 @@
 namespace {
 
 int decks = 1;
+int initialCardCount = 5;
 bool dirChange = false;
 bool aceRound = false;
 bool ultimate = false;
@@ -120,6 +121,10 @@ poptOption poptOptions[] = {
 	{
 		"decks", 0, POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &decks,
 		0, "Amount of card decks to use", "AMOUNT"
+	},
+	{
+		"initial-card-count", 'c', POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &initialCardCount,
+		0, "Amount of cards each player gets at game start", "AMOUNT"
 	},
 	{
 		"ai-name", 'A', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &aiName, 'A',
@@ -570,12 +575,14 @@ int main(int argc, const char **argv) {
 			con.connect(inetd);
 
 			decks = std::max(1, std::abs(decks));
+			initialCardCount = std::max(2, std::abs(initialCardCount));
 
 			Server::EventHandler evtHdlr(con);
 			Server::GameConfig cfg(evtHdlr, static_cast<long>(::fabs(aiDelay * 1e06)),
 								   dirChange, aiOpponent, aiNames,
 								   static_cast<char>(aceRound ? ::toupper(arRank ?
-										   arRank[0] : 'A') : 0), static_cast<std::size_t>(decks));
+										   arRank[0] : 'A') : 0), static_cast<std::size_t>(decks),
+								   static_cast<std::size_t>(initialCardCount));
 			Server::Game game(cfg);
 
 			Server::Connection::CAPABILITIES caps;
@@ -593,6 +600,12 @@ int main(int argc, const char **argv) {
 				char cc[20];
 				std::snprintf(cc, 19, "%d", 32 * decks);
 				caps.insert(std::make_pair("TALON", cc));
+			}
+
+			if(initialCardCount != 5) {
+				char cc[20];
+				std::snprintf(cc, 19, "%d", initialCardCount);
+				caps.insert(std::make_pair("INITIAL_CARDS", cc));
 			}
 
 			if(aiOpponent) caps.insert(std::make_pair("AI_NAME", aiNames[0]));

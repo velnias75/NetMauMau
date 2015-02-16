@@ -40,6 +40,7 @@ public:
 	virtual bool isAlive() const _CONST;
 
 	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset);
+	virtual void setEngineConfig(const EngineConfig *engineCfg);
 
 	virtual void receiveCard(Common::ICard *card);
 	virtual void receiveCardSet(const CARDS &cards);
@@ -137,6 +138,7 @@ private:
 	std::size_t m_rightCount;
 	bool m_dirChgEnabled;
 	std::size_t m_playerCount;
+	const EngineConfig *m_engineCfg;
 
 	static bool m_jackPlayed;
 };

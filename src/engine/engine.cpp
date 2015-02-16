@@ -80,10 +80,10 @@ const GSLRNG<std::ptrdiff_t> RNG;
 using namespace NetMauMau;
 
 Engine::Engine(EngineConfig &cfg) throw(Common::Exception::SocketException)
-	: m_cfg(cfg), m_state(ACCEPT_PLAYERS), m_talon(new Talon(this)), m_players(), m_nxtPlayer(0),
-	  m_turn(1), m_curTurn(0), m_jackMode(false), m_initialChecked(false), m_ultimate(false),
-	  m_initialJack(false), m_alwaysWait(false), m_initialNextMessage(cfg.getNextMessage()),
-	  m_gameIndex(0LL), m_dirChangeEnabled(false) {
+	: m_cfg(cfg), m_state(ACCEPT_PLAYERS), m_talon(new Talon(this, cfg.getTalonFactor())),
+	  m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_jackMode(false),
+	  m_initialChecked(false), m_ultimate(false), m_initialJack(false), m_alwaysWait(false),
+	  m_initialNextMessage(cfg.getNextMessage()), m_gameIndex(0LL), m_dirChangeEnabled(false) {
 	m_players.reserve(5);
 	cfg.getEventHandler().acceptingPlayers();
 }
@@ -131,6 +131,8 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 			}
 
 			player->setRuleSet(m_cfg.getRuleSet(this));
+			player->setEngineConfig(&m_cfg);
+
 			getEventHandler().playerAdded(player);
 
 			return true;

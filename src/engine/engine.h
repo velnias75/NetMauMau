@@ -29,7 +29,6 @@
 namespace NetMauMau {
 
 class EngineConfig;
-
 class Talon;
 
 namespace Event {
@@ -51,6 +50,10 @@ public:
 	Engine(EngineConfig &config) throw(Common::Exception::SocketException);
 
 	virtual ~Engine();
+
+	inline const EngineConfig &getConfig() const {
+		return m_cfg;
+	}
 
 	const Event::IEventHandler &getEventHandler() const _PURE;
 

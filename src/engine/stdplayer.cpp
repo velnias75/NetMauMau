@@ -26,6 +26,7 @@
 #include "iruleset.h"
 #include "cardtools.h"
 #include "random_gen.h"
+#include "engineconfig.h"
 #include "stdcardfactory.h"
 #include "socketexception.h"
 
@@ -119,7 +120,7 @@ bool StdPlayer::_hasRankPath::operator()(const NetMauMau::Common::ICard *c) cons
 StdPlayer::StdPlayer(const std::string &name) : m_name(name), m_cards(), m_cardsTaken(false),
 	m_ruleset(0), m_playerHasFewCards(false), m_powerSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL),
 	m_powerPlay(false), m_tryAceRound(false), m_nineIsEight(false), m_leftCount(0), m_rightCount(0),
-	m_dirChgEnabled(false), m_playerCount(0) {
+	m_dirChgEnabled(false), m_playerCount(0), m_engineCfg(0L) {
 	m_cards.reserve(32);
 }
 
@@ -157,6 +158,10 @@ bool StdPlayer::isAlive() const {
 
 void StdPlayer::setRuleSet(const NetMauMau::RuleSet::IRuleSet *ruleset) {
 	m_ruleset = ruleset;
+}
+
+void StdPlayer::setEngineConfig(const NetMauMau::EngineConfig *engineCfg) {
+	m_engineCfg = engineCfg;
 }
 
 const NetMauMau::RuleSet::IRuleSet *StdPlayer::getRuleSet() const {
@@ -320,7 +325,8 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 													std::bind2nd(playedOutRank(),
 															NetMauMau::Common::ICard::SEVEN));
 
-			if(f && (m_powerPlay || mySevens + poSevens > 2)) bestCard = f;
+			if(f && (m_powerPlay || mySevens + poSevens > static_cast<CARDS::difference_type>(2 *
+					 (m_engineCfg ? m_engineCfg->getTalonFactor() : 1)))) bestCard = f;
 
 			m_powerPlay = false;
 		}

@@ -37,9 +37,9 @@ std::size_t countAI(const std::string *aiNames) {
 using namespace NetMauMau::Server;
 
 GameConfig::GameConfig(NetMauMau::Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange,
-					   bool aiPlayer, const std::string *aiName, char aceRound)
+					   bool aiPlayer, const std::string *aiName, char aceRound, std::size_t factor)
 	: m_aiPlayer(aiPlayer), m_aiName(aiName), m_engineCfg(evtHdlr, dirChange, aiDelay,
-			!aiPlayer || countAI(aiName) > 1, aceRound) {}
+			!aiPlayer || countAI(aiName) > 1, aceRound, factor) {}
 
 GameConfig::GameConfig(const GameConfig &o) : m_aiPlayer(o.m_aiPlayer), m_aiName(o.m_aiName),
 	m_engineCfg(o.m_engineCfg) {}

@@ -39,7 +39,7 @@ class EngineConfig {
 public:
 	EngineConfig(const EngineConfig &);
 	EngineConfig(Event::IEventHandler &eventHandler, bool dirChange, long aiDelay = 1000L,
-				 bool nextMessage = true, char aceRound = 0);
+				 bool nextMessage = true, char aceRound = 0, std::size_t factor = 1);
 	~EngineConfig();
 
 	Event::IEventHandler &getEventHandler() const _PURE;
@@ -50,6 +50,7 @@ public:
 	char getAceRound() const _PURE;
 	Common::ICard::RANK getAceRoundRank() const _PURE;
 	RuleSet::IRuleSet *getRuleSet(const NetMauMau::IAceRoundListener *arl = 0L) const;
+	std::size_t getTalonFactor() const _PURE;
 
 private:
 	Event::IEventHandler &m_eventHandler;
@@ -59,6 +60,7 @@ private:
 	const Common::ICard::RANK m_aceRoundRank;
 	mutable RuleSet::IRuleSet *m_ruleset;
 	const char m_aceRound;
+	const std::size_t m_talonFactor;
 };
 
 }

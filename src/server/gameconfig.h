@@ -37,7 +37,7 @@ class GameConfig {
 public:
 	GameConfig(const GameConfig &);
 	GameConfig(Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange, bool aiPlayer = false,
-			   const std::string *aiName = 0L, char aceRound = 0);
+			   const std::string *aiName = 0L, char aceRound = 0, std::size_t factor = 1);
 	~GameConfig();
 
 	bool getAIPlayer() const _PURE;

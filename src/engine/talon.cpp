@@ -27,53 +27,55 @@
 
 using namespace NetMauMau;
 
-Talon::Talon(const ITalonChange *tchg) throw() : m_allCards(), m_talonChangeListener(tchg),
-	m_cardStack(createCards()), m_uncovered() {
+Talon::Talon(const ITalonChange *tchg, std::size_t factor) throw() : m_allCards(),
+	m_talonChangeListener(tchg), m_cardStack(createCards(factor)), m_uncovered() {
 	m_talonChangeListener->talonEmpty(false);
 }
 
-Talon::CARDS Talon::createCards() const throw() {
+Talon::CARDS Talon::createCards(std::size_t factor) const throw() {
 
 	StdCardFactory cardFactory;
 
 	Talon::CARDS cards;
-	cards.reserve(32);
+	cards.reserve(32 * factor);
 
-	cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::SEVEN));
-	cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::EIGHT));
-	cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::NINE));
-	cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::TEN));
-	cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::JACK));
-	cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::QUEEN));
-	cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::KING));
-	cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::ACE));
+	for(std::size_t i = 0; i < factor; ++i) {
+		cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::SEVEN));
+		cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::EIGHT));
+		cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::NINE));
+		cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::TEN));
+		cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::JACK));
+		cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::QUEEN));
+		cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::KING));
+		cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::ACE));
 
-	cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::SEVEN));
-	cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::EIGHT));
-	cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::NINE));
-	cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::TEN));
-	cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::JACK));
-	cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::QUEEN));
-	cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::KING));
-	cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::ACE));
+		cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::SEVEN));
+		cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::EIGHT));
+		cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::NINE));
+		cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::TEN));
+		cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::JACK));
+		cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::QUEEN));
+		cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::KING));
+		cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::ACE));
 
-	cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::SEVEN));
-	cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::EIGHT));
-	cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::NINE));
-	cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::TEN));
-	cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::JACK));
-	cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::QUEEN));
-	cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::KING));
-	cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::ACE));
+		cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::SEVEN));
+		cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::EIGHT));
+		cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::NINE));
+		cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::TEN));
+		cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::JACK));
+		cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::QUEEN));
+		cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::KING));
+		cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::ACE));
 
-	cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::SEVEN));
-	cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::EIGHT));
-	cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::NINE));
-	cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::TEN));
-	cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::JACK));
-	cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::QUEEN));
-	cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::KING));
-	cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::ACE));
+		cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::SEVEN));
+		cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::EIGHT));
+		cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::NINE));
+		cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::TEN));
+		cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::JACK));
+		cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::QUEEN));
+		cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::KING));
+		cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::ACE));
+	}
 
 	m_allCards.reserve(cards.size());
 	m_allCards.assign(cards.begin(), cards.end());

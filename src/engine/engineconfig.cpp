@@ -24,15 +24,17 @@
 using namespace NetMauMau;
 
 EngineConfig::EngineConfig(Event::IEventHandler &eventHandler, bool dirChange, long aiDelay,
-						   bool nextMessage, char aceRound) : m_eventHandler(eventHandler),
-	m_dirChange(dirChange), m_aiDelay(aiDelay), m_nextMessage(nextMessage),
-	m_aceRoundRank(aceRound == 'A' ? Common::ICard::ACE : (aceRound == 'Q' ? Common::ICard::QUEEN :
-				   (aceRound == 'K' ? Common::ICard::KING : Common::ICard::RANK_ILLEGAL))),
-	m_ruleset(0L), m_aceRound(aceRound) {}
+						   bool nextMessage, char aceRound, std::size_t factor)
+	: m_eventHandler(eventHandler), m_dirChange(dirChange), m_aiDelay(aiDelay),
+	  m_nextMessage(nextMessage), m_aceRoundRank(aceRound == 'A' ? Common::ICard::ACE :
+			  (aceRound == 'Q' ? Common::ICard::QUEEN : (aceRound == 'K' ? Common::ICard::KING :
+					  Common::ICard::RANK_ILLEGAL))), m_ruleset(0L), m_aceRound(aceRound),
+	  m_talonFactor(factor) {}
 
 EngineConfig::EngineConfig(const EngineConfig &o) : m_eventHandler(o.m_eventHandler),
 	m_dirChange(o.m_dirChange), m_aiDelay(o.m_aiDelay), m_nextMessage(o.m_nextMessage),
-	m_aceRoundRank(o.m_aceRoundRank), m_ruleset(o.m_ruleset), m_aceRound(o.m_aceRound) {}
+	m_aceRoundRank(o.m_aceRoundRank), m_ruleset(o.m_ruleset), m_aceRound(o.m_aceRound),
+	m_talonFactor(o.m_talonFactor) {}
 
 EngineConfig::~EngineConfig() {
 	delete m_ruleset;
@@ -69,6 +71,10 @@ char EngineConfig::getAceRound() const {
 
 Common::ICard::RANK EngineConfig::getAceRoundRank() const {
 	return m_aceRoundRank;
+}
+
+std::size_t EngineConfig::getTalonFactor() const {
+	return m_talonFactor;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -59,6 +59,7 @@ public:
 	 * MAX_PLAYERS    | amount of players needed to start the game
 	 * MIN_VERSION    | minimum version of client that can connect
 	 * SERVER_VERSION | version of the server
+	 * TALON          | if played with more than 1 card deck contains the number of cards
 	 * ULTIMATE       | `true` if running in ultimate mode, `false` otherwise
 	 *
 	 */

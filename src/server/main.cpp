@@ -79,6 +79,7 @@
 
 namespace {
 
+int decks = 1;
 bool dirChange = false;
 bool aceRound = false;
 bool ultimate = false;
@@ -115,6 +116,10 @@ poptOption poptOptions[] = {
 		"ace-round", 'a', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT | POPT_ARGFLAG_OPTIONAL,
 		&arRank, 'a', "Enable ace rounds (requires all clients to be at least of version 0.7)",
 		"ACE|QUEEN|KING"
+	},
+	{
+		"decks", 0, POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &decks,
+		0, "Amount of card decks to use", "AMOUNT"
 	},
 	{
 		"ai-name", 'A', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &aiName, 'A',
@@ -564,11 +569,13 @@ int main(int argc, const char **argv) {
 
 			con.connect(inetd);
 
+			decks = std::max(1, std::abs(decks));
+
 			Server::EventHandler evtHdlr(con);
 			Server::GameConfig cfg(evtHdlr, static_cast<long>(::fabs(aiDelay * 1e06)),
 								   dirChange, aiOpponent, aiNames,
 								   static_cast<char>(aceRound ? ::toupper(arRank ?
-										   arRank[0] : 'A') : 0));
+										   arRank[0] : 'A') : 0), static_cast<std::size_t>(decks));
 			Server::Game game(cfg);
 
 			Server::Connection::CAPABILITIES caps;
@@ -581,6 +588,12 @@ int main(int argc, const char **argv) {
 									   DB::SQLite::getInstance().getDBFilename().empty() ? "false"
 									   : "true"));
 			caps.insert(std::make_pair("DIRCHANGE", dirChange ? "true" : "false"));
+
+			if(decks > 1) {
+				char cc[20];
+				std::snprintf(cc, 19, "%d", 32 * decks);
+				caps.insert(std::make_pair("TALON", cc));
+			}
 
 			if(aiOpponent) caps.insert(std::make_pair("AI_NAME", aiNames[0]));
 

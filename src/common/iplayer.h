@@ -26,6 +26,8 @@
 
 namespace NetMauMau {
 
+class EngineConfig;
+
 namespace RuleSet {
 class IRuleSet;
 }
@@ -46,6 +48,7 @@ public:
 	virtual bool isAlive() const = 0;
 
 	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset) = 0;
+	virtual void setEngineConfig(const EngineConfig *engineCfg) = 0;
 
 	virtual void receiveCard(Common::ICard *card) = 0;
 	virtual void receiveCardSet(const CARDS &cards) = 0;

@@ -238,7 +238,8 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 
 	NetMauMau::Common::ICard *bestCard = 0L;
 
-	if(uc->getRank() == NetMauMau::Common::ICard::SEVEN) {
+	if(m_playedOutCards.size() > (4 * getTalonFactor()) &&
+			uc->getRank() == NetMauMau::Common::ICard::SEVEN) {
 
 		const CARDS::iterator &e(js ? std::partition(myCards.begin(), myCards.end(),
 								 std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit), *js)) :
@@ -326,7 +327,7 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 															NetMauMau::Common::ICard::SEVEN));
 
 			if(f && (m_powerPlay || mySevens + poSevens > static_cast<CARDS::difference_type>(2 *
-					 (m_engineCfg ? m_engineCfg->getTalonFactor() : 1)))) bestCard = f;
+					 getTalonFactor()))) bestCard = f;
 
 			m_powerPlay = false;
 		}
@@ -368,11 +369,11 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 					const CARDS::value_type f = NetMauMau::Common::findRank(uc->getRank(),
 												myCards.begin(), e);
 
-					if(f) {
+					if(f && (f->getRank() != NetMauMau::Common::ICard::SEVEN ||
+							 m_playedOutCards.size() > (4 * getTalonFactor()))) {
 						bestCard = f;
 						break;
 					}
-
 				}
 			}
 
@@ -613,6 +614,10 @@ void StdPlayer::setNeighbourCardCount(std::size_t playerCount, std::size_t leftC
 
 void StdPlayer::setDirChangeEnabled(bool dirChangeEnabled) {
 	m_dirChgEnabled = dirChangeEnabled;
+}
+
+std::size_t StdPlayer::getTalonFactor() const {
+	return m_engineCfg ? m_engineCfg->getTalonFactor() : 1;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

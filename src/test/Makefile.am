@@ -1,4 +1,5 @@
 check_PROGRAMS = test_netmaumau
+noinst_SCRIPTS = stresstest.sh
 
 if ENABLE_CLI_CLIENT
 bin_PROGRAMS = nmm-client
@@ -10,9 +11,10 @@ else
 GSL=
 endif
 
-EXTRA_DIST = testimg.png
+EXTRA_DIST = testimg.png stresstest.sh.in
 
 MAINTAINERCLEANFILES = testimg.h
+DISTCLEANFILES = stresstest.sh
 
 BUILT_SOURCES = testimg.h
 
@@ -41,3 +43,9 @@ endif
 .DELETE_ON_ERROR:
 testimg.h: testimg.png
 	$(SHELL) $(top_srcdir)/src/images/create_ai_icon.sh 'test_client_img' $< > $@
+	
+stresstest.sh: $(top_srcdir)/src/test/stresstest.sh.in
+	$(AM_V_GEN)$(SED) \
+		-e 's|@SHELL[@]|$(SHELL)|g' \
+		-e 's|@check_PROGRAMS[@]|$(abs_builddir)/$(check_PROGRAMS)|g' < $< > $@
+	chmod u+x $@

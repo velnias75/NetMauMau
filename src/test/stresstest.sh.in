@@ -1,0 +1,44 @@
+#!@SHELL@
+# 
+# Copyright 2015 by Heiko Schäfer <heiko@rangun.de>
+#
+# This file is part of NetMauMau.
+#
+# NetMauMau is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of
+# the License, or (at your option) any later version.
+#
+# NetMauMau is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+let seed=0
+
+if [ -n $1 ]; then
+  let seed=$1
+fi
+
+export GSL_RNG_TYPE=ranlxs2
+export GSL_RNG_SEED=$seed
+
+terminate() {
+  echo
+  echo "Seed: "$seed ;
+  exit 0
+}
+
+trap terminate SIGINT SIGTERM
+
+while(@check_PROGRAMS@); do
+  let seed=seed+1 ;
+  export GSL_RNG_SEED=$seed ;
+done
+
+echo
+echo "Seed: "$seed ;

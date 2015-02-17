@@ -114,6 +114,8 @@ void AbstractConnection::addAIPlayers(const std::vector<std::string> &aiPlayers)
 #pragma GCC diagnostic push
 void AbstractConnection::wait(long ms) throw(Exception::SocketException) {
 
+	if(ms == 0L) return;
+
 	fd_set rfds;
 	int sret = 1;
 	timeval tv = { ms / 0xF4240L, ms % 0xF4240L };

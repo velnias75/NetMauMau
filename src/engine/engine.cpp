@@ -83,7 +83,8 @@ Engine::Engine(EngineConfig &cfg) throw(Common::Exception::SocketException)
 	: m_cfg(cfg), m_state(ACCEPT_PLAYERS), m_talon(new Talon(this, cfg.getTalonFactor())),
 	  m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_jackMode(false),
 	  m_initialChecked(false), m_ultimate(false), m_initialJack(false), m_alwaysWait(false),
-	  m_initialNextMessage(cfg.getNextMessage()), m_gameIndex(0LL), m_dirChangeEnabled(false) {
+	  m_alreadyWaited(false), m_initialNextMessage(cfg.getNextMessage()), m_gameIndex(0LL),
+	  m_dirChangeEnabled(false) {
 	m_players.reserve(5);
 	cfg.getEventHandler().acceptingPlayers();
 }
@@ -224,18 +225,17 @@ void Engine::error(const std::string &msg) const throw() {
 }
 
 void Engine::suspends(Player::IPlayer *p, const Common::ICard *uc) const {
-
 	getEventHandler().playerSuspends(p, uc);
-
-	if(p->isAIPlayer() && m_alwaysWait) getEventHandler().getConnection()->wait(getAIDelay());
 }
 
 bool Engine::nextTurn() {
 
+	m_alreadyWaited = false;
+
 	if(getEventHandler().shutdown() || m_state != PLAYING) return false;
 
 	if(getAICount() == 1) {
-		m_alwaysWait  = false;
+		m_alwaysWait = false;
 		m_cfg.setNextMessage(false);
 	}
 
@@ -271,11 +271,6 @@ bool Engine::nextTurn() {
 			m_cfg.getRuleSet(this)->checkInitial(player, uc);
 			m_initialJack = m_cfg.getRuleSet(this)->isJackMode();
 			m_initialChecked = true;
-
-			if((uc->getRank() == Common::ICard::EIGHT || (uc->getRank() == Common::ICard::NINE &&
-					m_cfg.getRuleSet(this)->getDirChangeIsSuspend())) && getAICount()) {
-				getEventHandler().getConnection()->wait(getAIDelay());
-			}
 		}
 
 		getEventHandler().stats(m_players);
@@ -312,12 +307,9 @@ sevenRule:
 				}
 
 			} else if(pc->getSuit() == Common::ICard::SUIT_ILLEGAL) {
+
 				pc = player->requestCard(uc, m_jackMode ? &js : 0L,
 										 m_cfg.getRuleSet(this)->takeCardCount());
-
-				if(player->isAIPlayer() || m_alwaysWait) {
-					getEventHandler().getConnection()->wait(getAIDelay());
-				}
 
 				goto sevenRule;
 			}
@@ -408,8 +400,9 @@ sevenRule:
 
 						DB::SQLite::getInstance().
 						playerLost(m_gameIndex, nsf, std::time(0L),
-								   getEventHandler().playerLost(m_players[m_nxtPlayer],
-																m_turn, m_cfg.getRuleSet(this)->lostPointFactor(m_talon->
+								   getEventHandler().playerLost(m_players[m_nxtPlayer], m_turn,
+																m_cfg.getRuleSet(this)->
+																lostPointFactor(m_talon->
 																		getUncoveredCard())));
 
 						m_state = FINISHED;
@@ -425,15 +418,17 @@ sevenRule:
 
 					DB::SQLite::getInstance().playerWins(m_gameIndex, nsf);
 
-				} else if(player->isAIPlayer() && ((pc->getRank() == Common::ICard::EIGHT ||
-													(pc->getRank() == Common::ICard::NINE &&
-													 m_cfg.getRuleSet(this)->
-													 getDirChangeIsSuspend())) || m_alwaysWait)) {
+				} else if(wait(player, true) && (pc->getRank() == Common::ICard::EIGHT ||
+												 (pc->getRank() == Common::ICard::NINE &&
+												  m_cfg.getRuleSet(this)->
+												  getDirChangeIsSuspend()))) {
 					getEventHandler().getConnection()->wait(getAIDelay());
+					m_alreadyWaited = true;
 				}
 			}
 
 		} else {
+
 			suspends(player, uc);
 			m_cfg.getRuleSet(this)->hasSuspended();
 
@@ -463,6 +458,8 @@ sevenRule:
 			m_cfg.getRuleSet(this)->dirChanged();
 		}
 
+		const Player::IPlayer *curPlayer = player;
+
 		if(!won) {
 			const std::size_t leftCount = player->getCardCount();
 			m_nxtPlayer = (m_nxtPlayer + 1) >= m_players.size() ? 0 : m_nxtPlayer + 1;
@@ -474,6 +471,10 @@ sevenRule:
 		if(!m_nxtPlayer) ++m_turn;
 
 		m_initialJack = false;
+
+		if(!m_alreadyWaited && wait(curPlayer, false)) {
+			getEventHandler().getConnection()->wait(getAIDelay());
+		}
 
 	} catch(const Common::Exception::SocketException &e) {
 
@@ -646,6 +647,15 @@ long Engine::getAIDelay() const {
 	return (!getEventHandler().getConnection()->hasHumanPlayers()) ? 0L : m_cfg.getAIDelay();
 }
 
+bool Engine::wait(const Player::IPlayer *p, bool suspend) const {
+
+	const bool isAI = p->isAIPlayer();
+
+	if(m_players.size() == 2) return suspend && isAI;
+
+	return isAI ? (m_alwaysWait || isAI) : false;
+}
+
 void Engine::reset() throw() {
 
 	m_state = ACCEPT_PLAYERS;
@@ -666,6 +676,7 @@ void Engine::reset() throw() {
 	m_initialChecked = false;
 	m_initialJack = false;
 	m_alwaysWait = false;
+	m_alreadyWaited = false;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

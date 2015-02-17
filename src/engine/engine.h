@@ -57,8 +57,8 @@ public:
 
 	const Event::IEventHandler &getEventHandler() const _PURE;
 
-	inline void setAlwaysWait(bool wait) {
-		m_alwaysWait = wait;
+	inline void setAlwaysWait(bool w) {
+		m_alwaysWait = w;
 	}
 
 	inline void setUltimate(bool ultimate) {
@@ -127,6 +127,7 @@ private:
 	void checkPlayersAlive() const throw(Common::Exception::SocketException);
 
 	long getAIDelay() const;
+	bool wait(const Player::IPlayer *p, bool suspend) const;
 
 private:
 	EngineConfig &m_cfg;
@@ -143,6 +144,7 @@ private:
 	bool m_ultimate;
 	bool m_initialJack;
 	bool m_alwaysWait;
+	bool m_alreadyWaited;
 
 	const bool m_initialNextMessage;
 	long long int m_gameIndex;

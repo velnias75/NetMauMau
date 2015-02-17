@@ -651,9 +651,11 @@ bool Engine::wait(const Player::IPlayer *p, bool suspend) const {
 
 	const bool isAI = p->isAIPlayer();
 
+	if(isAI && getAICount() == m_players.size()) return true;
+
 	if(m_players.size() == 2) return suspend && isAI;
 
-	return isAI ? (m_alwaysWait || isAI) : false;
+	return isAI ? m_alwaysWait : false;
 }
 
 void Engine::reset() throw() {

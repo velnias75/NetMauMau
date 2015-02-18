@@ -66,7 +66,7 @@ See `configure --help` for more options and help.
 Client
 ------
 
-A proof of concept Qt client can be found at
+A Qt client can be found at
 [https://github.com/velnias75/NetMauMau-Qt-Client](https://github.com/velnias75/NetMauMau-Qt-Client)
 
 

@@ -956,7 +956,7 @@ private:
  * If you just want to query the player list, you can call @c playerList() and to get the
  * servers capabilities you can call @c capabilities()
  *
- * A complete proof of concept client can be obtained via git:
+ * A client can be obtained via git:
  * `git clone https://github.com/velnias75/NetMauMau-Qt-Client.git`
  *
  * @note All data is transferred as UTF-8 encoded byte strings

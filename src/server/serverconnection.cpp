@@ -642,7 +642,9 @@ throw(NetMauMau::Common::Exception::SocketException) {
 				}
 			}
 
-			if(!vMsg) write(i->sockfd, vm.find(0)->second);
+			const VERSIONEDMESSAGE::const_iterator &nullV(vm.find(0));
+
+			if(!vMsg && nullV != vm.end()) write(i->sockfd, nullV->second);
 		}
 	}
 }

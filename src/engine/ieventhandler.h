@@ -100,6 +100,8 @@ public:
 	virtual void nextPlayer(const Player::IPlayer *player) const
 	throw(Common::Exception::SocketException) = 0;
 
+	virtual void setJackModeOff() const throw(Common::Exception::SocketException) = 0;
+
 	virtual void aceRoundStarted(const Player::IPlayer *player)
 	throw(Common::Exception::SocketException) = 0;
 	virtual void aceRoundEnded(const Player::IPlayer *player)

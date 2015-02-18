@@ -17,12 +17,6 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @NOTE keeping API compatibility:
- * https://techbase.kde.org/Policies/Binary_Compatibility_Issues_With_C++#Adding_new_virtual_functions_to_leaf_classes
- * http://static.coldattic.info/restricted/science/syrcose09/cppbincomp.pdf
- */
-
 #include <cstdio>
 #include <cassert>
 #include <cstring>
@@ -482,6 +476,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		jackSuit(NetMauMau::Common::symbolToSuit(cjackSuit));
 
+	} else if(!_pimpl->m_disconnectNow && msg == "JACKMODEOFF") {
+		jackSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL);
 	} else if(!_pimpl->m_disconnectNow && msg == "JACKCHOICE") {
 
 		const NetMauMau::Common::ICard::SUIT s = getJackSuitChoice();

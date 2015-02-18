@@ -359,7 +359,7 @@ sevenRule:
 
 			if(pc && cc) {
 
-				if(m_jackMode || m_initialJack) m_cfg.getRuleSet(this)->setJackModeOff();
+				if(m_jackMode || m_initialJack) jackModeOff();
 
 				won = player->cardAccepted(pc);
 				m_talon->playCard(pc);
@@ -433,7 +433,7 @@ sevenRule:
 			m_cfg.getRuleSet(this)->hasSuspended();
 
 			if(m_jackMode) {
-				m_cfg.getRuleSet(this)->setJackModeOff();
+				jackModeOff();
 				m_jackMode = false;
 			}
 		}
@@ -634,6 +634,17 @@ void Engine::gameOver() const throw() {
 		getEventHandler().gameOver();
 	} catch(const Common::Exception::SocketException &e) {
 		logDebug(__PRETTY_FUNCTION__ << ": failed to handle event \'gameOver\': " << e.what());
+	}
+}
+
+void Engine::jackModeOff() const {
+	
+	m_cfg.getRuleSet(this)->setJackModeOff();
+
+	try {
+		getEventHandler().setJackModeOff();
+	} catch(const Common::Exception::SocketException &e) {
+		logDebug(__PRETTY_FUNCTION__ << ": failed to handle event \'jackModeOff\': " << e.what());
 	}
 }
 

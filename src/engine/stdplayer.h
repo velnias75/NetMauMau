@@ -123,7 +123,7 @@ private:
 
 	Common::ICard::SUIT findJackChoice() const;
 
-	std::size_t getTalonFactor() const;
+	std::size_t getTalonFactor() const _PURE;
 
 private:
 	const std::string m_name;

@@ -305,6 +305,14 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	m_connection.sendVersionedMessage(vm);
 }
 
+void EventHandler::setJackModeOff() const throw(NetMauMau::Common::Exception::SocketException) {
+
+	Connection::VERSIONEDMESSAGE vm;
+	vm.insert(std::make_pair(15, "JACKMODEOFF"));
+
+	m_connection.sendVersionedMessage(vm);
+}
+
 void EventHandler::nextPlayer(const NetMauMau::Player::IPlayer *player) const
 throw(NetMauMau::Common::Exception::SocketException) {
 	for(Connection::PLAYERINFOS::const_iterator i(m_connection.getPlayers().begin());

@@ -159,6 +159,9 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	return player->getPoints() * pointFactor;
 }
 
+void TestEventHandler::setJackModeOff() const
+throw(NetMauMau::Common::Exception::SocketException) {}
+
 void TestEventHandler::aceRoundStarted(const NetMauMau::Player::IPlayer *player)
 throw(NetMauMau::Common::Exception::SocketException) {
 	std::cerr << PLAYER << (m_isatty ? BOLD_ON : "") << "started" << (m_isatty ? BOLD_OFF : "")

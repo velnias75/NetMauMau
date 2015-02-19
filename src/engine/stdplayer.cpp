@@ -29,6 +29,7 @@
 #include "engineconfig.h"
 #include "stdcardfactory.h"
 #include "socketexception.h"
+#include "icardcountobserver.h"
 
 namespace {
 
@@ -117,10 +118,11 @@ bool StdPlayer::_hasRankPath::operator()(const NetMauMau::Common::ICard *c) cons
 	return hrp;
 }
 
-StdPlayer::StdPlayer(const std::string &name) : m_name(name), m_cards(), m_cardsTaken(false),
-	m_ruleset(0), m_playerHasFewCards(false), m_powerSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL),
-	m_powerPlay(false), m_tryAceRound(false), m_nineIsEight(false), m_leftCount(0), m_rightCount(0),
-	m_dirChgEnabled(false), m_playerCount(0), m_engineCfg(0L) {
+StdPlayer::StdPlayer(const std::string &name) : IPlayer(), m_name(name), m_cards(),
+	m_cardsTaken(false), m_ruleset(0), m_playerHasFewCards(false),
+	m_powerSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL), m_powerPlay(false), m_tryAceRound(false),
+	m_nineIsEight(false), m_leftCount(0), m_rightCount(0), m_dirChgEnabled(false),
+	m_playerCount(0), m_engineCfg(0L), m_cco(0L) {
 	m_cards.reserve(32);
 }
 
@@ -134,6 +136,8 @@ void StdPlayer::reset() throw() {
 	m_leftCount = m_rightCount = m_playerCount = 0;
 	m_dirChgEnabled = false;
 	m_cards.clear();
+
+	notifyCardCountChange();
 }
 
 void StdPlayer::resetJackState() throw() {
@@ -164,16 +168,32 @@ void StdPlayer::setEngineConfig(const NetMauMau::EngineConfig *engineCfg) {
 	m_engineCfg = engineCfg;
 }
 
+void StdPlayer::setCardCountObserver(const NetMauMau::ICardCountObserver *cco) {
+	m_cco = cco;
+}
+
+void StdPlayer::notifyCardCountChange() {
+	if(m_cco) m_cco->cardCountChanged(this);
+}
+
 const NetMauMau::RuleSet::IRuleSet *StdPlayer::getRuleSet() const {
 	return m_ruleset;
 }
 
 void StdPlayer::receiveCard(NetMauMau::Common::ICard *card) {
-	if(card) m_cards.push_back(card);
+
+	if(card) {
+		m_cards.push_back(card);
+		notifyCardCountChange();
+	}
 }
 
 void StdPlayer::receiveCardSet(const CARDS &cards) {
+
 	m_cards.insert(m_cards.end(), cards.begin(), cards.end());
+
+	if(!cards.empty()) notifyCardCountChange();
+
 	shuffleCards();
 }
 
@@ -436,9 +456,9 @@ NetMauMau::Common::ICard *StdPlayer::requestCard(const NetMauMau::Common::ICard 
 		const NetMauMau::Common::ICard::SUIT *js, std::size_t) const {
 
 	if(m_ruleset) {
-		if(m_cards.size() == 1 && !(uc->getRank() == NetMauMau::Common::ICard::JACK &&
-									(*m_cards.begin())->getRank() ==
-									NetMauMau::Common::ICard::JACK)) {
+		if(m_cards.size() == 1 &&
+				!(uc->getRank() == NetMauMau::Common::ICard::JACK &&
+				  (*m_cards.begin())->getRank() == NetMauMau::Common::ICard::JACK)) {
 			return m_ruleset->checkCard(uc, *m_cards.begin()) ? *m_cards.begin() : 0L;
 		} else if(m_cards.size() == 1) {
 			return 0L;
@@ -460,6 +480,7 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICard *uncoveredCard,
 						 const NetMauMau::Common::ICard *playedCard) const {
 
 	if(m_powerSuit != NetMauMau::Common::ICard::SUIT_ILLEGAL) {
+
 		const NetMauMau::Common::ICard::SUIT s = m_powerSuit;
 		m_powerSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
 		m_powerPlay = true;
@@ -566,9 +587,14 @@ IPlayer::REASON StdPlayer::getNoCardReason() const {
 
 bool StdPlayer::cardAccepted(const NetMauMau::Common::ICard *playedCard) {
 
-	const CARDS::iterator &i(std::find(m_cards.begin(), m_cards.end(), playedCard));
+	const CARDS::iterator &i(std::find_if(m_cards.begin(), m_cards.end(),
+										  std::bind2nd(std::ptr_fun(NetMauMau::Common::cardEqual),
+												  playedCard)));
 
-	if(i != m_cards.end()) m_cards.erase(i);
+	if(i != m_cards.end()) {
+		m_cards.erase(i);
+		notifyCardCountChange();
+	}
 
 	if(!m_cards.empty()) shuffleCards();
 

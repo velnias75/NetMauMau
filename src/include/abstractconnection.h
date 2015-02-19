@@ -70,7 +70,9 @@ public:
 
 	virtual NAMESOCKFD getPlayerInfo(SOCKET sockfd) const;
 	virtual std::string getPlayerName(SOCKET sockfd) const;
+
 	virtual void removePlayer(SOCKET sockfd);
+	virtual void removePlayer(const INFO &info);
 
 	virtual void addAIPlayers(const std::vector<std::string> &aiPlayers);
 	virtual void wait(long ms) throw(Exception::SocketException);
@@ -82,7 +84,9 @@ public:
 protected:
 	AbstractConnection(const char *server, uint16_t port);
 
-	void registerPlayer(const NAMESOCKFD &nfd);
+	bool registerPlayer(const NAMESOCKFD &nfd,
+						const std::vector<std::string> &ai = std::vector<std::string>());
+
 	const PLAYERINFOS &getRegisteredPlayers() const _PURE;
 	const std::vector<std::string> &getAIPlayers() const _PURE;
 

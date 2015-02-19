@@ -438,12 +438,17 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 							}
 
 							const NAMESOCKFD nsf(info.name, playerPic, cfd, cver);
+							const bool isOk = registerPlayer(nsf, getAIPlayers());
 
-							registerPlayer(nsf);
-							send("OK", 2, cfd);
-							accepted = PLAY;
+							send(isOk ? "OK" : "IN", 2, cfd);
 
-							NetMauMau::DB::SQLite::getInstance().addPlayer(info);
+							if(isOk) {
+								accepted = PLAY;
+								NetMauMau::DB::SQLite::getInstance().addPlayer(info);
+							} else {
+								shutdown(cfd);
+								accepted = REFUSED;
+							}
 
 						} else {
 
@@ -586,6 +591,12 @@ void Connection::shutdown(SOCKET cfd) {
 #else
 	closesocket(cfd);
 #endif
+}
+
+void Connection::removePlayer(const NetMauMau::Common::IConnection::INFO &info) {
+	NetMauMau::DB::SQLite::getInstance().logOutPlayer(NAMESOCKFD(info.name, "", info.sockfd,
+			MAKE_VERSION(info.maj, info.min)));
+	NetMauMau::Common::AbstractConnection::removePlayer(info);
 }
 
 void Connection::removePlayer(SOCKET sockfd) {

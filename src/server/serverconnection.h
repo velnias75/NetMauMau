@@ -49,6 +49,7 @@ public:
 
 	int wait(timeval *tv = NULL);
 
+	virtual void removePlayer(const INFO &info);
 	virtual void removePlayer(SOCKET sockfd);
 
 	inline const PLAYERINFOS &getPlayers() const {

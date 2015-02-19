@@ -41,6 +41,7 @@ protected:
 	virtual void gameOver() const;
 
 	virtual void directionChanged() const _CONST;
+	virtual std::string noCardReason() const;
 
 	virtual NetMauMau::Common::ICard *playCard(const CARDS &cards, std::size_t takeCount) const;
 	virtual NetMauMau::Common::ICard::SUIT getJackSuitChoice() const;

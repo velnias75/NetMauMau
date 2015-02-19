@@ -54,6 +54,8 @@ public:
 		return m_engine.getPlayerCount();
 	}
 
+	void removePlayer(const std::string &player);
+
 	void start(bool ultimate = false) throw(Common::Exception::SocketException);
 	void reset(bool playerLost) throw();
 	void shutdown() const throw();

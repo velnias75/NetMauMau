@@ -35,7 +35,7 @@ public:
 	virtual Common::IConnection *getConnection() const;
 	virtual void gameAboutToStart() const _CONST;
 	virtual void gameOver() const throw(Common::Exception::SocketException) _CONST;
-	virtual bool shutdown() const _CONST;
+	virtual bool shutdown() const throw() _CONST;
 	virtual void reset() throw() _CONST;
 
 	virtual void message(const std::string &msg, const std::vector<std::string> &except) const

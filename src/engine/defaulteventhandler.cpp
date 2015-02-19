@@ -35,7 +35,7 @@ void DefaultEventHandler::gameAboutToStart() const {}
 
 void DefaultEventHandler::gameOver() const throw(NetMauMau::Common::Exception::SocketException) {}
 
-bool DefaultEventHandler::shutdown() const {
+bool DefaultEventHandler::shutdown() const throw() {
 	return false;
 }
 
@@ -108,8 +108,7 @@ void DefaultEventHandler::playerWins(const NetMauMau::Player::IPlayer *, std::si
 throw(NetMauMau::Common::Exception::SocketException) {}
 
 std::size_t DefaultEventHandler::playerLost(const NetMauMau::Player::IPlayer *, std::size_t,
-		std::size_t) const
-throw(NetMauMau::Common::Exception::SocketException) {
+		std::size_t) const throw(NetMauMau::Common::Exception::SocketException) {
 	return 0;
 }
 

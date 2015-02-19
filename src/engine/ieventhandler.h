@@ -45,7 +45,7 @@ public:
 	virtual Common::IConnection *getConnection() const = 0;
 	virtual void gameAboutToStart() const = 0;
 	virtual void gameOver() const throw(Common::Exception::SocketException) = 0;
-	virtual bool shutdown() const = 0;
+	virtual bool shutdown() const throw() = 0;
 	virtual void reset() throw() = 0;
 
 	virtual void message(const std::string &msg,
@@ -77,8 +77,8 @@ public:
 
 	virtual void turn(std::size_t turn) const throw(Common::Exception::SocketException) = 0;
 
-	virtual void playerPicksCard(const Player::IPlayer *player, const Common::ICard *card) const
-	throw(Common::Exception::SocketException) = 0;
+	virtual void playerPicksCard(const Player::IPlayer *player, const Common::ICard *card = 0L)
+	const throw(Common::Exception::SocketException) = 0;
 	virtual void playerPicksCards(const Player::IPlayer *player, std::size_t cardCount) const
 	throw(Common::Exception::SocketException) = 0;
 	virtual void playerSuspends(const Player::IPlayer *player,

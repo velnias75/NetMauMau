@@ -179,6 +179,19 @@ void Player::talonShuffled() throw(NetMauMau::Common::Exception::SocketException
 }
 
 Player::IPlayer::REASON Player::getNoCardReason() const {
+
+	try {
+
+		if(m_connection.getPlayerInfo(getName()).clientVersion >= 15) {
+
+			m_connection.write(m_sockfd, "NOCARDREASON");
+			return m_connection.read(m_sockfd) == "NOMATCH" ?
+				   NetMauMau::Player::IPlayer::NOMATCH :
+				   NetMauMau::Player::IPlayer::SUSPEND;
+		}
+
+	} catch(const NetMauMau::Common::Exception::SocketException &) {}
+
 	return NetMauMau::Player::IPlayer::SUSPEND;
 }
 

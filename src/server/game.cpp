@@ -76,7 +76,7 @@ Game::COLLECT_STATE Game::collectPlayers(std::size_t minPlayers,
 
 	if(m_engine.getPlayerCount() < std::max<std::size_t>(2, minPlayers)) {
 
-		if(!addPlayer(player)) return REFUSED;
+		if(!addPlayer(player)) return Game::REFUSED;
 
 		NetMauMau::DB::SQLite::getInstance().addPlayerToGame(m_gameIndex,
 				m_engine.getEventHandler().getConnection()->getPlayerInfo(player->getSerial()));
@@ -107,10 +107,17 @@ bool Game::addPlayer(NetMauMau::Player::IPlayer *player) {
 
 	m_players.push_back(player);
 
-	if(m_engine.addPlayer(m_players.back())) {
-		return true;
-	} else {
-		delete m_players.back();
+	try {
+
+		if(m_engine.addPlayer(m_players.back())) {
+			return true;
+		} else {
+			delete m_players.back();
+			m_players.pop_back();
+			return false;
+		}
+
+	} catch(const NetMauMau::Common::Exception::SocketException &) {
 		m_players.pop_back();
 		return false;
 	}
@@ -133,6 +140,10 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 	if(ultimate || m_cfg.getAIPlayer()) m_engine.gameOver();
 
 	reset(false);
+}
+
+void Game::removePlayer(const std::string &player) {
+	m_engine.removePlayer(player);
 }
 
 void Game::reset(bool playerLost) throw() {

@@ -280,6 +280,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			if(!strncmp(name, "NAME", 4)) {
 				send(_pimpl->m_pName.c_str(), _pimpl->m_pName.length(), getSocketFD());
 			} else if(!strncmp(name, "NAMP", 4)) {
+
 				if(!(data && len)) {
 					send(_pimpl->m_pName.c_str(), _pimpl->m_pName.length(), getSocketFD());
 				} else {
@@ -331,6 +332,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			} else if((status[0] == 'V' && status[1] == 'M')) {
 				throw Exception::VersionMismatchException(
 					MAKE_VERSION(maj, min), _pimpl->m_clientVersion, getSocketFD());
+			} else if((status[0] == 'I' && status[1] == 'N')) {
+				throw Exception::PlayerlistException(_pimpl->m_pName, getSocketFD());
 			}
 
 		} else {

@@ -330,6 +330,13 @@ void exit_hdlr() {
 }
 #endif
 
+void conLog(const NetMauMau::Common::IConnection::INFO &info) {
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) <<
+			"Connection from " << info.host << ":" << info.port << " as \""
+			<< info.name << "\" (" << info.maj << "." << info.min << ") "
+			<< NetMauMau::Common::Logger::nonl());
+}
+
 }
 
 using namespace NetMauMau;
@@ -648,10 +655,7 @@ int main(int argc, const char **argv) {
 
 						if(state == Server::Connection::PLAY) {
 
-							logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) <<
-									"Connection from " << info.host << ":" << info.port << " as \""
-									<< info.name << "\" (" << info.maj << "." << info.min << ") "
-									<< NetMauMau::Common::Logger::nonl());
+							conLog(info);
 
 							Server::Game::COLLECT_STATE cs =
 								game.collectPlayers(minPlayers, new Server::Player(info.name,
@@ -714,9 +718,26 @@ int main(int argc, const char **argv) {
 
 							} else {
 								logger("refused");
+
+								con.removePlayer(info);
+								game.removePlayer(info.name);
+
+								if(info.sockfd != INVALID_SOCKET) {
+									shutdown(info.sockfd, SHUT_RDWR);
+#ifndef _WIN32
+									close(info.sockfd);
+#else
+									closesocket(info.sockfd);
+#endif
+								}
 							}
+
+						} else if(state == Server::Connection::REFUSED) {
+							conLog(info);
+							logger("refused");
 						}
 					}
+
 				} else if(r == -2) {
 					game.reset(true);
 				}

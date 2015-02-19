@@ -46,7 +46,7 @@ void EventHandler::gameOver() const throw(NetMauMau::Common::Exception::SocketEx
 	m_connection << "BYE";
 }
 
-bool EventHandler::shutdown() const {
+bool EventHandler::shutdown() const throw() {
 	return m_interrupt;
 }
 
@@ -264,7 +264,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		m_connection.write(i->sockfd, "PLAYERPICKSCARD");
 		m_connection.write(i->sockfd, player->getName());
 
-		if(i->name == player->getName()) {
+		if(card && i->name == player->getName()) {
 			m_connection.write(i->sockfd, "CARDTAKEN");
 			m_connection.write(i->sockfd, card->description());
 		} else {

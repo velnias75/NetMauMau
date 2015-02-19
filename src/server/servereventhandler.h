@@ -41,7 +41,7 @@ public:
 	virtual Connection *getConnection() const _PURE;
 	virtual void gameAboutToStart() const;
 	virtual void gameOver() const throw(Common::Exception::SocketException);
-	virtual bool shutdown() const _PURE;
+	virtual bool shutdown() const throw() _PURE;
 	virtual void reset() throw();
 
 	virtual void message(const std::string &msg, const std::vector<std::string> &except) const

@@ -22,6 +22,7 @@
 
 #include <vector>
 
+#include "icardcountobserver.h"
 #include "iaceroundlistener.h"
 #include "socketexception.h"
 #include "italonchange.h"
@@ -39,7 +40,9 @@ namespace RuleSet {
 class IRuleSet;
 }
 
-class _EXPORT Engine : protected ITalonChange, protected IAceRoundListener {
+class _EXPORT Engine : protected ITalonChange, protected IAceRoundListener,
+	protected ICardCountObserver {
+
 	DISALLOW_COPY_AND_ASSIGN(Engine)
 
 	typedef enum { ACCEPT_PLAYERS, NOCARDS, PLAYING, FINISHED } STATE;
@@ -70,6 +73,7 @@ public:
 	}
 
 	bool addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketException);
+	void removePlayer(const std::string &player);
 
 	inline bool hasPlayers() const {
 		return m_players.size() > 1;
@@ -97,14 +101,14 @@ protected:
 	virtual void talonEmpty(bool empty) const throw();
 	virtual void cardPlayed(Common::ICard *card) const;
 	virtual void cardTaken(const NetMauMau::Common::ICard* = 0L) const
-	throw(Common::Exception::SocketException);
+	throw(Common::Exception::SocketException) _CONST;
 	virtual void shuffled() const;
 
 	virtual Common::ICard::RANK getAceRoundRank() const _PURE;
 	virtual void aceRoundStarted(const Player::IPlayer *player) const
 	throw(Common::Exception::SocketException);
-	virtual void aceRoundEnded(const Player::IPlayer *player)
-	const throw(Common::Exception::SocketException);
+	virtual void aceRoundEnded(const Player::IPlayer *player) const
+	throw(Common::Exception::SocketException);
 
 private:
 	void calcScore(Player::IPlayer *p) const;
@@ -114,7 +118,8 @@ private:
 	void setDirChangeIsSuspend(bool b);
 	void jackModeOff() const;
 
-	void suspends(Player::IPlayer *p, const Common::ICard *uc = NULL) const;
+	void suspends(Player::IPlayer *p, const Common::ICard *uc = NULL) const
+	throw(Common::Exception::SocketException);
 	void takeCards(Player::IPlayer *player, const Common::ICard *card) const
 	throw(Common::Exception::SocketException);
 
@@ -126,6 +131,8 @@ private:
 	}
 
 	void checkPlayersAlive() const throw(Common::Exception::SocketException);
+
+	virtual void cardCountChanged(Player::IPlayer *player) const throw();
 
 	long getAIDelay() const;
 	bool wait(const Player::IPlayer *p, bool suspend) const;

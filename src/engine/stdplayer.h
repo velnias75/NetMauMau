@@ -17,8 +17,8 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_STDPLAYER_H
-#define NETMAUMAU_STDPLAYER_H
+#ifndef NETMAUMAU_PLAYER_STDPLAYER_H
+#define NETMAUMAU_PLAYER_STDPLAYER_H
 
 #include <set>
 
@@ -40,6 +40,7 @@ public:
 	virtual bool isAlive() const _CONST;
 
 	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset);
+	virtual void setCardCountObserver(const ICardCountObserver *cco);
 	virtual void setEngineConfig(const EngineConfig *engineCfg);
 
 	virtual void receiveCard(Common::ICard *card);
@@ -74,6 +75,9 @@ public:
 protected:
 	const CARDS &getPlayerCards() const _CONST;
 	const RuleSet::IRuleSet *getRuleSet() const _PURE;
+
+	// cppcheck-suppress functionConst
+	void notifyCardCountChange();
 
 	virtual void shuffleCards();
 
@@ -141,6 +145,7 @@ private:
 	bool m_dirChgEnabled;
 	std::size_t m_playerCount;
 	const EngineConfig *m_engineCfg;
+	const ICardCountObserver *m_cco;
 
 	static bool m_jackPlayed;
 };
@@ -149,6 +154,6 @@ private:
 
 }
 
-#endif /* NETMAUMAU_STDPLAYER_H */
+#endif /* NETMAUMAU_PLAYER_STDPLAYER_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

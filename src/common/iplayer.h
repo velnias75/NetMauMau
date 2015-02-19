@@ -17,8 +17,8 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_IPLAYER_H
-#define NETMAUMAU_IPLAYER_H
+#ifndef NETMAUMAU_PLAYER_IPLAYER_H
+#define NETMAUMAU_PLAYER_IPLAYER_H
 
 #include <vector>
 
@@ -27,6 +27,7 @@
 namespace NetMauMau {
 
 class EngineConfig;
+class ICardCountObserver;
 
 namespace RuleSet {
 class IRuleSet;
@@ -49,6 +50,7 @@ public:
 
 	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset) = 0;
 	virtual void setEngineConfig(const EngineConfig *engineCfg) = 0;
+	virtual void setCardCountObserver(const ICardCountObserver *cco) = 0;
 
 	virtual void receiveCard(Common::ICard *card) = 0;
 	virtual void receiveCardSet(const CARDS &cards) = 0;
@@ -84,6 +86,6 @@ protected:
 
 }
 
-#endif /* NETMAUMAU_IPLAYER_H */
+#endif /* NETMAUMAU_PLAYER_IPLAYER_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

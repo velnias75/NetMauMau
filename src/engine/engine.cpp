@@ -79,12 +79,12 @@ const GSLRNG<std::ptrdiff_t> RNG;
 
 using namespace NetMauMau;
 
-Engine::Engine(EngineConfig &cfg) throw(Common::Exception::SocketException)
-	: m_cfg(cfg), m_state(ACCEPT_PLAYERS), m_talon(new Talon(this, cfg.getTalonFactor())),
-	  m_players(), m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_jackMode(false),
-	  m_initialChecked(false), m_ultimate(false), m_initialJack(false), m_alwaysWait(false),
-	  m_alreadyWaited(false), m_initialNextMessage(cfg.getNextMessage()), m_gameIndex(0LL),
-	  m_dirChangeEnabled(false) {
+Engine::Engine(EngineConfig &cfg) throw(Common::Exception::SocketException) : ITalonChange(),
+	IAceRoundListener(), ICardCountObserver(), m_cfg(cfg), m_state(ACCEPT_PLAYERS),
+	m_talon(new Talon(this, cfg.getTalonFactor())), m_players(), m_nxtPlayer(0), m_turn(1),
+	m_curTurn(0), m_jackMode(false), m_initialChecked(false), m_ultimate(false),
+	m_initialJack(false), m_alwaysWait(false), m_alreadyWaited(false),
+	m_initialNextMessage(cfg.getNextMessage()), m_gameIndex(0LL), m_dirChangeEnabled(false) {
 	m_players.reserve(5);
 	cfg.getEventHandler().acceptingPlayers();
 }
@@ -153,6 +153,13 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 	m_state = m_state != PLAYING ? NOCARDS : m_state;
 
 	return false;
+}
+
+void Engine::removePlayer(const std::string &player) {
+
+	const PLAYERS::const_iterator &f(find(player));
+
+	if(f != m_players.end() && !(*f)->isAIPlayer()) removePlayer(*f);
 }
 
 Engine::PLAYERS::iterator Engine::removePlayer(Player::IPlayer *player) {
@@ -224,7 +231,8 @@ void Engine::error(const std::string &msg) const throw() {
 	} catch(const Common::Exception::SocketException &) {}
 }
 
-void Engine::suspends(Player::IPlayer *p, const Common::ICard *uc) const {
+void Engine::suspends(Player::IPlayer *p, const Common::ICard *uc) const
+throw(Common::Exception::SocketException) {
 	getEventHandler().playerSuspends(p, uc);
 }
 
@@ -244,6 +252,8 @@ bool Engine::nextTurn() {
 		checkPlayersAlive();
 
 		Player::IPlayer *player = m_players[m_nxtPlayer];
+
+		player->setCardCountObserver(this);
 
 		if(m_curTurn != m_turn) {
 
@@ -273,9 +283,6 @@ bool Engine::nextTurn() {
 			m_initialChecked = true;
 		}
 
-		getEventHandler().stats(m_players);
-		informAIStat();
-
 		const bool csuspend = m_cfg.getRuleSet(this)->hasToSuspend();
 		const Common::ICard::SUIT js = m_cfg.getRuleSet(this)->getJackSuit();
 
@@ -300,10 +307,16 @@ sevenRule:
 			if(!pc) {
 
 				player->receiveCard(pc = m_talon->takeCard());
+				getEventHandler().playerPicksCard(player);
 
-				if(player->getNoCardReason() == Player::IPlayer::SUSPEND) {
+				const Player::IPlayer::REASON reason = player->getNoCardReason();
+
+				if(reason == Player::IPlayer::SUSPEND) {
 					suspends(player);
 					pc = 0L;
+				} else if(!player->isAIPlayer() && reason == Player::IPlayer::NOMATCH) {
+					pc = player->requestCard(uc, m_jackMode ? &js : 0L,
+											 m_cfg.getRuleSet(this)->takeCardCount());
 				}
 
 			} else if(pc->getSuit() == Common::ICard::SUIT_ILLEGAL) {
@@ -340,8 +353,8 @@ sevenRule:
 						decidedSuspend = true;
 
 					case Player::IPlayer::NOMATCH:
-						player->receiveCard(pc = m_talon->takeCard());
 
+						player->receiveCard(pc = m_talon->takeCard());
 						getEventHandler().playerPicksCard(player, pc);
 
 						suspend = true;
@@ -392,8 +405,8 @@ sevenRule:
 
 						const Common::IConnection::NAMESOCKFD nsf =
 							(m_players[m_nxtPlayer]->isAIPlayer()) ?
-							Common::IConnection::NAMESOCKFD(m_players[m_nxtPlayer]->getName(),
-															"", m_players[m_nxtPlayer]->getSerial(),
+							Common::IConnection::NAMESOCKFD(m_players[m_nxtPlayer]->getName(), "",
+															m_players[m_nxtPlayer]->getSerial(),
 															0) :
 							getEventHandler().getConnection()->
 							getPlayerInfo(m_players[m_nxtPlayer]->getSerial());
@@ -404,7 +417,6 @@ sevenRule:
 																m_cfg.getRuleSet(this)->
 																lostPointFactor(m_talon->
 																		getUncoveredCard())));
-
 						m_state = FINISHED;
 					}
 
@@ -475,6 +487,9 @@ sevenRule:
 		if(!m_alreadyWaited && wait(curPlayer, false)) {
 			getEventHandler().getConnection()->wait(getAIDelay());
 		}
+
+// 		cardCountChanged(player);
+		informAIStat();
 
 	} catch(const Common::Exception::SocketException &e) {
 
@@ -547,8 +562,6 @@ throw(Common::Exception::SocketException) {
 
 		getEventHandler().playerPicksCards(player, cardCount);
 		m_cfg.getRuleSet(this)->hasTakenCards();
-
-		cardTaken();
 	}
 }
 
@@ -571,10 +584,7 @@ void Engine::cardPlayed(Common::ICard *card) const {
 	}
 }
 
-void Engine::cardTaken(const Common::ICard *) const throw(Common::Exception::SocketException) {
-	getEventHandler().stats(m_players);
-	informAIStat();
-}
+void Engine::cardTaken(const Common::ICard *) const throw(Common::Exception::SocketException) {}
 
 void Engine::shuffled() const {
 	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
@@ -638,7 +648,7 @@ void Engine::gameOver() const throw() {
 }
 
 void Engine::jackModeOff() const {
-	
+
 	m_cfg.getRuleSet(this)->setJackModeOff();
 
 	try {
@@ -650,7 +660,10 @@ void Engine::jackModeOff() const {
 
 void Engine::checkPlayersAlive() const throw(Common::Exception::SocketException) {
 	for(PLAYERS::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
-		if(!(*i)->isAlive()) throw Common::Exception::SocketException((*i)->getName() + " is dead");
+		if(!(*i)->isAlive()) {
+			(*i)->setCardCountObserver(0L);
+			throw Common::Exception::SocketException((*i)->getName() + " is dead");
+		}
 	}
 }
 
@@ -669,12 +682,21 @@ bool Engine::wait(const Player::IPlayer *p, bool suspend) const {
 	return isAI ? m_alwaysWait : false;
 }
 
+void Engine::cardCountChanged(Player::IPlayer *p) const throw() {
+
+	try {
+		getEventHandler().stats(PLAYERS(1, p));
+	} catch(const Common::Exception::SocketException &e) {
+		logDebug(__PRETTY_FUNCTION__ << ": failed to handle event \'stats()\': " << e.what());
+	}
+}
+
 void Engine::reset() throw() {
 
 	m_state = ACCEPT_PLAYERS;
 
 	delete m_talon;
-	m_talon = new Talon(this);
+	m_talon = new Talon(this, m_cfg.getTalonFactor());
 
 	m_cfg.getEventHandler().reset();
 	m_cfg.getRuleSet(this)->reset();

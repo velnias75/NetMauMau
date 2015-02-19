@@ -50,6 +50,15 @@ struct _isSocketFD :
 		return nsd.sockfd == sockfd;
 	}
 };
+
+struct _isInfo : public std::binary_function < NetMauMau::Common::AbstractConnection::NAMESOCKFD,
+		NetMauMau::Common::AbstractConnection::INFO, bool > {
+	bool operator()(const NetMauMau::Common::AbstractConnection::NAMESOCKFD &nsd,
+					const NetMauMau::Common::AbstractConnection::INFO &info) const {
+		return nsd.name == info.name;
+	}
+};
+
 #pragma GCC diagnostic pop
 
 }
@@ -76,8 +85,14 @@ AbstractConnection::~AbstractConnection() {
 	delete _pimpl;
 }
 
-void AbstractConnection::registerPlayer(const NAMESOCKFD &nfd) {
+bool AbstractConnection::registerPlayer(const NAMESOCKFD &nfd, const std::vector<std::string> &ai) {
+
+	if(!(getPlayerName(nfd.sockfd).empty() &&
+			std::find(ai.begin(), ai.end(), nfd.name) == ai.end())) return false;
+
 	_pimpl->m_registeredPlayers.push_back(nfd);
+
+	return true;
 }
 
 const AbstractConnection::PLAYERINFOS &AbstractConnection::getRegisteredPlayers() const {
@@ -95,6 +110,15 @@ AbstractConnection::NAMESOCKFD AbstractConnection::getPlayerInfo(SOCKET sockfd) 
 
 std::string AbstractConnection::getPlayerName(SOCKET sockfd) const {
 	return getPlayerInfo(sockfd).name;
+}
+
+void AbstractConnection::removePlayer(const IConnection::INFO &info) {
+
+	const PLAYERINFOS::iterator &f(std::find_if(_pimpl->m_registeredPlayers.begin(),
+								   _pimpl->m_registeredPlayers.end(),
+								   std::bind2nd(_isInfo(), info)));
+
+	if(f != _pimpl->m_registeredPlayers.end()) _pimpl->m_registeredPlayers.erase(f);
 }
 
 void AbstractConnection::removePlayer(SOCKET sockfd) {

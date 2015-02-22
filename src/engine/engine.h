@@ -122,7 +122,7 @@ private:
 
 	void suspends(Player::IPlayer *p, const Common::ICard *uc = NULL) const
 	throw(Common::Exception::SocketException);
-	void takeCards(Player::IPlayer *player, const Common::ICard *card) const
+	bool takeCards(Player::IPlayer *player, const Common::ICard *card) const
 	throw(Common::Exception::SocketException);
 
 	PLAYERS::const_iterator find(const std::string &name) const;

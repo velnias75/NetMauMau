@@ -154,7 +154,8 @@ the first player.
    more cards or play out another *Seven*. In that case the next player has
    either to take plus two (i.e. four) cards or can also play out a *Seven*
    and so forth. At maximum one player has to take eight cards if a sequence
-   of four *Seven* are played out
+   of four *Seven* are played out. After a player took the cards, but cannot
+   play any card, the player has **not** to take a extra card
 
 * **Eight** (2 points)
 

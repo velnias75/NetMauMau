@@ -300,17 +300,20 @@ bool Engine::nextTurn() {
 
 			bool suspend = false;
 
-			takeCards(player, pc);
+			const bool noCardOk = takeCards(player, pc);
 
 sevenRule:
 
 			if(!pc) {
 
-				player->receiveCard(pc = m_talon->takeCard());
-				getEventHandler().playerPicksCard(player);
+				if(!noCardOk) {
+					player->receiveCard(pc = m_talon->takeCard());
+					getEventHandler().playerPicksCard(player);
+				}
 
-				const Player::IPlayer::REASON reason =
-					player->getNoCardReason(uc, m_jackMode ? &js : 0L);
+				const Player::IPlayer::REASON reason = noCardOk ? Player::IPlayer::SUSPEND :
+													   player->getNoCardReason(uc, m_jackMode ?
+															   &js : 0L);
 
 				if(reason == Player::IPlayer::SUSPEND) {
 					suspends(player);
@@ -550,7 +553,7 @@ sevenRule:
 	return true;
 }
 
-void Engine::takeCards(Player::IPlayer *player, const Common::ICard *card) const
+bool Engine::takeCards(Player::IPlayer *player, const Common::ICard *card) const
 throw(Common::Exception::SocketException) {
 
 	const std::size_t cardCount = m_cfg.getRuleSet(this)->takeCards(card);
@@ -563,7 +566,11 @@ throw(Common::Exception::SocketException) {
 
 		getEventHandler().playerPicksCards(player, cardCount);
 		m_cfg.getRuleSet(this)->hasTakenCards();
+
+		return true;
 	}
+
+	return false;
 }
 
 void Engine::uncoveredCard(const Common::ICard *top) const

@@ -92,21 +92,10 @@ NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *un
 		m_connection.write(m_sockfd, uncoveredCard->description());;
 		m_connection.write(m_sockfd, "PLAYCARD");
 
-		for(CARDS::const_iterator i(getPlayerCards().begin()); i != getPlayerCards().end(); ++i) {
+		const CARDS &posCards(getPossibleCards(uncoveredCard, s));
 
-			if(s && (*i)->getSuit() != *s) continue;
-
-			const bool accepted = getRuleSet()->isAceRound() ?
-								  (*i)->getRank() == getRuleSet()->getAceRoundRank() :
-								  getRuleSet()->checkCard(*i, uncoveredCard);
-
-			const bool jack = ((*i)->getRank() == NetMauMau::Common::ICard::JACK &&
-							   uncoveredCard->getRank() != NetMauMau::Common::ICard::JACK) &&
-							  !getRuleSet()->isAceRound();
-
-			if(accepted || jack) {
-				m_connection.write(m_sockfd, (*i)->description());
-			}
+		for(CARDS::const_iterator i(posCards.begin()); i != posCards.end(); ++i) {
+			m_connection.write(m_sockfd, (*i)->description());
 		}
 
 		m_connection.write(m_sockfd, "PLAYCARDEND");
@@ -178,21 +167,11 @@ void Player::talonShuffled() throw(NetMauMau::Common::Exception::SocketException
 	m_connection.write(m_sockfd, "TALONSHUFFLED");
 }
 
-Player::IPlayer::REASON Player::getNoCardReason() const {
+Player::IPlayer::REASON Player::getNoCardReason(const NetMauMau::Common::ICard *uncoveredCard,
+		const NetMauMau::Common::ICard::SUIT *suit) const {
 
-	try {
-
-		if(m_connection.getPlayerInfo(getName()).clientVersion >= 15) {
-
-			m_connection.write(m_sockfd, "NOCARDREASON");
-			return m_connection.read(m_sockfd) == "NOMATCH" ?
-				   NetMauMau::Player::IPlayer::NOMATCH :
-				   NetMauMau::Player::IPlayer::SUSPEND;
-		}
-
-	} catch(const NetMauMau::Common::Exception::SocketException &) {}
-
-	return NetMauMau::Player::IPlayer::SUSPEND;
+	return !getPossibleCards(uncoveredCard, suit).empty() ? SUSPEND :
+		   StdPlayer::getNoCardReason(uncoveredCard, suit);
 }
 
 std::size_t Player::getCardCount() const throw(NetMauMau::Common::Exception::SocketException) {

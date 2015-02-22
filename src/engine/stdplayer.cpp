@@ -581,7 +581,8 @@ NetMauMau::Common::ICard::SUIT StdPlayer::findJackChoice() const {
 	}
 }
 
-IPlayer::REASON StdPlayer::getNoCardReason() const {
+IPlayer::REASON StdPlayer::getNoCardReason(const NetMauMau::Common::ICard *,
+		const NetMauMau::Common::ICard::SUIT *) const {
 	return m_cards.empty() ? MAUMAU : NOMATCH;
 }
 
@@ -621,6 +622,30 @@ std::size_t StdPlayer::getCardCount() const {
 
 std::size_t StdPlayer::getPoints() const {
 	return static_cast<std::size_t>(std::accumulate(m_cards.begin(), m_cards.end(), 0, pointSum()));
+}
+
+IPlayer::CARDS StdPlayer::getPossibleCards(const NetMauMau::Common::ICard *uncoveredCard,
+		const NetMauMau::Common::ICard::SUIT *suit) const {
+
+	CARDS posCards;
+	posCards.reserve(m_cards.size());
+
+	for(CARDS::const_iterator i(m_cards.begin()); i != m_cards.end(); ++i) {
+
+		if(suit && (*i)->getSuit() != *suit) continue;
+
+		const bool accepted = getRuleSet()->isAceRound() ?
+							  (*i)->getRank() == getRuleSet()->getAceRoundRank() :
+							  getRuleSet()->checkCard(*i, uncoveredCard);
+
+		const bool jack = ((*i)->getRank() == NetMauMau::Common::ICard::JACK &&
+						   uncoveredCard->getRank() != NetMauMau::Common::ICard::JACK) &&
+						  !getRuleSet()->isAceRound();
+
+		if(accepted || jack) posCards.push_back(*i);
+	}
+
+	return posCards;
 }
 
 const StdPlayer::CARDS &StdPlayer::getPlayerCards() const {

@@ -71,7 +71,8 @@ public:
 	virtual void talonShuffled() = 0;
 	virtual void setNineIsEight(bool b) = 0;
 
-	virtual REASON getNoCardReason() const = 0;
+	virtual REASON getNoCardReason(const NetMauMau::Common::ICard *uncoveredCard,
+								   const NetMauMau::Common::ICard::SUIT *suit) const = 0;
 
 	virtual std::size_t getCardCount() const = 0;
 	virtual std::size_t getPoints() const = 0;

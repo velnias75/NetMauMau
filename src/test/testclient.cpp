@@ -69,10 +69,6 @@ void TestClient::gameOver() const {
 
 void TestClient::directionChanged() const {}
 
-std::string TestClient::noCardReason() const {
-	return "SUSPEND";
-}
-
 void TestClient::turn(std::size_t t) const {
 	std::cout << "Turn #" << t << std::endl;
 }

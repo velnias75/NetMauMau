@@ -63,7 +63,8 @@ public:
 	virtual void talonShuffled();
 	virtual void setNineIsEight(bool b);
 
-	virtual REASON getNoCardReason() const _PURE;
+	virtual REASON getNoCardReason(const NetMauMau::Common::ICard *uncoveredCard,
+								   const NetMauMau::Common::ICard::SUIT *suit) const _PURE;
 
 	virtual std::size_t getCardCount() const _PURE;
 	virtual std::size_t getPoints() const;
@@ -73,6 +74,8 @@ public:
 	static void resetJackState() throw();
 
 protected:
+	CARDS getPossibleCards(const NetMauMau::Common::ICard *uncoveredCard,
+						   const NetMauMau::Common::ICard::SUIT *suit) const;
 	const CARDS &getPlayerCards() const _CONST;
 	const RuleSet::IRuleSet *getRuleSet() const _PURE;
 

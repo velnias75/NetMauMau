@@ -67,13 +67,7 @@ Connection::Connection(const std::string &pName, const std::string &server, uint
 }
 
 Connection::~Connection() {
-	shutdown(getSocketFD(), SHUT_RDWR);
-#ifndef _WIN32
-	close(getSocketFD());
-#else
-	close(getSocketFD());
-#endif
-
+	shutdown(getSocketFD());
 	delete _pimpl;
 }
 
@@ -352,12 +346,7 @@ bool Connection::wire(SOCKET sockfd, const struct sockaddr *addr, socklen_t addr
 	int ret = -1;
 
 	if((ret = ::connect(sockfd, addr, addrlen)) == -1) {
-		shutdown(sockfd, SHUT_RDWR);
-#ifndef _WIN32
-		close(sockfd);
-#else
-		closesocket(sockfd);
-#endif
+		shutdown(sockfd);
 	}
 
 	return ret != -1;

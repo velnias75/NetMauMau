@@ -66,6 +66,12 @@ public:
 
 	_EXPORT static void checkSocket(SOCKET fd) throw(Exception::SocketException);
 
+	static unsigned long getReceivedBytes() _PURE;
+	static void resetReceivedBytes();
+
+	static unsigned long getSentBytes() _PURE;
+	static void resetSentBytes();
+
 protected:
 	AbstractSocket(const char *server, uint16_t port);
 
@@ -78,10 +84,14 @@ protected:
 
 	SOCKET getSocketFD() const _PURE;
 
+	static void shutdown(SOCKET cfd);
+
 private:
 	AbstractSocketImpl *const _pimpl;
-
 	volatile static bool m_interrupt;
+
+	static unsigned long m_recv;
+	static unsigned long m_sent;
 };
 
 }

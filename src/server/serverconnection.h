@@ -89,7 +89,6 @@ protected:
 
 private:
 	static bool isPNG(const std::string &pic);
-	static void shutdown(SOCKET cfd);
 
 private:
 	CAPABILITIES m_caps;

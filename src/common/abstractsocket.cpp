@@ -67,17 +67,15 @@ using namespace NetMauMau::Common;
 
 volatile bool AbstractSocket::m_interrupt = false;
 
+unsigned long AbstractSocket::m_recv = 0L;
+unsigned long AbstractSocket::m_sent = 0L;
+
 AbstractSocket::AbstractSocket(const char *server, uint16_t port)
 	: _pimpl(new AbstractSocketImpl(server, port)) {}
 
 AbstractSocket::~AbstractSocket() {
 	if(_pimpl->m_sfd != INVALID_SOCKET) {
-		shutdown(_pimpl->m_sfd, SHUT_RDWR);
-#ifndef _WIN32
-		close(_pimpl->m_sfd);
-#else
-		closesocket(_pimpl->m_sfd);
-#endif
+		shutdown(_pimpl->m_sfd);
 	}
 
 	delete _pimpl;
@@ -142,7 +140,21 @@ void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 		if(rp == NULL) {
 			_pimpl->m_sfd = INVALID_SOCKET;
 			throw Exception::SocketException(wireError(_pimpl->m_wireError));
+		} else {
+			int bufSize = 0;
+			socklen_t slen = sizeof(int);
+
+			if(getsockopt(_pimpl->m_sfd, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char *>(&bufSize),
+						  &slen) != -1) {
+				bufSize *= 2;
+
+				if(setsockopt(_pimpl->m_sfd, SOL_SOCKET, SO_SNDBUF,
+							  reinterpret_cast<const char *>(&bufSize), sizeof(int)) == -1) {
+					logWarning("Couldn't increase send buffer");
+				}
+			}
 		}
+
 	} else {
 		_pimpl->m_sfd = fileno(stdin);
 	}
@@ -180,6 +192,8 @@ again:
 
 		unsigned char *ptr = static_cast<unsigned char *>(buf);
 
+		std::size_t origLen = len;
+
 		while(len > 0) {
 
 			ssize_t i = ::recv(fd, reinterpret_cast<char *>(ptr), len, 0);
@@ -191,10 +205,15 @@ again:
 			if(static_cast<std::size_t>(i) < len) break;
 
 			len -= static_cast<std::size_t>(i);
+
+			if(len > origLen) throw Exception::SocketException("BUG: internal recv overflow", fd,
+						errno);
 		}
 
 		total = static_cast<std::size_t>(ptr - static_cast<unsigned char *>(buf));
 	}
+
+	m_recv += total;
 
 	return total;
 }
@@ -203,7 +222,7 @@ again:
 std::string AbstractSocket::read(SOCKET fd, std::size_t len) throw(Exception::SocketException) {
 
 	std::string ret;
-	char *rbuf = new(std::nothrow) char[len];
+	char *rbuf = new(std::nothrow) char[len]();
 
 	if(!rbuf) throw Exception::SocketException(NetMauMau::Common::errorString(ENOMEM), fd, ENOMEM);
 
@@ -232,15 +251,28 @@ void AbstractSocket::send(const void *buf, std::size_t len,
 
 	const char *ptr = static_cast<const char *>(buf);
 
+	std::size_t origLen = len;
+
 	while(len > 0) {
 
 		ssize_t i = ::send(fd, ptr, len, MSG_NOSIGNAL);
 
-		if(i < 0) throw Exception::SocketException(NetMauMau::Common::errorString(), fd, errno);
+#ifdef _WIN32
+
+		if(i == SOCKET_ERROR || i == 0)
+#else
+		if(i < 1)
+#endif
+			throw Exception::SocketException(NetMauMau::Common::errorString(), fd, errno);
 
 		ptr += i;
 		len -= static_cast<std::size_t>(i);
+
+		if(len > origLen) throw Exception::SocketException("BUG: internal send overflow", fd,
+					errno);
 	}
+
+	m_sent += origLen;
 }
 
 void AbstractSocket::write(SOCKET *fds, std::size_t numfd,
@@ -298,14 +330,7 @@ void AbstractSocket::setInterrupted(bool b, bool shut) const {
 
 	setInterrupted(b);
 
-	if(b && shut) {
-		shutdown(getSocketFD(), SHUT_RDWR);
-#ifndef _WIN32
-		close(getSocketFD());
-#else
-		closesocket(getSocketFD());
-#endif
-	}
+	if(b && shut) shutdown(getSocketFD());
 }
 
 void AbstractSocket::checkSocket(SOCKET fd) throw(Exception::SocketException) {
@@ -322,6 +347,31 @@ void AbstractSocket::checkSocket(SOCKET fd) throw(Exception::SocketException) {
 
 SOCKET AbstractSocket::getSocketFD() const {
 	return _pimpl->m_sfd;
+}
+
+void AbstractSocket::shutdown(SOCKET cfd) {
+	::shutdown(cfd, SHUT_RDWR);
+#ifndef _WIN32
+	close(cfd);
+#else
+	closesocket(cfd);
+#endif
+}
+
+unsigned long AbstractSocket::getReceivedBytes() {
+	return m_recv;
+}
+
+void AbstractSocket::resetReceivedBytes() {
+	m_recv = 0L;
+}
+
+unsigned long AbstractSocket::getSentBytes() {
+	return m_sent;
+}
+
+void AbstractSocket::resetSentBytes() {
+	m_sent = 0;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -47,7 +47,8 @@ public:
 	virtual Common::ICard *requestCard(const Common::ICard *uncoveredCard,
 									   const Common::ICard::SUIT *jackSuit,
 									   std::size_t takeCount) const;
-	virtual REASON getNoCardReason() const _CONST;
+	virtual REASON getNoCardReason(const NetMauMau::Common::ICard *uncoveredCard,
+								   const NetMauMau::Common::ICard::SUIT *suit) const;
 	virtual bool cardAccepted(const Common::ICard *playedCard)
 	throw(NetMauMau::Common::Exception::SocketException);
 	virtual void talonShuffled() throw(NetMauMau::Common::Exception::SocketException);

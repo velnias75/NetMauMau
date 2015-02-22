@@ -309,12 +309,14 @@ sevenRule:
 				player->receiveCard(pc = m_talon->takeCard());
 				getEventHandler().playerPicksCard(player);
 
-				const Player::IPlayer::REASON reason = player->getNoCardReason();
+				const Player::IPlayer::REASON reason =
+					player->getNoCardReason(uc, m_jackMode ? &js : 0L);
 
 				if(reason == Player::IPlayer::SUSPEND) {
 					suspends(player);
 					pc = 0L;
 				} else if(!player->isAIPlayer() && reason == Player::IPlayer::NOMATCH) {
+
 					pc = player->requestCard(uc, m_jackMode ? &js : 0L,
 											 m_cfg.getRuleSet(this)->takeCardCount());
 				}
@@ -348,7 +350,7 @@ sevenRule:
 
 					bool decidedSuspend = false;
 
-					switch(player->getNoCardReason()) {
+					switch(player->getNoCardReason(uc, m_jackMode ? &js2 : 0L)) {
 					case Player::IPlayer::SUSPEND:
 						decidedSuspend = true;
 
@@ -488,7 +490,6 @@ sevenRule:
 			getEventHandler().getConnection()->wait(getAIDelay());
 		}
 
-// 		cardCountChanged(player);
 		informAIStat();
 
 	} catch(const Common::Exception::SocketException &e) {

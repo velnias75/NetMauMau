@@ -18,12 +18,14 @@
  */
 
 #include <ctime>
+#include <cstdio>
 
 #include "game.h"
 #include "logger.h"
 #include "sqlite.h"
 #include "gameconfig.h"
 #include "ieventhandler.h"
+#include "abstractsocket.h"
 
 using namespace NetMauMau::Server;
 
@@ -176,6 +178,17 @@ void Game::reset(bool playerLost) throw() {
 			logDebug(__PRETTY_FUNCTION__ << ": failed to add AI player: " << e.what());
 		}
 	}
+
+	char sr[128];
+
+	std::snprintf(sr, 127, "Received %.2f kb; sent %.2f kb", static_cast<double>(NetMauMau::Common::
+				  AbstractSocket::getReceivedBytes()) / 1024.0,
+				  static_cast<double>(NetMauMau::Common::AbstractSocket::getSentBytes()) / 1024.0);
+
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << sr);
+
+	NetMauMau::Common::AbstractSocket::resetReceivedBytes();
+	NetMauMau::Common::AbstractSocket::resetSentBytes();
 
 	gameReady();
 }

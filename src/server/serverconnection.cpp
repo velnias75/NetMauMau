@@ -177,11 +177,7 @@ Connection::~Connection() {
 			send("BYE", 3, i->sockfd);
 		} catch(const NetMauMau::Common::Exception::SocketException &) {}
 
-#ifndef _WIN32
-		close(i->sockfd);
-#else
-		closesocket(i->sockfd);
-#endif
+		shutdown(i->sockfd);
 	}
 
 	for(int i = 0; i < 4; ++i) delete m_aiPlayerImages[i];
@@ -582,15 +578,6 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 	}
 
 	return accepted;
-}
-
-void Connection::shutdown(SOCKET cfd) {
-	::shutdown(cfd, SHUT_RDWR);
-#ifndef _WIN32
-	close(cfd);
-#else
-	closesocket(cfd);
-#endif
 }
 
 void Connection::removePlayer(const NetMauMau::Common::IConnection::INFO &info) {

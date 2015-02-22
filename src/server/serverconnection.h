@@ -64,7 +64,8 @@ public:
 	Connection &operator<<(const std::string &msg) throw(Common::Exception::SocketException);
 	Connection &operator>>(std::string &msg) throw(Common::Exception::SocketException);
 
-	ACCEPT_STATE accept(INFO &v, bool refuse = false) throw(Common::Exception::SocketException);
+	ACCEPT_STATE accept(INFO &v,
+						bool gameRunning = false) throw(Common::Exception::SocketException);
 
 	inline void setCapabilities(const CAPABILITIES &caps) {
 		m_caps = caps;

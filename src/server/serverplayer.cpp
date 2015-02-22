@@ -100,7 +100,7 @@ NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *un
 
 		m_connection.write(m_sockfd, "PLAYCARDEND");
 
-		if(m_connection.getPlayerInfo(getName()).clientVersion >= 8) {
+		if(getClientVersion() >= 8) {
 
 			char cc[20];
 
@@ -170,8 +170,12 @@ void Player::talonShuffled() throw(NetMauMau::Common::Exception::SocketException
 Player::IPlayer::REASON Player::getNoCardReason(const NetMauMau::Common::ICard *uncoveredCard,
 		const NetMauMau::Common::ICard::SUIT *suit) const {
 
-	return !getPossibleCards(uncoveredCard, suit).empty() ? SUSPEND :
-		   StdPlayer::getNoCardReason(uncoveredCard, suit);
+	if(getClientVersion() >= 15) {
+		return !getPossibleCards(uncoveredCard, suit).empty() ? SUSPEND :
+			   StdPlayer::getNoCardReason(uncoveredCard, suit);
+	} else {
+		return SUSPEND;
+	}
 }
 
 std::size_t Player::getCardCount() const throw(NetMauMau::Common::Exception::SocketException) {
@@ -212,6 +216,10 @@ bool Player::getAceRoundChoice() const throw(NetMauMau::Common::Exception::Socke
 	}
 
 	return false;
+}
+
+uint32_t Player::getClientVersion() const {
+	return m_connection.getPlayerInfo(getName()).clientVersion;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

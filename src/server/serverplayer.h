@@ -20,6 +20,8 @@
 #ifndef NETMAUMAU_SERVERPLAYER_H
 #define NETMAUMAU_SERVERPLAYER_H
 
+#include <stdint.h>
+
 #include "stdplayer.h"
 #include "socketexception.h"
 
@@ -66,6 +68,7 @@ protected:
 
 private:
 	_NOUNUSED Common::ICard *findCard(const std::string &offeredCard) const;
+	uint32_t getClientVersion() const;
 
 private:
 	Connection &m_connection;

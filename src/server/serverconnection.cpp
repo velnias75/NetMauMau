@@ -266,7 +266,9 @@ int Connection::wait(timeval *tv) {
 #pragma GCC diagnostic pop
 
 Connection::ACCEPT_STATE Connection::accept(INFO &info,
-		bool refuse) throw(NetMauMau::Common::Exception::SocketException) {
+		bool gameRunning) throw(NetMauMau::Common::Exception::SocketException) {
+
+	bool refuse = gameRunning;
 
 	ACCEPT_STATE accepted = REFUSED;
 
@@ -449,7 +451,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						} else {
 
 							try {
-								send(cver <= maxver ? "NO" : "VM", 2, cfd);
+								send(cver <= maxver ? (gameRunning ? "GR" : "NO") : "VM", 2, cfd);
 							} catch(const NetMauMau::Common::Exception::SocketException &e) {
 								logDebug("Sending " << (cver <= maxver ? "NO" : "VM")
 										 << " to client failed: " << e.what());

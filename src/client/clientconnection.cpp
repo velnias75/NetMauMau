@@ -44,6 +44,7 @@
 #include "timeoutexception.h"
 #include "shutdownexception.h"
 #include "playerlistexception.h"
+#include "gamerunningexception.h"
 #include "capabilitiesexception.h"
 #include "protocolerrorexception.h"
 #include "versionmismatchexception.h"
@@ -328,6 +329,12 @@ throw(NetMauMau::Common::Exception::SocketException) {
 					MAKE_VERSION(maj, min), _pimpl->m_clientVersion, getSocketFD());
 			} else if((status[0] == 'I' && status[1] == 'N')) {
 				throw Exception::PlayerlistException(_pimpl->m_pName, getSocketFD());
+			} else if((status[0] == 'G' && status[1] == 'R')) {
+				throw Exception::GameRunningException("There is already a game running " \
+													  "on this server", getSocketFD());
+			} else if(!(status[0] == 'O' && status[1] == 'K')) {
+				throw NetMauMau::Common::Exception::SocketException("Connection rejected due " \
+						"to unknown reason", getSocketFD());
 			}
 
 		} else {

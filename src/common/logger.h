@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -39,6 +39,11 @@ public:
 	virtual ~Logger();
 
 	virtual void postAction(const logString &ls) const throw();
+
+	static void writeSyslog(bool b);
+
+private:
+	static bool m_writeSyslog;
 };
 
 }

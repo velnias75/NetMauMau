@@ -486,7 +486,12 @@ int main(int argc, const char **argv) {
 
 	poptFreeContext(pctx);
 
-	if(inetd) NetMauMau::Common::Logger::setSilentMask(0xFF);
+	if(inetd) {
+		NetMauMau::Common::Logger::setSilentMask(0xFF);
+		NetMauMau::Common::Logger::writeSyslog(true);
+	} else {
+		NetMauMau::Common::Logger::writeSyslog(false);
+	}
 
 #ifndef HAVE_ARC4RANDOM_UNIFORM
 #if HAVE_INITSTATE

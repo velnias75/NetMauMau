@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -32,16 +32,22 @@ const std::ostreambuf_iterator<LOG_CHAR> out = std::ostreambuf_iterator<LOG_CHAR
 
 using namespace NetMauMau::Common;
 
+bool Logger::m_writeSyslog = false;
+
 Logger::Logger(const LEVEL &lvl) : Commons::IPostLogger<std::ostreambuf_iterator<LOG_CHAR> >(),
-	Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR> >(out, lvl, this) {
+	Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR> >(out, lvl, m_writeSyslog ? this : 0L) {
 #ifdef HAVE_SYSLOG_H
-	openlog(PACKAGE_NAME, LOG_PID, LOG_DAEMON);
+
+	if(m_writeSyslog) openlog(PACKAGE_NAME, LOG_PID, LOG_DAEMON);
+
 #endif
 }
 
 Logger::~Logger() {
 #ifdef HAVE_SYSLOG_H
-	closelog();
+
+	if(m_writeSyslog) closelog();
+
 #endif
 }
 
@@ -50,8 +56,14 @@ void Logger::postAction(const logString &ls) const throw() {
 	std::cerr.flush();
 #endif
 #ifdef HAVE_SYSLOG_H
-	syslog(LOG_NOTICE, "%s", ls.c_str());
+
+	if(m_writeSyslog) syslog(LOG_NOTICE, "%s", ls.c_str());
+
 #endif
+}
+
+void Logger::writeSyslog(bool b) {
+	m_writeSyslog = b;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

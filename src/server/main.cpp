@@ -79,6 +79,8 @@
 
 namespace {
 
+const time_t startTime = std::time(0L);
+
 int decks = 1;
 int initialCardCount = 5;
 bool dirChange = false;
@@ -206,6 +208,49 @@ void sh_interrupt(int) {
 }
 
 #ifndef _WIN32
+
+void sh_dump(int) {
+
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "== Options ==");
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "AI-delay: "
+			<< static_cast<float>(aiDelay) << " sec");
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "A/K/Q rounds: "
+			<< NetMauMau::Common::Logger::abool(aceRound));
+
+	if(aceRound) logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "A/K/Q rank: "
+							 << ((arRank != 0L) ? arRank : "ACE"));
+
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Decks: " << decks);
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Direction change: "
+			<< NetMauMau::Common::Logger::abool(dirChange));
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Initial card count: "
+			<< initialCardCount);
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Players: " << minPlayers);
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Ultimate: "
+			<< NetMauMau::Common::Logger::abool(ultimate));
+
+	char sr[128];
+	std::snprintf(sr, 127, "Total received %.2f kb; total sent %.2f kb",
+				  static_cast<double>
+				  (NetMauMau::Common::AbstractSocket::getTotalReceivedBytes()) / 1024.0,
+				  static_cast<double>
+				  (NetMauMau::Common::AbstractSocket::getTotalSentBytes()) / 1024.0);
+
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "== Network ==");
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Host: "
+			<< (host && *host ? host : "localhost"));
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Port: " << port);
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << sr);
+
+	char outstr[256];
+	// cppcheck-suppress nonreentrantFunctionslocaltime
+	struct tm *tmp = std::localtime(&startTime);
+
+	if(tmp && std::strftime(outstr, sizeof(outstr), "Server start: %c", tmp)) {
+		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << outstr);
+	}
+}
+
 int getGroup(gid_t *gid, const char *group) {
 
 	errno = 0;
@@ -530,6 +575,10 @@ int main(int argc, const char **argv) {
 	sa.sa_flags = static_cast<int>(SA_RESETHAND);
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGTERM, &sa, NULL);
+
+	std::memset(&sa, 0, sizeof(struct sigaction));
+	sa.sa_handler = sh_dump;
+	sigaction(SIGUSR1, &sa, NULL);
 
 #ifdef HAVE_LIBRT
 

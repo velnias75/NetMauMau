@@ -66,6 +66,9 @@ public:
 
 	_EXPORT static void checkSocket(SOCKET fd) throw(Exception::SocketException);
 
+	static unsigned long getTotalReceivedBytes() _PURE;
+	static unsigned long getTotalSentBytes() _PURE;
+
 	static unsigned long getReceivedBytes() _PURE;
 	static void resetReceivedBytes();
 
@@ -90,6 +93,8 @@ private:
 	AbstractSocketImpl *const _pimpl;
 	volatile static bool m_interrupt;
 
+	static unsigned long m_recvTotal;
+	static unsigned long m_sentTotal;
 	static unsigned long m_recv;
 	static unsigned long m_sent;
 };

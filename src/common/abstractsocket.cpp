@@ -67,6 +67,8 @@ using namespace NetMauMau::Common;
 
 volatile bool AbstractSocket::m_interrupt = false;
 
+unsigned long AbstractSocket::m_recvTotal = 0L;
+unsigned long AbstractSocket::m_sentTotal = 0L;
 unsigned long AbstractSocket::m_recv = 0L;
 unsigned long AbstractSocket::m_sent = 0L;
 
@@ -213,6 +215,7 @@ again:
 		total = static_cast<std::size_t>(ptr - static_cast<unsigned char *>(buf));
 	}
 
+	m_recvTotal += total;
 	m_recv += total;
 
 	return total;
@@ -272,6 +275,7 @@ void AbstractSocket::send(const void *buf, std::size_t len,
 					errno);
 	}
 
+	m_sentTotal += origLen;
 	m_sent += origLen;
 }
 
@@ -372,6 +376,14 @@ unsigned long AbstractSocket::getSentBytes() {
 
 void AbstractSocket::resetSentBytes() {
 	m_sent = 0;
+}
+
+unsigned long AbstractSocket::getTotalReceivedBytes() {
+	return m_recvTotal;
+}
+
+unsigned long AbstractSocket::getTotalSentBytes() {
+	return m_sentTotal;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

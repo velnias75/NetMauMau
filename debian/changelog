@@ -4,8 +4,9 @@ netmaumau (0.15) UNRELEASED; urgency=low
   * amount of initial cards configurable
   * fix: clarified an untransparent move of a remote/ai player
   * fix: better handling of refused connections
+  * improved a/k/q rounds and seven rule
 
- -- Heiko Schäfer <heiko@rangun.de>  Thu, 19 Feb 2015 10:10:07 +0100
+ -- Heiko Schäfer <heiko@rangun.de>  Mon, 23 Feb 2015 07:11:11 +0100
 
 netmaumau (0.14) UNRELEASED; urgency=low
 

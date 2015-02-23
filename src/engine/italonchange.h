@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -33,7 +33,6 @@ class ITalonChange {
 public:
 	virtual ~ITalonChange() {}
 
-	virtual void cardTaken(const Common::ICard *card) const = 0;
 	virtual void cardPlayed(Common::ICard *card) const = 0;
 	virtual void uncoveredCard(const NetMauMau::Common::ICard *top) const = 0;
 	virtual void talonEmpty(bool empty) const throw() = 0;

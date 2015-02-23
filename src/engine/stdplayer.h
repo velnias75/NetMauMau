@@ -71,13 +71,21 @@ public:
 
 	virtual void reset() throw();
 
-	static void resetJackState() throw();
+	inline static void resetJackState() throw() {
+		m_jackPlayed = false;
+	}
 
 protected:
 	CARDS getPossibleCards(const NetMauMau::Common::ICard *uncoveredCard,
 						   const NetMauMau::Common::ICard::SUIT *suit) const;
-	const CARDS &getPlayerCards() const _CONST;
-	const RuleSet::IRuleSet *getRuleSet() const _PURE;
+
+	inline const CARDS &getPlayerCards() const {
+		return m_cards;
+	}
+
+	inline const RuleSet::IRuleSet *getRuleSet() const {
+		return m_ruleset;
+	}
 
 	// cppcheck-suppress functionConst
 	void notifyCardCountChange();

@@ -120,7 +120,7 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 
 		const PLAYERS::const_iterator &f(find(player->getName()));
 
-		if(f == m_players.end() && m_players.size() <= m_cfg.getRuleSet(this)->getMaxPlayers()) {
+		if(f == m_players.end() && m_players.size() <= getRuleSet()->getMaxPlayers()) {
 
 			m_players.push_back(player);
 
@@ -131,7 +131,7 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 						player->getName()));
 			}
 
-			player->setRuleSet(m_cfg.getRuleSet(this));
+			player->setRuleSet(getRuleSet());
 			player->setEngineConfig(&m_cfg);
 
 			getEventHandler().playerAdded(player);
@@ -168,7 +168,7 @@ Engine::PLAYERS::iterator Engine::removePlayer(Player::IPlayer *player) {
 
 	if(f != m_players.end()) return m_players.erase(f);
 
-	m_cfg.getRuleSet(this)->setCurPlayers(m_players.size());
+	getRuleSet()->setCurPlayers(m_players.size());
 
 	return f;
 }
@@ -179,7 +179,7 @@ bool Engine::distributeCards() throw(Common::Exception::SocketException) {
 
 		std::vector<std::vector<Common::ICard *> > cards(m_players.size());
 
-		for(std::size_t i = 0; i < m_cfg.getRuleSet(this)->initialCardCount(); ++i) {
+		for(std::size_t i = 0; i < getRuleSet()->initialCardCount(); ++i) {
 
 			if(m_talon->empty()) return false;
 
@@ -206,7 +206,7 @@ bool Engine::distributeCards() throw(Common::Exception::SocketException) {
 		m_curTurn = 0;
 		m_state = PLAYING;
 
-		m_cfg.getRuleSet(this)->setCurPlayers(m_players.size());
+		getRuleSet()->setCurPlayers(m_players.size());
 
 		return true;
 
@@ -278,19 +278,19 @@ bool Engine::nextTurn() {
 		const Common::ICard *uc = m_talon->getUncoveredCard();
 
 		if(!m_initialChecked) {
-			m_cfg.getRuleSet(this)->checkInitial(player, uc);
-			m_initialJack = m_cfg.getRuleSet(this)->isJackMode();
+			getRuleSet()->checkInitial(player, uc);
+			m_initialJack = getRuleSet()->isJackMode();
 			m_initialChecked = true;
 		}
 
-		const bool csuspend = m_cfg.getRuleSet(this)->hasToSuspend();
-		const Common::ICard::SUIT js = m_cfg.getRuleSet(this)->getJackSuit();
+		const bool csuspend = getRuleSet()->hasToSuspend();
+		const Common::ICard::SUIT js = getRuleSet()->getJackSuit();
 
 		assert(uc->getRank() != Common::ICard::JACK || (uc->getRank() == Common::ICard::JACK &&
 				((m_jackMode || m_initialJack) && js != Common::ICard::SUIT_ILLEGAL)));
 
 		Common::ICard *pc = !csuspend ? player->requestCard(uc, (m_jackMode || m_initialJack)
-							? &js : 0L, m_cfg.getRuleSet(this)->takeCardCount()) : 0L;
+							? &js : 0L, getRuleSet()->takeCardCount()) : 0L;
 
 		if(m_initialJack && !pc) m_jackMode = true;
 
@@ -300,7 +300,7 @@ bool Engine::nextTurn() {
 
 			bool suspend = false;
 
-			const bool noCardOk = takeCards(player, pc);
+			const bool noCardOk = takeCards(player, pc) || getRuleSet()->isAceRound();
 
 sevenRule:
 
@@ -321,21 +321,19 @@ sevenRule:
 				} else if(!player->isAIPlayer() && reason == Player::IPlayer::NOMATCH) {
 
 					pc = player->requestCard(uc, m_jackMode ? &js : 0L,
-											 m_cfg.getRuleSet(this)->takeCardCount());
+											 getRuleSet()->takeCardCount());
 				}
 
 			} else if(pc->getSuit() == Common::ICard::SUIT_ILLEGAL) {
 
-				pc = player->requestCard(uc, m_jackMode ? &js : 0L,
-										 m_cfg.getRuleSet(this)->takeCardCount());
+				pc = player->requestCard(uc, m_jackMode ? &js : 0L, getRuleSet()->takeCardCount());
 
 				goto sevenRule;
 			}
 
 			bool cc = false;
 
-			while(pc && !(cc = m_cfg.getRuleSet(this)->checkCard(player, uc, pc,
-							   !m_cfg.getNextMessage()))) {
+			while(pc && !(cc = getRuleSet()->checkCard(player, uc, pc, !m_cfg.getNextMessage()))) {
 
 				const bool aiSusp = !cc && player->isAIPlayer();
 
@@ -346,10 +344,10 @@ sevenRule:
 
 				getEventHandler().cardRejected(player, uc, pc);
 
-				const Common::ICard::SUIT js2 = m_cfg.getRuleSet(this)->getJackSuit();
+				const Common::ICard::SUIT js2 = getRuleSet()->getJackSuit();
 
 				if((!(pc = player->requestCard(uc, m_jackMode ? &js2 : 0L,
-											   m_cfg.getRuleSet(this)->takeCardCount())))) {
+											   getRuleSet()->takeCardCount())))) {
 
 					bool decidedSuspend = false;
 
@@ -363,8 +361,7 @@ sevenRule:
 						getEventHandler().playerPicksCard(player, pc);
 
 						suspend = true;
-						pc = m_cfg.getRuleSet(this)->suspendIfNoMatchingCard() ||
-							 decidedSuspend ? 0L : pc;
+						pc = getRuleSet()->suspendIfNoMatchingCard() || decidedSuspend ? 0L : pc;
 
 						break;
 
@@ -384,9 +381,8 @@ sevenRule:
 
 				getEventHandler().playerPlaysCard(player, pc, uc);
 
-				if((m_jackMode = m_cfg.getRuleSet(this)->isJackMode())) {
-					getEventHandler().playerChooseJackSuit(player,
-														   m_cfg.getRuleSet(this)->getJackSuit());
+				if((m_jackMode = getRuleSet()->isJackMode())) {
+					getEventHandler().playerChooseJackSuit(player, getRuleSet()->getJackSuit());
 				}
 
 				if(won) {
@@ -395,7 +391,7 @@ sevenRule:
 					std::advance(f, m_nxtPlayer);
 					const PLAYERS::iterator nxt = m_players.erase(f);
 
-					m_cfg.getRuleSet(this)->setCurPlayers(m_players.size());
+					getRuleSet()->setCurPlayers(m_players.size());
 
 					m_nxtPlayer = nxt != m_players.end() ?
 								  static_cast<std::size_t>(std::distance(m_players.begin(), nxt))
@@ -403,8 +399,8 @@ sevenRule:
 
 					if(!hasPlayers()) {
 
-						if(m_cfg.getRuleSet(this)->takeIfLost() &&
-								m_talon->getUncoveredCard()->getRank() == Common::ICard::SEVEN) {
+						if(getRuleSet()->takeIfLost() && m_talon->getUncoveredCard()->getRank() ==
+								Common::ICard::SEVEN) {
 							takeCards(m_players[m_nxtPlayer], Common::getIllegalCard());
 						}
 
@@ -419,7 +415,7 @@ sevenRule:
 						DB::SQLite::getInstance().
 						playerLost(m_gameIndex, nsf, std::time(0L),
 								   getEventHandler().playerLost(m_players[m_nxtPlayer], m_turn,
-																m_cfg.getRuleSet(this)->
+																getRuleSet()->
 																lostPointFactor(m_talon->
 																		getUncoveredCard())));
 						m_state = FINISHED;
@@ -437,8 +433,7 @@ sevenRule:
 
 				} else if(wait(player, true) && (pc->getRank() == Common::ICard::EIGHT ||
 												 (pc->getRank() == Common::ICard::NINE &&
-												  m_cfg.getRuleSet(this)->
-												  getDirChangeIsSuspend()))) {
+												  getRuleSet()->getDirChangeIsSuspend()))) {
 					getEventHandler().getConnection()->wait(getAIDelay());
 					m_alreadyWaited = true;
 				}
@@ -447,7 +442,7 @@ sevenRule:
 		} else {
 
 			suspends(player, uc);
-			m_cfg.getRuleSet(this)->hasSuspended();
+			getRuleSet()->hasSuspended();
 
 			if(m_jackMode) {
 				jackModeOff();
@@ -455,7 +450,7 @@ sevenRule:
 			}
 		}
 
-		if(m_cfg.getRuleSet(this)->hasDirChange()) {
+		if(getRuleSet()->hasDirChange()) {
 
 			if(m_dirChangeEnabled && m_players.size() > 2) {
 
@@ -472,7 +467,7 @@ sevenRule:
 				setDirChangeIsSuspend(true);
 			}
 
-			m_cfg.getRuleSet(this)->dirChanged();
+			getRuleSet()->dirChanged();
 		}
 
 		const Player::IPlayer *curPlayer = player;
@@ -556,16 +551,14 @@ sevenRule:
 bool Engine::takeCards(Player::IPlayer *player, const Common::ICard *card) const
 throw(Common::Exception::SocketException) {
 
-	const std::size_t cardCount = m_cfg.getRuleSet(this)->takeCards(card);
+	const std::size_t cardCount = getRuleSet()->takeCards(card);
 
 	if(cardCount) {
 
-		for(std::size_t i = 0; i < cardCount; ++i) {
-			player->receiveCard(m_talon->takeCard(false));
-		}
+		for(std::size_t i = 0; i < cardCount; ++i) player->receiveCard(m_talon->takeCard());
 
 		getEventHandler().playerPicksCards(player, cardCount);
-		m_cfg.getRuleSet(this)->hasTakenCards();
+		getRuleSet()->hasTakenCards();
 
 		return true;
 	}
@@ -591,8 +584,6 @@ void Engine::cardPlayed(Common::ICard *card) const {
 		(*i)->cardPlayed(card);
 	}
 }
-
-void Engine::cardTaken(const Common::ICard *) const throw(Common::Exception::SocketException) {}
 
 void Engine::shuffled() const {
 	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
@@ -625,7 +616,7 @@ void Engine::informAIStat() const {
 }
 
 void Engine::setDirChangeIsSuspend(bool b) {
-	m_cfg.getRuleSet(this)->setDirChangeIsSuspend(b);
+	getRuleSet()->setDirChangeIsSuspend(b);
 
 	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
 		(*i)->setNineIsEight(b);
@@ -657,7 +648,7 @@ void Engine::gameOver() const throw() {
 
 void Engine::jackModeOff() const {
 
-	m_cfg.getRuleSet(this)->setJackModeOff();
+	getRuleSet()->setJackModeOff();
 
 	try {
 		getEventHandler().setJackModeOff();
@@ -699,6 +690,10 @@ void Engine::cardCountChanged(Player::IPlayer *p) const throw() {
 	}
 }
 
+RuleSet::IRuleSet *Engine::getRuleSet() const {
+	return m_cfg.getRuleSet(this);
+}
+
 void Engine::reset() throw() {
 
 	m_state = ACCEPT_PLAYERS;
@@ -707,7 +702,7 @@ void Engine::reset() throw() {
 	m_talon = new Talon(this, m_cfg.getTalonFactor());
 
 	m_cfg.getEventHandler().reset();
-	m_cfg.getRuleSet(this)->reset();
+	getRuleSet()->reset();
 	removePlayers();
 
 	m_nxtPlayer = 0,

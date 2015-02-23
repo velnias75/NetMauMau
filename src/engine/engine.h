@@ -102,8 +102,6 @@ protected:
 	throw(Common::Exception::SocketException);
 	virtual void talonEmpty(bool empty) const throw();
 	virtual void cardPlayed(Common::ICard *card) const;
-	virtual void cardTaken(const NetMauMau::Common::ICard* = 0L) const
-	throw(Common::Exception::SocketException) _CONST;
 	virtual void shuffled() const;
 
 	virtual Common::ICard::RANK getAceRoundRank() const _PURE;
@@ -125,6 +123,8 @@ private:
 	bool takeCards(Player::IPlayer *player, const Common::ICard *card) const
 	throw(Common::Exception::SocketException);
 
+	RuleSet::IRuleSet *getRuleSet() const;
+
 	PLAYERS::const_iterator find(const std::string &name) const;
 	PLAYERS::iterator removePlayer(Player::IPlayer *player);
 
@@ -137,6 +137,7 @@ private:
 	virtual void cardCountChanged(Player::IPlayer *player) const throw();
 
 	long getAIDelay() const;
+
 	bool wait(const Player::IPlayer *p, bool suspend) const;
 
 private:

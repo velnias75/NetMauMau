@@ -140,10 +140,6 @@ void StdPlayer::reset() throw() {
 	notifyCardCountChange();
 }
 
-void StdPlayer::resetJackState() throw() {
-	m_jackPlayed = false;
-}
-
 std::string StdPlayer::getName() const {
 	return m_name;
 }
@@ -174,10 +170,6 @@ void StdPlayer::setCardCountObserver(const NetMauMau::ICardCountObserver *cco) {
 
 void StdPlayer::notifyCardCountChange() {
 	if(m_cco) m_cco->cardCountChanged(this);
-}
-
-const NetMauMau::RuleSet::IRuleSet *StdPlayer::getRuleSet() const {
-	return m_ruleset;
 }
 
 void StdPlayer::receiveCard(NetMauMau::Common::ICard *card) {
@@ -646,10 +638,6 @@ IPlayer::CARDS StdPlayer::getPossibleCards(const NetMauMau::Common::ICard *uncov
 	}
 
 	return posCards;
-}
-
-const StdPlayer::CARDS &StdPlayer::getPlayerCards() const {
-	return m_cards;
 }
 
 void StdPlayer::informAIStat(const IPlayer *, std::size_t count) {

@@ -60,7 +60,7 @@ public:
 
 	void playCard(Common::ICard *card);
 
-	Common::ICard *takeCard(bool notify = true);
+	Common::ICard *takeCard();
 
 private:
 	typedef std::vector<Common::ICard *> CARDS;

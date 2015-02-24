@@ -29,6 +29,8 @@
 
 using namespace NetMauMau::Server;
 
+long Game::m_gameServed = 0L;
+
 Game::Game(GameConfig &cfg) throw(NetMauMau::Common::Exception::SocketException)
 	: m_cfg(cfg), m_engine(cfg.getEngineConfig()), m_aiPlayers(), m_players(), m_gameIndex(0LL) {
 
@@ -149,6 +151,8 @@ void Game::removePlayer(const std::string &player) {
 }
 
 void Game::reset(bool playerLost) throw() {
+
+	++m_gameServed;
 
 	if(playerLost) m_engine.error("Lost connection to a waiting player.");
 

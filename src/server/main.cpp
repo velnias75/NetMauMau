@@ -249,6 +249,14 @@ void sh_dump(int) {
 	if(tmp && std::strftime(outstr, sizeof(outstr), "Server start: %c", tmp)) {
 		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << outstr);
 	}
+
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Served games since server start: "
+			<< NetMauMau::Server::Game::getServedGames());
+
+	if(!NetMauMau::DB::SQLite::getInstance().getDBFilename().empty()) {
+		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Total served games on this server: "
+				<< NetMauMau::DB::SQLite::getInstance().getServedGames());
+	}
 }
 
 int getGroup(gid_t *gid, const char *group) {

@@ -60,11 +60,17 @@ public:
 	void reset(bool playerLost) throw();
 	void shutdown() const throw();
 
+	inline static long getServedGames() {
+		return m_gameServed;
+	}
+
 private:
 	bool addPlayer(Player::IPlayer *player);
 	void gameReady();
 
 private:
+	static long m_gameServed;
+
 	const GameConfig &m_cfg;
 	Engine m_engine;
 	std::vector<Player::StdPlayer *> m_aiPlayers;

@@ -45,6 +45,10 @@ SQLite::SCORES SQLite::getScores(SCORE_TYPE type, std::size_t limit) const {
 	return _pimpl->getScores(type, limit);
 }
 
+long long int SQLite::getServedGames() const {
+	return _pimpl->getServedGames();
+}
+
 bool SQLite::addAIPlayer(const NetMauMau::Player::IPlayer *ai) const {
 	return _pimpl->addAIPlayer(ai);
 }

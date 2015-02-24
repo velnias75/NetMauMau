@@ -44,6 +44,8 @@ public:
 
 	SQLite::SCORES getScores(SQLite::SCORE_TYPE type, std::size_t limit) const;
 
+	long long int getServedGames() const;
+
 	bool addAIPlayer(const NetMauMau::Player::IPlayer *ai) const;
 	bool addPlayer(const Common::IConnection::INFO &info) const;
 	bool logOutPlayer(const Common::IConnection::NAMESOCKFD &nsf) const;

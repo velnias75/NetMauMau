@@ -35,6 +35,20 @@
 
 namespace {
 
+int gamesCountCallback(void *arg, int cols, char **col_text, char **) {
+
+	if(arg && cols == 1) {
+
+		long long int *res = static_cast<long long int *>(arg);
+
+		*res = std::strtoll(col_text[0], NULL, 10);
+
+		return 0;
+	}
+
+	return -1;
+}
+
 int scoresCallback(void *arg, int cols, char **col_text, char **) {
 
 	if(cols == 3 && col_text[0] && col_text[2]) {
@@ -190,7 +204,6 @@ std::string SQLiteImpl::getDBFilename() {
 
 	strcpy(buffer, getenv("APPDATA"));
 
-	//if(GetModuleFileName(NULL, buffer, MAX_PATH)) {
 	if(strlen(buffer)) {
 
 		char drive[_MAX_DRIVE];
@@ -244,6 +257,22 @@ SQLite::SCORES SQLiteImpl::getScores(SQLite::SCORE_TYPE type, std::size_t limit)
 				logWarning("SQLite: " << err);
 				sqlite3_free(err);
 			}
+		}
+	}
+
+	return res;
+}
+
+long long int SQLiteImpl::getServedGames() const {
+
+	long long int res = 0LL;
+	char *err = 0L;
+
+	if(m_db && (sqlite3_exec(m_db, "SELECT count(*) FROM games WHERE end IS NOT NULL;",
+							 gamesCountCallback, &res, &err) != SQLITE_OK)) {
+		if(err) {
+			logWarning("SQLite: " << err);
+			sqlite3_free(err);
 		}
 	}
 

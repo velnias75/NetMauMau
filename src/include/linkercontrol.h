@@ -1,7 +1,7 @@
 /*
  * linkercontrol.h - a common header for controlling visibility of functions and methods
  *
- * $Revision: 3544 $ $Author: heiko $
+ * $Revision: 3754 $ $Author: heiko $
  *
  * (c) 2012-2015 Heiko Schäfer <heiko@hgl.rangun.de>
  *
@@ -99,8 +99,32 @@ namespace Commons {
 #define _PURE __attribute__ ((pure))
 #endif
 
+#ifndef _WIN32
+#define _NWPURE _PURE
+#else
+#define _NWPURE
+#endif
+
+#ifndef _WIN32
+#define _WPURE
+#else
+#define _WPURE _PURE
+#endif
+
 #ifndef _CONST
 #define _CONST __attribute__ ((const))
+#endif
+
+#ifndef _WIN32
+#define _NWCONST _CONST
+#else
+#define _NWCONST
+#endif
+
+#ifndef _WIN32
+#define _WCONST
+#else
+#define _WCONST _CONST
 #endif
 
 #ifndef _HOT

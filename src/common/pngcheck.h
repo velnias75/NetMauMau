@@ -28,7 +28,7 @@ namespace NetMauMau {
 
 namespace Common {
 
-_EXPORT bool checkPNG(const unsigned char *pngData, std::size_t pngDataLen);
+_EXPORT bool checkPNG(const unsigned char *pngData, std::size_t pngDataLen) _WCONST;
 
 }
 

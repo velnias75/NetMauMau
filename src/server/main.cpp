@@ -177,6 +177,7 @@ void updatePlayerCap(NetMauMau::Server::Connection::CAPABILITIES &caps, std::siz
 }
 
 char *inetdParsedString(char *str) {
+
 	if(str) {
 
 		char *ptr = str;
@@ -209,53 +210,58 @@ void sh_interrupt(int) {
 
 #ifndef _WIN32
 
-void sh_dump(int) {
+void sh_dump(int, siginfo_t *info, void *) {
 
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "== Options ==");
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "AI-delay: "
-			<< static_cast<float>(aiDelay) << " sec");
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "A/K/Q rounds: "
-			<< NetMauMau::Common::Logger::abool(aceRound));
+	char pp[PATH_MAX] = "";
 
-	if(aceRound) logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "A/K/Q rank: "
-							 << ((arRank != 0L) ? arRank : "ACE"));
+	if(info) std::snprintf(pp, PATH_MAX, "/proc/%d/fd/1", info->si_pid);
 
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Decks: " << decks);
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Direction change: "
-			<< NetMauMau::Common::Logger::abool(dirChange));
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Initial card count: "
-			<< initialCardCount);
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Players: " << minPlayers);
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Ultimate: "
-			<< NetMauMau::Common::Logger::abool(ultimate));
+	std::ofstream out(*pp ? pp : "/dev/null");
 
-	char sr[128];
-	std::snprintf(sr, 127, "Total received %.2f kb; total sent %.2f kb",
-				  static_cast<double>
-				  (NetMauMau::Common::AbstractSocket::getTotalReceivedBytes()) / 1024.0,
-				  static_cast<double>
-				  (NetMauMau::Common::AbstractSocket::getTotalSentBytes()) / 1024.0);
+	if(out.is_open()) {
 
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "== Network ==");
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Host: "
-			<< (host && *host ? host : "localhost"));
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Port: " << port);
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << sr);
+		out << std::boolalpha << "== Options ==" << std::endl;
+		out << "AI-delay: " << static_cast<float>(aiDelay) << " sec" << std::endl;
+		out << "A/K/Q rounds: " << aceRound << std::endl;
 
-	char outstr[256];
-	// cppcheck-suppress nonreentrantFunctionslocaltime
-	struct tm *tmp = std::localtime(&startTime);
+		if(aceRound) out << "A/K/Q rank: " << ((arRank != 0L) ? arRank : "ACE") << std::endl;
 
-	if(tmp && std::strftime(outstr, sizeof(outstr), "Server start: %c", tmp)) {
-		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << outstr);
-	}
+		out << "Decks: " << decks << std::endl;
+		out << "Direction change: " << dirChange << std::endl;
+		out << "Initial card count: " << initialCardCount << std::endl;
+		out << "Players: " << minPlayers << std::endl;
+		out << "Ultimate: " << ultimate << std::endl;
 
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Served games since server start: "
-			<< NetMauMau::Server::Game::getServedGames());
+		char sr[128];
+		std::snprintf(sr, 127, "Total received %.2f kb; total sent %.2f kb",
+					  static_cast<double>
+					  (NetMauMau::Common::AbstractSocket::getTotalReceivedBytes()) / 1024.0,
+					  static_cast<double>
+					  (NetMauMau::Common::AbstractSocket::getTotalSentBytes()) / 1024.0);
 
-	if(!NetMauMau::DB::SQLite::getInstance().getDBFilename().empty()) {
-		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Total served games on this server: "
-				<< NetMauMau::DB::SQLite::getInstance().getServedGames());
+		out << "== Network ==" << std::endl;
+		out << "Host: " << (host && *host ? host : "localhost") << std::endl;
+		out << "Port: " << port << std::endl;
+		out << sr << std::endl;
+
+		char outstr[256];
+		// cppcheck-suppress nonreentrantFunctionslocaltime
+		struct tm *tmp = std::localtime(&startTime);
+
+		if(tmp && std::strftime(outstr, sizeof(outstr), "Server start: %c", tmp)) {
+			out << outstr << std::endl;
+		}
+
+		out << "Served games since server start: " << NetMauMau::Server::Game::getServedGames()
+			<< std::endl;
+
+		if(!NetMauMau::DB::SQLite::getInstance().getDBFilename().empty()) {
+			out << "Total served games on this server: "
+				<< NetMauMau::DB::SQLite::getInstance().getServedGames() << std::endl;
+		}
+
+		out.flush();
+		out.close();
 	}
 }
 
@@ -585,7 +591,8 @@ int main(int argc, const char **argv) {
 	sigaction(SIGTERM, &sa, NULL);
 
 	std::memset(&sa, 0, sizeof(struct sigaction));
-	sa.sa_handler = sh_dump;
+	sa.sa_sigaction = sh_dump;
+	sa.sa_flags = static_cast<int>(SA_SIGINFO);
 	sigaction(SIGUSR1, &sa, NULL);
 
 #ifdef HAVE_LIBRT

@@ -18,11 +18,11 @@ MAINTAINERCLEANFILES = $(bin_PROGRAMS).1
 DISTCLEANFILES = $(man1_MANS)
 
 noinst_HEADERS = gameconfig.h game.h serverconnection.h servereventhandler.h \
-	serverplayerexception.h serverplayer.h 
+	serverplayerexception.h serverplayer.h ttynamecheckdir.h
 
 libnmm_server_private_la_CXXFLAGS = $(NO_RTTI_FLAGS) -I$(top_srcdir)/src/include \
 	-I$(top_srcdir)/src/engine
-libnmm_server_private_la_SOURCES = gameconfig.cpp
+libnmm_server_private_la_SOURCES = gameconfig.cpp ttynamecheckdir.cpp
 	
 nmm_server_CPPFLAGS = $(GSL)
 

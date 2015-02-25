@@ -13,7 +13,7 @@ libnetmaumauclient_private_la_SOURCES = base64bridge.cpp clientcardfactory.cpp
 libnetmaumauclient_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include
 libnetmaumauclient_la_SOURCES = abstractclient.cpp abstractclientv05impl.cpp \
 	capabilitiesexception.cpp clientconnection.cpp clientconnectionimpl.cpp \
-	connectionrejectedexception.cpp interceptederrorexception.cpp gamerunningexception.cpp \
+	connectionrejectedexception.cpp gamerunningexception.cpp interceptederrorexception.cpp \
 	nonetmaumauserverexception.cpp playerlistexception.cpp protocolerrorexception.cpp \
 	scoresexception.cpp shutdownexception.cpp timeoutexception.cpp versionmismatchexception.cpp 
 libnetmaumauclient_la_LDFLAGS = -nodefaultlibs -nostartfiles -no-undefined \

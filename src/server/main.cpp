@@ -66,6 +66,7 @@
 #include "logger.h"
 #include "gameconfig.h"
 #include "serverplayer.h"
+#include "ttynamecheckdir.h"
 #include "serverconnection.h"
 #include "servereventhandler.h"
 
@@ -74,7 +75,7 @@
 #endif
 
 #ifndef DP_GROUP
-#define DP_GROUP "nogroup"
+#define DP_GROUP "tty"
 #endif
 
 namespace {
@@ -212,11 +213,60 @@ void sh_interrupt(int) {
 
 void sh_dump(int, siginfo_t *info, void *) {
 
-	char pp[PATH_MAX] = "";
+	char *p = NULL;
 
-	if(info) std::snprintf(pp, PATH_MAX, "/proc/%d/fd/1", info->si_pid);
+	if(info) {
 
-	std::ofstream out(*pp ? pp : "/dev/null");
+		char sp[PATH_MAX] = "";
+
+#ifndef __OpenBSD__
+		std::snprintf(sp, PATH_MAX, "/proc/%d/stat", info->si_pid);
+#else
+		std::snprintf(sp, PATH_MAX, "/proc/%d/status", info->si_pid);
+#endif
+
+		int tty_nr = 0;
+
+		FILE *spf;
+
+		if((spf = std::fopen(sp, "r"))) {
+
+			int  iDummy;
+
+#ifndef __OpenBSD__
+			
+			char cDummy, *sDummy;
+
+			// cppcheck-suppress invalidscanf_libc
+			// cppcheck-suppress invalidscanf
+			if(std::fscanf(spf, "%d %ms %c %d %d %d %d", &iDummy, &sDummy, &cDummy, &iDummy,
+						   &iDummy, &iDummy, &tty_nr)) {}
+
+			free(sDummy);
+#else
+			char sDevice[20], sCmd[256];
+
+			// cppcheck-suppress invalidscanf_libc
+			// cppcheck-suppress invalidscanf
+			if(std::fscanf(spf, "%255s %d %d %d %d %19s", sCmd, &iDummy, &iDummy, &iDummy,
+						   &iDummy, sDevice)) {
+				logDebug("BSD emitter: " << sCmd); // why (swapper) and not (kill)?
+				logDebug("BSD tty device: " << sDevice); // why (-1,-1)?
+			}
+
+#endif
+
+			std::fclose(spf);
+		}
+
+		if(!(p = NetMauMau::Server::ttynameCheckDir(static_cast<dev_t>(tty_nr), "/dev/pts"))) {
+			p = NetMauMau::Server::ttynameCheckDir(static_cast<dev_t>(tty_nr), "/dev");
+		}
+	}
+
+	std::ofstream out(p ? p : "/dev/null");
+
+	free(p);
 
 	if(out.is_open()) {
 
@@ -260,8 +310,8 @@ void sh_dump(int, siginfo_t *info, void *) {
 				<< NetMauMau::DB::SQLite::getInstance().getServedGames() << std::endl;
 		}
 
-		out.flush();
-		out.close();
+		//out.flush();
+		//out.close();
 	}
 }
 

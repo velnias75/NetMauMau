@@ -130,6 +130,7 @@ AC_CHECK_HEADERS([sys/socket.h])
 # Checks for typedefs, structures, and compiler characteristics.
 AX_CXX_GCC_ABI_DEMANGLE
 AC_CHECK_TYPES([ptrdiff_t])
+AC_CHECK_MEMBERS([struct stat.st_rdev])
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
 AC_TYPE_UINT16_T
@@ -139,6 +140,10 @@ AC_TYPE_PID_T
 AC_C_INLINE
 
 # Checks for library functions.
+AS_IF([test "x$cross_compiling" != "xyes"], [
+  AC_FUNC_MALLOC
+  AC_FUNC_REALLOC
+])
 AC_CHECK_FUNCS([mkdir])
 AC_CHECK_FUNCS([initstate])
 AC_CHECK_FUNCS([strdup])

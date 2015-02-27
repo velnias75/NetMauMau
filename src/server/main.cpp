@@ -595,12 +595,17 @@ int main(int argc, const char **argv) {
 
 	poptFreeContext(pctx);
 
+#ifndef _WIN32
 	if(inetd) {
 		NetMauMau::Common::Logger::setSilentMask(0xFF);
 		NetMauMau::Common::Logger::writeSyslog(true);
 	} else {
 		NetMauMau::Common::Logger::writeSyslog(false);
 	}
+#else
+	// on Win32 we don't write to syslog, but we flush std::cerr after every log
+	NetMauMau::Common::Logger::writeSyslog(true);
+#endif
 
 #ifndef HAVE_ARC4RANDOM_UNIFORM
 #if HAVE_INITSTATE

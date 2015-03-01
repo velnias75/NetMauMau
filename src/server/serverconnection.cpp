@@ -189,8 +189,15 @@ bool Connection::wire(SOCKET sockfd, const struct sockaddr *addr, socklen_t addr
 
 	const int yes = 1;
 
+#ifndef _WIN32
+
 	if(setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char *>(&yes),
 				  sizeof(int)) == -1) {
+#else
+
+	if(setsockopt(sockfd, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, reinterpret_cast<const char *>(&yes),
+				  sizeof(int)) == -1) {
+#endif
 		return false;
 	}
 

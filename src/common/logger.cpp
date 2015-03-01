@@ -32,7 +32,12 @@ const std::ostreambuf_iterator<LOG_CHAR> out = std::ostreambuf_iterator<LOG_CHAR
 
 using namespace NetMauMau::Common;
 
+#ifndef _WIN32
 bool Logger::m_writeSyslog = false;
+#else
+// on Win32 we don't write to syslog, but we flush std::cerr after every log
+bool Logger::m_writeSyslog = true;
+#endif
 
 Logger::Logger(const LEVEL &lvl) : Commons::IPostLogger<std::ostreambuf_iterator<LOG_CHAR> >(),
 	Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR> >(out, lvl, m_writeSyslog ? this : 0L) {

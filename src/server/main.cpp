@@ -234,7 +234,7 @@ void sh_dump(int, siginfo_t *info, void *) {
 			int  iDummy;
 
 #ifndef __OpenBSD__
-			
+
 			char cDummy, *sDummy;
 
 			// cppcheck-suppress invalidscanf_libc
@@ -596,15 +596,14 @@ int main(int argc, const char **argv) {
 	poptFreeContext(pctx);
 
 #ifndef _WIN32
+
 	if(inetd) {
 		NetMauMau::Common::Logger::setSilentMask(0xFF);
 		NetMauMau::Common::Logger::writeSyslog(true);
 	} else {
 		NetMauMau::Common::Logger::writeSyslog(false);
 	}
-#else
-	// on Win32 we don't write to syslog, but we flush std::cerr after every log
-	NetMauMau::Common::Logger::writeSyslog(true);
+
 #endif
 
 #ifndef HAVE_ARC4RANDOM_UNIFORM

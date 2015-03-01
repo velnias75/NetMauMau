@@ -1,3 +1,9 @@
+netmaumau (0.16) UNRELEASED; urgency=low
+
+  * 
+
+ -- Heiko Schäfer <heiko@rangun.de>  Sun, 01 Mar 2015 06:32:06 +0100
+
 netmaumau (0.15) UNRELEASED; urgency=low
 
   * amount of card decks configurable

@@ -37,7 +37,7 @@ AC_ARG_ENABLE([apidoc], [AS_HELP_STRING([--disable-apidoc], [disables generation
 
 AC_ARG_ENABLE([ai-name], [AS_HELP_STRING([--enable-ai-name], [default name of AI player])])
 
-if test "x$enable_ai_name" != "xno"; then
+if test ! -z "$enable_ai_name" -a "x$enable_ai_name" != "xno"; then
   AC_DEFINE_UNQUOTED([AI_NAME], ["$enable_ai_name"], [default name of AI player])
 else
   AC_DEFINE([AI_NAME], ["Computer"], [default name of AI player])
@@ -47,7 +47,7 @@ AC_ARG_ENABLE([ai-image], [AS_HELP_STRING([--enable-ai-image], [path to image of
   [ AM_CONDITIONAL([BRANDING], [ test x$enable_ai_image != xno ]) ],
   [ AM_CONDITIONAL([BRANDING], [ false ]) ])
 
-if test "x$enable_ai_image" != "xno"; then
+if test ! -z "$enable_ai_image" -a "x$enable_ai_image" != "xno"; then
   AC_SUBST([AI_IMAGE], [$enable_ai_image])
 else
   AC_SUBST([AI_IMAGE], [\$\(top_srcdir\)/src/images/KS.PNG])

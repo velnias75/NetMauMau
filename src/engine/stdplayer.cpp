@@ -538,7 +538,7 @@ NetMauMau::Common::ICard::SUIT StdPlayer::getMaxPlayedOffSuit(CARDS::difference_
 
 	pcVec.reserve(m_playedOutCards.size());
 
-	for(std::set<std::string>::const_iterator i(m_playedOutCards.begin());
+	for(std::vector<std::string>::const_iterator i(m_playedOutCards.begin());
 			i != m_playedOutCards.end(); ++i) {
 
 		NetMauMau::Common::ICard::SUIT s;
@@ -597,7 +597,7 @@ bool StdPlayer::cardAccepted(const NetMauMau::Common::ICard *playedCard) {
 }
 
 void StdPlayer::cardPlayed(NetMauMau::Common::ICard *playedCard) {
-	m_playedOutCards.insert(playedCard->description());
+	m_playedOutCards.push_back(playedCard->description());
 }
 
 void StdPlayer::talonShuffled() {

@@ -20,8 +20,6 @@
 #ifndef NETMAUMAU_PLAYER_STDPLAYER_H
 #define NETMAUMAU_PLAYER_STDPLAYER_H
 
-#include <set>
-
 #include "iplayer.h"
 
 namespace NetMauMau {
@@ -145,7 +143,7 @@ private:
 	CARDS m_cards;
 	mutable bool m_cardsTaken;
 	const RuleSet::IRuleSet *m_ruleset;
-	std::set<std::string> m_playedOutCards;
+	std::vector<std::string> m_playedOutCards;
 	bool m_playerHasFewCards;
 	mutable Common::ICard::SUIT m_powerSuit;
 	mutable bool m_powerPlay;

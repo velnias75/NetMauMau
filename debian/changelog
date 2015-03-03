@@ -1,8 +1,8 @@
-netmaumau (0.16) UNRELEASED; urgency=low
+netmaumau (0.16) precise; urgency=low
 
-  * 
+  * improved AI
 
- -- Heiko Schäfer <heiko@rangun.de>  Sun, 01 Mar 2015 06:32:06 +0100
+ -- Heiko Schäfer <heiko@rangun.de>  Tue, 03 Mar 2015 17:05:06 +0100
 
 netmaumau (0.15) UNRELEASED; urgency=low
 

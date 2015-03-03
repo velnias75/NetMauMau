@@ -95,7 +95,7 @@ void TestEventHandler::playerPicksCard(const NetMauMau::Player::IPlayer *player,
 									   const NetMauMau::Common::ICard *) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	std::cerr << PLAYER << SETWIDTH << "takes a card from talon!" << "("
+	std::cerr << PLAYER << std::setw(30) << "takes a card from talon!" << "("
 			  << player->getCardCount() << ")" << std::endl;
 }
 

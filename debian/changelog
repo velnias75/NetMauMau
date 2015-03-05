@@ -1,8 +1,9 @@
-netmaumau (0.16) precise; urgency=low
+netmaumau (0.16) UNRELEASED; urgency=low
 
   * improved AI
+  * ran wrap-and-sort over debian/
 
- -- Heiko Schäfer <heiko@rangun.de>  Tue, 03 Mar 2015 17:05:06 +0100
+ -- Heiko Schäfer <heiko@rangun.de>  Thu, 05 Mar 2015 12:09:20 +0100
 
 netmaumau (0.15) UNRELEASED; urgency=low
 

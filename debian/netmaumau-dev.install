@@ -1,5 +1,5 @@
 /usr/include/netmaumau
 /usr/lib/lib*.a
-/usr/lib/libnetmaumaucommon.so
 /usr/lib/libnetmaumauclient.so
+/usr/lib/libnetmaumaucommon.so
 /usr/lib/pkgconfig/netmaumau.pc

@@ -90,3 +90,6 @@ netmaumau-*.tar.xz
 src/common/ai-icon.h
 netmaumau.pc
 src/test/stresstest.sh
+.anjuta/
+.anjuta_sym_db.db
+netmaumau.anjuta

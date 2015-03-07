@@ -1,8 +1,5 @@
 #!/usr/bin/make -f
 
-export ACLOCAL = aclocal-1.11
-export AUTOMAKE = automake-1.11
-
 CPPFLAGS = -DNDEBUG
 CXXFLAGS = -fomit-frame-pointer
 

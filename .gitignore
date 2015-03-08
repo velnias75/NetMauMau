@@ -93,3 +93,4 @@ src/test/stresstest.sh
 .anjuta/
 .anjuta_sym_db.db
 netmaumau.anjuta
+hardy-buildp.patch

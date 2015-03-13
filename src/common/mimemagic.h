@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -17,8 +17,20 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_PNGCHECK_H
-#define NETMAUMAU_PNGCHECK_H
+#ifndef NETMAUMAU_COMMON_MAGIC_H
+#define NETMAUMAU_COMMON_MAGIC_H
+
+#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
+#include "config.h"
+#endif
+
+#if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
+#include <magic.h>
+
+#ifndef MAGIC_MIME_TYPE
+#define MAGIC_MIME_TYPE MAGIC_MIME
+#endif
+#endif
 
 #include <cstdlib>
 
@@ -28,12 +40,29 @@ namespace NetMauMau {
 
 namespace Common {
 
-_EXPORT bool checkPNG(const unsigned char *pngData, std::size_t pngDataLen);
+class MimeMagic {
+	DISALLOW_COPY_AND_ASSIGN(MimeMagic)
+public:
+	~MimeMagic();
+
+	static MimeMagic &getInstance();
+
+	// cppcheck-suppress functionStatic
+	bool checkMime(const unsigned char *data, std::size_t dataLen, const char *mime) const;
+
+private:
+	MimeMagic();
+
+private:
+#if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
+	magic_t m_magic;
+#endif
+};
 
 }
 
 }
 
-#endif /* NETMAUMAU_PNGCHECK_H */
+#endif /* NETMAUMAU_COMMON_MAGIC_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

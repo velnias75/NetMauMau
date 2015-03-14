@@ -1,3 +1,9 @@
+netmaumau (0.17) UNRELEASED; urgency=low
+
+  * open magic mime database once per session
+
+ -- Heiko Schäfer <heiko@rangun.de>  Sat, 14 Mar 2015 06:22:55 +0100
+
 netmaumau (0.16) UNRELEASED; urgency=low
 
   * improved AI

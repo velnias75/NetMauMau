@@ -43,15 +43,15 @@ namespace Common {
 class MimeMagic {
 	DISALLOW_COPY_AND_ASSIGN(MimeMagic)
 public:
-	~MimeMagic();
+	~MimeMagic() _WCONST;
 
 	static MimeMagic &getInstance();
 
 	// cppcheck-suppress functionStatic
-	bool checkMime(const unsigned char *data, std::size_t dataLen, const char *mime) const;
+	bool checkMime(const unsigned char *data, std::size_t dataLen, const char *mime) const _WCONST;
 
 private:
-	MimeMagic();
+	MimeMagic() _WCONST;
 
 private:
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)

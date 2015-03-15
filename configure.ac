@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.61])
-AC_INIT([NetMauMau], [0.17], [heiko@rangun.de], [netmaumau], [https://github.com/velnias75/NetMauMau])
+AC_INIT([NetMauMau], [0.17.0], [heiko@rangun.de], [netmaumau], [https://github.com/velnias75/NetMauMau])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
 AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip tar-pax no-installinfo no-texinfo.tex])
 AM_MAINTAINER_MODE
@@ -161,14 +161,17 @@ AC_FUNC_CHOWN
 
 SERVER_VERSION_MAJOR="`echo ${PACKAGE_VERSION} | tr -s '~.' '\t' | cut -f1`"
 SERVER_VERSION_MINOR="`echo ${PACKAGE_VERSION} | tr -s '~.' '\t' | cut -f2`"
+SERVER_VERSION_RELEASE="`echo ${PACKAGE_VERSION} | tr -s '~.' '\t' | cut -f3`"
 
 AC_SUBST([SERVER_VERSION_MAJOR])
 AC_SUBST([SERVER_VERSION_MINOR])
+AC_SUBST([SERVER_VERSION_RELEASE])
 
 AC_DEFINE([MAXPICBYTES], [1048576], [maximum size of player image in bytes (base64 encoded)])
 
 AC_DEFINE_UNQUOTED([SERVER_VERSION_MAJOR], [${SERVER_VERSION_MAJOR}], [server version major])
 AC_DEFINE_UNQUOTED([SERVER_VERSION_MINOR], [${SERVER_VERSION_MINOR}], [server version minor])
+AC_DEFINE_UNQUOTED([SERVER_VERSION_RELEASE], [${SERVER_VERSION_RELEASE}], [server version release])
 
 if test x$CLANG = xyes; then VISIBILITY=hidden; else VISIBILITY=internal; fi
 

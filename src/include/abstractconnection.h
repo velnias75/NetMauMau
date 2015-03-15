@@ -48,20 +48,21 @@ public:
 	/**
 	 * @brief Key/value map of the server capabilities
 	 *
-	 * Key            | Value
-	 * -------------- | -----
-	 * ACEROUND       | `false` if no *ace rounds* are enabled, else `A`, `Q` or `K` for the *rank*
-	 * AI_NAME        | name of the first AI player
-	 * AI_OPPONENT    | `true` if the AI opponent is enabled
-	 * CUR_PLAYERS    | amount of current players joined
-	 * DIRCHANGE      | `true` if direction changes are allowed, `false` otherwise
-	 * HAVE_SCORES    | `true` if the server can provide scores, `false` otherwise
-	 * INITIAL_CARDS  | if played with an amount of initial cards not equal to 5 contains the number of cards
-	 * MAX_PLAYERS    | amount of players needed to start the game
-	 * MIN_VERSION    | minimum version of client that can connect
-	 * SERVER_VERSION | version of the server
-	 * TALON          | if played with more than 1 card deck contains the number of cards
-	 * ULTIMATE       | `true` if running in ultimate mode, `false` otherwise
+	 * Key                | Value
+	 * ------------------ | -----
+	 * ACEROUND           | `false` if no *ace rounds* are enabled, else `A`, `Q` or `K` for the *rank*
+	 * AI_NAME            | name of the first AI player
+	 * AI_OPPONENT        | `true` if the AI opponent is enabled
+	 * CUR_PLAYERS        | amount of current players joined
+	 * DIRCHANGE          | `true` if direction changes are allowed, `false` otherwise
+	 * HAVE_SCORES        | `true` if the server can provide scores, `false` otherwise
+	 * INITIAL_CARDS      | if played with an amount of initial cards not equal to 5 contains the number of cards
+	 * MAX_PLAYERS        | amount of players needed to start the game
+	 * MIN_VERSION        | minimum version of client that can connect
+	 * SERVER_VERSION     | version of the server
+	 * SERVER_VERSION_REL | version of the server (including release)
+	 * TALON              | if played with more than 1 card deck contains the number of cards
+	 * ULTIMATE           | `true` if running in ultimate mode, `false` otherwise
 	 *
 	 */
 	typedef std::map<std::string, std::string> CAPABILITIES;

@@ -38,7 +38,7 @@
  * @hideinitializer
  * @ingroup util
  *
- * Computes the corresponding version number integer
+ * Computes the corresponding version number integer to an usigned 32 bit integer
  *
  * @param maj the major of the version number
  * @param min the minor of the version number
@@ -47,6 +47,67 @@
  */
 #define MAKE_VERSION(maj, min) static_cast<uint32_t>((static_cast<uint16_t>(maj) << 16u) | \
 		static_cast<uint16_t>(min))
+
+/**
+ * @def MAKE_VERSION_REL(maj, min, rel)
+ * @hideinitializer
+ * @ingroup util
+ *
+ * Computes the corresponding version number integer to an usigned 32 bit integer
+ *
+ * @note Release version differ only for security and bugfix releases which are **NEITHER**
+ * adding new features **NOR** changing the protocol.
+ *
+ * @param maj the major of the version number
+ * @param min the minor of the version number
+ * @param rel the release of the version number
+ *
+ * @since 0.17.0
+ */
+#define MAKE_VERSION_REL(maj, min, rel) static_cast<uint32_t>((((maj) & 0x3FF) << 11) | \
+		(((min) & 0x3FF) << 21) | ((rel) & 0x3FF) | (1UL << 31UL))
+
+/**
+ * @def VERSION_REL(v)
+ * @hideinitializer
+ * @ingroup util
+ *
+ * Gets the release number of the version as unsigned 16 bit integer
+ *
+ * @param v the version number
+ *
+ * @since 0.17.0
+ */
+#define VERSION_REL(v) static_cast<uint16_t>((((v) >> 31) & 1) ? ((v) & (((1 << 21) - 1) & 0x3FF)) \
+		: 0)
+
+/**
+ * @def VERSION_MIN(v)
+ * @hideinitializer
+ * @ingroup util
+ *
+ * Gets the minor number of the version as unsigned 16 bit integer
+ *
+ * @param v the version number
+ *
+ * @since 0.17.0
+ */
+#define VERSION_MIN(v) static_cast<uint16_t>((((v) >> 31) & 1) ? ((((v) & ((1UL << 31UL) - 1)) \
+		>> 21) & 0x3FF) : ((v) & ((1 << 16) - 1)))
+
+/**
+ * @def VERSION_MAJ(v)
+ * @hideinitializer
+ * @ingroup util
+ *
+ * Gets the major number of the version as unsigned 16 bit integer
+ *
+ * @param v the version number
+ *
+ * @since 0.17.0
+ */
+#define VERSION_MAJ(v) static_cast<uint16_t>((((v) >> 31) & 1) ? ((((v) & ((1UL << 31UL) - 1)) \
+		>> 11) & 0x3FF) : ((v) >> 16))
 
 namespace NetMauMau {
 

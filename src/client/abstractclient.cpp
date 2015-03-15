@@ -546,13 +546,22 @@ uint32_t AbstractClientV05::getClientProtocolVersion() {
 	return MAKE_VERSION(SERVER_VERSION_MAJOR, SERVER_VERSION_MINOR);
 }
 
+uint32_t AbstractClientV05::getClientLibraryVersion() {
+	return MAKE_VERSION_REL(SERVER_VERSION_MAJOR, SERVER_VERSION_MINOR, SERVER_VERSION_RELEASE);
+}
+
 uint32_t AbstractClientV05::parseProtocolVersion(const std::string &ver) {
 
-	const std::string::size_type p = ver.find('.');
+	const std::string::size_type p1 = ver.find('.');
+	const std::string::size_type p2 = ver.find('.', p1 + 1);
 
-	if(p != std::string::npos) {
-		return MAKE_VERSION(std::strtoul(ver.substr(0, p).c_str(), NULL, 10),
-							std::strtoul(ver.substr(p + 1).c_str(), NULL, 10));
+	if(p1 != std::string::npos && p2 == std::string::npos) {
+		return MAKE_VERSION(std::strtoul(ver.substr(0, p1).c_str(), NULL, 10),
+							std::strtoul(ver.substr(p1 + 1).c_str(), NULL, 10));
+	} else if(p1 != std::string::npos) {
+		return MAKE_VERSION_REL(std::strtoul(ver.substr(0, p1).c_str(), NULL, 10),
+								std::strtoul(ver.substr(p1 + 1, p2).c_str(), NULL, 10),
+								std::strtoul(ver.substr(p2 + 1).c_str(), NULL, 10));
 	}
 
 	return 0;

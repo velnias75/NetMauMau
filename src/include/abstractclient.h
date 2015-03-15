@@ -171,7 +171,7 @@ public:
 
 	/**
 	 * @ingroup util
-	 * @brief Returns the version of the client's implemented protocol version
+	 * @brief Returns the version of the client's implemented protocol
 	 *
 	 * You can retrieve major and minor version as following: @code
 	 * uint16_t major = static_cast<uint16_t>(AbstractClient::getClientProtocolVersion() >> 16);
@@ -181,6 +181,15 @@ public:
 	 * @return the protocol version
 	 */
 	static uint32_t getClientProtocolVersion() _CONST;
+
+	/**
+	 * @ingroup util
+	 * @brief Returns the version of the client library
+	 *
+	 * @return the library version
+	 * @since 0.17.0
+	 */
+	static uint32_t getClientLibraryVersion() _CONST;
 
 	/**
 	 * @ingroup util

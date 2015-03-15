@@ -21,6 +21,9 @@
 #include "config.h"
 #endif
 
+#define NMM_VERSION_STRING(maj,min) NMMSTR(maj) "." NMMSTR(min)
+#define NMMSTR(s) #s
+
 #if _WIN32
 #define COPY "\270"
 #define AUML "\204"
@@ -716,7 +719,10 @@ int main(int argc, const char **argv) {
 			Server::Game game(cfg);
 
 			Server::Connection::CAPABILITIES caps;
-			caps.insert(std::make_pair("SERVER_VERSION", PACKAGE_VERSION));
+
+			caps.insert(std::make_pair("SERVER_VERSION", NMM_VERSION_STRING(SERVER_VERSION_MAJOR,
+									   SERVER_VERSION_MINOR)));
+			caps.insert(std::make_pair("SERVER_VERSION_REL", PACKAGE_VERSION));
 			caps.insert(std::make_pair("AI_OPPONENT", aiOpponent ? "true" : "false"));
 			caps.insert(std::make_pair("ULTIMATE", ultimate ? "true" : "false"));
 			caps.insert(std::make_pair("ACEROUND", aceRound ? std::string(1, arRank ?

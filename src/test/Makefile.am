@@ -34,6 +34,7 @@ test_netmaumau_LDADD = ../common/libnetmaumaucommon.la ../engine/libengine.la \
 test_netmaumau_LDFLAGS = -no-install
 
 if ENABLE_CLI_CLIENT
+nmm_client_CPPFLAGS = -DCLIENTVERSION=$(CLIENTVERSION)
 nmm_client_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/client $(POPT_CFLAGS)
 nmm_client_SOURCES = test_client.cpp testclient.cpp

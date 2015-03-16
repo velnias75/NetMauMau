@@ -13,4 +13,4 @@ Description: client library to communicate with the NetMauMau server
 URL: https://github.com/velnias75/NetMauMau/
 Version: ${version}
 Libs: -L${libdir} -lnetmaumaucommon -lnetmaumauclient
-Cflags: -I${includedir}
+Cflags: -I${includedir} -DCLIENTVERSION=@CLIENTVERSION@

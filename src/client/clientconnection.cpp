@@ -326,7 +326,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 						"the connection", getSocketFD());
 			} else if((status[0] == 'V' && status[1] == 'M')) {
 				throw Exception::VersionMismatchException(
-					MAKE_VERSION(maj, min), _pimpl->m_clientVersion, getSocketFD());
+					MAKE_VERSION(SERVER_VERSION_MAJOR, SERVER_VERSION_MINOR),
+					MAKE_VERSION(maj, min), getSocketFD());
 			} else if((status[0] == 'I' && status[1] == 'N')) {
 				throw Exception::PlayerlistException(_pimpl->m_pName, getSocketFD());
 			} else if((status[0] == 'G' && status[1] == 'R')) {

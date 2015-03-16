@@ -1,8 +1,8 @@
-netmaumau (0.17) UNRELEASED; urgency=low
+netmaumau (0.17.0) UNRELEASED; urgency=low
 
   * open magic mime database once per session
 
- -- Heiko Schäfer <heiko@rangun.de>  Sat, 14 Mar 2015 06:22:55 +0100
+ -- Heiko Schäfer <heiko@rangun.de>  Mon, 16 Mar 2015 08:37:36 +0100
 
 netmaumau (0.16) UNRELEASED; urgency=low
 

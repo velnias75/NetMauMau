@@ -29,7 +29,8 @@ netmaumau.pc: $(top_srcdir)/netmaumau.pc.in
 	-e 's|@PACKAGE_VERSION[@]|$(PACKAGE_VERSION)|g' \
 	-e 's|@bindir[@]|$(bindir)|g' \
 	-e 's|@libdir[@]|$(libdir)|g' \
-	-e 's|@pkgincludedir[@]|$(pkgincludedir)|g' < $< > $@
+	-e 's|@pkgincludedir[@]|$(pkgincludedir)|g' \
+	-e 's|@CLIENTVERSION[@]|$(CLIENTVERSION)|g' < $< > $@
 endif
 
 AM_DISTCHECK_CONFIGURE_FLAGS = --disable-client --enable-cli-client --enable-pidfile

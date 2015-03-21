@@ -54,9 +54,9 @@ function takeCards(playedCard)
   return (playedCard ~= nil and playedCard.RANK == RANK.SEVEN) and 0 or takeCardCount()
 end
 
-function takeIfLost() {
+function takeIfLost()
   return true
-}
+end
 
 function lostPointFactor(uncoveredCard)
   return uncoveredCard.RANK == RANK.JACK and 2 or 1

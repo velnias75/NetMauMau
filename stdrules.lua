@@ -15,7 +15,7 @@ function isJackMode()
 end
 
 function setJackModeOff()
-  m_jackMode = false;
+  m_jackMode = false
 end
 
 function getJackSuit()
@@ -54,6 +54,14 @@ function takeCards(playedCard)
   return (playedCard ~= nil and playedCard.RANK == RANK.SEVEN) and 0 or takeCardCount()
 end
 
+function takeIfLost() {
+  return true
+}
+
+function lostPointFactor(uncoveredCard)
+  return uncoveredCard.RANK == RANK.JACK and 2 or 1
+end
+
 function hasTakenCards()
   m_takeCardCount = 0
 end
@@ -72,7 +80,7 @@ function checkCard(uncoveredCard, playedCard, player)
 		   not (playedCard.RANK == RANK.JACK and uncoveredCard.RANK == RANK.JACK)))
   
   if player == nil then 
-	return acceptable
+	return accepted
   elseif(accepted and (m_aceRound and (m_aceRoundPlayer == nil or m_aceRoundPlayer == player) 
 	and playedCard.RANK == getAceRoundRank())) then
 

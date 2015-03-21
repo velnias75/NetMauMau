@@ -31,8 +31,7 @@ namespace RuleSet {
 class LuaRuleSet : public IRuleSet {
 	DISALLOW_COPY_AND_ASSIGN(LuaRuleSet)
 public:
-	LuaRuleSet(bool dirChangePossible, std::size_t initialCardCount = 5,
-			   const IAceRoundListener *l = 0L);
+	LuaRuleSet(const std::string &luafile, const IAceRoundListener *l = 0L);
 	virtual ~LuaRuleSet();
 
 	virtual void checkInitial(const Player::IPlayer *player, const Common::ICard *playedCard);
@@ -70,6 +69,9 @@ public:
 	virtual void setCurPlayers(std::size_t players);
 
 	virtual void reset() throw();
+	
+private:
+	const bool m_validLua;
 };
 
 }

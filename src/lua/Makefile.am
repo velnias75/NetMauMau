@@ -1,6 +1,8 @@
 noinst_LTLIBRARIES = libluaruleset.la
 
-noinst_HEADERS = luaruleset.h
+noinst_HEADERS = luaruleset.h luastate.h
 
-libluaruleset_la_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/engine $(NO_RTTI_FLAGS)
-libluaruleset_la_SOURCES = luaruleset.cpp
+libluaruleset_la_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
+	-I$(top_srcdir)/src/engine $(NO_RTTI_FLAGS) $(LIBLUA_CFLAGS)
+libluaruleset_la_SOURCES = luaruleset.cpp luastate.cpp
+libluaruleset_la_LIBADD = $(LIBLUA_LIBS)

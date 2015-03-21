@@ -20,8 +20,8 @@ libengine_private_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/i
 libengine_private_la_SOURCES = engine.cpp nullconnection.cpp stdplayer.cpp
 
 libengine_la_CPPFLAGS = $(GSL)
-libengine_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include $(GSL_CFLAGS) \
-	$(NO_RTTI_FLAGS)
+libengine_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include \
+	-I$(top_srcdir)/src/lua $(GSL_CFLAGS) $(NO_RTTI_FLAGS)
 libengine_la_SOURCES = engineconfig.cpp stdcardfactory.cpp stdruleset.cpp talon.cpp 
-libengine_la_LIBADD = libengine_private.la libeventhandler.la ../common/libnetmaumaucommon.la \
-	$(GSL_LIBS)
+libengine_la_LIBADD = ../lua/libluaruleset.la libengine_private.la libeventhandler.la \
+	../common/libnetmaumaucommon.la $(GSL_LIBS)

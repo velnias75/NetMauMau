@@ -18,6 +18,8 @@ Prerequisites
 
 * libtool
 
+* lua 5.1
+
 (x)inetd support
 ----------------
 

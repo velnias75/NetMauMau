@@ -2,6 +2,13 @@ noinst_LTLIBRARIES = libluaruleset.la
 
 noinst_HEADERS = luaruleset.h luastate.h
 
+if GSL
+GSL=-DHAVE_GSL
+else
+GSL=
+endif
+
+libluaruleset_la_CPPFLAGS = $(GSL)
 libluaruleset_la_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/engine $(NO_RTTI_FLAGS) $(LIBLUA_CFLAGS)
 libluaruleset_la_SOURCES = luaruleset.cpp luastate.cpp

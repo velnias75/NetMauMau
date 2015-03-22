@@ -39,6 +39,7 @@ int main(int, char **) {
 
 	TestEventHandler evHdlr;
 	EngineConfig cfg(evHdlr, 0L, false, 'A', true);
+// 	EngineConfig cfg(evHdlr, true, 0L, false, 'A');
 	Engine engine(cfg);
 
 	Player::StdPlayer p1("Cathy");

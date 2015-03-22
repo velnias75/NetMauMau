@@ -14,15 +14,7 @@
 
  You should have received a copy of the GNU Lesser General Public License
  along with NetMauMau.  If not, see <http://www.gnu.org/licenses/> ]]
-
-function getMaxPlayers()
-  return 5
-end
-
-function setCurPlayers(num)
-  m_curPlayers = num
-end
-
+ 
 local function ternary(expr, tVal, fVal)
   if expr then return tVal else return fVal end
 end
@@ -33,11 +25,11 @@ end
 
 local function isCardAcceptable(uncoveredCard, playedCard)
   
-  if uncoveredCard == nil or playedCard == nil then
+  if not (uncoveredCard and playedCard) then
     return false
   end
 
-  return ternary(nmm_aceRound.ENABLED and m_aceRoundPlayer ~= nil,
+  return ternary(nmm_aceRound.ENABLED and m_aceRoundPlayer,
        playedCard.RANK == nmm_aceRound.RANK, 
        ((playedCard.RANK == RANK.JACK and uncoveredCard.RANK ~= RANK.JACK) 
          or ((((isJackMode() and getJackSuit() == playedCard.SUIT) 
@@ -48,22 +40,26 @@ end
 
 function checkCard(uncoveredCard, playedCard, player)
   
-  local accepted = ternary(uncoveredCard ~= nil, isCardAcceptable(uncoveredCard, playedCard), true)
+  local accepted = ternary(uncoveredCard, isCardAcceptable(uncoveredCard, playedCard), true)
   
-  if player ~= nil then
+  if player then
     
-    if accepted and (nmm_aceRound.ENABLED and uncoveredCard ~= nil 
-      and (m_aceRoundPlayer == nil or m_aceRoundPlayer == player) 
+    -- Check if we are in an ace round or can start an ace round
+    if accepted and (nmm_aceRound.ENABLED and uncoveredCard 
+      and (not m_aceRoundPlayer or m_aceRoundPlayer == player.ID) 
       and playedCard.RANK == nmm_aceRound.RANK) then
 
-      local acrCont = m_aceRoundPlayer ~= nil
-    
-      m_aceRoundPlayer = ternary(getAceRoundChoice(player.INTERFACE), player, nil)
+      do
+        
+        local acrCont = (m_aceRoundPlayer ~= nil)
+      
+        m_aceRoundPlayer = ternary(getAceRoundChoice(player.INTERFACE), player.ID, nil)
 
-      if m_aceRoundPlayer ~= nil then
-        aceRoundStarted(player.INTERFACE)
-      elseif acrCont then
-        aceRoundEnded(player.INTERFACE)
+        if m_aceRoundPlayer then
+          aceRoundStarted(player.INTERFACE)
+        elseif acrCont then
+          aceRoundEnded(player.INTERFACE)
+        end
       end
 
     elseif accepted and isDirChange(playedCard) then
@@ -80,10 +76,9 @@ function checkCard(uncoveredCard, playedCard, player)
     elseif accepted and playedCard.RANK == RANK.JACK 
       and (m_curPlayers > 2 or player.CARDCOUNT > 1) then
       m_jackSuit = getJackChoice(player.INTERFACE, 
-        ternary(uncoveredCard ~= nil, uncoveredCard, playedCard), playedCard)
+        ternary(uncoveredCard, uncoveredCard, playedCard), playedCard)
       m_jackMode = true
-    end
-    
+    end   
   end
 
   return accepted
@@ -95,7 +90,7 @@ function lostPointFactor(uncoveredCard)
 end
 
 function hasToSuspend()
-  return m_hasToSuspend and not m_hasSuspended
+  return m_hasToSuspend and (not m_hasSuspended)
 end
 
 function hasSuspended()
@@ -107,7 +102,7 @@ function takeCardCount()
 end
 
 function takeCards(playedCard)
-  return ternary(playedCard ~= nil and playedCard.RANK == RANK.SEVEN, 0, takeCardCount())
+  return ternary(playedCard and playedCard.RANK == RANK.SEVEN, 0, takeCardCount())
 end
 
 function hasTakenCards()
@@ -135,7 +130,7 @@ function getAceRoundRank()
 end
 
 function isAceRound()
-  return m_aceRoundPlayer ~= nil and isAceRoundPossible()
+  return m_aceRoundPlayer and isAceRoundPossible()
 end
 
 function isJackMode()
@@ -164,6 +159,14 @@ end
 
 function getJackSuit()
   return ternary(m_jackSuit == SUIT.SUIT_ILLEGAL, getRandomSuit(), m_jackSuit)
+end
+
+function getMaxPlayers()
+  return 5
+end
+
+function setCurPlayers(num)
+  m_curPlayers = num
 end
 
 function reset()

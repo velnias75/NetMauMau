@@ -75,6 +75,7 @@ LuaState::LuaState() : m_state(luaL_newstate()), m_luaFile() {
 		lua_setfield(m_state, -2, "RANK_ILLEGAL");
 		lua_setfield(m_state, LUA_GLOBALSINDEX, "RANK");
 
+		lua_register(m_state, "print", print);
 		lua_register(m_state, "getRandomSuit", getRandomSuit);
 		lua_register(m_state, "getJackChoice", playerGetJackChoice);
 		lua_register(m_state, "getAceRoundChoice", playerGetAceRoundChoice);
@@ -121,7 +122,7 @@ bool LuaState::load(const std::string &luafile, bool dirChangePossible,
 				break;
 			}
 
-		} else {
+		} else if(call("init", 0, 0)) {
 
 			lua_pushboolean(m_state, dirChangePossible);
 			lua_setglobal(m_state, "nmm_dirChangePossible");
@@ -139,10 +140,9 @@ bool LuaState::load(const std::string &luafile, bool dirChangePossible,
 			}
 
 			lua_setfield(m_state, -2, "RANK");
-
 			lua_setglobal(m_state, "nmm_aceRound");
 
-			return call("init", 0, 0);
+			return true;
 		}
 	}
 
@@ -155,7 +155,7 @@ bool LuaState::call(const char *fname, int nargs, int nresults) const {
 
 		switch(lua_pcall(m_state, nargs, nresults, 0)) {
 		case LUA_ERRRUN:
-			logError("[Lua " << m_luaFile << ":" << fname << "]: " << lua_tostring(m_state, -1));
+			logError("[Lua]: " << lua_tostring(m_state, -1));
 			return false;
 
 		case LUA_ERRMEM:
@@ -191,8 +191,11 @@ void LuaState::pushCard(const NetMauMau::Common::ICard *card) const {
 }
 
 void LuaState::pushPlayer(const NetMauMau::Player::IPlayer *player) const {
+
 	if(player) {
 		lua_newtable(m_state);
+		lua_pushinteger(m_state, reinterpret_cast<lua_Integer>(player));
+		lua_setfield(m_state, -2, "ID");
 		lua_pushinteger(m_state, static_cast<lua_Integer>(player->getCardCount()));
 		lua_setfield(m_state, -2, "CARDCOUNT");
 		const NetMauMau::Player::IPlayer **bp =
@@ -229,6 +232,15 @@ NetMauMau::Common::ICard *LuaState::createCard(lua_State *l, int idx) {
 	} else {
 		return NetMauMau::Common::getIllegalCard();
 	}
+}
+
+int LuaState::print(lua_State *l) {
+	
+	if(lua_gettop(l)) {
+		logInfo("[Lua] " << lua_tostring(l, 1));
+	}
+	
+	return 0;
 }
 
 int LuaState::getRandomSuit(lua_State *l) {

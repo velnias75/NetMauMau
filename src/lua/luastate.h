@@ -22,7 +22,9 @@
 
 #include <string>
 
+extern "C" {
 #include <lua.h>
+}
 
 #include "linkercontrol.h"
 

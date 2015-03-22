@@ -19,8 +19,10 @@
 
 #include <cstring>
 
+extern "C" {
 #include <lualib.h>
 #include <lauxlib.h>
+}
 
 #include "luastate.h"
 

@@ -29,8 +29,9 @@ const NetMauMau::Lua::LuaState &l = NetMauMau::Lua::LuaState::getInstance();
 
 using namespace NetMauMau::RuleSet;
 
-LuaRuleSet::LuaRuleSet(const std::string &luafile, const NetMauMau::IAceRoundListener *arl)
-	: IRuleSet(), m_validLua(l.load(luafile)) {}
+LuaRuleSet::LuaRuleSet(const std::string &luafile, bool dirChangePossible, std::size_t icc,
+					   const NetMauMau::IAceRoundListener *arl)
+	: IRuleSet(), m_validLua(l.load(luafile, dirChangePossible, icc, arl)) {}
 
 LuaRuleSet::~LuaRuleSet() {}
 
@@ -237,7 +238,7 @@ bool LuaRuleSet::getDirChangeIsSuspend() const {
 
 void LuaRuleSet::setDirChangeIsSuspend(bool suspend) {
 	if(m_validLua) {
-		const char *fname = "takeIfLost";
+		const char *fname = "setDirChangeIsSuspend";
 		lua_getglobal(l, fname);
 		lua_pushboolean(l, suspend);
 		l.call(fname, 1, 0);

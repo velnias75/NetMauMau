@@ -28,6 +28,8 @@
 
 namespace NetMauMau {
 
+class IAceRoundListener;
+
 namespace Common {
 class ICard;
 }
@@ -45,7 +47,8 @@ public:
 
 	static LuaState &getInstance();
 
-	bool load(const std::string &luafile) const;
+	bool load(const std::string &luafile, bool dirChangePossible,
+			  std::size_t initialCardCount, const NetMauMau::IAceRoundListener *arl) const;
 	bool call(const char *fname, int nargs, int nresults) const;
 
 	void pushCard(const Common::ICard *card) const;
@@ -60,10 +63,15 @@ private:
 
 	static Common::ICard *createCard(lua_State *l, int idx) _NOUNUSED;
 
+	static int getRandomSuit(lua_State *l);
 	static int playerGetJackChoice(lua_State *l);
 	static int playerGetAceRoundChoice(lua_State *l);
+	static int playerAceRoundStarted(lua_State *l);
+	static int playerAceRoundEnded(lua_State *l);
 
 private:
+	static const NetMauMau::IAceRoundListener *m_arl;
+	
 	lua_State *m_state;
 	mutable std::string m_luaFile;
 };

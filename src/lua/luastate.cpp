@@ -24,13 +24,17 @@
 
 #include "luastate.h"
 
+#include "iaceroundlistener.h"
 #include "stdcardfactory.h"
+#include "random_gen.h"
 #include "cardtools.h"
 #include "iplayer.h"
 #include "logger.h"
 #include "icard.h"
 
 using namespace NetMauMau::Lua;
+
+const NetMauMau::IAceRoundListener *NetMauMau::Lua::LuaState::m_arl = 0L;
 
 LuaState::LuaState() : m_state(luaL_newstate()), m_luaFile() {
 
@@ -71,8 +75,11 @@ LuaState::LuaState() : m_state(luaL_newstate()), m_luaFile() {
 		lua_setfield(m_state, -2, "RANK_ILLEGAL");
 		lua_setfield(m_state, LUA_GLOBALSINDEX, "RANK");
 
+		lua_register(m_state, "getRandomSuit", getRandomSuit);
 		lua_register(m_state, "getJackChoice", playerGetJackChoice);
 		lua_register(m_state, "getAceRoundChoice", playerGetAceRoundChoice);
+		lua_register(m_state, "aceRoundStarted", playerAceRoundStarted);
+		lua_register(m_state, "aceRoundEnded", playerAceRoundEnded);
 
 	} else {
 		logWarning("[Lua] couldn't initialize Lua");
@@ -88,9 +95,11 @@ LuaState &LuaState::getInstance() {
 	return instance;
 }
 
-bool LuaState::load(const std::string &luafile) const {
+bool LuaState::load(const std::string &luafile, bool dirChangePossible,
+					std::size_t initialCardCount, const NetMauMau::IAceRoundListener *arl) const {
 
 	m_luaFile = luafile;
+	m_arl = arl;
 
 	if(m_state) {
 
@@ -113,6 +122,26 @@ bool LuaState::load(const std::string &luafile) const {
 			}
 
 		} else {
+
+			lua_pushboolean(m_state, dirChangePossible);
+			lua_setglobal(m_state, "nmm_dirChangePossible");
+			lua_pushinteger(m_state, static_cast<lua_Integer>(initialCardCount));
+			lua_setglobal(m_state, "nmm_initialCardCount");
+
+			lua_newtable(m_state);
+			lua_pushboolean(m_state, m_arl != 0L);
+			lua_setfield(m_state, -2, "ENABLED");
+
+			if(arl) {
+				lua_pushinteger(m_state, static_cast<lua_Integer>(arl->getAceRoundRank()));
+			} else {
+				lua_pushnil(m_state);
+			}
+
+			lua_setfield(m_state, -2, "RANK");
+
+			lua_setglobal(m_state, "nmm_aceRound");
+
 			return call("init", 0, 0);
 		}
 	}
@@ -202,6 +231,20 @@ NetMauMau::Common::ICard *LuaState::createCard(lua_State *l, int idx) {
 	}
 }
 
+int LuaState::getRandomSuit(lua_State *l) {
+
+	if(lua_gettop(l) != 0) {
+		lua_pushstring(l, "getRandomSuit takes no arguments");
+		return lua_error(l);
+	}
+
+	lua_pushinteger(l, static_cast<lua_Integer>
+					(NetMauMau::Common::symbolToSuit(NetMauMau::Common::getSuitSymbols()
+							[NetMauMau::Common::genRandom(4)])));
+
+	return 1;
+}
+
 int LuaState::playerGetJackChoice(lua_State *l) {
 
 	if(!(lua_gettop(l) == 3 && lua_type(l, 1) == LUA_TUSERDATA &&
@@ -232,6 +275,32 @@ int LuaState::playerGetAceRoundChoice(lua_State *l) {
 	lua_pushboolean(l, (*reinterpret_cast<const NetMauMau::Player::IPlayer **>
 						(lua_touserdata(l, 1)))->getAceRoundChoice());
 	return 1;
+}
+
+int LuaState::playerAceRoundStarted(lua_State *l) {
+
+	if(!(lua_gettop(l) == 1 && lua_type(l, 1) == LUA_TUSERDATA)) {
+		lua_pushstring(l, "incorrect argument to aceRoundStarted");
+		return lua_error(l);
+	}
+
+	if(m_arl) m_arl->aceRoundStarted(*reinterpret_cast<const NetMauMau::Player::IPlayer **>
+										 (lua_touserdata(l, 1)));
+
+	return 0;
+}
+
+int LuaState::playerAceRoundEnded(lua_State *l) {
+
+	if(!(lua_gettop(l) == 1 && lua_type(l, 1) == LUA_TUSERDATA)) {
+		lua_pushstring(l, "incorrect argument to aceRoundEnded");
+		return lua_error(l);
+	}
+
+	if(m_arl) m_arl->aceRoundEnded(*reinterpret_cast<const NetMauMau::Player::IPlayer **>
+									   (lua_touserdata(l, 1)));
+
+	return 0;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -67,7 +67,7 @@ RuleSet::IRuleSet *EngineConfig::getRuleSet(const NetMauMau::IAceRoundListener *
 // 	return m_ruleset ? m_ruleset : (m_ruleset = new RuleSet::StdRuleSet(m_dirChange,
 // 			m_initialCardCount, m_aceRound ? arl : 0L));
 	return m_ruleset ? m_ruleset : (m_ruleset = new RuleSet::LuaRuleSet(LUADIR"/stdrules.lua",
-			m_aceRound ? arl : 0L));
+			m_dirChange, m_initialCardCount, m_aceRound ? arl : 0L));
 }
 
 char EngineConfig::getAceRound() const {

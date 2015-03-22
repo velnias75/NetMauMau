@@ -23,67 +23,75 @@ function setCurPlayers(num)
   m_curPlayers = num
 end
 
+local function ternary(expr, tVal, fVal)
+  if expr then return tVal else return fVal end
+end
+
 local function isDirChange(playedCard)
   return nmm_dirChangePossible and playedCard.RANK == RANK.NINE
 end
 
 local function isCardAcceptable(uncoveredCard, playedCard)
   
-  if(uncoveredCard == nil or playedCard == nil) then
-	return false
+  if uncoveredCard == nil or playedCard == nil then
+    return false
   end
 
-  return (nmm_aceRound.ENABLED and m_aceRoundPlayer) and (playedCard.RANK == getAceRoundRank()) or
-		 ((playedCard.RANK == RANK.JACK and uncoveredCard.RANK ~= RANK.JACK) or
-		  ((((isJackMode() and getJackSuit() == playedCard.SUIT) or
-			 ((not isJackMode()) and (uncoveredCard.SUIT == playedCard.SUIT or
-								(uncoveredCard.RANK == playedCard.RANK))))) and
-		   not (playedCard.RANK == RANK.JACK and uncoveredCard.RANK == RANK.JACK)))
+  return ternary(nmm_aceRound.ENABLED and m_aceRoundPlayer ~= nil,
+       playedCard.RANK == nmm_aceRound.RANK, 
+       ((playedCard.RANK == RANK.JACK and uncoveredCard.RANK ~= RANK.JACK) 
+         or ((((isJackMode() and getJackSuit() == playedCard.SUIT) 
+           or (not isJackMode() 
+           and (uncoveredCard.SUIT == playedCard.SUIT or (uncoveredCard.RANK == playedCard.RANK)))))
+        and not (playedCard.RANK == RANK.JACK and uncoveredCard.RANK == RANK.JACK))))
 end
 
 function checkCard(uncoveredCard, playedCard, player)
-
-  if player == nil then
-	return isCardAcceptable(uncoveredCard, playedCard)
-  end
   
-  local accepted = uncoveredCard ~= nil and isCardAcceptable(uncoveredCard, playedCard) or true
+  local accepted = ternary(uncoveredCard ~= nil, isCardAcceptable(uncoveredCard, playedCard), true)
   
-  if(accepted and (nmm_aceRound.ENABLED and uncoveredCard ~= nil and (m_aceRoundPlayer == nil 
-	or m_aceRoundPlayer == player) and playedCard.RANK == getAceRoundRank())) then
+  if player ~= nil then
+    
+    if accepted and (nmm_aceRound.ENABLED and uncoveredCard ~= nil 
+      and (m_aceRoundPlayer == nil or m_aceRoundPlayer == player) 
+      and playedCard.RANK == nmm_aceRound.RANK) then
 
-	local acrCont = m_aceRoundPlayer ~= nil
+      local acrCont = m_aceRoundPlayer ~= nil
+    
+      m_aceRoundPlayer = ternary(getAceRoundChoice(player.INTERFACE), player, nil)
 
-	m_aceRoundPlayer = getAceRoundChoice(player.INTERFACE) and player or nil
+      if m_aceRoundPlayer ~= nil then
+        aceRoundStarted(player.INTERFACE)
+      elseif acrCont then
+        aceRoundEnded(player.INTERFACE)
+      end
 
-	if(m_aceRoundPlayer ~= nil) then
-	  aceRoundStarted(player.INTERFACE);
-	elseif(acrCont) then
-	  aceRoundEnded(player.INTERFACE);
-	end
-  elseif(accepted and isDirChange(playedCard)) then
-	m_dirChange = true
-  end
+    elseif accepted and isDirChange(playedCard) then
+      m_dirChange = true
+    end
 
-  m_hasToSuspend = accepted and (playedCard.RANK == RANK.EIGHT or (isDirChange(playedCard) 
-	and m_dirChangeIsSuspend))
+    m_hasToSuspend = accepted 
+      and (playedCard.RANK == RANK.EIGHT or (isDirChange(playedCard) and m_dirChangeIsSuspend))
 
-  m_hasSuspended = false
+    m_hasSuspended = false
 
-  if(accepted and playedCard.RANK == RANK.SEVEN) then
-	m_takeCardCount = m_takeCardCount + 2
-  elseif(accepted and playedCard.RANK == RANK.JACK and (m_curPlayers > 2 
-	or player.CARDCOUNT > 1)) then
-	m_jackSuit = getJackChoice(player.INTERFACE, 
-	  uncoveredCard ~= nil and uncoveredCard or playedCard, playedCard)
-	m_jackMode = true
+    if accepted and playedCard.RANK == RANK.SEVEN then
+      m_takeCardCount = m_takeCardCount + 2
+    elseif accepted and playedCard.RANK == RANK.JACK 
+      and (m_curPlayers > 2 or player.CARDCOUNT > 1) then
+      m_jackSuit = getJackChoice(player.INTERFACE, 
+        ternary(uncoveredCard ~= nil, uncoveredCard, playedCard), playedCard)
+      m_jackMode = true
+    end
+    
   end
 
   return accepted
+
 end
 
 function lostPointFactor(uncoveredCard)
-  return uncoveredCard.RANK == RANK.JACK and 2 or 1
+  return ternary(uncoveredCard.RANK == RANK.JACK, 2, 1)
 end
 
 function hasToSuspend()
@@ -99,7 +107,7 @@ function takeCardCount()
 end
 
 function takeCards(playedCard)
-  return (playedCard ~= nil and playedCard.RANK == RANK.SEVEN) and 0 or takeCardCount()
+  return ternary(playedCard ~= nil and playedCard.RANK == RANK.SEVEN, 0, takeCardCount())
 end
 
 function hasTakenCards()
@@ -123,7 +131,7 @@ function isAceRoundPossible()
 end
 
 function getAceRoundRank()
-  return nmm_aceRound.ENABLED and nmm_aceRound.RANK or RANK.RANK_ILLEGAL
+  return ternary(nmm_aceRound.ENABLED, nmm_aceRound.RANK, RANK.RANK_ILLEGAL)
 end
 
 function isAceRound()
@@ -155,7 +163,7 @@ function setDirChangeIsSuspend(isSuspend)
 end
 
 function getJackSuit()
-  return m_jackSuit == SUIT.SUIT_ILLEGAL and getRandomSuit() and m_jackSuit
+  return ternary(m_jackSuit == SUIT.SUIT_ILLEGAL, getRandomSuit(), m_jackSuit)
 end
 
 function reset()
@@ -171,3 +179,5 @@ function reset()
 end
 
 reset()
+
+-- kate: indent-mode cstyle; indent-width 2; replace-tabs on; tab-width 2; 

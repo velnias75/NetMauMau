@@ -317,7 +317,7 @@ void LuaRuleSet::setCurPlayers(std::size_t players) {
 	if(m_validLua) {
 		const char *fname = "setCurPlayers";
 		lua_getglobal(l, fname);
-		lua_pushinteger(l, players);
+		lua_pushinteger(l, static_cast<lua_Integer>(players));
 		l.call(fname, 1, 0);
 	}
 }

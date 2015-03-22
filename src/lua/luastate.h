@@ -58,8 +58,8 @@ public:
 private:
 	LuaState();
 
-	static Common::ICard *lcd(lua_State *l, int idx);
-	
+	static Common::ICard *createCard(lua_State *l, int idx) _NOUNUSED;
+
 	static int playerGetJackChoice(lua_State *l);
 	static int playerGetAceRoundChoice(lua_State *l);
 

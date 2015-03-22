@@ -186,8 +186,11 @@ void LuaState::pushCard(const NetMauMau::Common::ICard *card) const {
 		lua_setfield(m_state, -2, "RANK");
 		lua_pushinteger(m_state, static_cast<lua_Integer>(card->getPoints()));
 		lua_setfield(m_state, -2, "POINTS");
-		lua_pushstring(m_state, card->description().c_str());
-		lua_setfield(m_state, -2, "DESCRIPTION");
+		const NetMauMau::Common::ICard **bp =
+			reinterpret_cast<const NetMauMau::Common::ICard **>(lua_newuserdata(m_state,
+					sizeof(card)));
+		*bp = card;
+		lua_setfield(m_state, -2, "INTERFACE");
 	} else {
 		lua_pushnil(m_state);
 	}
@@ -211,30 +214,24 @@ void LuaState::pushPlayer(const NetMauMau::Player::IPlayer *player) const {
 	}
 }
 
-NetMauMau::Common::ICard *LuaState::createCard(lua_State *l, int idx) {
+const NetMauMau::Common::ICard *LuaState::getCard(lua_State *l, int idx) {
 
 	if(lua_isnil(l, idx)) return 0L;
 
-	std::string cdesc;
+	const NetMauMau::Common::ICard *c = 0L;
 
 	lua_pushnil(l);
 
 	while(lua_next(l, idx) != 0) {
-		if(!std::strncmp("DESCRIPTION", lua_tostring(l, -2), 11)) {
-			cdesc = lua_tostring(l, -1);
+
+		if(!std::strncmp("INTERFACE", lua_tostring(l, -2), 9)) {
+			c = *reinterpret_cast<const NetMauMau::Common::ICard **>(lua_touserdata(l, -1));
 		}
 
 		lua_pop(l, 1);
 	}
-
-	NetMauMau::Common::ICard::SUIT s = NetMauMau::Common::ICard::SUIT_ILLEGAL;
-	NetMauMau::Common::ICard::RANK r = NetMauMau::Common::ICard::RANK_ILLEGAL;
-
-	if(NetMauMau::Common::parseCardDesc(cdesc, &s, &r)) {
-		return NetMauMau::StdCardFactory().create(s, r);
-	} else {
-		return NetMauMau::Common::getIllegalCard();
-	}
+	
+	return c;
 }
 
 int LuaState::print(lua_State *l) {
@@ -269,14 +266,8 @@ int LuaState::playerGetJackChoice(lua_State *l) {
 		return lua_error(l);
 	}
 
-	const NetMauMau::Common::ICard *uc = createCard(l, 2);
-	const NetMauMau::Common::ICard *pc = createCard(l, 3);
-
 	lua_pushinteger(l, (*reinterpret_cast<const NetMauMau::Player::IPlayer **>
-						(lua_touserdata(l, 1)))->getJackChoice(uc, pc));
-	delete uc;
-	delete pc;
-
+						(lua_touserdata(l, 1)))->getJackChoice(getCard(l, 2), getCard(l, 3)));
 	return 1;
 }
 

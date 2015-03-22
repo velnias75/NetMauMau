@@ -63,7 +63,7 @@ public:
 private:
 	LuaState();
 
-	static Common::ICard *createCard(lua_State *l, int idx) _NOUNUSED;
+	static const Common::ICard *getCard(lua_State *l, int idx) _NOUNUSED;
 
 	static int print(lua_State *l);
 	static int getRandomSuit(lua_State *l);

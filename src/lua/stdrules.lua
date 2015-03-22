@@ -16,7 +16,7 @@
  along with NetMauMau.  If not, see <http://www.gnu.org/licenses/> ]]
  
 local function ternary(expr, tVal, fVal)
-  if expr then return tVal else return fVal end
+  if not not expr then return tVal else return fVal end
 end
 
 local function isDirChange(playedCard)
@@ -29,7 +29,7 @@ local function isCardAcceptable(uncoveredCard, playedCard)
     return false
   end
 
-  return ternary(nmm_aceRound.ENABLED and m_aceRoundPlayer,
+  return not not ternary(nmm_aceRound.ENABLED and m_aceRoundPlayer ~= nil,
     playedCard.RANK == nmm_aceRound.RANK, -- in ace rounds only nmm_aceRound.RANK is allowed
     (playedCard.RANK == RANK.JACK and uncoveredCard.RANK ~= RANK.JACK) 
       or ((((isJackMode() and getJackSuit() == playedCard.SUIT) 
@@ -40,19 +40,18 @@ end
 
 function checkCard(uncoveredCard, playedCard, player)
   
-  local accepted = ternary(uncoveredCard, isCardAcceptable(uncoveredCard, playedCard), true)
+  local accepted = not not ternary(uncoveredCard, isCardAcceptable(uncoveredCard, playedCard), true)
   
   if player then
 
-    do
-      -- Check if we are in an ace round or can start an ace round
+    do -- Check if we are in an ace round or can start an ace round
       if accepted and (nmm_aceRound.ENABLED and uncoveredCard 
         and (not m_aceRoundPlayer or m_aceRoundPlayer == player.ID) 
         and playedCard.RANK == nmm_aceRound.RANK) then
 
         do
           
-          local acrCont = (m_aceRoundPlayer ~= nil)
+          local acrCont = not not (m_aceRoundPlayer ~= nil)
         
           m_aceRoundPlayer = ternary(getAceRoundChoice(player.INTERFACE), player.ID, nil)
 
@@ -67,14 +66,14 @@ function checkCard(uncoveredCard, playedCard, player)
         m_dirChange = true
       end
 
-      m_hasToSuspend = accepted 
+      m_hasToSuspend = accepted -- does player has to suspend
         and (playedCard.RANK == RANK.EIGHT or (isDirChange(playedCard) and m_dirChangeIsSuspend))
 
       m_hasSuspended = false
 
-      if accepted and playedCard.RANK == RANK.SEVEN then
+      if accepted and playedCard.RANK == RANK.SEVEN then -- do we need to increase the take counter?
         m_takeCardCount = m_takeCardCount + 2
-      elseif accepted and playedCard.RANK == RANK.JACK 
+      elseif accepted and playedCard.RANK == RANK.JACK -- do we need to ask for a jack suit?
         and (m_curPlayers > 2 or player.CARDCOUNT > 1) then
         m_jackSuit = getJackChoice(player.INTERFACE, 
           ternary(uncoveredCard, uncoveredCard, playedCard), playedCard)
@@ -92,7 +91,7 @@ function lostPointFactor(uncoveredCard)
 end
 
 function hasToSuspend()
-  return m_hasToSuspend and (not m_hasSuspended)
+  return not not (m_hasToSuspend and (not m_hasSuspended))
 end
 
 function hasSuspended()
@@ -132,11 +131,11 @@ function getAceRoundRank()
 end
 
 function isAceRound()
-  return m_aceRoundPlayer and isAceRoundPossible()
+  return not not (m_aceRoundPlayer and isAceRoundPossible())
 end
 
 function isJackMode()
-  return m_jackMode
+  return not not m_jackMode
 end
 
 function setJackModeOff()
@@ -144,7 +143,7 @@ function setJackModeOff()
 end
 
 function hasDirChange()
-  return m_dirChange
+  return not not m_dirChange
 end
 
 function dirChanged()
@@ -152,7 +151,7 @@ function dirChanged()
 end
 
 function getDirChangeIsSuspend()
-  return m_dirChangeIsSuspend
+  return not not m_dirChangeIsSuspend
 end
 
 function setDirChangeIsSuspend(isSuspend)

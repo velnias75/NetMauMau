@@ -30,12 +30,12 @@ local function isCardAcceptable(uncoveredCard, playedCard)
   end
 
   return ternary(nmm_aceRound.ENABLED and m_aceRoundPlayer,
-       playedCard.RANK == nmm_aceRound.RANK, 
-       ((playedCard.RANK == RANK.JACK and uncoveredCard.RANK ~= RANK.JACK) 
-         or ((((isJackMode() and getJackSuit() == playedCard.SUIT) 
-           or (not isJackMode() 
-           and (uncoveredCard.SUIT == playedCard.SUIT or (uncoveredCard.RANK == playedCard.RANK)))))
-        and not (playedCard.RANK == RANK.JACK and uncoveredCard.RANK == RANK.JACK))))
+    playedCard.RANK == nmm_aceRound.RANK, -- in ace rounds only nmm_aceRound.RANK is allowed
+    (playedCard.RANK == RANK.JACK and uncoveredCard.RANK ~= RANK.JACK) 
+      or ((((isJackMode() and getJackSuit() == playedCard.SUIT) 
+        or (not isJackMode()
+          and (uncoveredCard.SUIT == playedCard.SUIT or (uncoveredCard.RANK == playedCard.RANK)))))
+        and not (playedCard.RANK == RANK.JACK and uncoveredCard.RANK == RANK.JACK)))
 end
 
 function checkCard(uncoveredCard, playedCard, player)
@@ -43,44 +43,46 @@ function checkCard(uncoveredCard, playedCard, player)
   local accepted = ternary(uncoveredCard, isCardAcceptable(uncoveredCard, playedCard), true)
   
   if player then
-    
-    -- Check if we are in an ace round or can start an ace round
-    if accepted and (nmm_aceRound.ENABLED and uncoveredCard 
-      and (not m_aceRoundPlayer or m_aceRoundPlayer == player.ID) 
-      and playedCard.RANK == nmm_aceRound.RANK) then
 
-      do
+    do
+      -- Check if we are in an ace round or can start an ace round
+      if accepted and (nmm_aceRound.ENABLED and uncoveredCard 
+        and (not m_aceRoundPlayer or m_aceRoundPlayer == player.ID) 
+        and playedCard.RANK == nmm_aceRound.RANK) then
+
+        do
+          
+          local acrCont = (m_aceRoundPlayer ~= nil)
         
-        local acrCont = (m_aceRoundPlayer ~= nil)
-      
-        m_aceRoundPlayer = ternary(getAceRoundChoice(player.INTERFACE), player.ID, nil)
+          m_aceRoundPlayer = ternary(getAceRoundChoice(player.INTERFACE), player.ID, nil)
 
-        if m_aceRoundPlayer then
-          aceRoundStarted(player.INTERFACE)
-        elseif acrCont then
-          aceRoundEnded(player.INTERFACE)
+          if m_aceRoundPlayer then
+            aceRoundStarted(player.INTERFACE)
+          elseif acrCont then
+            aceRoundEnded(player.INTERFACE)
+          end
         end
+
+      elseif accepted and isDirChange(playedCard) then -- check if card will change direction
+        m_dirChange = true
       end
 
-    elseif accepted and isDirChange(playedCard) then
-      m_dirChange = true
+      m_hasToSuspend = accepted 
+        and (playedCard.RANK == RANK.EIGHT or (isDirChange(playedCard) and m_dirChangeIsSuspend))
+
+      m_hasSuspended = false
+
+      if accepted and playedCard.RANK == RANK.SEVEN then
+        m_takeCardCount = m_takeCardCount + 2
+      elseif accepted and playedCard.RANK == RANK.JACK 
+        and (m_curPlayers > 2 or player.CARDCOUNT > 1) then
+        m_jackSuit = getJackChoice(player.INTERFACE, 
+          ternary(uncoveredCard, uncoveredCard, playedCard), playedCard)
+        m_jackMode = true
+      end
     end
-
-    m_hasToSuspend = accepted 
-      and (playedCard.RANK == RANK.EIGHT or (isDirChange(playedCard) and m_dirChangeIsSuspend))
-
-    m_hasSuspended = false
-
-    if accepted and playedCard.RANK == RANK.SEVEN then
-      m_takeCardCount = m_takeCardCount + 2
-    elseif accepted and playedCard.RANK == RANK.JACK 
-      and (m_curPlayers > 2 or player.CARDCOUNT > 1) then
-      m_jackSuit = getJackChoice(player.INTERFACE, 
-        ternary(uncoveredCard, uncoveredCard, playedCard), playedCard)
-      m_jackMode = true
-    end   
   end
-
+  
   return accepted
 
 end
@@ -102,7 +104,7 @@ function takeCardCount()
 end
 
 function takeCards(playedCard)
-  return ternary(playedCard and playedCard.RANK == RANK.SEVEN, 0, takeCardCount())
+  return ternary(playedCard and (playedCard.RANK == RANK.SEVEN), 0, takeCardCount())
 end
 
 function hasTakenCards()

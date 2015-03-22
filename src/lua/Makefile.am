@@ -2,6 +2,10 @@ noinst_LTLIBRARIES = libluaruleset.la
 
 noinst_HEADERS = luaruleset.h luastate.h
 
+pkgdata_DATA = stdrules.lua
+
+EXTRA_DIST = $(pkgdata_DATA)
+
 if GSL
 GSL=-DHAVE_GSL
 else

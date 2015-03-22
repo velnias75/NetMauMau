@@ -17,6 +17,11 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef NDEBUG
+#undef LUADIR
+#define LUADIR DEBUGLUADIR
+#endif
+
 #include "engineconfig.h"
 
 #include "stdruleset.h"

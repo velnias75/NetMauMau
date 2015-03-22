@@ -39,6 +39,7 @@ const NetMauMau::IAceRoundListener *NetMauMau::Lua::LuaState::m_arl = 0L;
 LuaState::LuaState() : m_state(luaL_newstate()), m_luaFile() {
 
 	if(m_state) {
+
 		luaL_openlibs(m_state);
 
 		lua_newtable(m_state);
@@ -235,11 +236,11 @@ NetMauMau::Common::ICard *LuaState::createCard(lua_State *l, int idx) {
 }
 
 int LuaState::print(lua_State *l) {
-	
+
 	if(lua_gettop(l)) {
 		logInfo("[Lua] " << lua_tostring(l, 1));
 	}
-	
+
 	return 0;
 }
 

@@ -1,3 +1,7 @@
+local function isDirChange(playedCard)
+  return m_dirChangePossible and playedCard.RANK == RANK.NINE
+end
+
 function getAceRoundRank()
   return RANK.ACE
 end
@@ -66,20 +70,25 @@ function hasTakenCards()
   m_takeCardCount = 0
 end
 
-function checkCard(uncoveredCard, playedCard, player)
+local function isCardAccepted(uncoveredCard, playedCard)
   
   if(uncoveredCard == nil or playedCard == nil) then
 	return false
   end
 
-  local accepted = (m_aceRound and m_aceRoundPlayer) and (playedCard.RANK == getAceRoundRank()) or
+  return (m_aceRound and m_aceRoundPlayer) and (playedCard.RANK == getAceRoundRank()) or
 		 ((playedCard.RANK == RANK.JACK and uncoveredCard.RANK ~= RANK.JACK) or
 		  ((((isJackMode() and getJackSuit() == playedCard.SUIT) or
 			 ((not isJackMode()) and (uncoveredCard.SUIT == playedCard.SUIT or
 								(uncoveredCard.RANK == playedCard.RANK))))) and
 		   not (playedCard.RANK == RANK.JACK and uncoveredCard.RANK == RANK.JACK)))
-  
-  if player == nil then 
+end
+
+function checkCard(uncoveredCard, playedCard, player)
+
+  local accepted = uncoveredCard ~= nil and isCardAccepted(uncoveredCard, playedCard) or true;
+
+  if player == nil then
 	return accepted
   elseif(accepted and (m_aceRound and (m_aceRoundPlayer == nil or m_aceRoundPlayer == player) 
 	and playedCard.RANK == getAceRoundRank())) then
@@ -105,7 +114,8 @@ function checkCard(uncoveredCard, playedCard, player)
 	m_takeCardCount = m_takeCardCount + 2
   elseif(accepted and playedCard.RANK == RANK.JACK 
 	and (m_curPlayers > 2 or player.CARDCOUNT > 1)) then
-	m_jackSuit = getJackChoice(player.INTERFACE, uncoveredCard, playedCard)
+	m_jackSuit = getJackChoice(player.INTERFACE, uncoveredCard ~=nil 
+	  and uncoveredCard or playedCard, playedCard)
 	m_jackMode = true
   end
 
@@ -133,10 +143,6 @@ function reset()
   m_dirChangeIsSuspend = false
   m_dirChangePossible = true
   m_initialCardCount = 5
-end
-
-function isDirChange(playedCard)
-  return m_dirChangePossible and playedCard.RANK == RANK.NINE
 end
 
 reset()

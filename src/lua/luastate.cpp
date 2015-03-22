@@ -178,6 +178,8 @@ void LuaState::pushPlayer(const NetMauMau::Player::IPlayer *player) const {
 
 NetMauMau::Common::ICard *LuaState::lcd(lua_State *l, int idx) {
 
+	if(lua_isnil(l, idx)) return 0L;
+
 	std::string cdesc;
 
 	lua_pushnil(l);
@@ -192,7 +194,7 @@ NetMauMau::Common::ICard *LuaState::lcd(lua_State *l, int idx) {
 
 	NetMauMau::Common::ICard::SUIT s = NetMauMau::Common::ICard::SUIT_ILLEGAL;
 	NetMauMau::Common::ICard::RANK r = NetMauMau::Common::ICard::RANK_ILLEGAL;
-	
+
 	if(NetMauMau::Common::parseCardDesc(cdesc, &s, &r)) {
 		return NetMauMau::StdCardFactory().create(s, r);
 	} else {
@@ -202,16 +204,15 @@ NetMauMau::Common::ICard *LuaState::lcd(lua_State *l, int idx) {
 
 int LuaState::playerGetJackChoice(lua_State *l) {
 
-	if(lua_gettop(l) != 3 || lua_type(l, 1) != LUA_TUSERDATA || !lua_istable(l, 2) ||
-			!lua_istable(l, 3)) {
-		lua_pushstring(l, "incorrect argument");
+	if(!(lua_gettop(l) == 3 && lua_type(l, 1) == LUA_TUSERDATA &&
+			(lua_istable(l, 2) || lua_isnil(l, 2)) &&
+			(lua_istable(l, 3) || lua_isnil(l, 3)))) {
+		lua_pushstring(l, "incorrect arguments to getJackChoice");
 		return lua_error(l);
 	}
 
-	const NetMauMau::Player::IPlayer *bp = *reinterpret_cast<const NetMauMau::Player::IPlayer **>
-										   (lua_touserdata(l, 1));
-
-	lua_pushinteger(l, bp->getJackChoice(lcd(l, 2), lcd(l, 3)));
+	lua_pushinteger(l, (*reinterpret_cast<const NetMauMau::Player::IPlayer **>
+						(lua_touserdata(l, 1)))->getJackChoice(lcd(l, 2), lcd(l, 3)));
 
 	return 1;
 }
@@ -219,14 +220,12 @@ int LuaState::playerGetJackChoice(lua_State *l) {
 int LuaState::playerGetAceRoundChoice(lua_State *l) {
 
 	if(lua_gettop(l) != 1 || lua_type(l, 1) != LUA_TUSERDATA) {
-		lua_pushstring(l, "incorrect argument");
+		lua_pushstring(l, "incorrect argument to getAceRoundChoice");
 		return lua_error(l);
 	}
 
-	const NetMauMau::Player::IPlayer *bp = *reinterpret_cast<const NetMauMau::Player::IPlayer **>
-										   (lua_touserdata(l, 1));
-
-	lua_pushboolean(l, bp->getAceRoundChoice());
+	lua_pushboolean(l, (*reinterpret_cast<const NetMauMau::Player::IPlayer **>
+						(lua_touserdata(l, 1)))->getAceRoundChoice());
 
 	return 1;
 }

@@ -880,6 +880,7 @@ int main(int argc, const char **argv) {
 
 		} catch(const Common::Exception::SocketException &e) {
 			logError(e.what());
+			con.reset();
 			return EXIT_FAILURE;
 		}
 

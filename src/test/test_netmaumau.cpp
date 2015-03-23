@@ -24,6 +24,7 @@
 #include <ctime>
 #include <cstdlib>
 
+#include "logger.h"
 #include "engine.h"
 #include "stdplayer.h"
 #include "engineconfig.h"
@@ -37,24 +38,32 @@ int main(int, char **) {
 	std::srand(static_cast<unsigned int>(std::time(0L)));
 #endif
 
-	TestEventHandler evHdlr;
-	EngineConfig cfg(evHdlr, 0L, false, 'A', true);
-	Engine engine(cfg);
+	try {
 
-	Player::StdPlayer p1("Cathy");
-	Player::StdPlayer p2("Tarik");
-	Player::StdPlayer p3("Alischa");
-	Player::StdPlayer p4("Heiko");
+		TestEventHandler evHdlr;
+		EngineConfig cfg(evHdlr, 0L, false, 'A', true);
+		// 	EngineConfig cfg(evHdlr, true, 0L, false, 'A');
+		Engine engine(cfg);
 
-	engine.addPlayer(&p1);
-	engine.addPlayer(&p2);
-	engine.addPlayer(&p3);
-	engine.addPlayer(&p4);
+		Player::StdPlayer p1("Cathy");
+		Player::StdPlayer p2("Tarik");
+		Player::StdPlayer p3("Alischa");
+		Player::StdPlayer p4("Heiko");
 
-	engine.distributeCards();
+		engine.addPlayer(&p1);
+		engine.addPlayer(&p2);
+		engine.addPlayer(&p3);
+		engine.addPlayer(&p4);
 
-	while(engine.hasPlayers()) {
-		engine.nextTurn();
+		engine.distributeCards();
+
+		while(engine.hasPlayers()) {
+			engine.nextTurn();
+		}
+
+	} catch(const NetMauMau::Common::Exception::SocketException &e) {
+		logError(e);
+		return EXIT_FAILURE;
 	}
 
 	return EXIT_SUCCESS;

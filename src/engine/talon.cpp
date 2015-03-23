@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <cassert>
 
 #include "talon.h"
 
@@ -97,6 +98,10 @@ Common::ICard *Talon::uncoverCard() {
 }
 
 void Talon::playCard(Common::ICard *card) {
+
+	assert(!(card->getRank() == Common::ICard::RANK_ILLEGAL ||
+			 card->getSuit() == Common::ICard::SUIT_ILLEGAL));
+
 	m_uncovered.push(card);
 	m_talonChangeListener->talonEmpty(false);
 	m_talonChangeListener->cardPlayed(card);

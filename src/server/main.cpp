@@ -312,9 +312,6 @@ void sh_dump(int, siginfo_t *info, void *) {
 			out << "Total served games on this server: "
 				<< NetMauMau::DB::SQLite::getInstance().getServedGames() << std::endl;
 		}
-
-		//out.flush();
-		//out.close();
 	}
 }
 

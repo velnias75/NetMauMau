@@ -279,6 +279,7 @@ bool Engine::nextTurn() {
 
 		if(!m_initialChecked) {
 			getRuleSet()->checkInitial(player, uc);
+			checkAndPerformDirChange(player);
 			m_initialJack = getRuleSet()->isJackMode();
 			m_initialChecked = true;
 		}
@@ -450,25 +451,7 @@ sevenRule:
 			}
 		}
 
-		if(getRuleSet()->hasDirChange()) {
-
-			if(m_dirChangeEnabled && m_players.size() > 2) {
-
-				std::reverse(m_players.begin(), m_players.end());
-
-				m_nxtPlayer = static_cast<std::size_t>(std::distance(m_players.begin(),
-													   std::find(m_players.begin(), m_players.end(),
-															   player)));
-				assert(m_nxtPlayer <= m_players.size());
-
-				getEventHandler().directionChange();
-
-			} else if(m_dirChangeEnabled) {
-				setDirChangeIsSuspend(true);
-			}
-
-			getRuleSet()->dirChanged();
-		}
+		checkAndPerformDirChange(player);
 
 		const Player::IPlayer *curPlayer = player;
 
@@ -546,6 +529,29 @@ sevenRule:
 	}
 
 	return true;
+}
+
+void Engine::checkAndPerformDirChange(const Player::IPlayer *player) {
+
+	if(getRuleSet()->hasDirChange()) {
+
+		if(m_dirChangeEnabled && m_players.size() > 2) {
+
+			std::reverse(m_players.begin(), m_players.end());
+
+			m_nxtPlayer = static_cast<std::size_t>(std::distance(m_players.begin(),
+												   std::find(m_players.begin(), m_players.end(),
+														   player)));
+			assert(m_nxtPlayer <= m_players.size());
+
+			getEventHandler().directionChange();
+
+		} else if(m_dirChangeEnabled) {
+			setDirChangeIsSuspend(true);
+		}
+
+		getRuleSet()->dirChanged();
+	}
 }
 
 bool Engine::takeCards(Player::IPlayer *player, const Common::ICard *card) const

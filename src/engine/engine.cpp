@@ -45,8 +45,8 @@
 #include "sqlite.h"
 #include "logger.h"
 #include "iplayer.h"
+#include "iruleset.h"
 #include "cardtools.h"
-#include "stdruleset.h"
 #include "engineconfig.h"
 #include "ieventhandler.h"
 

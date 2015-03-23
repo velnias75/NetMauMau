@@ -2,7 +2,7 @@ noinst_LTLIBRARIES = libengine.la libengine_private.la libeventhandler.la
 
 noinst_HEADERS = defaulteventhandler.h engineconfig.h engine.h iaceroundlistener.h \
 	icardcountobserver.h ieventhandler.h iruleset.h italonchange.h nullconnection.h \
-	stdcardfactory.h stdplayer.h stdruleset.h talon.h 
+	stdcardfactory.h stdplayer.h talon.h 
 
 if GSL
 GSL=-DHAVE_GSL
@@ -23,6 +23,6 @@ libengine_la_CPPFLAGS = $(GSL) -DDEBUGLUADIR=\"$(abs_top_srcdir)/src/lua\" \
 	-DLUADIR=\"$(pkgdatadir)\"
 libengine_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include \
 	-I$(top_srcdir)/src/lua $(GSL_CFLAGS) $(NO_RTTI_FLAGS)
-libengine_la_SOURCES = engineconfig.cpp stdcardfactory.cpp stdruleset.cpp talon.cpp 
+libengine_la_SOURCES = engineconfig.cpp stdcardfactory.cpp talon.cpp 
 libengine_la_LIBADD = ../lua/libluaruleset.la libengine_private.la libeventhandler.la \
 	../common/libnetmaumaucommon.la $(GSL_LIBS)

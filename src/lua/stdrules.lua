@@ -77,6 +77,7 @@ function checkCard(uncoveredCard, playedCard, player)
         m_jackSuit = getJackChoice(player.INTERFACE,
           ternary(uncoveredCard, uncoveredCard, playedCard), playedCard)
         m_jackMode = true
+        m_jackSuitOrig = false
       end
     end
   end
@@ -158,7 +159,11 @@ function setDirChangeIsSuspend(isSuspend)
 end
 
 function getJackSuit()
-  return ternary(m_jackSuit == SUIT.SUIT_ILLEGAL, getRandomSuit(), m_jackSuit)
+  if m_jackSuitOrig then
+    return getRandomSuit()
+  else
+    return m_jackSuit
+  end
 end
 
 function getMaxPlayers()
@@ -175,6 +180,7 @@ function reset()
   m_takeCardCount = 0
   m_jackMode = false
   m_jackSuit = SUIT.SUIT_ILLEGAL
+  m_jackSuitOrig = true
   m_aceRoundPlayer = nil
   m_curPlayers = 0
   m_dirChange = false

@@ -34,11 +34,15 @@ extern "C" {
 #include "logger.h"
 #include "icard.h"
 
+namespace {
+const char *INTERFACE = "INTERFACE";
+}
+
 using namespace NetMauMau::Lua;
 
 const NetMauMau::IAceRoundListener *NetMauMau::Lua::LuaState::m_arl = 0L;
 
-LuaState::LuaState() : m_state(luaL_newstate()), m_luaFile() {
+LuaState::LuaState() throw(Exception::LuaException) : m_state(luaL_newstate()) {
 
 	if(m_state) {
 
@@ -86,7 +90,8 @@ LuaState::LuaState() : m_state(luaL_newstate()), m_luaFile() {
 		lua_register(m_state, "aceRoundEnded", playerAceRoundEnded);
 
 	} else {
-		logWarning("[Lua] couldn't initialize Lua");
+		// cppcheck-suppress exceptThrowInDestructor
+		throw Exception::LuaException("couldn't initialize Lua");
 	}
 }
 
@@ -94,90 +99,65 @@ LuaState::~LuaState() {
 	if(m_state) lua_close(m_state);
 }
 
-LuaState &LuaState::getInstance() {
+LuaState &LuaState::getInstance() throw(Exception::LuaException) {
 	static LuaState instance;
 	return instance;
 }
 
-bool LuaState::load(const std::string &luafile, bool dirChangePossible,
-					std::size_t initialCardCount, const NetMauMau::IAceRoundListener *arl) const {
-
-	m_luaFile = luafile;
+void LuaState::load(const std::string &luafile, bool dirChangePossible,
+					std::size_t initialCardCount,
+					const NetMauMau::IAceRoundListener *arl) const throw(Exception::LuaException) {
 	m_arl = arl;
 
-	if(m_state) {
+	switch(luaL_loadfile(m_state, luafile.c_str())) {
+	case LUA_ERRSYNTAX:
+		throw Exception::LuaException(lua_tostring(m_state, -1));
 
-		int res;
+	case LUA_ERRMEM:
+		throw Exception::LuaException("memory allocation error", luafile.c_str());
 
-		if((res = luaL_loadfile(m_state, m_luaFile.c_str()))) {
-
-			switch(res) {
-			case LUA_ERRSYNTAX:
-				logError("[Lua]: " << lua_tostring(m_state, -1));
-				break;
-
-			case LUA_ERRMEM:
-				logError("[Lua " << m_luaFile << "]: memory allocation error");
-				break;
-
-			case LUA_ERRFILE:
-				logError("[Lua " << m_luaFile << "]: cannot open/read the file");
-				break;
-			}
-
-		} else if(call("init", 0, 0)) {
-
-			lua_pushboolean(m_state, dirChangePossible);
-			lua_setglobal(m_state, "nmm_dirChangePossible");
-			lua_pushinteger(m_state, static_cast<lua_Integer>(initialCardCount));
-			lua_setglobal(m_state, "nmm_initialCardCount");
-
-			lua_newtable(m_state);
-			lua_pushboolean(m_state, m_arl != 0L);
-			lua_setfield(m_state, -2, "ENABLED");
-
-			if(arl) {
-				lua_pushinteger(m_state, static_cast<lua_Integer>(arl->getAceRoundRank()));
-			} else {
-				lua_pushnil(m_state);
-			}
-
-			lua_setfield(m_state, -2, "RANK");
-			lua_setglobal(m_state, "nmm_aceRound");
-
-			return true;
-		}
+	case LUA_ERRFILE:
+		throw Exception::LuaException("cannot open/read the file", luafile.c_str());
 	}
 
-	return false;
+	call("init", 0, 0);
+
+	lua_pushboolean(m_state, dirChangePossible);
+	lua_setglobal(m_state, "nmm_dirChangePossible");
+	lua_pushinteger(m_state, static_cast<lua_Integer>(initialCardCount));
+	lua_setglobal(m_state, "nmm_initialCardCount");
+
+	lua_newtable(m_state);
+	lua_pushboolean(m_state, m_arl != 0L);
+	lua_setfield(m_state, -2, "ENABLED");
+
+	if(arl) {
+		lua_pushinteger(m_state, static_cast<lua_Integer>(arl->getAceRoundRank()));
+	} else {
+		lua_pushnil(m_state);
+	}
+
+	lua_setfield(m_state, -2, "RANK");
+	lua_setglobal(m_state, "nmm_aceRound");
 }
 
-bool LuaState::call(const char *fname, int nargs, int nresults) const {
+void LuaState::call(const char *fname, int nargs,
+					int nresults) const throw(Exception::LuaException) {
 
-	if(m_state) {
+	switch(lua_pcall(m_state, nargs, nresults, 0)) {
+	case LUA_ERRRUN:
+		throw Exception::LuaException(lua_tostring(m_state, -1), fname);
 
-		switch(lua_pcall(m_state, nargs, nresults, 0)) {
-		case LUA_ERRRUN:
-			logError("[Lua]: " << lua_tostring(m_state, -1));
-			return false;
+	case LUA_ERRMEM:
+		throw Exception::LuaException("memory allocation error", fname);
 
-		case LUA_ERRMEM:
-			logError("[Lua " << m_luaFile << ":" << fname << "]: memory allocation error");
-			return false;
-
-		case LUA_ERRERR:
-			logError("[Lua " << m_luaFile << ":" << fname
-					 << "]: error while running the error handler function");
-			return false;
-		}
-
-		return true;
+	case LUA_ERRERR:
+		throw Exception::LuaException("error while running the error handler function", fname);
 	}
-
-	return false;
 }
 
 void LuaState::pushCard(const NetMauMau::Common::ICard *card) const {
+
 	if(card) {
 		lua_newtable(m_state);
 		lua_pushinteger(m_state, card->getSuit());
@@ -188,9 +168,9 @@ void LuaState::pushCard(const NetMauMau::Common::ICard *card) const {
 		lua_setfield(m_state, -2, "POINTS");
 		const NetMauMau::Common::ICard **bp =
 			reinterpret_cast<const NetMauMau::Common::ICard **>(lua_newuserdata(m_state,
-					sizeof(card)));
+					sizeof(const NetMauMau::Common::ICard **)));
 		*bp = card;
-		lua_setfield(m_state, -2, "INTERFACE");
+		lua_setfield(m_state, -2, INTERFACE);
 	} else {
 		lua_pushnil(m_state);
 	}
@@ -206,9 +186,9 @@ void LuaState::pushPlayer(const NetMauMau::Player::IPlayer *player) const {
 		lua_setfield(m_state, -2, "CARDCOUNT");
 		const NetMauMau::Player::IPlayer **bp =
 			reinterpret_cast<const NetMauMau::Player::IPlayer **>(lua_newuserdata(m_state,
-					sizeof(player)));
+					sizeof(const NetMauMau::Player::IPlayer **)));
 		*bp = player;
-		lua_setfield(m_state, -2, "INTERFACE");
+		lua_setfield(m_state, -2, INTERFACE);
 	} else {
 		lua_pushnil(m_state);
 	}
@@ -224,21 +204,19 @@ const NetMauMau::Common::ICard *LuaState::getCard(lua_State *l, int idx) {
 
 	while(lua_next(l, idx) != 0) {
 
-		if(!std::strncmp("INTERFACE", lua_tostring(l, -2), 9)) {
+		if(!std::strncmp(INTERFACE, lua_tostring(l, -2), 9)) {
 			c = *reinterpret_cast<const NetMauMau::Common::ICard **>(lua_touserdata(l, -1));
 		}
 
 		lua_pop(l, 1);
 	}
-	
+
 	return c;
 }
 
 int LuaState::print(lua_State *l) {
 
-	if(lua_gettop(l)) {
-		logInfo("[Lua] " << lua_tostring(l, 1));
-	}
+	if(lua_gettop(l)) logInfo("[Lua] " << lua_tostring(l, 1));
 
 	return 0;
 }

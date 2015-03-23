@@ -22,6 +22,8 @@
 
 #include "iruleset.h"
 
+#include "luaexception.h"
+
 namespace NetMauMau {
 
 class IAceRoundListener;
@@ -32,47 +34,49 @@ class LuaRuleSet : public IRuleSet {
 	DISALLOW_COPY_AND_ASSIGN(LuaRuleSet)
 public:
 	LuaRuleSet(const std::string &luafile, bool dirChangePossible, std::size_t initialCardCount = 5,
-			   const IAceRoundListener *l = 0L);
+			   const IAceRoundListener *l = 0L) throw(Lua::Exception::LuaException);
 	virtual ~LuaRuleSet();
 
-	virtual void checkInitial(const Player::IPlayer *player, const Common::ICard *playedCard);
+	virtual void checkInitial(const Player::IPlayer *player,
+							  const Common::ICard *playedCard) throw(Lua::Exception::LuaException);
 	virtual bool checkCard(const Player::IPlayer *player, const Common::ICard *uncoveredCard,
-						   const Common::ICard *playedCard, bool ai);
+						   const Common::ICard *playedCard,
+						   bool ai) throw(Lua::Exception::LuaException);
 	virtual bool checkCard(const Common::ICard *uncoveredCard,
-						   const Common::ICard *playedCard) const;
+						   const Common::ICard *playedCard) const
+	throw(Lua::Exception::LuaException);
 
-	virtual std::size_t lostPointFactor(const Common::ICard *uncoveredCard) const;
+	virtual std::size_t lostPointFactor(const Common::ICard *uncoveredCard) const
+	throw(Lua::Exception::LuaException);
 
-	virtual bool hasToSuspend() const;
-	virtual void hasSuspended();
-	virtual std::size_t takeCardCount() const;
-	virtual std::size_t takeCards(const Common::ICard *playedCard) const;
-	virtual void hasTakenCards();
+	virtual bool hasToSuspend() const throw(Lua::Exception::LuaException);
+	virtual void hasSuspended() throw(Lua::Exception::LuaException);
+	virtual std::size_t takeCardCount() const throw(Lua::Exception::LuaException);
+	virtual std::size_t takeCards(const Common::ICard *playedCard) const
+	throw(Lua::Exception::LuaException);
+	virtual void hasTakenCards() throw(Lua::Exception::LuaException);
 
-	virtual std::size_t initialCardCount() const;
-	virtual bool suspendIfNoMatchingCard() const;
-	virtual bool takeIfLost() const;
+	virtual std::size_t initialCardCount() const throw(Lua::Exception::LuaException);
+	virtual bool suspendIfNoMatchingCard() const throw(Lua::Exception::LuaException);
+	virtual bool takeIfLost() const throw(Lua::Exception::LuaException);
 
-	virtual bool isAceRoundPossible() const;
-	virtual Common::ICard::RANK getAceRoundRank() const;
+	virtual bool isAceRoundPossible() const throw(Lua::Exception::LuaException);
+	virtual Common::ICard::RANK getAceRoundRank() const throw(Lua::Exception::LuaException);
 
-	virtual bool hasDirChange() const;
-	virtual void dirChanged();
-	virtual bool getDirChangeIsSuspend() const;
-	virtual void setDirChangeIsSuspend(bool suspend);
+	virtual bool hasDirChange() const throw(Lua::Exception::LuaException);
+	virtual void dirChanged() throw(Lua::Exception::LuaException);
+	virtual bool getDirChangeIsSuspend() const throw(Lua::Exception::LuaException);
+	virtual void setDirChangeIsSuspend(bool suspend) throw(Lua::Exception::LuaException);
 
-	virtual bool isAceRound() const;
-	virtual bool isJackMode() const;
-	virtual Common::ICard::SUIT getJackSuit() const;
-	virtual void setJackModeOff();
+	virtual bool isAceRound() const throw(Lua::Exception::LuaException);
+	virtual bool isJackMode() const throw(Lua::Exception::LuaException);
+	virtual Common::ICard::SUIT getJackSuit() const throw(Lua::Exception::LuaException);
+	virtual void setJackModeOff() throw(Lua::Exception::LuaException);
 
-	virtual std::size_t getMaxPlayers() const;
-	virtual void setCurPlayers(std::size_t players);
+	virtual std::size_t getMaxPlayers() const throw(Lua::Exception::LuaException);
+	virtual void setCurPlayers(std::size_t players) throw(Lua::Exception::LuaException);
 
 	virtual void reset() throw();
-
-private:
-	const bool m_validLua;
 };
 
 }

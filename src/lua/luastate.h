@@ -26,7 +26,7 @@ extern "C" {
 #include <lua.h>
 }
 
-#include "linkercontrol.h"
+#include "luaexception.h"
 
 namespace NetMauMau {
 
@@ -47,11 +47,12 @@ class LuaState {
 public:
 	~LuaState();
 
-	static LuaState &getInstance();
+	static LuaState &getInstance() throw(Exception::LuaException);
 
-	bool load(const std::string &luafile, bool dirChangePossible,
-			  std::size_t initialCardCount, const NetMauMau::IAceRoundListener *arl) const;
-	bool call(const char *fname, int nargs, int nresults) const;
+	void load(const std::string &luafile, bool dirChangePossible,
+			  std::size_t initialCardCount, const NetMauMau::IAceRoundListener *arl) const
+	throw(Exception::LuaException);
+	void call(const char *fname, int nargs, int nresults = 1) const throw(Exception::LuaException);
 
 	void pushCard(const Common::ICard *card) const;
 	void pushPlayer(const Player::IPlayer *player) const;
@@ -61,7 +62,7 @@ public:
 	}
 
 private:
-	LuaState();
+	LuaState() throw(Exception::LuaException);
 
 	static const Common::ICard *getCard(lua_State *l, int idx) _NOUNUSED;
 
@@ -74,9 +75,7 @@ private:
 
 private:
 	static const NetMauMau::IAceRoundListener *m_arl;
-	
 	lua_State *m_state;
-	mutable std::string m_luaFile;
 };
 
 }

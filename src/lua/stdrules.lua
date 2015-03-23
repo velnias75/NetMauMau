@@ -14,7 +14,7 @@
 
  You should have received a copy of the GNU Lesser General Public License
  along with NetMauMau.  If not, see <http://www.gnu.org/licenses/> ]]
- 
+
 local function ternary(expr, tVal, fVal)
   if not not expr then return tVal else return fVal end
 end
@@ -24,35 +24,34 @@ local function isDirChange(playedCard)
 end
 
 local function isCardAcceptable(uncoveredCard, playedCard)
-  
+
   if not (uncoveredCard and playedCard) then
     return false
   end
 
-  return not not ternary(nmm_aceRound.ENABLED and m_aceRoundPlayer ~= nil,
+  return ternary(nmm_aceRound.ENABLED and m_aceRoundPlayer ~= nil,
     playedCard.RANK == nmm_aceRound.RANK, -- in ace rounds only nmm_aceRound.RANK is allowed
-    (playedCard.RANK == RANK.JACK and uncoveredCard.RANK ~= RANK.JACK) 
-      or ((((isJackMode() and getJackSuit() == playedCard.SUIT) 
+    (playedCard.RANK == RANK.JACK and uncoveredCard.RANK ~= RANK.JACK)
+      or ((((isJackMode() and getJackSuit() == playedCard.SUIT)
         or (not isJackMode()
           and (uncoveredCard.SUIT == playedCard.SUIT or (uncoveredCard.RANK == playedCard.RANK)))))
         and not (playedCard.RANK == RANK.JACK and uncoveredCard.RANK == RANK.JACK)))
 end
 
 function checkCard(uncoveredCard, playedCard, player)
-  
-  local accepted = not not ternary(uncoveredCard, isCardAcceptable(uncoveredCard, playedCard), true)
-  
+
+  local accepted = ternary(uncoveredCard, isCardAcceptable(uncoveredCard, playedCard), true)
+
   if player then
 
     do -- Check if we are in an ace round or can start an ace round
-      if accepted and (nmm_aceRound.ENABLED and uncoveredCard 
-        and (not m_aceRoundPlayer or m_aceRoundPlayer == player.ID) 
+      if accepted and (nmm_aceRound.ENABLED and uncoveredCard
+        and (not m_aceRoundPlayer or m_aceRoundPlayer == player.ID)
         and playedCard.RANK == nmm_aceRound.RANK) then
 
         do
-          
-          local acrCont = not not (m_aceRoundPlayer ~= nil)
-        
+          local acrCont = (m_aceRoundPlayer ~= nil)
+
           m_aceRoundPlayer = ternary(getAceRoundChoice(player.INTERFACE), player.ID, nil)
 
           if m_aceRoundPlayer then
@@ -75,13 +74,13 @@ function checkCard(uncoveredCard, playedCard, player)
         m_takeCardCount = m_takeCardCount + 2
       elseif accepted and playedCard.RANK == RANK.JACK -- do we need to ask for a jack suit?
         and (m_curPlayers > 2 or player.CARDCOUNT > 1) then
-        m_jackSuit = getJackChoice(player.INTERFACE, 
+        m_jackSuit = getJackChoice(player.INTERFACE,
           ternary(uncoveredCard, uncoveredCard, playedCard), playedCard)
         m_jackMode = true
       end
     end
   end
-  
+
   return accepted
 
 end
@@ -91,7 +90,7 @@ function lostPointFactor(uncoveredCard)
 end
 
 function hasToSuspend()
-  return not not (m_hasToSuspend and (not m_hasSuspended))
+  return (m_hasToSuspend and (not m_hasSuspended))
 end
 
 function hasSuspended()
@@ -131,11 +130,11 @@ function getAceRoundRank()
 end
 
 function isAceRound()
-  return not not (m_aceRoundPlayer and isAceRoundPossible())
+  return (m_aceRoundPlayer and isAceRoundPossible())
 end
 
 function isJackMode()
-  return not not m_jackMode
+  return m_jackMode
 end
 
 function setJackModeOff()
@@ -143,7 +142,7 @@ function setJackModeOff()
 end
 
 function hasDirChange()
-  return not not m_dirChange
+  return m_dirChange
 end
 
 function dirChanged()
@@ -151,7 +150,7 @@ function dirChanged()
 end
 
 function getDirChangeIsSuspend()
-  return not not m_dirChangeIsSuspend
+  return m_dirChangeIsSuspend
 end
 
 function setDirChangeIsSuspend(isSuspend)
@@ -184,4 +183,4 @@ end
 
 reset()
 
--- kate: indent-mode cstyle; indent-width 2; replace-tabs on; tab-width 2; 
+-- kate: indent-mode cstyle; indent-width 2; replace-tabs on; tab-width 2; replace-trailing-space-save on;

@@ -22,7 +22,7 @@
 using namespace NetMauMau::Lua::Exception;
 
 LuaException::LuaException(const std::string &msg, const char *fname) throw()
-	: SocketException(std::string("[Lua") + (fname ? " " : "") + (fname ? fname : "") + "]" +
+	: SocketException(std::string("[Lua") + (fname ? " " : "") + (fname ? fname : "") + "] " +
 					  msg) {}
 
 LuaException::~LuaException() throw() {}

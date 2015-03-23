@@ -55,7 +55,7 @@ public:
 	void call(const char *fname, int nargs, int nresults = 1) const throw(Exception::LuaException);
 
 	void pushCard(const Common::ICard *card) const throw();
-	void pushPlayer(const Player::IPlayer *player) const throw();
+	void pushPlayer(const Player::IPlayer *player) const throw(Common::Exception::SocketException);
 
 	inline operator lua_State *() const {
 		return m_state;

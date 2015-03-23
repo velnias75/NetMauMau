@@ -33,6 +33,7 @@ LuaRuleSet::LuaRuleSet(const std::string &luafile, bool dirChangePossible, std::
 					   const NetMauMau::IAceRoundListener *arl)
 throw(NetMauMau::Lua::Exception::LuaException) : IRuleSet() {
 	l.load(luafile, dirChangePossible, icc, arl);
+	reset();
 }
 
 LuaRuleSet::~LuaRuleSet() {}
@@ -54,8 +55,17 @@ bool LuaRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 
 	l.pushCard(uncoveredCard);
 	l.pushCard(playedCard);
-	l.pushPlayer(player);
-	l.call(fname, 3);
+
+	try {
+
+		l.pushPlayer(player);
+		l.call(fname, 3);
+
+	} catch(const NetMauMau::Common::Exception::SocketException &e) {
+		lua_pop(l, 3);
+		throw NetMauMau::Lua::Exception::LuaException(std::string("Internal error: ") + e.what(),
+				fname);
+	}
 
 	return static_cast<bool>(lua_toboolean(l, -1));
 }
@@ -258,13 +268,13 @@ void LuaRuleSet::setCurPlayers(std::size_t players) throw(NetMauMau::Lua::Except
 
 void LuaRuleSet::reset() throw() {
 
-	const char *fname = "reset";
+	const char *fname = "init";
 	lua_getglobal(l, fname);
 
 	try {
 		l.call(fname, 0, 0);
 	} catch(const NetMauMau::Lua::Exception::LuaException &e) {
-		logWarning(e)
+		logWarning(e);
 	}
 }
 

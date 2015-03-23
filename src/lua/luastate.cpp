@@ -156,7 +156,7 @@ void LuaState::call(const char *fname, int nargs,
 	}
 }
 
-void LuaState::pushCard(const NetMauMau::Common::ICard *card) const {
+void LuaState::pushCard(const NetMauMau::Common::ICard *card) const throw() {
 
 	if(card) {
 		lua_newtable(m_state);
@@ -176,14 +176,23 @@ void LuaState::pushCard(const NetMauMau::Common::ICard *card) const {
 	}
 }
 
-void LuaState::pushPlayer(const NetMauMau::Player::IPlayer *player) const {
+void LuaState::pushPlayer(const NetMauMau::Player::IPlayer *player) const throw() {
 
 	if(player) {
 		lua_newtable(m_state);
 		lua_pushinteger(m_state, reinterpret_cast<lua_Integer>(player));
 		lua_setfield(m_state, -2, "ID");
-		lua_pushinteger(m_state, static_cast<lua_Integer>(player->getCardCount()));
+
+		try {
+			lua_pushinteger(m_state, static_cast<lua_Integer>(player->getCardCount()));
+		} catch(const NetMauMau::Common::Exception::SocketException &) {
+			lua_pushinteger(m_state, 0);
+			logDebug("[Lua] Trouble getting card count from player \""
+					 << player->getName() << "\" (probably called too early)");
+		}
+
 		lua_setfield(m_state, -2, "CARDCOUNT");
+
 		const NetMauMau::Player::IPlayer **bp =
 			reinterpret_cast<const NetMauMau::Player::IPlayer **>(lua_newuserdata(m_state,
 					sizeof(const NetMauMau::Player::IPlayer **)));

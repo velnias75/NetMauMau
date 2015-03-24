@@ -57,7 +57,7 @@ Logger::~Logger() {
 }
 
 void Logger::postAction(const logString &ls) const throw() {
-#if _WIN32
+#ifdef _WIN32
 	std::cerr.flush();
 #endif
 #ifdef HAVE_SYSLOG_H

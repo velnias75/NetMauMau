@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -28,7 +28,7 @@
 #include <exception>
 #include <string>
 
-#if _WIN32
+#ifdef _WIN32
 #include <winsock2.h>
 #else
 #define INVALID_SOCKET -1

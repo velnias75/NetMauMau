@@ -49,6 +49,7 @@ struct cardGreater : std::binary_function < NetMauMau::Common::ICard *, NetMauMa
 	}
 };
 
+#if 0
 struct playedOutSuit : std::binary_function<std::string, NetMauMau::Common::ICard::SUIT, bool> {
 	bool operator()(const std::string &desc, NetMauMau::Common::ICard::SUIT suit) const {
 
@@ -62,6 +63,7 @@ struct playedOutSuit : std::binary_function<std::string, NetMauMau::Common::ICar
 		return false;
 	}
 };
+#endif
 
 struct playedOutRank : std::binary_function<std::string, NetMauMau::Common::ICard::RANK, bool> {
 	bool operator()(const std::string &desc, NetMauMau::Common::ICard::RANK rank) const {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -22,14 +22,14 @@
 #include <cstring>
 #include <cerrno>
 
-#if _WIN32
+#ifdef _WIN32
 #include <windows.h>
 #include <winsock2.h>
 #endif
 
 #include "errorstring.h"
 
-#if _WIN32
+#ifdef _WIN32
 namespace {
 TCHAR buffer[1024];
 }

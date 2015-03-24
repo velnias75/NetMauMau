@@ -32,7 +32,7 @@
 
 using namespace NetMauMau;
 
-int main(int, char **) {
+int main(int, const char **) {
 
 #ifndef HAVE_ARC4RANDOM_UNIFORM
 	std::srand(static_cast<unsigned int>(std::time(0L)));

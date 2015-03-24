@@ -21,6 +21,10 @@
 #include "config.h"
 #endif
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include <cstdlib>
 
 #include <sys/stat.h>
@@ -33,7 +37,7 @@ namespace {
 #ifndef _WIN32
 const char *STDRULESLUA = "/stdrules.lua";
 #else
-const char *STDRULESLUA = "\\stdrules.lua";
+const char *STDRULESLUA = "stdrules";
 #endif
 }
 
@@ -102,11 +106,31 @@ std::string EngineConfig::getLuaScriptPath() {
 
 	if(luaDir) return std::string(luaDir);
 
+#ifndef _WIN32
 	luaDir = std::getenv("HOME");
-
+#else
+	luaDir = std::getenv("APPDATA");
+#endif
+	
 	if(!(luaDir && !stat((std::string(luaDir) + "/." +
 						  PACKAGE_NAME + STDRULESLUA).c_str(), &ls))) {
+#ifndef _WIN32
 		return std::string(LUADIR) + STDRULESLUA;
+#else
+		TCHAR buffer[MAX_PATH];
+
+		GetModuleFileName(NULL, buffer, MAX_PATH);
+
+		char drive[_MAX_DRIVE];
+		char dir[_MAX_DIR];
+		char fname[_MAX_FNAME];
+		char ext[_MAX_EXT];
+
+		_splitpath(buffer, drive, dir, fname, ext);
+		_makepath(buffer, drive, dir, STDRULESLUA, "lua");
+
+		return std::string(buffer);
+#endif
 	}
 
 	return std::string(luaDir) + STDRULESLUA;

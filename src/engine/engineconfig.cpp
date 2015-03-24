@@ -96,18 +96,17 @@ std::size_t EngineConfig::getTalonFactor() const {
 #include "logger.h"
 std::string EngineConfig::getLuaScriptPath() {
 
-	char *luaDir = std::getenv("NETMAUMAU_RULESDIR");
+	char *luaDir = std::getenv("NETMAUMAU_RULES");
 
 	struct stat ls;
 
-	if(!(luaDir && !stat((std::string(luaDir) + STDRULESLUA).c_str(), &ls))) {
+	if(luaDir) return std::string(luaDir);
 
-		luaDir = std::getenv("HOME");
+	luaDir = std::getenv("HOME");
 
-		if(!(luaDir && !stat((std::string(luaDir) + "/." +
-							  PACKAGE_NAME + STDRULESLUA).c_str(), &ls))) {
-			return std::string(LUADIR) + STDRULESLUA;
-		}
+	if(!(luaDir && !stat((std::string(luaDir) + "/." +
+						  PACKAGE_NAME + STDRULESLUA).c_str(), &ls))) {
+		return std::string(LUADIR) + STDRULESLUA;
 	}
 
 	return std::string(luaDir) + STDRULESLUA;

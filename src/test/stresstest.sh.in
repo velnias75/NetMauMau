@@ -26,7 +26,7 @@ fi
 
 export GSL_RNG_TYPE=ranlxs2
 export GSL_RNG_SEED=$seed
-export NETMAUMAU_RULESDIR=@RULESDIR@
+export NETMAUMAU_RULES=@RULES@
 
 terminate() {
   echo

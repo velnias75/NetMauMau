@@ -54,6 +54,9 @@ public:
 	std::size_t getTalonFactor() const _PURE;
 
 private:
+	static std::string getLuaScriptPath();
+
+private:
 	Event::IEventHandler &m_eventHandler;
 	const bool m_dirChange;
 	const long m_aiDelay;

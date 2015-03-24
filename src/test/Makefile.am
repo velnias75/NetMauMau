@@ -20,6 +20,7 @@ BUILT_SOURCES = testimg.h
 
 export GSL_RNG_TYPE := ranlxs2
 export GSL_RNG_SEED := 280375
+export NETMAUMAU_RULESDIR := $(abs_top_srcdir)/src/lua
 
 TESTS = $(check_PROGRAMS)
 
@@ -47,6 +48,7 @@ testimg.h: testimg.png
 	
 stresstest.sh: $(top_srcdir)/src/test/stresstest.sh.in
 	$(AM_V_GEN)$(SED) \
+		-e 's|@RULESDIR[@]|$(NETMAUMAU_RULESDIR)|g' \
 		-e 's|@SHELL[@]|$(SHELL)|g' \
 		-e 's|@check_PROGRAMS[@]|$(abs_builddir)/$(check_PROGRAMS)|g' < $< > $@
 	chmod u+x $@

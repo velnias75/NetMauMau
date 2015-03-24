@@ -17,14 +17,25 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NDEBUG
-#undef LUADIR
-#define LUADIR DEBUGLUADIR
+#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
+#include "config.h"
 #endif
+
+#include <cstdlib>
+
+#include <sys/stat.h>
 
 #include "engineconfig.h"
 
 #include "luaruleset.h"
+
+namespace {
+#ifndef _WIN32
+const char *STDRULESLUA = "/stdrules.lua";
+#else
+const char *STDRULESLUA = "\\stdrules.lua";
+#endif
+}
 
 using namespace NetMauMau;
 
@@ -67,7 +78,7 @@ void EngineConfig::setNextMessage(bool b) {
 }
 
 RuleSet::IRuleSet *EngineConfig::getRuleSet(const NetMauMau::IAceRoundListener *arl) const {
-	return m_ruleset ? m_ruleset : (m_ruleset = new RuleSet::LuaRuleSet(LUADIR"/stdrules.lua",
+	return m_ruleset ? m_ruleset : (m_ruleset = new RuleSet::LuaRuleSet(getLuaScriptPath(),
 			m_dirChange, m_initialCardCount, m_aceRound ? arl : 0L));
 }
 
@@ -81,6 +92,25 @@ Common::ICard::RANK EngineConfig::getAceRoundRank() const {
 
 std::size_t EngineConfig::getTalonFactor() const {
 	return m_talonFactor;
+}
+#include "logger.h"
+std::string EngineConfig::getLuaScriptPath() {
+
+	char *luaDir = std::getenv("NETMAUMAU_RULESDIR");
+
+	struct stat ls;
+
+	if(!(luaDir && !stat((std::string(luaDir) + STDRULESLUA).c_str(), &ls))) {
+
+		luaDir = std::getenv("HOME");
+
+		if(!(luaDir && !stat((std::string(luaDir) + "/." +
+							  PACKAGE_NAME + STDRULESLUA).c_str(), &ls))) {
+			return std::string(LUADIR) + STDRULESLUA;
+		}
+	}
+
+	return std::string(luaDir) + STDRULESLUA;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

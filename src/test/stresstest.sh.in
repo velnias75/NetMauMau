@@ -20,7 +20,7 @@
 
 let seed=0
 
-if [ -n $1 ]; then
+if [ -n "$1" ]; then
   let seed=$1
 fi
 

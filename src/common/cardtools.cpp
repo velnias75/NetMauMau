@@ -165,6 +165,7 @@ std::size_t NetMauMau::Common::getCardPoints(ICard::RANK v) {
 	case ICard::JACK:
 		return 20;
 
+	case ICard::RANK_ILLEGAL:
 	default:
 		return 0;
 	}
@@ -177,18 +178,19 @@ std::size_t NetMauMau::Common::getCardPoints(ICard::RANK v) {
 unsigned int NetMauMau::Common::suitOrderPosition(NetMauMau::Common::ICard::SUIT s) {
 
 	switch(s) {
-	case NetMauMau::Common::ICard::CLUBS:
+	case ICard::CLUBS:
 		return 0;
 
-	case NetMauMau::Common::ICard::SPADES:
+	case ICard::SPADES:
 		return 1;
 
-	case NetMauMau::Common::ICard::HEARTS:
+	case ICard::HEARTS:
 		return 2;
 
-	case NetMauMau::Common::ICard::DIAMONDS:
+	case ICard::DIAMONDS:
 		return 3;
 
+	case ICard::SUIT_ILLEGAL:
 	default:
 		return 4;
 	}
@@ -328,6 +330,10 @@ std::string NetMauMau::Common::createCardDesc(ICard::SUIT s, ICard::RANK v, bool
 		d.append(1, 'A');
 		break;
 
+	case ICard::SEVEN:
+	case ICard::EIGHT:
+	case ICard::NINE:
+	case ICard::TEN:
 	default:
 		char n[256];
 		std::snprintf(n, 255, "%u", static_cast<unsigned int>(v));

@@ -24,7 +24,7 @@
 #define NMM_VERSION_STRING(maj,min) NMMSTR(maj) "." NMMSTR(min)
 #define NMMSTR(s) #s
 
-#if _WIN32
+#ifdef _WIN32
 #define COPY "\270"
 #define AUML "\204"
 #else
@@ -569,7 +569,7 @@ int main(int argc, const char **argv) {
 			break;
 
 		case 'I':
-#if !WIN32
+#ifndef WIN32
 			if(interface[0] == '?') {
 				getIPForIF();
 				poptFreeContext(pctx);
@@ -651,7 +651,7 @@ int main(int argc, const char **argv) {
 
 #ifdef HAVE_LIBRT
 
-	timer_t timerid;
+	timer_t timerid = 0;
 	struct sigevent sev;
 	struct itimerspec its;
 

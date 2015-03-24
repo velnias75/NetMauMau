@@ -76,7 +76,7 @@ public:
 											   static_cast<unsigned long int>(ubound))) : 0;
 		}
 
-#if HAVE_ARC4RANDOM_UNIFORM
+#ifdef HAVE_ARC4RANDOM_UNIFORM
 		return ubound > 0 ? ::arc4random_uniform(ubound) : 0;
 #else
 		return ubound > 0 ? (std::rand() % ubound) : 0;

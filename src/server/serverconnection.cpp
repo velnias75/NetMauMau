@@ -67,6 +67,7 @@ struct _isPlayer : public std::binary_function < NetMauMau::Common::IConnection:
 	}
 };
 
+#if 0
 struct _playerClientversionLess :
 	public std::binary_function < NetMauMau::Common::IConnection::PLAYERINFOS::value_type,
 		NetMauMau::Common::IConnection::PLAYERINFOS::value_type, bool > {
@@ -84,6 +85,7 @@ struct _playerClientversionLess2 :
 		return x.clientVersion < y;
 	}
 };
+#endif
 #pragma GCC diagnostic pop
 
 }
@@ -226,7 +228,7 @@ int Connection::wait(timeval *tv) {
 		for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 				i != getRegisteredPlayers().end(); ++i) {
 
-#if _WIN32
+#ifdef _WIN32
 			fd_set rfds;
 
 			FD_ZERO(&rfds);

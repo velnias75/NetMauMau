@@ -123,7 +123,7 @@ NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *un
 
 		return findCard(offeredCard);
 
-	} catch(const NetMauMau::Common::Exception::SocketException &e) {
+	} catch(const NetMauMau::Common::Exception::SocketException &) {
 		throw Exception::ServerPlayerException(__FUNCTION__);
 	}
 }

@@ -117,6 +117,9 @@ See the
 .URL \"http://www.gnu.org/software/gsl/manual/html_node/Random-number-environment-variables.html\" \"GSL Manual\" \" for more information\"" > gsl.h2m ], 
   [ AM_CONDITIONAL([GSL], [ false ])] )
 PKG_CHECK_MODULES([LIBSQLITE], [sqlite3 >= 3.4.2])
+PKG_CHECK_MODULES([LIBLUA], [lua5.1 >= 5.1.2], [ AC_SUBST([PKGC_LUA], [lua5.1]) ], 
+  [ PKG_CHECK_MODULES([LIBLUA], [lua51 >= 5.1.2], [ AC_SUBST([PKGC_LUA], [lua51]) ],
+  [ PKG_CHECK_MODULES([LIBLUA], [lua >= 5.1.2 lua < 5.2], [AC_SUBST([PKGC_LUA], [lua])] ) ] ) ])
 
 # Checks for header files.
 AC_HEADER_STDBOOL
@@ -199,5 +202,5 @@ AC_CONFIG_FILES([src/server/netmaumau.rc doc/client.dox netmaumau.h2m])
 AC_MSG_RESULT([You may want to install a client too: https://github.com/velnias75/NetMauMau-Qt-Client])
 
 AC_OUTPUT([Makefile src/images/Makefile src/include/Makefile src/Makefile src/common/Makefile 
-  src/sqlite/Makefile src/engine/Makefile src/server/Makefile src/client/Makefile src/test/Makefile 
-  doc/Makefile])
+  src/sqlite/Makefile src/lua/Makefile src/engine/Makefile src/server/Makefile src/client/Makefile 
+  src/test/Makefile doc/Makefile])

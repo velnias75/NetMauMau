@@ -45,8 +45,8 @@
 #include "sqlite.h"
 #include "logger.h"
 #include "iplayer.h"
+#include "iruleset.h"
 #include "cardtools.h"
-#include "stdruleset.h"
 #include "engineconfig.h"
 #include "ieventhandler.h"
 
@@ -179,7 +179,9 @@ bool Engine::distributeCards() throw(Common::Exception::SocketException) {
 
 		std::vector<std::vector<Common::ICard *> > cards(m_players.size());
 
-		for(std::size_t i = 0; i < getRuleSet()->initialCardCount(); ++i) {
+		const std::size_t icc = getRuleSet()->initialCardCount();
+
+		for(std::size_t i = 0; i < icc; ++i) {
 
 			if(m_talon->empty()) return false;
 

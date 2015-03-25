@@ -17,9 +17,29 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
+#include "config.h"
+#endif
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+#include <cstdlib>
+
+#include <sys/stat.h>
+
 #include "engineconfig.h"
 
-#include "stdruleset.h"
+#include "luaruleset.h"
+
+namespace {
+#ifndef _WIN32
+const char *STDRULESLUA = "/stdrules.lua";
+#else
+const char *STDRULESLUA = "stdrules";
+#endif
+}
 
 using namespace NetMauMau;
 
@@ -62,8 +82,8 @@ void EngineConfig::setNextMessage(bool b) {
 }
 
 RuleSet::IRuleSet *EngineConfig::getRuleSet(const NetMauMau::IAceRoundListener *arl) const {
-	return m_ruleset ? m_ruleset : (m_ruleset = new RuleSet::StdRuleSet(m_dirChange,
-			m_initialCardCount, m_aceRound ? arl : 0L));
+	return m_ruleset ? m_ruleset : (m_ruleset = new RuleSet::LuaRuleSet(getLuaScriptPath(),
+			m_dirChange, m_initialCardCount, m_aceRound ? arl : 0L));
 }
 
 char EngineConfig::getAceRound() const {
@@ -76,6 +96,52 @@ Common::ICard::RANK EngineConfig::getAceRoundRank() const {
 
 std::size_t EngineConfig::getTalonFactor() const {
 	return m_talonFactor;
+}
+#include "logger.h"
+std::string EngineConfig::getLuaScriptPath() {
+
+	char *luaDir = std::getenv("NETMAUMAU_RULES");
+
+	struct stat ls;
+
+	if(luaDir) return std::string(luaDir);
+
+#ifndef _WIN32
+	luaDir = std::getenv("HOME");
+#else
+	luaDir = std::getenv("APPDATA");
+#endif
+
+#ifndef _WIN32
+
+	if(!(luaDir && !stat((std::string(luaDir) + "/." +
+						  PACKAGE_NAME + STDRULESLUA).c_str(), &ls))) {
+
+		return std::string(LUADIR) + STDRULESLUA;
+#else
+
+	if(!(luaDir && !stat((std::string(luaDir) + "\\" + STDRULESLUA + ".lua").c_str(), &ls))) {
+		TCHAR buffer[MAX_PATH];
+
+		GetModuleFileName(NULL, buffer, MAX_PATH);
+
+		char drive[_MAX_DRIVE];
+		char dir[_MAX_DIR];
+		char fname[_MAX_FNAME];
+		char ext[_MAX_EXT];
+
+		_splitpath(buffer, drive, dir, fname, ext);
+		_makepath(buffer, drive, dir, STDRULESLUA, "lua");
+
+		return std::string(buffer);
+#endif
+	}
+
+#ifndef _WIN32
+	return std::string(luaDir) + STDRULESLUA;
+#else
+	return std::string(luaDir) + "\\" + STDRULESLUA + ".lua";
+#endif
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

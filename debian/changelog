@@ -1,8 +1,9 @@
 netmaumau (0.17.0) UNRELEASED; urgency=low
 
   * open magic mime database once per session
+  * using Lua script as rule set
 
- -- Heiko Schäfer <heiko@rangun.de>  Mon, 16 Mar 2015 08:37:36 +0100
+ -- Heiko Schäfer <heiko@rangun.de>  Tue, 24 Mar 2015 06:24:43 +0100
 
 netmaumau (0.16) UNRELEASED; urgency=low
 

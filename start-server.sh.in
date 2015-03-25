@@ -1,0 +1,6 @@
+#!/bin/sh
+
+export NETMAUMAU_RULES=@SRCDIR@/src/lua/stdrules.lua
+
+@BUILDDIR@/src/server/nmm-server --user=$USER $@
+

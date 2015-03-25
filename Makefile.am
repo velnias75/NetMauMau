@@ -5,15 +5,17 @@ xinetddir = $(sysconfdir)/xinetd.d
 xinetd_DATA = netmaumau
 endif
 
+noinst_SCRIPTS = start-server.sh
+
 ACLOCAL_AMFLAGS = -I m4
 
-EXTRA_DIST = COPYING netmaumau.ico netmaumau.xinetd.in netmaumau.pc.in
+EXTRA_DIST = COPYING netmaumau.ico netmaumau.xinetd.in netmaumau.pc.in start-server.sh.in
 
 if XINETD
 CLEANFILES = netmaumau
 endif
 
-DISTCLEANFILES = $(PACKAGE_NAME)-dbg.db
+DISTCLEANFILES = $(PACKAGE_NAME)-dbg.db start-server.sh
 
 if ENABLE_CLIENT
 DISTCLEANFILES += netmaumau.pc
@@ -39,6 +41,12 @@ if XINETD
 netmaumau: $(top_srcdir)/netmaumau.xinetd.in
 	$(AM_V_GEN)$(SED) -e 's|@bindir[@]|$(bindir)|g' < $< > $@
 endif
+
+start-server.sh: $(top_srcdir)/start-server.sh.in
+	$(AM_V_GEN)$(SED) \
+		-e 's|@SRCDIR[@]|$(abs_top_srcdir)|g' \
+		-e 's|@BUILDDIR[@]|$(abs_top_builddir)|g' < $< > $@
+	@chmod +x $@
 
 if CHECKCPP
 # suppression template: // cppcheck-suppress {id}

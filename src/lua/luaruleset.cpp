@@ -94,7 +94,7 @@ throw(NetMauMau::Lua::Exception::LuaException) {
 	l.pushCard(uncoveredCard);
 	l.call(fname, 1);
 
-	return static_cast<std::size_t>(lua_tointeger(l, -1));
+	return std::max<std::size_t>(1, static_cast<std::size_t>(lua_tointeger(l, -1)));
 }
 
 bool LuaRuleSet::hasToSuspend() const throw(NetMauMau::Lua::Exception::LuaException) {
@@ -141,7 +141,7 @@ std::size_t LuaRuleSet::initialCardCount() const throw(NetMauMau::Lua::Exception
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
-	return static_cast<std::size_t>(lua_tointeger(l, -1));
+	return std::max<std::size_t>(1, static_cast<std::size_t>(lua_tointeger(l, -1)));
 }
 
 bool LuaRuleSet::suspendIfNoMatchingCard() const throw(NetMauMau::Lua::Exception::LuaException) {

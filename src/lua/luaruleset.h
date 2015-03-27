@@ -20,6 +20,8 @@
 #ifndef NETMAUMAU_RULESET_LUARULESET_H
 #define NETMAUMAU_RULESET_LUARULESET_H
 
+#include <vector>
+
 #include "iruleset.h"
 
 #include "luaexception.h"
@@ -77,6 +79,9 @@ public:
 	virtual void setCurPlayers(std::size_t players) throw(Lua::Exception::LuaException);
 
 	virtual void reset() throw();
+
+private:
+	static std::vector<const char *> checkInterface();
 };
 
 }

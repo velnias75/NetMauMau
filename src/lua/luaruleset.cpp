@@ -17,6 +17,9 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iterator>
+#include <algorithm>
+
 #include "luaruleset.h"
 
 #include "luastate.h"
@@ -24,7 +27,89 @@
 #include "logger.h"
 
 namespace {
+
 const NetMauMau::Lua::LuaState &l = NetMauMau::Lua::LuaState::getInstance();
+
+const char *FUNCTIONS[] = {
+	"checkCard",
+	"dirChanged",
+	"getAceRoundRank",
+	"getDirChangeIsSuspend",
+	"getJackSuit",
+	"getMaxPlayers",
+	"hasDirChange",
+	"hasSuspended",
+	"hasTakenCards",
+	"hasToSuspend",
+	"init",
+	"initialCardCount",
+	"isAceRound",
+	"isAceRoundPossible",
+	"isJackMode",
+	"lostPointFactor",
+	"setCurPlayers",
+	"setDirChangeIsSuspend",
+	"setJackModeOff",
+	"suspendIfNoMatchingCard",
+	"takeCardCount",
+	"takeCards",
+	"takeIfLost"
+};
+
+enum FUNCTIONNAMES {
+	CHECKCARD = 0,
+	DIRCHANGED,
+	GETACEROUNDRANK,
+	GETDIRCHANGEISSUSPEND,
+	GETJACKSUIT,
+	GETMAXPLAYERS,
+	HASDIRCHANGE,
+	HASSUSPENDED,
+	HASTAKENCARDS,
+	HASTOSUSPEND,
+	INIT,
+	INITIALCARDCOUNT,
+	ISACEROUND,
+	ISACEROUNDPOSSIBLE,
+	ISJACKMODE,
+	LOSTPOINTFACTOR,
+	SETCURPLAYERS,
+	SETDIRCHANGEISSUSPEND,
+	SETJACKMODEOFF,
+	SUSPENDIFNOMATCHINGCARD,
+	TAKECARDCOUNT,
+	TAKECARDS,
+	TAKEIFLOST,
+	ENDFUNCTIONS
+};
+
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+struct _checkMissing : public std::unary_function<const char *, void> {
+
+	inline _checkMissing() : missing() {
+		missing.reserve(sizeof(FUNCTIONS));
+	}
+
+	inline void operator()(const char *fn) {
+		if(fn && !exists(fn)) missing.push_back(fn);
+	}
+
+	std::vector<const char *> missing;
+
+private:
+	inline bool exists(const char *fn) const {
+
+		lua_pushstring(l, fn);
+		lua_rawget(l, LUA_GLOBALSINDEX);
+		const bool ex = static_cast<bool>(lua_isfunction(l, -1));
+		lua_pop(l, 1);
+
+		return ex;
+	}
+};
+#pragma GCC diagnostic pop
+
 }
 
 using namespace NetMauMau::RuleSet;
@@ -32,16 +117,34 @@ using namespace NetMauMau::RuleSet;
 LuaRuleSet::LuaRuleSet(const std::string &luafile, bool dirChangePossible, std::size_t icc,
 					   const NetMauMau::IAceRoundListener *arl)
 throw(NetMauMau::Lua::Exception::LuaException) : IRuleSet() {
+
 	l.load(luafile, dirChangePossible, icc, arl);
+
+	const std::vector<const char *> &missing(checkInterface());
+
+	if(!missing.empty()) {
+
+		std::ostringstream os;
+		os << "Your Lua rules is missing following required functions: ";
+		std::ostream_iterator<std::string> out_it(os, ", ");
+		std::copy(missing.begin(), missing.end(), out_it);
+
+		throw NetMauMau::Lua::Exception::LuaException(os.str().substr(0, os.str().length() - 2));
+	}
+
 	reset();
 }
 
 LuaRuleSet::~LuaRuleSet() {}
 
+std::vector<const char *> LuaRuleSet::checkInterface() {
+	return std::for_each(FUNCTIONS, &FUNCTIONS[ENDFUNCTIONS], _checkMissing()).missing;
+}
+
 void LuaRuleSet::checkInitial(const NetMauMau::Player::IPlayer *player,
 							  const NetMauMau::Common::ICard *playedCard)
 throw(NetMauMau::Lua::Exception::LuaException) {
-	checkCard(player, 0L, playedCard, false);
+	checkCard(player, 0L, playedCard, player->isAIPlayer());
 }
 
 bool LuaRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
@@ -49,7 +152,7 @@ bool LuaRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 						   const NetMauMau::Common::ICard *playedCard,
 						   bool) throw(NetMauMau::Lua::Exception::LuaException) {
 
-	const char *fname = "checkCard";
+	const char *fname = FUNCTIONS[CHECKCARD];
 
 	lua_getglobal(l, fname);
 
@@ -74,7 +177,7 @@ bool LuaRuleSet::checkCard(const NetMauMau::Common::ICard *uncoveredCard,
 						   const NetMauMau::Common::ICard *playedCard) const
 throw(NetMauMau::Lua::Exception::LuaException) {
 
-	const char *fname = "checkCard";
+	const char *fname = FUNCTIONS[CHECKCARD];
 
 	lua_getglobal(l, fname);
 
@@ -89,7 +192,7 @@ throw(NetMauMau::Lua::Exception::LuaException) {
 std::size_t LuaRuleSet::lostPointFactor(const NetMauMau::Common::ICard *uncoveredCard) const
 throw(NetMauMau::Lua::Exception::LuaException) {
 
-	const char *fname = "lostPointFactor";
+	const char *fname = FUNCTIONS[LOSTPOINTFACTOR];
 	lua_getglobal(l, fname);
 	l.pushCard(uncoveredCard);
 	l.call(fname, 1);
@@ -98,7 +201,7 @@ throw(NetMauMau::Lua::Exception::LuaException) {
 }
 
 bool LuaRuleSet::hasToSuspend() const throw(NetMauMau::Lua::Exception::LuaException) {
-	const char *fname = "hasToSuspend";
+	const char *fname = FUNCTIONS[HASTOSUSPEND];
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
@@ -106,13 +209,13 @@ bool LuaRuleSet::hasToSuspend() const throw(NetMauMau::Lua::Exception::LuaExcept
 }
 
 void LuaRuleSet::hasSuspended() throw(NetMauMau::Lua::Exception::LuaException) {
-	const char *fname = "hasSuspended";
+	const char *fname = FUNCTIONS[HASSUSPENDED];
 	lua_getglobal(l, fname);
 	l.call(fname, 0, 0);
 }
 
 std::size_t LuaRuleSet::takeCardCount() const throw(NetMauMau::Lua::Exception::LuaException) {
-	const char *fname = "takeCardCount";
+	const char *fname = FUNCTIONS[TAKECARDCOUNT];
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
@@ -122,7 +225,7 @@ std::size_t LuaRuleSet::takeCardCount() const throw(NetMauMau::Lua::Exception::L
 std::size_t LuaRuleSet::takeCards(const NetMauMau::Common::ICard *playedCard) const
 throw(NetMauMau::Lua::Exception::LuaException) {
 
-	const char *fname = "takeCards";
+	const char *fname = FUNCTIONS[TAKECARDS];
 	lua_getglobal(l, fname);
 	l.pushCard(playedCard);
 	l.call(fname, 1);
@@ -131,13 +234,13 @@ throw(NetMauMau::Lua::Exception::LuaException) {
 }
 
 void LuaRuleSet::hasTakenCards() throw(NetMauMau::Lua::Exception::LuaException) {
-	const char *fname = "hasTakenCards";
+	const char *fname = FUNCTIONS[HASTAKENCARDS];
 	lua_getglobal(l, fname);
 	l.call(fname, 0, 0);
 }
 
 std::size_t LuaRuleSet::initialCardCount() const throw(NetMauMau::Lua::Exception::LuaException) {
-	const char *fname = "initialCardCount";
+	const char *fname = FUNCTIONS[INITIALCARDCOUNT];
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
@@ -145,7 +248,7 @@ std::size_t LuaRuleSet::initialCardCount() const throw(NetMauMau::Lua::Exception
 }
 
 bool LuaRuleSet::suspendIfNoMatchingCard() const throw(NetMauMau::Lua::Exception::LuaException) {
-	const char *fname = "suspendIfNoMatchingCard";
+	const char *fname = FUNCTIONS[SUSPENDIFNOMATCHINGCARD];
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
@@ -153,7 +256,7 @@ bool LuaRuleSet::suspendIfNoMatchingCard() const throw(NetMauMau::Lua::Exception
 }
 
 bool LuaRuleSet::takeIfLost() const throw(NetMauMau::Lua::Exception::LuaException) {
-	const char *fname = "takeIfLost";
+	const char *fname = FUNCTIONS[TAKEIFLOST];
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
@@ -161,7 +264,7 @@ bool LuaRuleSet::takeIfLost() const throw(NetMauMau::Lua::Exception::LuaExceptio
 }
 
 bool LuaRuleSet::isAceRoundPossible() const throw(NetMauMau::Lua::Exception::LuaException) {
-	const char *fname = "isAceRoundPossible";
+	const char *fname = FUNCTIONS[ISACEROUNDPOSSIBLE];
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
@@ -171,7 +274,7 @@ bool LuaRuleSet::isAceRoundPossible() const throw(NetMauMau::Lua::Exception::Lua
 NetMauMau::Common::ICard::RANK LuaRuleSet::getAceRoundRank() const
 throw(NetMauMau::Lua::Exception::LuaException) {
 
-	const char *fname = "getAceRoundRank";
+	const char *fname = FUNCTIONS[GETACEROUNDRANK];
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
@@ -179,7 +282,7 @@ throw(NetMauMau::Lua::Exception::LuaException) {
 }
 
 bool LuaRuleSet::hasDirChange() const throw(NetMauMau::Lua::Exception::LuaException) {
-	const char *fname = "hasDirChange";
+	const char *fname = FUNCTIONS[HASDIRCHANGE];
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
@@ -187,13 +290,13 @@ bool LuaRuleSet::hasDirChange() const throw(NetMauMau::Lua::Exception::LuaExcept
 }
 
 void LuaRuleSet::dirChanged() throw(NetMauMau::Lua::Exception::LuaException) {
-	const char *fname = "dirChanged";
+	const char *fname = FUNCTIONS[DIRCHANGED];
 	lua_getglobal(l, fname);
 	l.call(fname, 0, 0);
 }
 
 bool LuaRuleSet::getDirChangeIsSuspend() const throw(NetMauMau::Lua::Exception::LuaException) {
-	const char *fname = "getDirChangeIsSuspend";
+	const char *fname = FUNCTIONS[GETDIRCHANGEISSUSPEND];
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
@@ -203,14 +306,14 @@ bool LuaRuleSet::getDirChangeIsSuspend() const throw(NetMauMau::Lua::Exception::
 void LuaRuleSet::setDirChangeIsSuspend(bool suspend)
 throw(NetMauMau::Lua::Exception::LuaException) {
 
-	const char *fname = "setDirChangeIsSuspend";
+	const char *fname = FUNCTIONS[SETDIRCHANGEISSUSPEND];
 	lua_getglobal(l, fname);
 	lua_pushboolean(l, suspend);
 	l.call(fname, 1, 0);
 }
 
 bool LuaRuleSet::isAceRound() const throw(NetMauMau::Lua::Exception::LuaException) {
-	const char *fname = "isAceRound";
+	const char *fname = FUNCTIONS[ISACEROUND];
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
@@ -218,7 +321,7 @@ bool LuaRuleSet::isAceRound() const throw(NetMauMau::Lua::Exception::LuaExceptio
 }
 
 bool LuaRuleSet::isJackMode() const throw(NetMauMau::Lua::Exception::LuaException) {
-	const char *fname = "isJackMode";
+	const char *fname = FUNCTIONS[ISJACKMODE];
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
@@ -228,7 +331,7 @@ bool LuaRuleSet::isJackMode() const throw(NetMauMau::Lua::Exception::LuaExceptio
 NetMauMau::Common::ICard::SUIT LuaRuleSet::getJackSuit() const
 throw(NetMauMau::Lua::Exception::LuaException) {
 
-	const char *fname = "getJackSuit";
+	const char *fname = FUNCTIONS[GETJACKSUIT];
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
@@ -236,14 +339,14 @@ throw(NetMauMau::Lua::Exception::LuaException) {
 }
 
 void LuaRuleSet::setJackModeOff() throw(NetMauMau::Lua::Exception::LuaException) {
-	const char *fname = "setJackModeOff";
+	const char *fname = FUNCTIONS[SETJACKMODEOFF];
 	lua_getglobal(l, fname);
 	l.call(fname, 0, 0);
 }
 
 std::size_t LuaRuleSet::getMaxPlayers() const throw(NetMauMau::Lua::Exception::LuaException) {
 
-	const char *fname = "getMaxPlayers";
+	const char *fname = FUNCTIONS[GETMAXPLAYERS];
 
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
@@ -260,7 +363,7 @@ std::size_t LuaRuleSet::getMaxPlayers() const throw(NetMauMau::Lua::Exception::L
 }
 
 void LuaRuleSet::setCurPlayers(std::size_t players) throw(NetMauMau::Lua::Exception::LuaException) {
-	const char *fname = "setCurPlayers";
+	const char *fname = FUNCTIONS[SETCURPLAYERS];
 	lua_getglobal(l, fname);
 	lua_pushinteger(l, static_cast<lua_Integer>(players));
 	l.call(fname, 1, 0);
@@ -268,7 +371,7 @@ void LuaRuleSet::setCurPlayers(std::size_t players) throw(NetMauMau::Lua::Except
 
 void LuaRuleSet::reset() throw() {
 
-	const char *fname = "init";
+	const char *fname = FUNCTIONS[INIT];
 	lua_getglobal(l, fname);
 
 	try {

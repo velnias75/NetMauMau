@@ -17,16 +17,15 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "luaexception.h"
+#include "luafatalexception.h"
 
 using namespace NetMauMau::Lua::Exception;
 
-LuaException::LuaException(const std::string &msg, const char *fname) throw()
-	: SocketException(std::string("[Lua") + (fname ? " " : "") + (fname ? fname : "") + "] " +
-					  msg) {}
+LuaFatalException::LuaFatalException(const std::string &msg, const char *fname) throw()
+	: LuaException(msg, fname) {}
 
-LuaException::LuaException(const LuaException &o) throw() : SocketException(o) {}
+LuaFatalException::LuaFatalException(const LuaFatalException &o) throw() : LuaException(o) {}
 
-LuaException::~LuaException() throw() {}
+LuaFatalException::~LuaFatalException() throw() {}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

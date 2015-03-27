@@ -16,7 +16,7 @@ libeventhandler_la_SOURCES = defaulteventhandler.cpp
 
 libengine_private_la_CPPFLAGS = $(GSL)
 libengine_private_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include \
-	-I$(top_srcdir)/src/sqlite $(GSL_CFLAGS)
+	-I$(top_srcdir)/src/lua -I$(top_srcdir)/src/sqlite $(GSL_CFLAGS)
 libengine_private_la_SOURCES = engine.cpp nullconnection.cpp stdplayer.cpp
 
 libengine_la_CPPFLAGS = $(GSL) -DLUADIR=\"$(pkgdatadir)\"

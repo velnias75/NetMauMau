@@ -114,10 +114,11 @@ private:
 
 	void informAIStat() const;
 	std::size_t getAICount() const;
-	void setDirChangeIsSuspend(bool b);
-	void jackModeOff() const;
+	void setDirChangeIsSuspend(bool b) throw(Common::Exception::SocketException);
+	void jackModeOff() const throw(Common::Exception::SocketException);
 
-	void checkAndPerformDirChange(const Player::IPlayer *player);
+	void checkAndPerformDirChange(const Player::IPlayer *player)
+	throw(Common::Exception::SocketException);
 
 	void suspends(Player::IPlayer *p, const Common::ICard *uc = NULL) const
 	throw(Common::Exception::SocketException);
@@ -127,11 +128,14 @@ private:
 	RuleSet::IRuleSet *getRuleSet() const;
 
 	PLAYERS::const_iterator find(const std::string &name) const;
-	PLAYERS::iterator removePlayer(Player::IPlayer *player);
+	PLAYERS::iterator removePlayer(Player::IPlayer *player)
+	throw(Common::Exception::SocketException);
 
 	inline void removePlayers() throw() {
 		m_players.clear();
 	}
+
+	void disconnectError(SOCKET fd) const;
 
 	void checkPlayersAlive() const throw(Common::Exception::SocketException);
 

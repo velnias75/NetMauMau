@@ -36,7 +36,8 @@ endif
 
 nmm_server_CPPFLAGS += -DPKGDATADIR="\"$(pkgdatadir)\""
 nmm_server_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
-	-I$(top_srcdir)/src/engine -I$(top_srcdir)/src/sqlite $(POPT_CFLAGS)
+	-I$(top_srcdir)/src/lua -I$(top_srcdir)/src/engine -I$(top_srcdir)/src/sqlite \
+	$(POPT_CFLAGS)
 nmm_server_SOURCES = game.cpp main.cpp serverconnection.cpp servereventhandler.cpp \
 	serverplayer.cpp serverplayerexception.cpp
 nmm_server_LDADD = libnmm_server_private.la ../common/libnetmaumaucommon.la \

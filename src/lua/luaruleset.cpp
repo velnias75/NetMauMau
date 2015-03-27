@@ -22,11 +22,14 @@
 
 #include "luaruleset.h"
 
+#include "luafatalexception.h"
 #include "luastate.h"
 #include "iplayer.h"
 #include "logger.h"
 
 namespace {
+
+const std::string WRONGTYPE("Wrong return type; expecting ");
 
 const NetMauMau::Lua::LuaState &l = NetMauMau::Lua::LuaState::getInstance();
 
@@ -110,6 +113,124 @@ private:
 };
 #pragma GCC diagnostic pop
 
+template<typename T>
+struct returnTypeCheckerTrait {
+	inline T operator()(lua_State *, const char *fname) const
+	throw(NetMauMau::Lua::Exception::LuaFatalException) {
+		throw NetMauMau::Lua::Exception::LuaFatalException("Illegal return type", fname);
+	}
+};
+
+template<>
+struct returnTypeCheckerTrait<bool> {
+
+	inline bool operator()(lua_State *ls, const char *fname) const
+	throw(NetMauMau::Lua::Exception::LuaFatalException) {
+
+		if(lua_type(ls, -1) != LUA_TBOOLEAN || lua_type(ls, -1) == LUA_TNONE) {
+			lua_pop(ls, -1);
+			throw NetMauMau::Lua::Exception::LuaFatalException(WRONGTYPE + "bool", fname);
+		}
+
+		return static_cast<bool>(lua_toboolean(ls, -1));
+	}
+};
+
+template<>
+struct returnTypeCheckerTrait<std::size_t> {
+
+	inline std::size_t operator()(lua_State *ls, const char *fname) const
+	throw(NetMauMau::Lua::Exception::LuaFatalException) {
+
+		if(lua_type(ls, -1) != LUA_TNUMBER || lua_type(ls, -1) == LUA_TNONE) {
+			lua_pop(ls, -1);
+			throw NetMauMau::Lua::Exception::LuaFatalException(WRONGTYPE + "integer", fname);
+		}
+
+		return static_cast<std::size_t>(lua_tointeger(ls, -1));
+	}
+};
+
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wunreachable-code"
+#pragma clang diagnostic push
+#endif
+template<>
+struct returnTypeCheckerTrait<NetMauMau::Common::ICard::SUIT> {
+
+	inline NetMauMau::Common::ICard::SUIT operator()(lua_State *ls, const char *fname) const
+	throw(NetMauMau::Lua::Exception::LuaFatalException) {
+
+		if(lua_type(ls, -1) != LUA_TNUMBER || lua_type(ls, -1) == LUA_TNONE) {
+			lua_pop(ls, -1);
+			throw NetMauMau::Lua::Exception::LuaFatalException(WRONGTYPE + "SUIT", fname);
+		}
+
+		const NetMauMau::Common::ICard::SUIT s =
+			static_cast<NetMauMau::Common::ICard::SUIT>(lua_tointeger(ls, -1));
+
+		switch(s) {
+		case NetMauMau::Common::ICard::DIAMONDS:
+		case NetMauMau::Common::ICard::HEARTS:
+		case NetMauMau::Common::ICard::SPADES:
+		case NetMauMau::Common::ICard::CLUBS:
+		case NetMauMau::Common::ICard::SUIT_ILLEGAL:
+			return s;
+
+		default:
+			throw NetMauMau::Lua::Exception::LuaFatalException("No valid suit", fname);
+		}
+	}
+};
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wunreachable-code"
+#pragma clang diagnostic push
+#endif
+template<>
+struct returnTypeCheckerTrait<NetMauMau::Common::ICard::RANK> {
+
+	inline NetMauMau::Common::ICard::RANK operator()(lua_State *ls, const char *fname) const
+	throw(NetMauMau::Lua::Exception::LuaFatalException) {
+
+		if(lua_type(ls, -1) != LUA_TNUMBER || lua_type(ls, -1) == LUA_TNONE) {
+			lua_pop(ls, -1);
+			throw NetMauMau::Lua::Exception::LuaFatalException(WRONGTYPE + "RANK", fname);
+		}
+
+		const NetMauMau::Common::ICard::RANK r =
+			static_cast<NetMauMau::Common::ICard::RANK>(lua_tointeger(ls, -1));
+
+		switch(r) {
+		case NetMauMau::Common::ICard::SEVEN:
+		case NetMauMau::Common::ICard::EIGHT:
+		case NetMauMau::Common::ICard::NINE:
+		case NetMauMau::Common::ICard::TEN:
+		case NetMauMau::Common::ICard::JACK:
+		case NetMauMau::Common::ICard::KING:
+		case NetMauMau::Common::ICard::QUEEN:
+		case NetMauMau::Common::ICard::ACE:
+		case NetMauMau::Common::ICard::RANK_ILLEGAL:
+			return r;
+
+		default:
+			throw NetMauMau::Lua::Exception::LuaFatalException("No valid rank", fname);
+		}
+	}
+};
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
+template<typename T>
+inline T checkReturnType(lua_State *ls,
+						 const char *fname) throw(NetMauMau::Lua::Exception::LuaFatalException) {
+	return returnTypeCheckerTrait<T>()(ls, fname);
+}
+
 }
 
 using namespace NetMauMau::RuleSet;
@@ -170,7 +291,7 @@ bool LuaRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 				fname);
 	}
 
-	return static_cast<bool>(lua_toboolean(l, -1));
+	return checkReturnType<bool>(l, fname);
 }
 
 bool LuaRuleSet::checkCard(const NetMauMau::Common::ICard *uncoveredCard,
@@ -186,7 +307,7 @@ throw(NetMauMau::Lua::Exception::LuaException) {
 	lua_pushnil(l);
 	l.call(fname, 3);
 
-	return static_cast<bool>(lua_toboolean(l, -1));
+	return checkReturnType<bool>(l, fname);
 }
 
 std::size_t LuaRuleSet::lostPointFactor(const NetMauMau::Common::ICard *uncoveredCard) const
@@ -197,7 +318,7 @@ throw(NetMauMau::Lua::Exception::LuaException) {
 	l.pushCard(uncoveredCard);
 	l.call(fname, 1);
 
-	return std::max<std::size_t>(1, static_cast<std::size_t>(lua_tointeger(l, -1)));
+	return std::max<std::size_t>(1, checkReturnType<std::size_t>(l, fname));
 }
 
 bool LuaRuleSet::hasToSuspend() const throw(NetMauMau::Lua::Exception::LuaException) {
@@ -205,7 +326,7 @@ bool LuaRuleSet::hasToSuspend() const throw(NetMauMau::Lua::Exception::LuaExcept
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
-	return static_cast<bool>(lua_toboolean(l, -1));
+	return checkReturnType<bool>(l, fname);
 }
 
 void LuaRuleSet::hasSuspended() throw(NetMauMau::Lua::Exception::LuaException) {
@@ -219,7 +340,7 @@ std::size_t LuaRuleSet::takeCardCount() const throw(NetMauMau::Lua::Exception::L
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
-	return static_cast<std::size_t>(lua_tointeger(l, -1));
+	return checkReturnType<std::size_t>(l, fname);
 }
 
 std::size_t LuaRuleSet::takeCards(const NetMauMau::Common::ICard *playedCard) const
@@ -230,7 +351,7 @@ throw(NetMauMau::Lua::Exception::LuaException) {
 	l.pushCard(playedCard);
 	l.call(fname, 1);
 
-	return static_cast<std::size_t>(lua_tointeger(l, -1));
+	return checkReturnType<std::size_t>(l, fname);
 }
 
 void LuaRuleSet::hasTakenCards() throw(NetMauMau::Lua::Exception::LuaException) {
@@ -244,7 +365,7 @@ std::size_t LuaRuleSet::initialCardCount() const throw(NetMauMau::Lua::Exception
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
-	return std::max<std::size_t>(1, static_cast<std::size_t>(lua_tointeger(l, -1)));
+	return std::max<std::size_t>(1, checkReturnType<std::size_t>(l, fname));
 }
 
 bool LuaRuleSet::suspendIfNoMatchingCard() const throw(NetMauMau::Lua::Exception::LuaException) {
@@ -252,7 +373,7 @@ bool LuaRuleSet::suspendIfNoMatchingCard() const throw(NetMauMau::Lua::Exception
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
-	return static_cast<bool>(lua_toboolean(l, -1));
+	return checkReturnType<bool>(l, fname);
 }
 
 bool LuaRuleSet::takeIfLost() const throw(NetMauMau::Lua::Exception::LuaException) {
@@ -260,7 +381,7 @@ bool LuaRuleSet::takeIfLost() const throw(NetMauMau::Lua::Exception::LuaExceptio
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
-	return static_cast<bool>(lua_toboolean(l, -1));
+	return checkReturnType<bool>(l, fname);
 }
 
 bool LuaRuleSet::isAceRoundPossible() const throw(NetMauMau::Lua::Exception::LuaException) {
@@ -268,7 +389,7 @@ bool LuaRuleSet::isAceRoundPossible() const throw(NetMauMau::Lua::Exception::Lua
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
-	return static_cast<bool>(lua_toboolean(l, -1));
+	return checkReturnType<bool>(l, fname);
 }
 
 NetMauMau::Common::ICard::RANK LuaRuleSet::getAceRoundRank() const
@@ -278,7 +399,7 @@ throw(NetMauMau::Lua::Exception::LuaException) {
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
-	return static_cast<NetMauMau::Common::ICard::RANK>(lua_tointeger(l, -1));
+	return checkReturnType<NetMauMau::Common::ICard::RANK>(l, fname);
 }
 
 bool LuaRuleSet::hasDirChange() const throw(NetMauMau::Lua::Exception::LuaException) {
@@ -286,7 +407,7 @@ bool LuaRuleSet::hasDirChange() const throw(NetMauMau::Lua::Exception::LuaExcept
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
-	return static_cast<bool>(lua_toboolean(l, -1));
+	return checkReturnType<bool>(l, fname);
 }
 
 void LuaRuleSet::dirChanged() throw(NetMauMau::Lua::Exception::LuaException) {
@@ -300,7 +421,7 @@ bool LuaRuleSet::getDirChangeIsSuspend() const throw(NetMauMau::Lua::Exception::
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
-	return static_cast<bool>(lua_toboolean(l, -1));
+	return checkReturnType<bool>(l, fname);
 }
 
 void LuaRuleSet::setDirChangeIsSuspend(bool suspend)
@@ -317,7 +438,7 @@ bool LuaRuleSet::isAceRound() const throw(NetMauMau::Lua::Exception::LuaExceptio
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
-	return static_cast<bool>(lua_toboolean(l, -1));
+	return checkReturnType<bool>(l, fname);
 }
 
 bool LuaRuleSet::isJackMode() const throw(NetMauMau::Lua::Exception::LuaException) {
@@ -325,7 +446,7 @@ bool LuaRuleSet::isJackMode() const throw(NetMauMau::Lua::Exception::LuaExceptio
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
-	return static_cast<bool>(lua_toboolean(l, -1));
+	return checkReturnType<bool>(l, fname);
 }
 
 NetMauMau::Common::ICard::SUIT LuaRuleSet::getJackSuit() const
@@ -335,7 +456,7 @@ throw(NetMauMau::Lua::Exception::LuaException) {
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
-	return static_cast<NetMauMau::Common::ICard::SUIT>(lua_tointeger(l, -1));
+	return checkReturnType<NetMauMau::Common::ICard::SUIT>(l, fname);
 }
 
 void LuaRuleSet::setJackModeOff() throw(NetMauMau::Lua::Exception::LuaException) {
@@ -351,7 +472,7 @@ std::size_t LuaRuleSet::getMaxPlayers() const throw(NetMauMau::Lua::Exception::L
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
-	const std::size_t r = static_cast<std::size_t>(lua_tointeger(l, -1));
+	const std::size_t r = checkReturnType<std::size_t>(l, fname);
 
 	if(r <= 5) {
 		return r;

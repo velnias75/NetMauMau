@@ -49,6 +49,7 @@
 #include "cardtools.h"
 #include "engineconfig.h"
 #include "ieventhandler.h"
+#include "luafatalexception.h"
 
 #if defined(HAVE_GSL)
 #include <random_gen.h>
@@ -162,13 +163,18 @@ void Engine::removePlayer(const std::string &player) {
 	if(f != m_players.end() && !(*f)->isAIPlayer()) removePlayer(*f);
 }
 
-Engine::PLAYERS::iterator Engine::removePlayer(Player::IPlayer *player) {
+Engine::PLAYERS::iterator Engine::removePlayer(Player::IPlayer *player)
+throw(Common::Exception::SocketException) {
 
 	const PLAYERS::iterator &f(std::find(m_players.begin(), m_players.end(), player));
 
 	if(f != m_players.end()) return m_players.erase(f);
 
-	getRuleSet()->setCurPlayers(m_players.size());
+	try {
+		getRuleSet()->setCurPlayers(m_players.size());
+	} catch(Common::Exception::SocketException &e) {
+		logDebug(e);
+	}
 
 	return f;
 }
@@ -475,6 +481,8 @@ sevenRule:
 
 		informAIStat();
 
+	} catch(const Lua::Exception::LuaFatalException &) {
+		throw;
 	} catch(const Common::Exception::SocketException &e) {
 
 		logDebug("SocketException: " << e);
@@ -516,13 +524,7 @@ sevenRule:
 		}
 
 		con->removePlayer(e.sockfd());
-
-		shutdown(e.sockfd(), SHUT_RDWR);
-#ifndef _WIN32
-		close(e.sockfd());
-#else
-		closesocket(e.sockfd());
-#endif
+		disconnectError(e.sockfd());
 
 		if(f != m_players.end()) removePlayer(*f);
 
@@ -533,7 +535,19 @@ sevenRule:
 	return true;
 }
 
-void Engine::checkAndPerformDirChange(const Player::IPlayer *player) {
+void Engine::disconnectError(SOCKET fd) const {
+	if(fd != INVALID_SOCKET) {
+		shutdown(fd, SHUT_RDWR);
+#ifndef _WIN32
+		close(fd);
+#else
+		closesocket(fd);
+#endif
+	}
+}
+
+void Engine::checkAndPerformDirChange(const Player::IPlayer *player)
+throw(Common::Exception::SocketException) {
 
 	if(getRuleSet()->hasDirChange()) {
 
@@ -623,7 +637,8 @@ void Engine::informAIStat() const {
 	}
 }
 
-void Engine::setDirChangeIsSuspend(bool b) {
+void Engine::setDirChangeIsSuspend(bool b) throw(Common::Exception::SocketException) {
+
 	getRuleSet()->setDirChangeIsSuspend(b);
 
 	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
@@ -654,7 +669,7 @@ void Engine::gameOver() const throw() {
 	}
 }
 
-void Engine::jackModeOff() const {
+void Engine::jackModeOff() const throw(Common::Exception::SocketException) {
 
 	getRuleSet()->setJackModeOff();
 
@@ -710,7 +725,13 @@ void Engine::reset() throw() {
 	m_talon = new Talon(this, m_cfg.getTalonFactor());
 
 	m_cfg.getEventHandler().reset();
-	getRuleSet()->reset();
+
+	try {
+		getRuleSet()->reset();
+	} catch(Lua::Exception::LuaException &e) {
+		logDebug(e);
+	}
+
 	removePlayers();
 
 	m_nxtPlayer = 0,

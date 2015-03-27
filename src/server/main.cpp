@@ -68,6 +68,7 @@
 #include "sqlite.h"
 #include "logger.h"
 #include "gameconfig.h"
+#include "luaexception.h"
 #include "serverplayer.h"
 #include "ttynamecheckdir.h"
 #include "serverconnection.h"
@@ -814,32 +815,38 @@ int main(int argc, const char **argv) {
 
 #endif
 
-									game.start(ultimate);
+									try {
+										game.start(ultimate);
 
 #ifdef HAVE_LIBRT
 
-									if(!inetd) {
+										if(!inetd) {
 #endif
-										updatePlayerCap(caps, game.getPlayerCount(), con,
-														aiOpponent);
+											updatePlayerCap(caps, game.getPlayerCount(), con,
+															aiOpponent);
 #ifdef HAVE_LIBRT
-									} else {
-
-										its.it_value.tv_sec = 60;
-										its.it_value.tv_nsec = 0;
-										its.it_interval.tv_sec = 0;
-										its.it_interval.tv_nsec = 0;
-
-										if(timer_settime(timerid, 0, &its, NULL) == -1) {
-											logWarning("Could not arm idle timer");
 										} else {
-											logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) <<
-													"Idle timer armed");
+
+											its.it_value.tv_sec = 60;
+											its.it_value.tv_nsec = 0;
+											its.it_interval.tv_sec = 0;
+											its.it_interval.tv_nsec = 0;
+
+											if(timer_settime(timerid, 0, &its, NULL) == -1) {
+												logWarning("Could not arm idle timer");
+											} else {
+												logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT)
+														<< "Idle timer armed");
+											}
 										}
-									}
 
 #endif
-									refuse = false;
+										refuse = false;
+
+									} catch(const Lua::Exception::LuaException &e) {
+										game.shutdown(e.what());
+										game.reset(false);
+									}
 								}
 
 							} else {

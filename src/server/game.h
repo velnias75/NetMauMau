@@ -58,7 +58,7 @@ public:
 
 	void start(bool ultimate = false) throw(Common::Exception::SocketException);
 	void reset(bool playerLost) throw();
-	void shutdown() const throw();
+	void shutdown(const std::string &reason = std::string()) const throw();
 
 	inline static long getServedGames() {
 		return m_gameServed;

@@ -26,6 +26,11 @@
 #include "gameconfig.h"
 #include "ieventhandler.h"
 #include "abstractsocket.h"
+#include "luafatalexception.h"
+
+namespace {
+const std::string MISCONFIGURED("Misconfigured or compromised server. Please report: ");
+}
 
 using namespace NetMauMau::Server;
 
@@ -137,11 +142,18 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 	m_engine.setUltimate(ultimate);
 	m_engine.gameAboutToStart();
 
-	while(ultimate ? m_engine.getPlayerCount() >= 2 : m_engine.getPlayerCount() == minPlayers) {
-		if(!m_engine.nextTurn()) break;
-	}
+	try {
+		while(ultimate ? m_engine.getPlayerCount() >= 2 : m_engine.getPlayerCount() == minPlayers) {
+			if(!m_engine.nextTurn()) break;
+		}
 
-	if(ultimate || m_cfg.getAIPlayer()) m_engine.gameOver();
+		if(ultimate || m_cfg.getAIPlayer()) m_engine.gameOver();
+
+	} catch(NetMauMau::Lua::Exception::LuaFatalException &e) {
+		logFatal(e);
+		m_engine.error(MISCONFIGURED + e.what());
+		m_engine.gameOver();
+	}
 
 	reset(false);
 }
@@ -203,8 +215,8 @@ void Game::gameReady() {
 	m_engine.setGameId(m_gameIndex = NetMauMau::DB::SQLite::getInstance().newGame());
 }
 
-void Game::shutdown() const throw() {
-	m_engine.error("The server has been shut down");
+void Game::shutdown(const std::string &reason) const throw() {
+	m_engine.error(reason.empty() ? "The server has been shut down" : (MISCONFIGURED + reason));
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

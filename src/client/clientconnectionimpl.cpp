@@ -64,7 +64,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	if(!m_timeout || (pret = ::select(_piface->getSocketFD() + 1, &rfds, NULL, NULL, &tv)) > 0) {
 
-		const std::string rHello = _piface->read(_piface->getSocketFD());
+		const std::string rHello(_piface->read(_piface->getSocketFD()));
 		const std::string::size_type spc = rHello.find(' ');
 		const std::string::size_type dot = rHello.find('.');
 

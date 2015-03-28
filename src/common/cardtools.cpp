@@ -310,7 +310,7 @@ bool NetMauMau::Common::parseCardDesc(const std::string &desc, ICard::SUIT *suit
 
 std::string NetMauMau::Common::createCardDesc(ICard::SUIT s, ICard::RANK v, bool ansi) {
 
-	std::string d = suitToSymbol(s, ansi);
+	std::string d(suitToSymbol(s, ansi));
 	d.append(1, ' ');
 
 	switch(v) {

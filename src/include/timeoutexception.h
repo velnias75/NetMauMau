@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -43,7 +43,7 @@ class _EXPORT TimeoutException : public Common::Exception::SocketException {
 	TimeoutException &operator=(const TimeoutException &);
 public:
 	TimeoutException(const TimeoutException &o) throw();
-	TimeoutException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
+	explicit TimeoutException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~TimeoutException() throw();
 };
 

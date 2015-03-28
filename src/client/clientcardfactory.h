@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -29,7 +29,7 @@ namespace Client {
 class CardFactory : public ICardFactory {
 	DISALLOW_COPY_AND_ASSIGN(CardFactory)
 public:
-	CardFactory(const std::string &cardDesc);
+	explicit CardFactory(const std::string &cardDesc);
 	virtual ~CardFactory();
 
 	virtual _NOUNUSED Common::ICard *create(Common::ICard::SUIT s = Common::ICard::HEARTS,
@@ -39,7 +39,7 @@ private:
 	class Card : public Common::ICard {
 		DISALLOW_COPY_AND_ASSIGN(Card)
 	public:
-		Card(Common::ICard::SUIT s, ICard::RANK r, const std::string &desc);
+		explicit Card(Common::ICard::SUIT s, ICard::RANK r, const std::string &desc);
 		virtual ~Card();
 
 		virtual std::string description(bool ansi = false) const;

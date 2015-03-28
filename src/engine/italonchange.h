@@ -39,7 +39,7 @@ public:
 	virtual void shuffled() const = 0;
 
 protected:
-	ITalonChange() {}
+	explicit ITalonChange() {}
 };
 
 }

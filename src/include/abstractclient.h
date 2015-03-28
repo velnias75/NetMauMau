@@ -254,7 +254,7 @@ protected:
 	 * @param server the server to connect to
 	 * @param port the server port to connect to
 	 */
-	AbstractClientV05(const std::string &player, const std::string &server, uint16_t port);
+	explicit AbstractClientV05(const std::string &player, const std::string &server, uint16_t port);
 
 	/**
 	 * @brief Creates an @c AbstractClientV05 instance
@@ -272,8 +272,8 @@ protected:
 	 *
 	 * @since 0.4
 	 */
-	AbstractClientV05(const std::string &player, const unsigned char *pngData,
-					  std::size_t pngDataLen, const std::string &server, uint16_t port);
+	explicit AbstractClientV05(const std::string &player, const unsigned char *pngData,
+							   std::size_t pngDataLen, const std::string &server, uint16_t port);
 
 	/**
 	 * @name Server requests
@@ -575,7 +575,7 @@ protected:
 	 *
 	 * @copydetails AbstractClientV05(const std::string &, const std::string &, uint16_t)
 	 */
-	AbstractClientV07(const std::string &player, const std::string &server, uint16_t port);
+	explicit AbstractClientV07(const std::string &player, const std::string &server, uint16_t port);
 
 	/**
 	 * @brief Creates an @c AbstractClientV07 instance
@@ -583,8 +583,8 @@ protected:
 	 * @copydetails AbstractClientV05(const std::string &, const unsigned char *,
 	 *				  std::size_t, const std::string &, uint16_t)
 	 */
-	AbstractClientV07(const std::string &player, const unsigned char *pngData,
-					  std::size_t pngDataLen, const std::string &server, uint16_t port);
+	explicit AbstractClientV07(const std::string &player, const unsigned char *pngData,
+							   std::size_t pngDataLen, const std::string &server, uint16_t port);
 
 	/**
 	 * @name Server requests
@@ -665,8 +665,8 @@ protected:
 	 *
 	 * @since 0.8
 	 */
-	AbstractClientV08(const std::string &player, const std::string &server, uint16_t port,
-					  uint32_t clientVersion);
+	explicit AbstractClientV08(const std::string &player, const std::string &server, uint16_t port,
+							   uint32_t clientVersion);
 
 	/**
 	 * @brief Creates an @c AbstractClientV08 instance
@@ -678,9 +678,9 @@ protected:
 	 *
 	 * @since 0.8
 	 */
-	AbstractClientV08(const std::string &player, const unsigned char *pngData,
-					  std::size_t pngDataLen, const std::string &server, uint16_t port,
-					  uint32_t clientVersion);
+	explicit AbstractClientV08(const std::string &player, const unsigned char *pngData,
+							   std::size_t pngDataLen, const std::string &server, uint16_t port,
+							   uint32_t clientVersion);
 
 	virtual Common::ICard *playCard(const CARDS &cards) const;
 
@@ -781,8 +781,8 @@ protected:
 	 *
 	 * @since 0.9
 	 */
-	AbstractClientV09(const std::string &player, const std::string &server, uint16_t port,
-					  uint32_t clientVersion);
+	explicit AbstractClientV09(const std::string &player, const std::string &server, uint16_t port,
+							   uint32_t clientVersion);
 
 	/**
 	 * @brief Creates an @c AbstractClientV09 instance
@@ -796,9 +796,9 @@ protected:
 	 *
 	 * @since 0.9
 	 */
-	AbstractClientV09(const std::string &player, const unsigned char *pngData,
-					  std::size_t pngDataLen, const std::string &server, uint16_t port,
-					  uint32_t clientVersion);
+	explicit AbstractClientV09(const std::string &player, const unsigned char *pngData,
+							   std::size_t pngDataLen, const std::string &server, uint16_t port,
+							   uint32_t clientVersion);
 
 	virtual ~AbstractClientV09();
 };
@@ -836,8 +836,8 @@ protected:
 	 *
 	 * @copydetails AbstractClientV08(const std::string &, const std::string &, uint16_t, uint32_t)
 	 */
-	AbstractClientV11(const std::string &player, const std::string &server, uint16_t port,
-					  uint32_t clientVersion);
+	explicit AbstractClientV11(const std::string &player, const std::string &server, uint16_t port,
+							   uint32_t clientVersion);
 
 	/**
 	 * @brief Creates an @c AbstractClientV11 instance
@@ -848,8 +848,8 @@ protected:
 	 *
 	 * @since 0.11
 	 */
-	AbstractClientV11(const std::string &player, const std::string &server, uint16_t port,
-					  uint32_t clientVersion, const IBase64 *base64);
+	explicit AbstractClientV11(const std::string &player, const std::string &server, uint16_t port,
+							   uint32_t clientVersion, const IBase64 *base64);
 
 	/**
 	 * @brief Creates an @c AbstractClientV11 instance
@@ -861,9 +861,9 @@ protected:
 	 *
 	 * @since 0.11
 	 */
-	AbstractClientV11(const std::string &player, const unsigned char *pngData,
-					  std::size_t pngDataLen, const std::string &server, uint16_t port,
-					  uint32_t clientVersion, const IBase64 *base64);
+	explicit AbstractClientV11(const std::string &player, const unsigned char *pngData,
+							   std::size_t pngDataLen, const std::string &server, uint16_t port,
+							   uint32_t clientVersion, const IBase64 *base64);
 
 	/**
 	 * @brief Creates an @c AbstractClientV11 instance
@@ -892,8 +892,8 @@ protected:
 	 *
 	 * @copydetails AbstractClientV08(const std::string &, const std::string &, uint16_t, uint32_t)
 	 */
-	AbstractClientV13(const std::string &player, const std::string &server, uint16_t port,
-					  uint32_t clientVersion);
+	explicit AbstractClientV13(const std::string &player, const std::string &server, uint16_t port,
+							   uint32_t clientVersion);
 
 	/**
 	 * @brief Creates an @c AbstractClientV13 instance
@@ -904,8 +904,8 @@ protected:
 	 *
 	 * @since 0.13
 	 */
-	AbstractClientV13(const std::string &player, const std::string &server, uint16_t port,
-					  uint32_t clientVersion, const IBase64 *base64);
+	explicit AbstractClientV13(const std::string &player, const std::string &server, uint16_t port,
+							   uint32_t clientVersion, const IBase64 *base64);
 
 	/**
 	 * @brief Creates an @c AbstractClientV13 instance
@@ -917,9 +917,9 @@ protected:
 	 *
 	 * @since 0.13
 	 */
-	AbstractClientV13(const std::string &player, const unsigned char *pngData,
-					  std::size_t pngDataLen, const std::string &server, uint16_t port,
-					  uint32_t clientVersion, const IBase64 *base64);
+	explicit AbstractClientV13(const std::string &player, const unsigned char *pngData,
+							   std::size_t pngDataLen, const std::string &server, uint16_t port,
+							   uint32_t clientVersion, const IBase64 *base64);
 
 	/**
 	 * @brief Creates an @c AbstractClientV13 instance
@@ -928,9 +928,9 @@ protected:
 	 *				  std::size_t, const std::string &, uint16_t, uint32_t)
 	 *
 	 */
-	AbstractClientV13(const std::string &player, const unsigned char *pngData,
-					  std::size_t pngDataLen, const std::string &server, uint16_t port,
-					  uint32_t clientVersion);
+	explicit AbstractClientV13(const std::string &player, const unsigned char *pngData,
+							   std::size_t pngDataLen, const std::string &server, uint16_t port,
+							   uint32_t clientVersion);
 
 	virtual ~AbstractClientV13();
 

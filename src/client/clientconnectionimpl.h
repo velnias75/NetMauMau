@@ -32,10 +32,10 @@ namespace Client {
 class ConnectionImpl {
 	DISALLOW_COPY_AND_ASSIGN(ConnectionImpl)
 public:
-	ConnectionImpl(Connection *piface, const std::string &pName, const timeval *timeout,
-				   uint32_t clientVersion);
-	ConnectionImpl(Connection *piface, const std::string &pName, const timeval *timeout,
-				   uint32_t clientVersion, Connection::BASE64RAII &base64);
+	explicit ConnectionImpl(Connection *piface, const std::string &pName, const timeval *timeout,
+							uint32_t clientVersion);
+	explicit ConnectionImpl(Connection *piface, const std::string &pName, const timeval *timeout,
+							uint32_t clientVersion, Connection::BASE64RAII &base64);
 	~ConnectionImpl();
 
 	bool hello(uint16_t *maj = 0L, uint16_t *min = 0L) throw(Common::Exception::SocketException);

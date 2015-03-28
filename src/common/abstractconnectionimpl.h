@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -29,7 +29,7 @@ namespace Common {
 class AbstractConnectionImpl {
 	DISALLOW_COPY_AND_ASSIGN(AbstractConnectionImpl)
 public:
-	AbstractConnectionImpl();
+	explicit AbstractConnectionImpl();
 	~AbstractConnectionImpl();
 
 	AbstractConnection::PLAYERINFOS m_registeredPlayers;

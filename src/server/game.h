@@ -45,7 +45,7 @@ public:
 
 	typedef enum { ACCEPTED, REFUSED, ACCEPTED_READY, REFUSED_FULL } COLLECT_STATE;
 
-	Game(GameConfig &gameConfig) throw(Common::Exception::SocketException);
+	explicit Game(GameConfig &gameConfig) throw(Common::Exception::SocketException);
 	~Game();
 
 	COLLECT_STATE collectPlayers(std::size_t minPlayers, Player::IPlayer *player);

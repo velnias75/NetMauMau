@@ -40,7 +40,7 @@ public:
 	virtual void aceRoundEnded(const Player::IPlayer *player) const = 0;
 
 protected:
-	IAceRoundListener() {}
+	explicit IAceRoundListener() {}
 };
 
 }

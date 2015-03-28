@@ -35,10 +35,10 @@ namespace Server {
 class GameConfig {
 	GameConfig &operator=(const GameConfig &);
 public:
-	GameConfig(const GameConfig &);
-	GameConfig(Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange, bool aiPlayer = false,
-			   const std::string *aiName = 0L, char aceRound = 0, std::size_t factor = 1,
-			   std::size_t initialCardCount = 5);
+	explicit GameConfig(const GameConfig &);
+	explicit GameConfig(Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange,
+						bool aiPlayer = false, const std::string *aiName = 0L, char aceRound = 0,
+						std::size_t factor = 1, std::size_t initialCardCount = 5);
 	~GameConfig();
 
 	bool getAIPlayer() const _PURE;

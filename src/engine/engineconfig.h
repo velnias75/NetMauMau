@@ -37,10 +37,10 @@ class IRuleSet;
 class EngineConfig {
 	EngineConfig &operator=(const EngineConfig &);
 public:
-	EngineConfig(const EngineConfig &);
-	EngineConfig(Event::IEventHandler &eventHandler, bool dirChange, long aiDelay = 1000L,
-				 bool nextMessage = true, char aceRound = 0, std::size_t factor = 1,
-				 std::size_t initialCardCount = 5);
+	explicit EngineConfig(const EngineConfig &);
+	explicit EngineConfig(Event::IEventHandler &eventHandler, bool dirChange, long aiDelay = 1000L,
+						  bool nextMessage = true, char aceRound = 0, std::size_t factor = 1,
+						  std::size_t initialCardCount = 5);
 	~EngineConfig();
 
 	Event::IEventHandler &getEventHandler() const _PURE;

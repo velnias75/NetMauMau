@@ -35,7 +35,7 @@ class _EXPORT Logger : public Commons::IPostLogger<std::ostreambuf_iterator<LOG_
 	public Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR> > {
 	DISALLOW_COPY_AND_ASSIGN(Logger)
 public:
-	Logger(const LEVEL &lvl);
+	explicit Logger(const LEVEL &lvl);
 	virtual ~Logger();
 
 	virtual void postAction(const logString &ls) const throw();

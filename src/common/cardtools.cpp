@@ -50,7 +50,7 @@ const std::string SUIT[] = { "\u2666", "\u2665", "\u2660", "\u2663" };
 class _ICARD : public NetMauMau::Common::ICard {
 	DISALLOW_COPY_AND_ASSIGN(_ICARD)
 public:
-	_ICARD() : ICard() {}
+	explicit _ICARD() : ICard() {}
 	virtual ~_ICARD() {}
 
 	virtual SUIT getSuit() const {

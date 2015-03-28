@@ -30,10 +30,10 @@ class IBase64;
 
 class AbstractClientV05Impl {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV05Impl)
-
 public:
-	AbstractClientV05Impl(const std::string &pName, const std::string &server, uint16_t port,
-						  const unsigned char *pngData, std::size_t pngDataLen);
+	explicit AbstractClientV05Impl(const std::string &pName, const std::string &server,
+								   uint16_t port, const unsigned char *pngData,
+								   std::size_t pngDataLen);
 
 	~AbstractClientV05Impl();
 

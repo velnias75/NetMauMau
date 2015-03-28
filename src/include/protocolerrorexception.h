@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -41,7 +41,7 @@ class _EXPORT ProtocolErrorException : public Common::Exception::SocketException
 	ProtocolErrorException &operator=(const ProtocolErrorException &);
 public:
 	ProtocolErrorException(const ProtocolErrorException &o) throw();
-	ProtocolErrorException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
+	explicit ProtocolErrorException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~ProtocolErrorException() throw();
 };
 

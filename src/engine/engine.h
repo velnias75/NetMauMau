@@ -50,7 +50,7 @@ class _EXPORT Engine : protected ITalonChange, protected IAceRoundListener,
 public:
 	typedef std::vector<Player::IPlayer *> PLAYERS;
 
-	Engine(EngineConfig &config) throw(Common::Exception::SocketException);
+	explicit Engine(EngineConfig &config) throw(Common::Exception::SocketException);
 
 	virtual ~Engine();
 

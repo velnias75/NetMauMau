@@ -76,7 +76,7 @@ public:
 	static void resetSentBytes();
 
 protected:
-	AbstractSocket(const char *server, uint16_t port);
+	explicit AbstractSocket(const char *server, uint16_t port);
 
 	virtual bool wire(SOCKET sockfd, const sockaddr *addr, socklen_t addrlen) const = 0;
 	virtual std::string wireError(const std::string &err) const = 0;

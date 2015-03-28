@@ -29,7 +29,7 @@ namespace Event {
 class _EXPORT DefaultEventHandler : public IEventHandler {
 	DISALLOW_COPY_AND_ASSIGN(DefaultEventHandler)
 public:
-	DefaultEventHandler();
+	explicit DefaultEventHandler();
 	virtual ~DefaultEventHandler();
 
 	virtual Common::IConnection *getConnection() const;

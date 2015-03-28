@@ -72,7 +72,7 @@ public:
 	const;
 
 private:
-	SQLite();
+	explicit SQLite();
 
 private:
 	// cppcheck-suppress unsafeClassCanLeak

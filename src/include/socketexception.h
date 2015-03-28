@@ -53,7 +53,8 @@ class _EXPORT SocketException : public std::exception {
 	SocketException &operator=(const SocketException &);
 public:
 	SocketException(const SocketException &o) throw();
-	SocketException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET, int err = 0) throw();
+	explicit SocketException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET,
+							 int err = 0) throw();
 	virtual ~SocketException() throw();
 
 	/**

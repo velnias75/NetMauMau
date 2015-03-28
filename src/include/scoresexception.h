@@ -41,7 +41,7 @@ class _EXPORT ScoresException : public Common::Exception::SocketException {
 	ScoresException &operator=(const ScoresException &);
 public:
 	ScoresException(const ScoresException &o) throw();
-	ScoresException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
+	explicit ScoresException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~ScoresException() throw();
 };
 

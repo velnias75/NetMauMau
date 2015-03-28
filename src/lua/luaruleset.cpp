@@ -90,7 +90,7 @@ enum FUNCTIONNAMES {
 #pragma GCC diagnostic push
 struct _checkMissing : public std::unary_function<const char *, void> {
 
-	inline _checkMissing() : missing() {
+	inline explicit _checkMissing() : missing() {
 		missing.reserve(sizeof(FUNCTIONS));
 	}
 

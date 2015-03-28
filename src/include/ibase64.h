@@ -74,7 +74,7 @@ public:
 	virtual ~IBase64() {}
 
 protected:
-	IBase64() {}
+	explicit IBase64() {}
 };
 
 }

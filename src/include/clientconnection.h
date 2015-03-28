@@ -95,7 +95,7 @@ public:
 	private:
 		DISALLOW_COPY_AND_ASSIGN(_base64RAII)
 	public:
-		_base64RAII();
+		explicit _base64RAII();
 		explicit _base64RAII(const IBase64 *base64);
 		~_base64RAII();
 
@@ -107,9 +107,9 @@ public:
 		const IBase64 *m_base64;
 	} BASE64RAII;
 
-	Connection(const std::string &pName, const std::string &server, uint16_t port);
-	Connection(const std::string &pName, const std::string &server, uint16_t port,
-			   BASE64RAII &base64);
+	explicit Connection(const std::string &pName, const std::string &server, uint16_t port);
+	explicit Connection(const std::string &pName, const std::string &server, uint16_t port,
+						BASE64RAII &base64);
 	virtual ~Connection();
 
 	void setClientVersion(uint32_t clientVersion);

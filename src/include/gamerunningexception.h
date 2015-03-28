@@ -41,7 +41,7 @@ class _EXPORT GameRunningException : public Common::Exception::SocketException {
 	GameRunningException &operator=(const GameRunningException &);
 public:
 	GameRunningException(const GameRunningException &o) throw();
-	GameRunningException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
+	explicit GameRunningException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~GameRunningException() throw();
 };
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -97,7 +97,7 @@ public:
 	virtual std::string description(bool ansi = false) const = 0;
 
 protected:
-	ICard() {}
+	explicit ICard() {}
 };
 
 }

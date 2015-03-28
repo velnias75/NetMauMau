@@ -25,7 +25,7 @@
 class TestEventHandler : public NetMauMau::Event::DefaultEventHandler {
 	DISALLOW_COPY_AND_ASSIGN(TestEventHandler)
 public:
-	TestEventHandler();
+	explicit TestEventHandler();
 	virtual ~TestEventHandler();
 
 	virtual void playerAdded(const NetMauMau::Player::IPlayer *player) const

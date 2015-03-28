@@ -35,7 +35,7 @@ namespace Server {
 class EventHandler : public Event::DefaultEventHandler {
 	DISALLOW_COPY_AND_ASSIGN(EventHandler)
 public:
-	EventHandler(Connection &con);
+	explicit EventHandler(Connection &con);
 	virtual ~EventHandler();
 
 	virtual Connection *getConnection() const _PURE;

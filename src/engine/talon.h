@@ -37,7 +37,7 @@ class ICard;
 class Talon {
 	DISALLOW_COPY_AND_ASSIGN(Talon)
 public:
-	Talon(const ITalonChange *tchg, std::size_t factor) throw();
+	explicit Talon(const ITalonChange *tchg, std::size_t factor) throw();
 	~Talon();
 
 	inline bool empty() const {

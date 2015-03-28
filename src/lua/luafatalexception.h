@@ -32,7 +32,7 @@ class LuaFatalException : public LuaException {
 	LuaFatalException &operator=(const LuaFatalException &);
 public:
 	LuaFatalException(const LuaFatalException &o) throw();
-	LuaFatalException(const std::string &msg, const char *fname = 0L) throw();
+	explicit LuaFatalException(const std::string &msg, const char *fname = 0L) throw();
 	virtual ~LuaFatalException() throw();
 };
 

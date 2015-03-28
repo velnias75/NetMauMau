@@ -80,7 +80,7 @@ public:
 	virtual void reset() = 0;
 
 protected:
-	IPlayer() {}
+	explicit IPlayer() {}
 };
 
 }

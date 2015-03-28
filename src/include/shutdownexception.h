@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -41,7 +41,7 @@ class _EXPORT ShutdownException : public Common::Exception::SocketException {
 	ShutdownException &operator=(const ShutdownException &);
 public:
 	ShutdownException(const ShutdownException &o) throw();
-	ShutdownException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
+	explicit ShutdownException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~ShutdownException() throw();
 };
 

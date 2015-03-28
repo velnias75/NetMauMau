@@ -41,7 +41,7 @@ public:
 	virtual void wait(long ms) throw(Common::Exception::SocketException) _CONST;
 
 private:
-	NullConnection();
+	explicit NullConnection();
 };
 
 }

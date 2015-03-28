@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -32,7 +32,7 @@ class ServerPlayerException : public Common::Exception::SocketException {
 	ServerPlayerException &operator=(const ServerPlayerException &);
 public:
 	ServerPlayerException(const ServerPlayerException &o) throw();
-	ServerPlayerException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
+	explicit ServerPlayerException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~ServerPlayerException() throw();
 };
 

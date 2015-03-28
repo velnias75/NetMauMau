@@ -108,7 +108,7 @@ public:
 	throw(Common::Exception::SocketException) = 0;
 
 protected:
-	IEventHandler() {}
+	explicit IEventHandler() {}
 };
 
 }

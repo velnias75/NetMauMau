@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -31,7 +31,7 @@ namespace Common {
 class AbstractSocketImpl {
 	DISALLOW_COPY_AND_ASSIGN(AbstractSocketImpl)
 public:
-	AbstractSocketImpl(const char *server, uint16_t port);
+	explicit AbstractSocketImpl(const char *server, uint16_t port);
 	~AbstractSocketImpl();
 
 public:

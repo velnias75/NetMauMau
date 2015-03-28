@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -41,7 +41,8 @@ class _EXPORT NoNetMauMauServerException : public Common::Exception::SocketExcep
 	NoNetMauMauServerException &operator=(const NoNetMauMauServerException &);
 public:
 	NoNetMauMauServerException(const NoNetMauMauServerException &o) throw();
-	NoNetMauMauServerException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
+	explicit NoNetMauMauServerException(const std::string &msg,
+										SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~NoNetMauMauServerException() throw();
 };
 

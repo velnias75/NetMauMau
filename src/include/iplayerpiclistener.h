@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -40,7 +40,7 @@ public:
 	virtual void uploadFailed(const std::string &player) const throw() = 0;
 
 protected:
-	IPlayerPicListener() {}
+	explicit IPlayerPicListener() {}
 };
 
 }

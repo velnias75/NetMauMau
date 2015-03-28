@@ -72,7 +72,7 @@ public:
 	virtual void reset() throw() = 0;
 
 protected:
-	IRuleSet() {}
+	explicit IRuleSet() {}
 };
 
 }

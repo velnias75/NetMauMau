@@ -123,7 +123,7 @@ class IConnection {
 	DISALLOW_COPY_AND_ASSIGN(IConnection)
 public:
 	typedef struct _EXPORT _info {
-		_info();
+		explicit _info();
 		~_info();
 		SOCKET sockfd;
 		std::string  name;
@@ -133,9 +133,9 @@ public:
 	} INFO;
 
 	typedef struct _EXPORT _nameSockFD {
-		_nameSockFD();
-		_nameSockFD(const std::string &name, const std::string &playerPic, SOCKET sockfd,
-					uint32_t clientVersion);
+		explicit _nameSockFD();
+		explicit _nameSockFD(const std::string &name, const std::string &playerPic, SOCKET sockfd,
+							 uint32_t clientVersion);
 		~_nameSockFD();
 		std::string name;
 		mutable std::string playerPic;
@@ -157,7 +157,7 @@ public:
 	virtual void wait(long ms) throw(Exception::SocketException) = 0;
 
 protected:
-	IConnection() {}
+	explicit IConnection() {}
 };
 
 }

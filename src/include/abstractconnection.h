@@ -63,7 +63,6 @@ public:
 	 * SERVER_VERSION_REL | version of the server (including release)
 	 * TALON              | if played with more than 1 card deck contains the number of cards
 	 * ULTIMATE           | `true` if running in ultimate mode, `false` otherwise
-	 *
 	 */
 	typedef std::map<std::string, std::string> CAPABILITIES;
 
@@ -83,7 +82,7 @@ public:
 	virtual void reset() throw();
 
 protected:
-	AbstractConnection(const char *server, uint16_t port);
+	explicit AbstractConnection(const char *server, uint16_t port);
 
 	bool registerPlayer(const NAMESOCKFD &nfd,
 						const std::vector<std::string> &ai = std::vector<std::string>());

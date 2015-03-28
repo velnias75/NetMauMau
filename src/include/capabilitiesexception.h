@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -41,7 +41,7 @@ class _EXPORT CapabilitiesException : public Common::Exception::SocketException 
 	CapabilitiesException &operator=(const CapabilitiesException &);
 public:
 	CapabilitiesException(const CapabilitiesException &o) throw();
-	CapabilitiesException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
+	explicit CapabilitiesException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~CapabilitiesException() throw();
 };
 

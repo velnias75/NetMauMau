@@ -62,7 +62,7 @@ public:
 	}
 
 private:
-	LuaState() throw(Exception::LuaException);
+	explicit LuaState() throw(Exception::LuaException);
 
 	static const Common::ICard *getCard(lua_State *l, int idx) _NOUNUSED;
 

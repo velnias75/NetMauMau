@@ -37,7 +37,7 @@ namespace DB {
 class SQLiteImpl {
 	DISALLOW_COPY_AND_ASSIGN(SQLiteImpl)
 public:
-	SQLiteImpl();
+	explicit SQLiteImpl();
 	~SQLiteImpl();
 
 	static std::string getDBFilename();

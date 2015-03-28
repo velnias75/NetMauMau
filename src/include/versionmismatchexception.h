@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -43,8 +43,8 @@ class _EXPORT VersionMismatchException : public Common::Exception::SocketExcepti
 	VersionMismatchException &operator=(const VersionMismatchException &);
 public:
 	VersionMismatchException(const VersionMismatchException &o) throw();
-	VersionMismatchException(uint32_t serverVersion, uint32_t clientVersion,
-							 SOCKET sockfd = INVALID_SOCKET) throw();
+	explicit VersionMismatchException(uint32_t serverVersion, uint32_t clientVersion,
+									  SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~VersionMismatchException() throw();
 
 	virtual const char *what() const throw() _PURE;

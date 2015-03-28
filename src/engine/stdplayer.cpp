@@ -88,7 +88,7 @@ struct pointSum : std::binary_function<std::size_t, NetMauMau::Common::ICard *, 
 struct _isSpecialRank : std::binary_function < NetMauMau::Common::ICard *,
 		NetMauMau::Common::ICard::RANK, bool > {
 
-	_isSpecialRank(bool nineIsEight) : m_nineIsEight(nineIsEight) {}
+	explicit _isSpecialRank(bool nineIsEight) : m_nineIsEight(nineIsEight) {}
 
 	bool operator()(const NetMauMau::Common::ICard *c, NetMauMau::Common::ICard::RANK r) const {
 		return m_nineIsEight && r == NetMauMau::Common::ICard::EIGHT ?

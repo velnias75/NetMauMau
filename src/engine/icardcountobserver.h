@@ -36,7 +36,7 @@ public:
 	virtual void cardCountChanged(Player::IPlayer *player) const throw() = 0;
 
 protected:
-	ICardCountObserver() {}
+	explicit ICardCountObserver() {}
 };
 
 }

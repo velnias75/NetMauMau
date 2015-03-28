@@ -29,7 +29,7 @@ namespace Player {
 class _EXPORT StdPlayer : public IPlayer {
 	DISALLOW_COPY_AND_ASSIGN(StdPlayer)
 public:
-	StdPlayer(const std::string &name);
+	explicit StdPlayer(const std::string &name);
 	virtual ~StdPlayer();
 
 	virtual std::string getName() const;
@@ -98,7 +98,7 @@ private:
 #pragma GCC diagnostic push
 	struct _hasRankPath : std::unary_function<Common::ICard *, bool> {
 
-		_hasRankPath(const CARDS &c, NetMauMau::Common::ICard::RANK r, bool nie) : mCards(c),
+		explicit _hasRankPath(const CARDS &c, NetMauMau::Common::ICard::RANK r, bool nie) : mCards(c),
 			rank(r), nineIsEight(nie) {}
 
 		bool operator()(const Common::ICard *c) const;

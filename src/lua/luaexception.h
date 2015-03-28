@@ -32,7 +32,7 @@ class LuaException : public Common::Exception::SocketException {
 	LuaException &operator=(const LuaException &);
 public:
 	LuaException(const LuaException &o) throw();
-	LuaException(const std::string &msg, const char *fname = 0L) throw();
+	explicit LuaException(const std::string &msg, const char *fname = 0L) throw();
 	virtual ~LuaException() throw();
 };
 

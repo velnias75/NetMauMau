@@ -36,7 +36,7 @@ class Connection;
 class Player : public NetMauMau::Player::StdPlayer {
 	DISALLOW_COPY_AND_ASSIGN(Player)
 public:
-	Player(const std::string &name, int sockfd, Connection &con);
+	explicit Player(const std::string &name, int sockfd, Connection &con);
 	virtual ~Player();
 
 	virtual int getSerial() const _PURE;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -26,7 +26,7 @@ namespace NetMauMau {
 
 class StdCardFactory : public ICardFactory {
 public:
-	StdCardFactory();
+	explicit StdCardFactory();
 	~StdCardFactory();
 
 	virtual _NOUNUSED Common::ICard *create(Common::ICard::SUIT s, Common::ICard::RANK r) const;
@@ -35,7 +35,7 @@ private:
 	class StdCard : public Common::ICard {
 		DISALLOW_COPY_AND_ASSIGN(StdCard)
 	public:
-		StdCard(ICard::SUIT f, ICard::RANK r);
+		explicit StdCard(ICard::SUIT f, ICard::RANK r);
 		virtual ~StdCard();
 
 		virtual SUIT getSuit() const _PURE;

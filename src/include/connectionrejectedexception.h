@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -41,7 +41,8 @@ class _EXPORT ConnectionRejectedException : public Common::Exception::SocketExce
 	ConnectionRejectedException &operator=(const ConnectionRejectedException &);
 public:
 	ConnectionRejectedException(const ConnectionRejectedException &o) throw();
-	ConnectionRejectedException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
+	explicit ConnectionRejectedException(const std::string &msg,
+										 SOCKET sockfd = INVALID_SOCKET) throw();
 	virtual ~ConnectionRejectedException() throw();
 };
 

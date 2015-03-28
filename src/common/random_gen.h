@@ -47,7 +47,7 @@ template<typename T>
 class GSLRNG {
 	DISALLOW_COPY_AND_ASSIGN(GSLRNG)
 public:
-	GSLRNG(long unsigned int seed = static_cast<long unsigned int>(std::time(0L))) :
+	explicit GSLRNG(long unsigned int seed = static_cast<long unsigned int>(std::time(0L))) :
 		m_rng(gsl_rng_alloc(gsl_rng_ranlxs2)) {
 
 		if(m_rng) gsl_rng_set(m_rng, seed);

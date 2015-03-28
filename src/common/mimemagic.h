@@ -51,7 +51,7 @@ public:
 	bool checkMime(const unsigned char *data, std::size_t dataLen, const char *mime) const _WCONST;
 
 private:
-	MimeMagic() _WCONST;
+	explicit MimeMagic() _WCONST;
 
 private:
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)

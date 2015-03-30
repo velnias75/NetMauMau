@@ -113,6 +113,16 @@ private:
 };
 #pragma GCC diagnostic pop
 
+struct LuaTypeCheckerBase {
+	inline static void checkLuaTypeOrNone(lua_State *ls, int t, const char *n, const char *fname)
+	throw(NetMauMau::Lua::Exception::LuaFatalException) {
+		if(lua_type(ls, -1) != t || lua_type(ls, -1) == LUA_TNONE) {
+			lua_pop(ls, -1);
+			throw NetMauMau::Lua::Exception::LuaFatalException(WRONGTYPE + n, fname);
+		}
+	}
+};
+
 template<typename T>
 struct returnTypeCheckerTrait {
 	inline T operator()(lua_State *, const char *fname) const
@@ -122,31 +132,19 @@ struct returnTypeCheckerTrait {
 };
 
 template<>
-struct returnTypeCheckerTrait<bool> {
-
+struct returnTypeCheckerTrait<bool> : private LuaTypeCheckerBase {
 	inline bool operator()(lua_State *ls, const char *fname) const
 	throw(NetMauMau::Lua::Exception::LuaFatalException) {
-
-		if(lua_type(ls, -1) != LUA_TBOOLEAN || lua_type(ls, -1) == LUA_TNONE) {
-			lua_pop(ls, -1);
-			throw NetMauMau::Lua::Exception::LuaFatalException(WRONGTYPE + "bool", fname);
-		}
-
+		checkLuaTypeOrNone(ls, LUA_TBOOLEAN, "bool", fname);
 		return static_cast<bool>(lua_toboolean(ls, -1));
 	}
 };
 
 template<>
-struct returnTypeCheckerTrait<std::size_t> {
-
+struct returnTypeCheckerTrait<std::size_t> : private LuaTypeCheckerBase {
 	inline std::size_t operator()(lua_State *ls, const char *fname) const
 	throw(NetMauMau::Lua::Exception::LuaFatalException) {
-
-		if(lua_type(ls, -1) != LUA_TNUMBER || lua_type(ls, -1) == LUA_TNONE) {
-			lua_pop(ls, -1);
-			throw NetMauMau::Lua::Exception::LuaFatalException(WRONGTYPE + "integer", fname);
-		}
-
+		checkLuaTypeOrNone(ls, LUA_TNUMBER, "integer", fname);
 		return static_cast<std::size_t>(lua_tointeger(ls, -1));
 	}
 };
@@ -156,15 +154,11 @@ struct returnTypeCheckerTrait<std::size_t> {
 #pragma clang diagnostic push
 #endif
 template<>
-struct returnTypeCheckerTrait<NetMauMau::Common::ICard::SUIT> {
-
+struct returnTypeCheckerTrait<NetMauMau::Common::ICard::SUIT> : private LuaTypeCheckerBase {
 	inline NetMauMau::Common::ICard::SUIT operator()(lua_State *ls, const char *fname) const
 	throw(NetMauMau::Lua::Exception::LuaFatalException) {
 
-		if(lua_type(ls, -1) != LUA_TNUMBER || lua_type(ls, -1) == LUA_TNONE) {
-			lua_pop(ls, -1);
-			throw NetMauMau::Lua::Exception::LuaFatalException(WRONGTYPE + "SUIT", fname);
-		}
+		checkLuaTypeOrNone(ls, LUA_TNUMBER, "SUIT", fname);
 
 		const NetMauMau::Common::ICard::SUIT s =
 			static_cast<NetMauMau::Common::ICard::SUIT>(lua_tointeger(ls, -1));
@@ -191,15 +185,11 @@ struct returnTypeCheckerTrait<NetMauMau::Common::ICard::SUIT> {
 #pragma clang diagnostic push
 #endif
 template<>
-struct returnTypeCheckerTrait<NetMauMau::Common::ICard::RANK> {
-
+struct returnTypeCheckerTrait<NetMauMau::Common::ICard::RANK> : private LuaTypeCheckerBase {
 	inline NetMauMau::Common::ICard::RANK operator()(lua_State *ls, const char *fname) const
 	throw(NetMauMau::Lua::Exception::LuaFatalException) {
 
-		if(lua_type(ls, -1) != LUA_TNUMBER || lua_type(ls, -1) == LUA_TNONE) {
-			lua_pop(ls, -1);
-			throw NetMauMau::Lua::Exception::LuaFatalException(WRONGTYPE + "RANK", fname);
-		}
+		checkLuaTypeOrNone(ls, LUA_TNUMBER, "RANK", fname);
 
 		const NetMauMau::Common::ICard::RANK r =
 			static_cast<NetMauMau::Common::ICard::RANK>(lua_tointeger(ls, -1));

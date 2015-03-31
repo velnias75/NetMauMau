@@ -21,6 +21,7 @@
 #include "config.h"
 #endif
 
+#include <vector>
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
@@ -225,22 +226,23 @@ again:
 std::string AbstractSocket::read(SOCKET fd, std::size_t len) throw(Exception::SocketException) {
 
 	std::string ret;
-	char *rbuf = new(std::nothrow) char[len]();
-
-	if(!rbuf) throw Exception::SocketException(NetMauMau::Common::errorString(ENOMEM), fd, ENOMEM);
-
-	const std::size_t rlen = recv(rbuf, len, fd);
 
 	try {
-		ret.reserve(rlen);
+
+		std::vector<char> rbuf = std::vector<char>(len);
+		const std::size_t rlen = recv(rbuf.data(), len, fd);
+
+		try {
+			ret.reserve(rlen);
+		} catch(const std::bad_alloc &) {
+			throw Exception::SocketException(NetMauMau::Common::errorString(ENOMEM), fd, ENOMEM);
+		}
+
+		ret.append(rbuf.data(), rlen);
+
 	} catch(const std::bad_alloc &) {
-		delete [] rbuf;
 		throw Exception::SocketException(NetMauMau::Common::errorString(ENOMEM), fd, ENOMEM);
 	}
-
-	ret.append(rbuf, rlen);
-
-	delete [] rbuf;
 
 	return ret;
 }

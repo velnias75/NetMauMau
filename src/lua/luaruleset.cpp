@@ -17,6 +17,7 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <limits>
 #include <iterator>
 #include <algorithm>
 
@@ -117,7 +118,7 @@ template < typename T, typename LuaType = lua_Integer,
 		 LuaType(*CONV)(lua_State *, int) = lua_tointeger >
 struct LuaTypeCheckerBase {
 
-	inline static T getType(lua_State *ls, int t, const char *n, const char *fname)
+	inline static LuaType getType(lua_State *ls, int t, const char *n, const char *fname)
 	throw(NetMauMau::Lua::Exception::LuaFatalException) {
 
 		if(lua_type(ls, -1) != t || lua_type(ls, -1) == LUA_TNONE) {
@@ -125,9 +126,89 @@ struct LuaTypeCheckerBase {
 			throw NetMauMau::Lua::Exception::LuaFatalException(WRONGTYPE + n, fname);
 		}
 
-		return static_cast<T>(CONV(ls, -1));
+		return CONV(ls, -1);
 	}
 };
+
+template<typename R, typename T>
+R checkRange(const T &t, const char *fname) throw(NetMauMau::Lua::Exception::LuaFatalException) {
+
+	if(t > static_cast<long long>(std::numeric_limits<R>::max())) {
+		throw NetMauMau::Lua::Exception::LuaFatalException("returned value out of range", fname);
+	}
+
+	return static_cast<R>(t);
+}
+
+template<>
+std::size_t checkRange<std::size_t>(const lua_Integer &t, const char *fname)
+throw(NetMauMau::Lua::Exception::LuaFatalException) {
+
+	if(t < 0) {
+		throw NetMauMau::Lua::Exception::LuaFatalException("returned value cannot be negative",
+				fname);
+	} else if(t > static_cast<long long>(std::numeric_limits<std::size_t>::max())) {
+		throw NetMauMau::Lua::Exception::LuaFatalException("returned value out of range", fname);
+	}
+
+	return static_cast<std::size_t>(t);
+}
+
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wunreachable-code"
+#pragma clang diagnostic push
+#endif
+template<>
+NetMauMau::Common::ICard::SUIT checkRange<NetMauMau::Common::ICard::SUIT>(const lua_Integer &t,
+		const char *fname) throw(NetMauMau::Lua::Exception::LuaFatalException) {
+
+	const NetMauMau::Common::ICard::SUIT s = static_cast<NetMauMau::Common::ICard::SUIT>(t);
+
+	switch(s) {
+	case NetMauMau::Common::ICard::DIAMONDS:
+	case NetMauMau::Common::ICard::HEARTS:
+	case NetMauMau::Common::ICard::SPADES:
+	case NetMauMau::Common::ICard::CLUBS:
+	case NetMauMau::Common::ICard::SUIT_ILLEGAL:
+		return s;
+
+	default:
+		throw NetMauMau::Lua::Exception::LuaFatalException("No valid suit", fname);
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wunreachable-code"
+#pragma clang diagnostic push
+#endif
+template<>
+NetMauMau::Common::ICard::RANK checkRange<NetMauMau::Common::ICard::RANK>(const lua_Integer &t,
+		const char *fname) throw(NetMauMau::Lua::Exception::LuaFatalException) {
+
+	const NetMauMau::Common::ICard::RANK r = static_cast<NetMauMau::Common::ICard::RANK>(t);
+
+	switch(r) {
+	case NetMauMau::Common::ICard::SEVEN:
+	case NetMauMau::Common::ICard::EIGHT:
+	case NetMauMau::Common::ICard::NINE:
+	case NetMauMau::Common::ICard::TEN:
+	case NetMauMau::Common::ICard::JACK:
+	case NetMauMau::Common::ICard::KING:
+	case NetMauMau::Common::ICard::QUEEN:
+	case NetMauMau::Common::ICard::ACE:
+	case NetMauMau::Common::ICard::RANK_ILLEGAL:
+		return r;
+
+	default:
+		throw NetMauMau::Lua::Exception::LuaFatalException("No valid rank", fname);
+	}
+}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 template<typename T>
 struct returnTypeCheckerTrait {
@@ -141,7 +222,7 @@ template<>
 struct returnTypeCheckerTrait<bool> : private LuaTypeCheckerBase<bool, int, lua_toboolean> {
 	inline bool operator()(lua_State *ls, const char *fname) const
 	throw(NetMauMau::Lua::Exception::LuaFatalException) {
-		return getType(ls, LUA_TBOOLEAN, "bool", fname);
+		return checkRange<bool>(getType(ls, LUA_TBOOLEAN, "bool", fname), fname);
 	}
 };
 
@@ -149,73 +230,31 @@ template<>
 struct returnTypeCheckerTrait<std::size_t> : private LuaTypeCheckerBase<std::size_t> {
 	inline std::size_t operator()(lua_State *ls, const char *fname) const
 	throw(NetMauMau::Lua::Exception::LuaFatalException) {
-		return getType(ls, LUA_TNUMBER, "integer", fname);
+		return checkRange<std::size_t>(getType(ls, LUA_TNUMBER, "integer", fname), fname);
 	}
 };
 
-#ifdef __clang__
-#pragma clang diagnostic ignored "-Wunreachable-code"
-#pragma clang diagnostic push
-#endif
 template<>
 struct returnTypeCheckerTrait<NetMauMau::Common::ICard::SUIT> :
 	private LuaTypeCheckerBase<NetMauMau::Common::ICard::SUIT> {
 
 	inline NetMauMau::Common::ICard::SUIT operator()(lua_State *ls, const char *fname) const
 	throw(NetMauMau::Lua::Exception::LuaFatalException) {
-
-		const NetMauMau::Common::ICard::SUIT s = getType(ls, LUA_TNUMBER, "SUIT", fname);
-
-		switch(s) {
-		case NetMauMau::Common::ICard::DIAMONDS:
-		case NetMauMau::Common::ICard::HEARTS:
-		case NetMauMau::Common::ICard::SPADES:
-		case NetMauMau::Common::ICard::CLUBS:
-		case NetMauMau::Common::ICard::SUIT_ILLEGAL:
-			return s;
-
-		default:
-			throw NetMauMau::Lua::Exception::LuaFatalException("No valid suit", fname);
-		}
+		return checkRange<NetMauMau::Common::ICard::SUIT>(getType(ls, LUA_TNUMBER, "SUIT", fname),
+				fname);
 	}
 };
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
 
-#ifdef __clang__
-#pragma clang diagnostic ignored "-Wunreachable-code"
-#pragma clang diagnostic push
-#endif
 template<>
 struct returnTypeCheckerTrait<NetMauMau::Common::ICard::RANK> :
 	private LuaTypeCheckerBase<NetMauMau::Common::ICard::RANK> {
 
 	inline NetMauMau::Common::ICard::RANK operator()(lua_State *ls, const char *fname) const
 	throw(NetMauMau::Lua::Exception::LuaFatalException) {
-
-		const NetMauMau::Common::ICard::RANK r = getType(ls, LUA_TNUMBER, "RANK", fname);
-
-		switch(r) {
-		case NetMauMau::Common::ICard::SEVEN:
-		case NetMauMau::Common::ICard::EIGHT:
-		case NetMauMau::Common::ICard::NINE:
-		case NetMauMau::Common::ICard::TEN:
-		case NetMauMau::Common::ICard::JACK:
-		case NetMauMau::Common::ICard::KING:
-		case NetMauMau::Common::ICard::QUEEN:
-		case NetMauMau::Common::ICard::ACE:
-		case NetMauMau::Common::ICard::RANK_ILLEGAL:
-			return r;
-
-		default:
-			throw NetMauMau::Lua::Exception::LuaFatalException("No valid rank", fname);
-		}
+		return checkRange<NetMauMau::Common::ICard::RANK>(getType(ls, LUA_TNUMBER, "RANK", fname),
+				fname);
 	}
 };
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
 
 template<typename T>
 inline T checkReturnType(lua_State *ls,

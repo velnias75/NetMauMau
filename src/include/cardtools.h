@@ -69,7 +69,7 @@ _EXPORT std::string ansiSuit(const std::string &suit);
  * @param symbol the symbol
  * @return the @c SUIT
  */
-_EXPORT NetMauMau::Common::ICard::SUIT symbolToSuit(const std::string &symbol);
+_EXPORT NetMauMau::Common::ICard::SUIT symbolToSuit(const std::string &symbol) _PURE;
 
 /**
  * @ingroup util

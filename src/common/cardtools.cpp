@@ -19,6 +19,7 @@
 
 #include <fstream>
 #include <cstdio>
+#include <map>
 
 #include "cardtools.h"
 
@@ -71,6 +72,22 @@ public:
 
 } ILLEGAL_CARD;
 
+const std::map<const std::string, NetMauMau::Common::ICard::SUIT> createSuitToSymbolMap() {
+
+	std::map<const std::string, NetMauMau::Common::ICard::SUIT> ssm;
+
+	ssm.insert(std::make_pair("\u2660", NetMauMau::Common::ICard::SPADES));
+	ssm.insert(std::make_pair("\u2663", NetMauMau::Common::ICard::CLUBS));
+	ssm.insert(std::make_pair("\u2665", NetMauMau::Common::ICard::HEARTS));
+	ssm.insert(std::make_pair("\u2666", NetMauMau::Common::ICard::DIAMONDS));
+	ssm.insert(std::make_pair("X", NetMauMau::Common::ICard::SUIT_ILLEGAL));
+
+	return ssm;
+}
+
+const std::map<const std::string, NetMauMau::Common::ICard::SUIT>
+suitToSymbolMap(createSuitToSymbolMap());
+
 }
 
 const std::string *NetMauMau::Common::getSuitSymbols() {
@@ -122,20 +139,9 @@ std::string NetMauMau::Common::suitToSymbol(ICard::SUIT suit, bool ansi, bool en
 }
 
 NetMauMau::Common::ICard::SUIT NetMauMau::Common::symbolToSuit(const std::string &sym) {
-
-	if(sym == "\u2666") {
-		return ICard::DIAMONDS;
-	} else if(sym == "\u2665") {
-		return ICard::HEARTS;
-	} else if(sym == "\u2660") {
-		return ICard::SPADES;
-	} else if(sym == "\u2663") {
-		return ICard::CLUBS;
-	} else if(sym == "X") {
-		return ICard::SUIT_ILLEGAL;
-	}
-
-	return ICard::HEARTS;
+	const std::map<const std::string, NetMauMau::Common::ICard::SUIT>::const_iterator
+	&f(suitToSymbolMap.find(sym));
+	return f != suitToSymbolMap.end() ? f->second : ICard::HEARTS;
 }
 
 std::size_t NetMauMau::Common::getCardPoints(ICard::RANK v) {
@@ -276,17 +282,17 @@ bool NetMauMau::Common::parseCardDesc(const std::string &desc, ICard::SUIT *suit
 
 	if(p == std::string::npos || !suit || !rank) return false;
 
-	const std::string s(desc.substr(0, p));
 	const std::string r(desc.substr(p + 1));
+	const std::string::value_type rc(r[0]);
 
-	*suit = symbolToSuit(s);
+	*suit = symbolToSuit(desc.substr(0, p));
 
 	const unsigned int iVal = std::strtoul(r.c_str(), NULL, 10);
 
-	if(::isdigit(r[0]) && iVal) {
+	if(::isdigit(rc) && iVal) {
 		*rank = static_cast<ICard::RANK>(iVal);
 	} else {
-		switch(r[0]) {
+		switch(rc) {
 		case 'J':
 			*rank = ICard::JACK;
 			break;

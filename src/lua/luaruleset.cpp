@@ -133,7 +133,12 @@ struct LuaTypeCheckerBase {
 template<typename R, typename T>
 R checkRange(const T &t, const char *fname) throw(NetMauMau::Lua::Exception::LuaFatalException) {
 
-	if(t > static_cast<long long>(std::numeric_limits<R>::max())) {
+	if(!std::numeric_limits<T>::is_specialized) {
+		throw NetMauMau::Lua::Exception::LuaFatalException("cannot check return value range",
+				fname);
+	}
+
+	if((std::numeric_limits<T>::max() - static_cast<T>(t)) > std::numeric_limits<T>::max()) {
 		throw NetMauMau::Lua::Exception::LuaFatalException("returned value out of range", fname);
 	}
 
@@ -147,7 +152,8 @@ throw(NetMauMau::Lua::Exception::LuaFatalException) {
 	if(t < 0) {
 		throw NetMauMau::Lua::Exception::LuaFatalException("returned value cannot be negative",
 				fname);
-	} else if(t > static_cast<long long>(std::numeric_limits<std::size_t>::max())) {
+	} else if((std::numeric_limits<std::size_t>::max() - static_cast<std::size_t>(t)) >
+			  std::numeric_limits<std::size_t>::max()) {
 		throw NetMauMau::Lua::Exception::LuaFatalException("returned value out of range", fname);
 	}
 

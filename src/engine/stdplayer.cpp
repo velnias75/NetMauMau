@@ -624,17 +624,21 @@ IPlayer::CARDS StdPlayer::getPossibleCards(const NetMauMau::Common::ICard *uncov
 	CARDS posCards;
 	posCards.reserve(m_cards.size());
 
+	const NetMauMau::RuleSet::IRuleSet *ruleset = getRuleSet();
+
+	const bool isAceRound = ruleset->isAceRound();
+	const NetMauMau::Common::ICard::RANK aceRoundRank = ruleset->getAceRoundRank();
+	const NetMauMau::Common::ICard::RANK ucRank = uncoveredCard->getRank();
+
 	for(CARDS::const_iterator i(m_cards.begin()); i != m_cards.end(); ++i) {
 
 		if(suit && (*i)->getSuit() != *suit) continue;
 
-		const bool accepted = getRuleSet()->isAceRound() ?
-							  (*i)->getRank() == getRuleSet()->getAceRoundRank() :
-							  getRuleSet()->checkCard(*i, uncoveredCard);
+		const bool accepted = isAceRound ? (*i)->getRank() == aceRoundRank :
+							  ruleset->checkCard(*i, uncoveredCard);
 
 		const bool jack = ((*i)->getRank() == NetMauMau::Common::ICard::JACK &&
-						   uncoveredCard->getRank() != NetMauMau::Common::ICard::JACK) &&
-						  !getRuleSet()->isAceRound();
+						   ucRank != NetMauMau::Common::ICard::JACK) && !isAceRound;
 
 		if(accepted || jack) posCards.push_back(*i);
 	}

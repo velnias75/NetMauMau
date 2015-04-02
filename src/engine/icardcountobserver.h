@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_ICARDCOUNTOBSERVER_H
 #define NETMAUMAU_ICARDCOUNTOBSERVER_H
 
-#include "socketexception.h"
+#include "linkercontrol.h"
 
 namespace NetMauMau {
 

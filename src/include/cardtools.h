@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -27,7 +27,6 @@
 #define NETMAUMAU_CARDTOOLS_H
 
 #include <algorithm>
-#include <cstdlib>
 
 #include "icard.h"
 

@@ -23,6 +23,7 @@
 #include "game.h"
 #include "logger.h"
 #include "sqlite.h"
+#include "stdplayer.h"
 #include "gameconfig.h"
 #include "ieventhandler.h"
 #include "abstractsocket.h"

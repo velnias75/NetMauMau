@@ -40,8 +40,6 @@
 #ifndef NETMAUMAU_ABSTRACTCLIENT_H
 #define NETMAUMAU_ABSTRACTCLIENT_H
 
-#include <vector>
-
 #include "iplayerpiclistener.h"
 #include "clientconnection.h"
 #include "icard.h"

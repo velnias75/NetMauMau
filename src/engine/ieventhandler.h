@@ -20,7 +20,6 @@
 #ifndef NETMAUMAU_IEVENTHANDLER_H
 #define NETMAUMAU_IEVENTHANDLER_H
 
-#include "icard.h"
 #include "engine.h"
 
 namespace NetMauMau {

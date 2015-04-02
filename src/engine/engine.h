@@ -96,7 +96,6 @@ public:
 	void reset() throw();
 
 protected:
-
 	virtual void uncoveredCard(const Common::ICard *top) const
 	throw(Common::Exception::SocketException);
 	virtual void talonEmpty(bool empty) const throw();

@@ -25,7 +25,6 @@
 #endif
 
 #include "engine.h"
-#include "stdplayer.h"
 
 #ifndef _WIN32
 #define TIMEFORMAT "%T - "
@@ -34,6 +33,10 @@
 #endif
 
 namespace NetMauMau {
+
+namespace Player {
+class StdPlayer;
+}
 
 namespace Server {
 

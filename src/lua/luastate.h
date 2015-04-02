@@ -20,8 +20,6 @@
 #ifndef NETMAUMAU_LUA_LUASTATE
 #define NETMAUMAU_LUA_LUASTATE
 
-#include <string>
-
 extern "C" {
 #include <lua.h>
 }

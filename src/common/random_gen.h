@@ -33,7 +33,6 @@
 #include <ctime>
 #include <gsl/gsl_rng.h>
 #include "linkercontrol.h"
-#include "logger.h"
 #endif
 
 #include <cstdlib>

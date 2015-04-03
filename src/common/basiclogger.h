@@ -1,7 +1,7 @@
 /**
  * basiclogger.h - template for basic logging functionality
  *
- * $Revision: 3544 $ $Author: heiko $
+ * $Revision: 3896 $ $Author: heiko $
  *
  * (c) 2012-2015 Heiko Schäfer <heiko@rangun.de>
  *
@@ -181,7 +181,8 @@ private:
 		size_t fatal;
 	} m_logCount;
 
-	static unsigned char m_silentMask;
+	// we need this in order to get the combination LTO & inetd to work
+	__attribute__((externally_visible)) static unsigned char m_silentMask;
 
 	LEVEL m_level;
 

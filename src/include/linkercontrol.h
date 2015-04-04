@@ -1,7 +1,7 @@
 /*
  * linkercontrol.h - a common header for controlling visibility of functions and methods
  *
- * $Revision: 3754 $ $Author: heiko $
+ * $Revision: 3898 $ $Author: heiko $
  *
  * (c) 2012-2015 Heiko Schäfer <heiko@hgl.rangun.de>
  *
@@ -85,6 +85,12 @@ namespace Commons {
 #endif
 #ifdef __clang__
 #pragma clang diagnostic pop
+#endif
+
+#ifdef __clang__
+#define _LTO_EXT_VISIBLE
+#else
+#define _LTO_EXT_VISIBLE __attribute__ ((externally_visible))
 #endif
 
 #ifndef _NONNULL_RETURN

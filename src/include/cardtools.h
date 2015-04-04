@@ -143,7 +143,7 @@ _EXPORT unsigned int suitOrderPosition(NetMauMau::Common::ICard::SUIT suit) _CON
  * @param rank the @c RANK to get the ordinal for
  * @return ordinal number for a @c RANK
  */
-_EXPORT unsigned int rankOrderPosition(NetMauMau::Common::ICard::RANK rank) _CONST;
+_EXPORT unsigned int rankOrderPosition(NetMauMau::Common::ICard::RANK rank) _CONST _PURE;
 
 /**
  * @ingroup util
@@ -309,7 +309,7 @@ _EXPORT NetMauMau::Common::ICard *getIllegalCard() _CONST;
  * @param rank the @c RANK
  * @return the points of a @c RANK
  */
-_EXPORT std::size_t getCardPoints(NetMauMau::Common::ICard::RANK rank) _CONST;
+_EXPORT std::size_t getCardPoints(NetMauMau::Common::ICard::RANK rank) _CONST _PURE;
 
 /**
  * @ingroup util

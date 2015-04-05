@@ -99,6 +99,41 @@ struct _isSpecialRank : std::binary_function < NetMauMau::Common::ICard *,
 private:
 	bool m_nineIsEight;
 };
+
+struct _pushIfPossible : std::unary_function<NetMauMau::Common::ICard *, void> {
+
+	inline explicit _pushIfPossible(NetMauMau::Player::IPlayer::CARDS &c,
+									const NetMauMau::Common::ICard *const uc,
+									const NetMauMau::RuleSet::IRuleSet *const rs,
+									const NetMauMau::Common::ICard::SUIT *const s) : cards(c),
+		uncoveredCard(uc), ruleset(rs), suit(s), aceRoundRank(rs->getAceRoundRank()),
+		ucRank(uc->getRank()), isAceRound(rs->isAceRound()) {}
+
+	inline void operator()(NetMauMau::Common::ICard *card) const {
+
+		if(suit && card->getSuit() != *suit) return;
+
+		const NetMauMau::Common::ICard::RANK rank = card->getRank();
+
+		const bool accepted = isAceRound ? rank == aceRoundRank :
+							  ruleset->checkCard(card, uncoveredCard);
+
+		const bool jack = (rank == NetMauMau::Common::ICard::JACK &&
+						   ucRank != NetMauMau::Common::ICard::JACK) && !isAceRound;
+
+		if(accepted || jack) cards.push_back(card);
+	}
+
+	NetMauMau::Player::IPlayer::CARDS &cards;
+
+private:
+	const NetMauMau::Common::ICard *const uncoveredCard;
+	const NetMauMau::RuleSet::IRuleSet *const ruleset;
+	const NetMauMau::Common::ICard::SUIT *const suit;
+	NetMauMau::Common::ICard::RANK aceRoundRank;
+	NetMauMau::Common::ICard::RANK ucRank;
+	bool isAceRound;
+};
 #pragma GCC diagnostic pop
 
 }
@@ -624,28 +659,8 @@ IPlayer::CARDS StdPlayer::getPossibleCards(const NetMauMau::Common::ICard *uncov
 	CARDS posCards;
 	posCards.reserve(m_cards.size());
 
-	const NetMauMau::RuleSet::IRuleSet *ruleset = getRuleSet();
-
-	const bool isAceRound = ruleset->isAceRound();
-	const NetMauMau::Common::ICard::RANK aceRoundRank = ruleset->getAceRoundRank();
-	const NetMauMau::Common::ICard::RANK ucRank = uncoveredCard->getRank();
-
-	for(CARDS::const_iterator i(m_cards.begin()); i != m_cards.end(); ++i) {
-
-		if(suit && (*i)->getSuit() != *suit) continue;
-
-		const NetMauMau::Common::ICard::RANK rank = (*i)->getRank();
-
-		const bool accepted = isAceRound ? rank == aceRoundRank :
-							  ruleset->checkCard(*i, uncoveredCard);
-
-		const bool jack = (rank == NetMauMau::Common::ICard::JACK &&
-						   ucRank != NetMauMau::Common::ICard::JACK) && !isAceRound;
-
-		if(accepted || jack) posCards.push_back(*i);
-	}
-
-	return posCards;
+	return std::for_each(m_cards.begin(), m_cards.end(), _pushIfPossible(posCards, uncoveredCard,
+						 getRuleSet(), suit)).cards;
 }
 
 void StdPlayer::informAIStat(const IPlayer *, std::size_t count) {

@@ -61,10 +61,15 @@ public:
 	bool playerWins(long long int gameIndex, const Common::IConnection::NAMESOCKFD &nsf) const;
 
 private:
-	bool exec(const std::string &sql) const;
+	bool exec(const char *sql) const;
+
+	inline bool exec(const std::string &sql) const {
+		return exec(sql.c_str());
+	}
 
 private:
 	sqlite3 *m_db;
+	sqlite3_stmt *m_turnStmt;
 };
 
 }

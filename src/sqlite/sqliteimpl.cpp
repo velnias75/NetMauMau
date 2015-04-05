@@ -21,6 +21,7 @@
 #include "config.h"
 #endif
 
+#include <cstdio>
 #include <cstdlib>
 #include <sstream>
 
@@ -70,6 +71,7 @@ int scoresCallback(void *arg, int cols, char **col_text, char **) {
 
 const char *SCHEMA =
 	"PRAGMA journal_mode=OFF;" \
+	"PRAGMA synchronous=NORMAL;" \
 	"CREATE TABLE IF NOT EXISTS \"meta\" (" \
 	"dbver INTEGER UNIQUE," \
 	"date INTEGER );"\
@@ -125,7 +127,7 @@ const char *SCHEMA =
 
 using namespace NetMauMau::DB;
 
-SQLiteImpl::SQLiteImpl() : m_db(0L) {
+SQLiteImpl::SQLiteImpl() : m_db(0L), m_turnStmt(0L) {
 
 	const std::string &db(getDBFilename());
 
@@ -135,6 +137,8 @@ SQLiteImpl::SQLiteImpl() : m_db(0L) {
 
 		if(sqlite3_open(db.c_str(), &m_db) != SQLITE_ERROR) {
 
+			sqlite3_prepare_v2(m_db, "UPDATE games SET turns = @TURN WHERE id = @ID;", 100,
+							   &m_turnStmt, NULL);
 			exec(SCHEMA);
 
 			std::ostringstream sql;
@@ -164,6 +168,7 @@ SQLiteImpl::~SQLiteImpl() {
 		exec(sql.str());
 		exec("VACUUM;");
 
+		sqlite3_finalize(m_turnStmt);
 		sqlite3_close(m_db);
 	}
 }
@@ -223,11 +228,11 @@ std::string SQLiteImpl::getDBFilename() {
 }
 #pragma GCC diagnostic pop
 
-bool SQLiteImpl::exec(const std::string &sql) const {
+bool SQLiteImpl::exec(const char *sql) const {
 
 	char *err = 0L;
 
-	if(m_db && sqlite3_exec(m_db, sql.c_str(), NULL, NULL, &err) == SQLITE_OK) {
+	if(m_db && sqlite3_exec(m_db, sql, NULL, NULL, &err) == SQLITE_OK) {
 		return true;
 	}
 
@@ -351,12 +356,11 @@ bool SQLiteImpl::addPlayerToGame(long long int gid,
 }
 
 bool SQLiteImpl::turn(long long int gameIndex, std::size_t t) const {
-
-	std::ostringstream sql;
-
-	sql << "UPDATE games SET turns = " << t << " WHERE id = " << gameIndex << ";";
-
-	return exec(sql.str());
+	return sqlite3_bind_int64(m_turnStmt, 1, t) == SQLITE_OK &&
+		   sqlite3_bind_int64(m_turnStmt, 2, gameIndex) == SQLITE_OK &&
+		   sqlite3_step(m_turnStmt) == SQLITE_DONE &&
+		   sqlite3_clear_bindings(m_turnStmt) == SQLITE_OK &&
+		   sqlite3_reset(m_turnStmt) == SQLITE_OK;
 }
 
 bool SQLiteImpl::gamePlayStarted(long long int gameIndex) const {

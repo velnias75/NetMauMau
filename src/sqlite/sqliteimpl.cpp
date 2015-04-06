@@ -50,25 +50,6 @@ int gamesCountCallback(void *arg, int cols, char **col_text, char **) {
 	return -1;
 }
 
-int scoresCallback(void *arg, int cols, char **col_text, char **) {
-
-	if(cols == 3 && col_text[0] && col_text[2]) {
-
-		NetMauMau::DB::SQLite::SCORES *res = static_cast<NetMauMau::DB::SQLite::SCORES *>(arg);
-		NetMauMau::DB::SQLite::SCORE sc = {
-			std::strtoll(col_text[0], NULL, 10),
-			col_text[1],
-			std::strtoll(col_text[2], NULL, 10),
-		};
-
-		res->push_back(sc);
-
-		return 0;
-	}
-
-	return !(col_text[0] && col_text[2]) ? 0 : -1;
-}
-
 const char *SCHEMA =
 	"PRAGMA journal_mode=OFF;" \
 	"PRAGMA synchronous=NORMAL;" \
@@ -127,7 +108,8 @@ const char *SCHEMA =
 
 using namespace NetMauMau::DB;
 
-SQLiteImpl::SQLiteImpl() : m_db(0L), m_turnStmt(0L) {
+SQLiteImpl::SQLiteImpl() : m_db(0L), m_turnStmt(0L), m_winStmt(0L), m_scoreNormStmt(0L),
+	m_scoreNormLimitStmt(0L), m_scoreAbsStmt(0L), m_scoreAbsLimitStmt(0L) {
 
 	const std::string &db(getDBFilename());
 
@@ -137,11 +119,27 @@ SQLiteImpl::SQLiteImpl() : m_db(0L), m_turnStmt(0L) {
 
 		if(sqlite3_open(db.c_str(), &m_db) != SQLITE_ERROR) {
 
-			sqlite3_prepare_v2(m_db, "UPDATE games SET turns = @TURN WHERE id = @ID;", 100,
-							   &m_turnStmt, NULL);
+			if(!(sqlite3_prepare_v2(m_db, "UPDATE games SET turns = @TURN " \
+									"WHERE id = @ID;", 100, &m_turnStmt, NULL) == SQLITE_OK &&
+					sqlite3_prepare_v2(m_db, "UPDATE games SET win_player = " \
+									   "(SELECT id FROM players WHERE name = @NAME) " \
+									   "WHERE id = @ID AND win_player IS NULL;",
+									   1024, &m_winStmt, NULL) == SQLITE_OK &&
+					sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores;", 28,
+									   &m_scoreNormStmt, NULL) == SQLITE_OK &&
+					sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores LIMIT @LIM;",
+									   100, &m_scoreNormLimitStmt, NULL) == SQLITE_OK &&
+					sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores_abs;", 32,
+									   &m_scoreAbsStmt, NULL) == SQLITE_OK &&
+					sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores_abs LIMIT @LIM;",
+									   100, &m_scoreAbsLimitStmt, NULL))) {
+				logDebug(sqlite3_errmsg(m_db));
+			}
+
 			exec(SCHEMA);
 
 			std::ostringstream sql;
+
 			sql << "INSERT OR IGNORE INTO meta (dbver, date) VALUES ("
 				<< MAKE_VERSION(SERVER_VERSION_MAJOR, SERVER_VERSION_MINOR)
 				<< "," << std::time(0L) << ");";
@@ -168,7 +166,13 @@ SQLiteImpl::~SQLiteImpl() {
 		exec(sql.str());
 		exec("VACUUM;");
 
+		sqlite3_finalize(m_scoreNormStmt);
+		sqlite3_finalize(m_scoreNormLimitStmt);
+		sqlite3_finalize(m_scoreAbsStmt);
+		sqlite3_finalize(m_scoreAbsLimitStmt);
+		sqlite3_finalize(m_winStmt);
 		sqlite3_finalize(m_turnStmt);
+
 		sqlite3_close(m_db);
 	}
 }
@@ -250,18 +254,50 @@ SQLite::SCORES SQLiteImpl::getScores(SQLite::SCORE_TYPE type, std::size_t limit)
 
 	if(m_db) {
 
-		char *err = 0L;
-		std::ostringstream sql;
+		sqlite3_stmt *stmt = 0L;
+		bool succ = false;
 
-		sql << "SELECT * FROM " << (type == SQLite::NORM ? "total_scores" : "total_scores_abs");
-
-		if(limit > 0) sql << " LIMIT " << limit;
-
-		if(sqlite3_exec(m_db, sql.str().c_str(), scoresCallback, &res, &err) != SQLITE_OK) {
-			if(err) {
-				logWarning("SQLite: " << err);
-				sqlite3_free(err);
+		switch(type) {
+		case SQLite::NORM: {
+			if(limit > 0) {
+				stmt = m_scoreNormLimitStmt;
+				succ = sqlite3_bind_int64(stmt, 1, limit) == SQLITE_OK;
+			} else {
+				stmt = m_scoreNormStmt;
+				succ = true;
 			}
+		}
+		break;
+
+		case SQLite::ABS: {
+			if(limit > 0) {
+				stmt = m_scoreAbsLimitStmt;
+				succ = sqlite3_bind_int64(stmt, 1, limit) == SQLITE_OK;
+			} else {
+				stmt = m_scoreAbsStmt;
+				succ = true;
+			}
+		}
+		break;
+		}
+
+		while(succ && sqlite3_step(stmt) == SQLITE_ROW) {
+
+			SQLite::SCORE sc = {
+				std::strtoll(reinterpret_cast<const char *>(sqlite3_column_text(stmt, 0)),
+				NULL, 10),
+				reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1)),
+				std::strtoll(reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2)),
+				NULL, 10),
+			};
+
+			res.push_back(sc);
+		}
+
+		if(!(succ &&
+				sqlite3_clear_bindings(stmt) == SQLITE_OK &&
+				sqlite3_reset(stmt) == SQLITE_OK)) {
+			logDebug(sqlite3_errmsg(m_db));
 		}
 	}
 
@@ -356,11 +392,16 @@ bool SQLiteImpl::addPlayerToGame(long long int gid,
 }
 
 bool SQLiteImpl::turn(long long int gameIndex, std::size_t t) const {
-	return sqlite3_bind_int64(m_turnStmt, 1, t) == SQLITE_OK &&
-		   sqlite3_bind_int64(m_turnStmt, 2, gameIndex) == SQLITE_OK &&
-		   sqlite3_step(m_turnStmt) == SQLITE_DONE &&
-		   sqlite3_clear_bindings(m_turnStmt) == SQLITE_OK &&
-		   sqlite3_reset(m_turnStmt) == SQLITE_OK;
+
+	const bool succ = sqlite3_bind_int64(m_turnStmt, 1, t) == SQLITE_OK &&
+					  sqlite3_bind_int64(m_turnStmt, 2, gameIndex) == SQLITE_OK &&
+					  sqlite3_step(m_turnStmt) == SQLITE_DONE &&
+					  sqlite3_clear_bindings(m_turnStmt) == SQLITE_OK &&
+					  sqlite3_reset(m_turnStmt) == SQLITE_OK;
+
+	if(!succ) logWarning("SQLite: " << sqlite3_errmsg(m_db));
+
+	return succ;
 }
 
 bool SQLiteImpl::gamePlayStarted(long long int gameIndex) const {
@@ -384,14 +425,23 @@ bool SQLiteImpl::playerLost(long long int gameIndex,
 	return exec(sql.str());
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 bool SQLiteImpl::playerWins(long long int gameIndex,
 							const NetMauMau::Common::IConnection::NAMESOCKFD &nsf) const {
-	std::ostringstream sql;
 
-	sql << "UPDATE games SET win_player = (SELECT id FROM players WHERE name = \'"
-		<< nsf.name << "\')" << " WHERE " << "id = " << gameIndex << " AND win_player IS NULL;";
+	const bool succ = sqlite3_bind_text(m_winStmt, 1, nsf.name.c_str(),
+										static_cast<int>(nsf.name.size()),
+										SQLITE_TRANSIENT) == SQLITE_OK &&
+					  sqlite3_bind_int64(m_winStmt, 2, gameIndex) == SQLITE_OK &&
+					  sqlite3_step(m_winStmt) == SQLITE_DONE &&
+					  sqlite3_clear_bindings(m_winStmt) == SQLITE_OK &&
+					  sqlite3_reset(m_winStmt) == SQLITE_OK;
 
-	return exec(sql.str());
+	if(!succ) logWarning("SQLite: " << sqlite3_errmsg(m_db));
+
+	return succ;
 }
+#pragma GCC diagnostic pop
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -69,7 +69,14 @@ private:
 
 private:
 	sqlite3 *m_db;
+	
 	sqlite3_stmt *m_turnStmt;
+	sqlite3_stmt *m_winStmt;
+	
+	sqlite3_stmt *m_scoreNormStmt;
+	sqlite3_stmt *m_scoreNormLimitStmt;
+	sqlite3_stmt *m_scoreAbsStmt;
+	sqlite3_stmt *m_scoreAbsLimitStmt;
 };
 
 }

@@ -1,3 +1,9 @@
+netmaumau (0.17.2) UNRELEASED; urgency=low
+
+  * 
+
+ -- Heiko Schäfer <heiko@rangun.de>  Sun, 12 Apr 2015 20:03:17 +0200
+
 netmaumau (0.17.1) UNRELEASED; urgency=low
 
   * improved Lua returned type checking

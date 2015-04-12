@@ -72,21 +72,15 @@ public:
 
 } ILLEGAL_CARD;
 
-const std::map<const std::string, NetMauMau::Common::ICard::SUIT> createSuitToSymbolMap() {
+const std::map<const std::string, NetMauMau::Common::ICard::SUIT>::value_type SSP[] = {
+	std::make_pair("\u2660", NetMauMau::Common::ICard::SPADES),
+	std::make_pair("\u2663", NetMauMau::Common::ICard::CLUBS),
+	std::make_pair("\u2665", NetMauMau::Common::ICard::HEARTS),
+	std::make_pair("\u2666", NetMauMau::Common::ICard::DIAMONDS),
+	std::make_pair("X", NetMauMau::Common::ICard::SUIT_ILLEGAL)
+};
 
-	std::map<const std::string, NetMauMau::Common::ICard::SUIT> ssm;
-
-	ssm.insert(std::make_pair("\u2660", NetMauMau::Common::ICard::SPADES));
-	ssm.insert(std::make_pair("\u2663", NetMauMau::Common::ICard::CLUBS));
-	ssm.insert(std::make_pair("\u2665", NetMauMau::Common::ICard::HEARTS));
-	ssm.insert(std::make_pair("\u2666", NetMauMau::Common::ICard::DIAMONDS));
-	ssm.insert(std::make_pair("X", NetMauMau::Common::ICard::SUIT_ILLEGAL));
-
-	return ssm;
-}
-
-const std::map<const std::string, NetMauMau::Common::ICard::SUIT>
-suitToSymbolMap(createSuitToSymbolMap());
+const std::map<const std::string, NetMauMau::Common::ICard::SUIT> suitToSymbolMap(SSP, SSP + 5);
 
 }
 

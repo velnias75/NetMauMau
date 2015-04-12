@@ -132,7 +132,7 @@ SQLiteImpl::SQLiteImpl() : m_db(0L), m_turnStmt(0L), m_winStmt(0L), m_scoreNormS
 					sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores_abs;", 32,
 									   &m_scoreAbsStmt, NULL) == SQLITE_OK &&
 					sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores_abs LIMIT @LIM;",
-									   100, &m_scoreAbsLimitStmt, NULL))) {
+									   100, &m_scoreAbsLimitStmt, NULL) == SQLITE_OK)) {
 				logDebug(sqlite3_errmsg(m_db));
 			}
 

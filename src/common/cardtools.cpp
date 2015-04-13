@@ -73,10 +73,10 @@ public:
 } ILLEGAL_CARD;
 
 const std::map<const std::string, NetMauMau::Common::ICard::SUIT>::value_type SSP[] = {
-	std::make_pair("\u2660", NetMauMau::Common::ICard::SPADES),
-	std::make_pair("\u2663", NetMauMau::Common::ICard::CLUBS),
-	std::make_pair("\u2665", NetMauMau::Common::ICard::HEARTS),
-	std::make_pair("\u2666", NetMauMau::Common::ICard::DIAMONDS),
+	std::make_pair(SUIT[2], NetMauMau::Common::ICard::SPADES),
+	std::make_pair(SUIT[3], NetMauMau::Common::ICard::CLUBS),
+	std::make_pair(SUIT[1], NetMauMau::Common::ICard::HEARTS),
+	std::make_pair(SUIT[0], NetMauMau::Common::ICard::DIAMONDS),
 	std::make_pair("X", NetMauMau::Common::ICard::SUIT_ILLEGAL)
 };
 

@@ -120,19 +120,19 @@ SQLiteImpl::SQLiteImpl() : m_db(0L), m_turnStmt(0L), m_winStmt(0L), m_scoreNormS
 		if(sqlite3_open(db.c_str(), &m_db) != SQLITE_ERROR) {
 
 			if(!(sqlite3_prepare_v2(m_db, "UPDATE games SET turns = @TURN " \
-									"WHERE id = @ID;", 100, &m_turnStmt, NULL) == SQLITE_OK &&
+									"WHERE id = @ID;", -1, &m_turnStmt, NULL) == SQLITE_OK &&
 					sqlite3_prepare_v2(m_db, "UPDATE games SET win_player = " \
 									   "(SELECT id FROM players WHERE name = @NAME) " \
 									   "WHERE id = @ID AND win_player IS NULL;",
-									   1024, &m_winStmt, NULL) == SQLITE_OK &&
-					sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores;", 28,
+									   -1, &m_winStmt, NULL) == SQLITE_OK &&
+					sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores;", -1,
 									   &m_scoreNormStmt, NULL) == SQLITE_OK &&
 					sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores LIMIT @LIM;",
-									   100, &m_scoreNormLimitStmt, NULL) == SQLITE_OK &&
-					sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores_abs;", 32,
+									   -1, &m_scoreNormLimitStmt, NULL) == SQLITE_OK &&
+					sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores_abs;", -1,
 									   &m_scoreAbsStmt, NULL) == SQLITE_OK &&
 					sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores_abs LIMIT @LIM;",
-									   100, &m_scoreAbsLimitStmt, NULL) == SQLITE_OK)) {
+									   -1, &m_scoreAbsLimitStmt, NULL) == SQLITE_OK)) {
 				logDebug(sqlite3_errmsg(m_db));
 			}
 

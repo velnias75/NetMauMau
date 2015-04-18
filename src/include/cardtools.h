@@ -230,7 +230,7 @@ typename Iterator::value_type findSuit(NetMauMau::Common::ICard::SUIT suit, Iter
 
 	const Iterator &f(std::find_if(first, last, std::bind2nd(std::ptr_fun(isSuit), suit)));
 
-	return f != last ? *f : 0L;
+	return f != last ? *f : typename Iterator::value_type();
 }
 
 /**
@@ -250,7 +250,7 @@ typename Iterator::value_type findRank(NetMauMau::Common::ICard::RANK rank, Iter
 
 	const Iterator &f(std::find_if(first, last, std::bind2nd(std::ptr_fun(isRank), rank)));
 
-	return f != last ? *f : 0L;
+	return f != last ? *f : typename Iterator::value_type();
 }
 
 /**
@@ -270,7 +270,7 @@ typename Iterator::value_type findCard(typename Iterator::value_type card, Itera
 
 	const Iterator &f(std::find_if(first, last, std::bind2nd(std::ptr_fun(cardEqual), card)));
 
-	return f != last ? *f : 0L;
+	return f != last ? *f : typename Iterator::value_type();
 }
 
 /// @}

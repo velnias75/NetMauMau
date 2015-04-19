@@ -24,6 +24,7 @@
 #include "serverplayerexception.h"
 #include "serverconnection.h"
 #include "cardtools.h"
+#include "smartptr.h"
 #include "iruleset.h"
 #include "engine.h"
 
@@ -53,7 +54,7 @@ bool Player::isAlive() const {
 	return true;
 }
 
-void Player::receiveCard(NetMauMau::Common::ICard *card) {
+void Player::receiveCard(const NetMauMau::Common::ICardPtr &card) {
 
 	try {
 		if(card) receiveCardSet(CARDS(1, card));
@@ -83,7 +84,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 void Player::shuffleCards() {}
 
-NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *uncoveredCard,
+NetMauMau::Common::ICardPtr Player::requestCard(const NetMauMau::Common::ICardPtr &uncoveredCard,
 		const NetMauMau::Common::ICard::SUIT *s, std::size_t takeCount) const {
 
 	try {
@@ -116,9 +117,10 @@ NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *un
 		const std::string offeredCard = m_connection.read(m_sockfd);
 
 		if(offeredCard == "SUSPEND") {
-			return 0L;
+			return NetMauMau::Common::ICardPtr();
 		} else if(offeredCard == "ILLEGAL CARD") {
-			return NetMauMau::Common::getIllegalCard();
+			return NetMauMau::Common::ICardPtr(const_cast<const NetMauMau::Common::ICard *>
+											   (NetMauMau::Common::getIllegalCard()));
 		}
 
 		return findCard(offeredCard);
@@ -128,7 +130,7 @@ NetMauMau::Common::ICard *Player::requestCard(const NetMauMau::Common::ICard *un
 	}
 }
 
-NetMauMau::Common::ICard *Player::findCard(const std::string &offeredCard) const {
+NetMauMau::Common::ICardPtr Player::findCard(const std::string &offeredCard) const {
 
 	NetMauMau::Common::ICard::SUIT s = NetMauMau::Common::ICard::HEARTS;
 	NetMauMau::Common::ICard::RANK r = NetMauMau::Common::ICard::ACE;
@@ -138,11 +140,11 @@ NetMauMau::Common::ICard *Player::findCard(const std::string &offeredCard) const
 		const CARDS &pc(getPlayerCards());
 
 		for(CARDS::const_iterator i(pc.begin()); i != pc.end(); ++i) {
-			if((*i)->getSuit() == s && (*i)->getRank() == r) return *i;
+			if((*i)->getSuit() == s && (*i)->getRank() == r) return NetMauMau::Common::ICardPtr(*i);
 		}
 	}
 
-	return 0L;
+	return NetMauMau::Common::ICardPtr();
 }
 
 bool Player::cardAccepted(const NetMauMau::Common::ICard *playedCard)
@@ -167,7 +169,7 @@ void Player::talonShuffled() throw(NetMauMau::Common::Exception::SocketException
 	m_connection.write(m_sockfd, "TALONSHUFFLED");
 }
 
-Player::IPlayer::REASON Player::getNoCardReason(const NetMauMau::Common::ICard *uncoveredCard,
+Player::IPlayer::REASON Player::getNoCardReason(const NetMauMau::Common::ICardPtr &uncoveredCard,
 		const NetMauMau::Common::ICard::SUIT *suit) const {
 
 	if(getClientVersion() >= 15) {
@@ -192,8 +194,8 @@ std::size_t Player::getCardCount() const throw(NetMauMau::Common::Exception::Soc
 	return cc;
 }
 
-NetMauMau::Common::ICard::SUIT Player::getJackChoice(const NetMauMau::Common::ICard *,
-		const NetMauMau::Common::ICard *) const
+NetMauMau::Common::ICard::SUIT Player::getJackChoice(const NetMauMau::Common::ICardPtr &,
+		const NetMauMau::Common::ICardPtr &) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	try {

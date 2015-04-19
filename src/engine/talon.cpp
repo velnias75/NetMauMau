@@ -26,78 +26,83 @@
 #include "italonchange.h"
 #include "stdcardfactory.h"
 
+namespace {
+
+const NetMauMau::StdCardFactory CF;
+
+const NetMauMau::Common::ICardPtr _DECK[32] = {
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS, NetMauMau::Common::ICard::SEVEN)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS, NetMauMau::Common::ICard::EIGHT)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS, NetMauMau::Common::ICard::NINE)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS, NetMauMau::Common::ICard::TEN)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS, NetMauMau::Common::ICard::JACK)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS, NetMauMau::Common::ICard::QUEEN)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS, NetMauMau::Common::ICard::KING)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS, NetMauMau::Common::ICard::ACE)),
+
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::HEARTS, NetMauMau::Common::ICard::SEVEN)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::HEARTS, NetMauMau::Common::ICard::EIGHT)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::HEARTS, NetMauMau::Common::ICard::NINE)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::HEARTS, NetMauMau::Common::ICard::TEN)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::HEARTS, NetMauMau::Common::ICard::JACK)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::HEARTS, NetMauMau::Common::ICard::QUEEN)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::HEARTS, NetMauMau::Common::ICard::KING)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::HEARTS, NetMauMau::Common::ICard::ACE)),
+
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::SPADES, NetMauMau::Common::ICard::SEVEN)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::SPADES, NetMauMau::Common::ICard::EIGHT)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::SPADES, NetMauMau::Common::ICard::NINE)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::SPADES, NetMauMau::Common::ICard::TEN)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::SPADES, NetMauMau::Common::ICard::JACK)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::SPADES, NetMauMau::Common::ICard::QUEEN)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::SPADES, NetMauMau::Common::ICard::KING)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::SPADES, NetMauMau::Common::ICard::ACE)),
+
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::CLUBS, NetMauMau::Common::ICard::SEVEN)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::CLUBS, NetMauMau::Common::ICard::EIGHT)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::CLUBS, NetMauMau::Common::ICard::NINE)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::CLUBS, NetMauMau::Common::ICard::TEN)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::CLUBS, NetMauMau::Common::ICard::JACK)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::CLUBS, NetMauMau::Common::ICard::QUEEN)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::CLUBS, NetMauMau::Common::ICard::KING)),
+	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::CLUBS, NetMauMau::Common::ICard::ACE))
+};
+
+const NetMauMau::Common::ICardPtr NULLCARD;
+
+}
+
 using namespace NetMauMau;
 
-Talon::Talon(const ITalonChange *tchg, std::size_t factor) throw() : m_allCards(),
-	m_talonChangeListener(tchg), m_cardStack(createCards(factor)), m_uncovered() {
+Talon::Talon(const ITalonChange *tchg, std::size_t factor) throw() : m_talonChangeListener(tchg),
+	m_cardStack(Talon::createCards(factor)), m_uncovered() {
 	m_talonChangeListener->talonEmpty(false);
 }
 
-Talon::CARDS Talon::createCards(std::size_t factor) const throw() {
+Talon::CARDSTACK::container_type Talon::createCards(std::size_t factor) throw() {
 
-	StdCardFactory cardFactory;
-
-	Talon::CARDS cards;
+	Talon::CARDSTACK::container_type cards;
 	cards.reserve(32 * factor);
 
 	for(std::size_t i = 0; i < factor; ++i) {
-		cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::SEVEN));
-		cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::EIGHT));
-		cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::NINE));
-		cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::TEN));
-		cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::JACK));
-		cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::QUEEN));
-		cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::KING));
-		cards.push_back(cardFactory.create(Common::ICard::DIAMONDS, Common::ICard::ACE));
-
-		cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::SEVEN));
-		cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::EIGHT));
-		cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::NINE));
-		cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::TEN));
-		cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::JACK));
-		cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::QUEEN));
-		cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::KING));
-		cards.push_back(cardFactory.create(Common::ICard::HEARTS, Common::ICard::ACE));
-
-		cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::SEVEN));
-		cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::EIGHT));
-		cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::NINE));
-		cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::TEN));
-		cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::JACK));
-		cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::QUEEN));
-		cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::KING));
-		cards.push_back(cardFactory.create(Common::ICard::SPADES, Common::ICard::ACE));
-
-		cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::SEVEN));
-		cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::EIGHT));
-		cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::NINE));
-		cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::TEN));
-		cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::JACK));
-		cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::QUEEN));
-		cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::KING));
-		cards.push_back(cardFactory.create(Common::ICard::CLUBS, Common::ICard::ACE));
+		cards.insert(cards.end(), _DECK, _DECK + 32);
 	}
-
-	m_allCards.reserve(cards.size());
-	m_allCards.assign(cards.begin(), cards.end());
 
 	std::random_shuffle(cards.begin(), cards.end(), Common::genRandom<CARDS::difference_type>);
 
 	return cards;
 }
 
-Talon::~Talon() {
-	for(CARDS::const_iterator i(m_allCards.begin()); i != m_allCards.end(); ++i) delete *i;
-}
+Talon::~Talon() {}
 
-Common::ICard *Talon::uncoverCard() {
+Common::ICardPtr Talon::uncoverCard() {
 	m_uncovered.push(top());
 	pop();
 	m_talonChangeListener->uncoveredCard(m_uncovered.top());
 	return m_uncovered.top();
 }
 
-void Talon::playCard(Common::ICard *card) {
+void Talon::playCard(const Common::ICardPtr &card) {
 
 	assert(!(card->getRank() == Common::ICard::RANK_ILLEGAL ||
 			 card->getSuit() == Common::ICard::SUIT_ILLEGAL));
@@ -107,13 +112,13 @@ void Talon::playCard(Common::ICard *card) {
 	m_talonChangeListener->cardPlayed(card);
 }
 
-Common::ICard *Talon::takeCard() {
+Common::ICardPtr Talon::takeCard() {
 
 	if(empty()) {
 
 		m_talonChangeListener->shuffled();
 
-		Common::ICard *uc = m_uncovered.top();
+		Common::ICardPtr uc(m_uncovered.top());
 		m_uncovered.pop();
 
 		CARDS cards;
@@ -138,7 +143,7 @@ Common::ICard *Talon::takeCard() {
 
 	if(!empty()) {
 
-		Common::ICard *c = top();
+		Common::ICardPtr c(top());
 		pop();
 
 		return c;
@@ -146,7 +151,7 @@ Common::ICard *Talon::takeCard() {
 
 	m_talonChangeListener->talonEmpty(true);
 
-	return 0;
+	return NULLCARD;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

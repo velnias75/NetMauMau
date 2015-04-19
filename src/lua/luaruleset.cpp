@@ -24,6 +24,7 @@
 #include "luaruleset.h"
 
 #include "luafatalexception.h"
+#include "smartptr.h"
 #include "luastate.h"
 #include "iplayer.h"
 #include "logger.h"
@@ -300,14 +301,14 @@ std::vector<const char *> LuaRuleSet::checkInterface() {
 }
 
 void LuaRuleSet::checkInitial(const NetMauMau::Player::IPlayer *player,
-							  const NetMauMau::Common::ICard *playedCard)
+							  const NetMauMau::Common::ICardPtr &playedCard)
 throw(NetMauMau::Lua::Exception::LuaException) {
-	checkCard(player, 0L, playedCard, player->isAIPlayer());
+	checkCard(player, NetMauMau::Common::ICardPtr(), playedCard, player->isAIPlayer());
 }
 
 bool LuaRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
-						   const NetMauMau::Common::ICard *uncoveredCard,
-						   const NetMauMau::Common::ICard *playedCard,
+						   const NetMauMau::Common::ICardPtr &uncoveredCard,
+						   const NetMauMau::Common::ICardPtr &playedCard,
 						   bool) throw(NetMauMau::Lua::Exception::LuaException) {
 
 	const char *fname = FUNCTIONS[CHECKCARD];
@@ -331,8 +332,8 @@ bool LuaRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 	return checkReturnType<bool>(l, fname);
 }
 
-bool LuaRuleSet::checkCard(const NetMauMau::Common::ICard *uncoveredCard,
-						   const NetMauMau::Common::ICard *playedCard) const
+bool LuaRuleSet::checkCard(const NetMauMau::Common::ICardPtr &uncoveredCard,
+						   const NetMauMau::Common::ICardPtr &playedCard) const
 throw(NetMauMau::Lua::Exception::LuaException) {
 
 	const char *fname = FUNCTIONS[CHECKCARD];
@@ -347,7 +348,7 @@ throw(NetMauMau::Lua::Exception::LuaException) {
 	return checkReturnType<bool>(l, fname);
 }
 
-std::size_t LuaRuleSet::lostPointFactor(const NetMauMau::Common::ICard *uncoveredCard) const
+std::size_t LuaRuleSet::lostPointFactor(const NetMauMau::Common::ICardPtr &uncoveredCard) const
 throw(NetMauMau::Lua::Exception::LuaException) {
 
 	const char *fname = FUNCTIONS[LOSTPOINTFACTOR];
@@ -385,7 +386,7 @@ throw(NetMauMau::Lua::Exception::LuaException) {
 
 	const char *fname = FUNCTIONS[TAKECARDS];
 	lua_getglobal(l, fname);
-	l.pushCard(playedCard);
+	l.pushCard(NetMauMau::Common::ICardPtr(playedCard));
 	l.call(fname, 1);
 
 	return checkReturnType<std::size_t>(l, fname);

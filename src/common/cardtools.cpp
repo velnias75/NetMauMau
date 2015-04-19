@@ -22,6 +22,7 @@
 #include <map>
 
 #include "cardtools.h"
+#include "smartptr.h"
 
 namespace {
 

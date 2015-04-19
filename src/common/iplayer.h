@@ -38,7 +38,7 @@ namespace Player {
 class IPlayer {
 	DISALLOW_COPY_AND_ASSIGN(IPlayer)
 public:
-	typedef std::vector<NetMauMau::Common::ICard *> CARDS;
+	typedef std::vector<NetMauMau::Common::ICardPtr> CARDS;
 	typedef enum { MAUMAU, NOMATCH, SUSPEND } REASON;
 
 	virtual ~IPlayer() {}
@@ -52,14 +52,14 @@ public:
 	virtual void setEngineConfig(const EngineConfig *engineCfg) = 0;
 	virtual void setCardCountObserver(const ICardCountObserver *cco) = 0;
 
-	virtual void receiveCard(Common::ICard *card) = 0;
+	virtual void receiveCard(const Common::ICardPtr &card) = 0;
 	virtual void receiveCardSet(const CARDS &cards) = 0;
 
-	virtual Common::ICard *requestCard(const Common::ICard *uncoveredCard,
-									   const Common::ICard::SUIT *jackSuit,
-									   std::size_t takeCount) const = 0;
-	virtual Common::ICard::SUIT getJackChoice(const Common::ICard *uncoveredCard,
-			const Common::ICard *playedCard) const = 0;
+	virtual Common::ICardPtr requestCard(const Common::ICardPtr &uncoveredCard,
+										 const Common::ICard::SUIT *jackSuit,
+										 std::size_t takeCount) const = 0;
+	virtual Common::ICard::SUIT getJackChoice(const Common::ICardPtr &uncoveredCard,
+			const Common::ICardPtr &playedCard) const = 0;
 	virtual bool getAceRoundChoice() const = 0;
 
 	virtual bool cardAccepted(const Common::ICard *playedCard) = 0;
@@ -71,7 +71,7 @@ public:
 	virtual void talonShuffled() = 0;
 	virtual void setNineIsEight(bool b) = 0;
 
-	virtual REASON getNoCardReason(const NetMauMau::Common::ICard *uncoveredCard,
+	virtual REASON getNoCardReason(const NetMauMau::Common::ICardPtr &uncoveredCard,
 								   const NetMauMau::Common::ICard::SUIT *suit) const = 0;
 
 	virtual std::size_t getCardCount() const = 0;

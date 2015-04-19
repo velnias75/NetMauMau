@@ -21,6 +21,7 @@
 #define NETMAUMAU_PLAYER_STDPLAYER_H
 
 #include "iplayer.h"
+#include "smartptr.h"
 
 namespace NetMauMau {
 
@@ -41,14 +42,14 @@ public:
 	virtual void setCardCountObserver(const ICardCountObserver *cco);
 	virtual void setEngineConfig(const EngineConfig *engineCfg);
 
-	virtual void receiveCard(Common::ICard *card);
+	virtual void receiveCard(const Common::ICardPtr &card);
 	virtual void receiveCardSet(const CARDS &cards);
 
-	virtual Common::ICard *requestCard(const Common::ICard *uncoveredCard,
-									   const Common::ICard::SUIT *jackSuit,
-									   std::size_t takeCount) const;
-	virtual Common::ICard::SUIT getJackChoice(const Common::ICard *uncoveredCard,
-			const Common::ICard *playedCard) const;
+	virtual Common::ICardPtr requestCard(const Common::ICardPtr &uncoveredCard,
+										 const Common::ICard::SUIT *jackSuit,
+										 std::size_t takeCount) const;
+	virtual Common::ICard::SUIT getJackChoice(const Common::ICardPtr &uncoveredCard,
+			const Common::ICardPtr &playedCard) const;
 
 	virtual bool getAceRoundChoice() const;
 
@@ -61,8 +62,8 @@ public:
 	virtual void talonShuffled();
 	virtual void setNineIsEight(bool b);
 
-	virtual REASON getNoCardReason(const NetMauMau::Common::ICard *uncoveredCard,
-								   const NetMauMau::Common::ICard::SUIT *suit) const _PURE;
+	virtual REASON getNoCardReason(const Common::ICardPtr &uncoveredCard,
+								   const Common::ICard::SUIT *suit) const _PURE;
 
 	virtual std::size_t getCardCount() const _PURE;
 	virtual std::size_t getPoints() const;
@@ -74,8 +75,8 @@ public:
 	}
 
 protected:
-	CARDS getPossibleCards(const NetMauMau::Common::ICard *uncoveredCard,
-						   const NetMauMau::Common::ICard::SUIT *suit) const;
+	CARDS getPossibleCards(const Common::ICardPtr &uncoveredCard,
+						   const Common::ICard::SUIT *suit) const;
 
 	inline const CARDS &getPlayerCards() const {
 		return m_cards;
@@ -96,16 +97,16 @@ private:
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-	struct _hasRankPath : std::unary_function<Common::ICard *, bool> {
+	struct _hasRankPath : std::unary_function<Common::ICardPtr, bool> {
 
-		explicit _hasRankPath(const CARDS &c, NetMauMau::Common::ICard::RANK r, bool nie) : mCards(c),
-			rank(r), nineIsEight(nie) {}
+		explicit _hasRankPath(const CARDS &c, Common::ICard::RANK r, bool nie) : mCards(c), rank(r),
+			nineIsEight(nie) {}
 
-		bool operator()(const Common::ICard *c) const;
+		bool operator()(const Common::ICardPtr &c) const;
 
 	private:
 		const CARDS &mCards;
-		const NetMauMau::Common::ICard::RANK rank;
+		const Common::ICard::RANK rank;
 		bool nineIsEight;
 	};
 #pragma GCC diagnostic pop
@@ -115,11 +116,11 @@ private:
 			return !(count < sc.count);
 		}
 
-		bool operator==(NetMauMau::Common::ICard::SUIT s) const {
+		bool operator==(Common::ICard::SUIT s) const {
 			return suit == s;
 		}
 
-		NetMauMau::Common::ICard::SUIT suit;
+		Common::ICard::SUIT suit;
 		CARDS::difference_type count;
 	} SUITCOUNT;
 
@@ -127,12 +128,12 @@ private:
 
 	Common::ICard::SUIT getMaxPlayedOffSuit(CARDS::difference_type *count = 0L) const;
 
-	static Common::ICard *hasRankPath(const NetMauMau::Common::ICard *uc, Common::ICard::SUIT s,
-									  NetMauMau::Common::ICard::RANK r, const CARDS &cards,
-									  bool nineIsEight);
+	static Common::ICardPtr hasRankPath(const Common::ICardPtr &uc,  Common::ICard::SUIT s,
+										Common::ICard::RANK r, const CARDS &cards,
+										bool nineIsEight);
 
-	Common::ICard *findBestCard(const Common::ICard *uc, const Common::ICard::SUIT *js,
-								bool noJack) const;
+	Common::ICardPtr findBestCard(const Common::ICardPtr &uc, const Common::ICard::SUIT *js,
+								  bool noJack) const;
 
 	Common::ICard::SUIT findJackChoice() const;
 

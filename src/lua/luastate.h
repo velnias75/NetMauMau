@@ -24,15 +24,12 @@ extern "C" {
 #include <lua.h>
 }
 
+#include "icard.h"
 #include "luaexception.h"
 
 namespace NetMauMau {
 
 class IAceRoundListener;
-
-namespace Common {
-class ICard;
-}
 
 namespace Player {
 class IPlayer;
@@ -62,7 +59,7 @@ public:
 private:
 	explicit LuaState() throw(Exception::LuaException);
 
-	static const Common::ICard *getCard(lua_State *l, int idx) _NOUNUSED;
+	static Common::ICardPtr getCard(lua_State *l, int idx) _NOUNUSED;
 
 	static int print(lua_State *l);
 	static int getRandomSuit(lua_State *l);

@@ -43,13 +43,13 @@ public:
 	virtual bool isAIPlayer() const _CONST;
 	virtual bool isAlive() const;
 
-	virtual void receiveCard(Common::ICard *card);
+	virtual void receiveCard(const Common::ICardPtr &card);
 	virtual void receiveCardSet(const CARDS &cards) throw(Common::Exception::SocketException);
 
-	virtual Common::ICard *requestCard(const Common::ICard *uncoveredCard,
-									   const Common::ICard::SUIT *jackSuit,
-									   std::size_t takeCount) const;
-	virtual REASON getNoCardReason(const NetMauMau::Common::ICard *uncoveredCard,
+	virtual Common::ICardPtr requestCard(const Common::ICardPtr &uncoveredCard,
+										 const Common::ICard::SUIT *jackSuit,
+										 std::size_t takeCount) const;
+	virtual REASON getNoCardReason(const NetMauMau::Common::ICardPtr &uncoveredCard,
 								   const NetMauMau::Common::ICard::SUIT *suit) const;
 	virtual bool cardAccepted(const Common::ICard *playedCard)
 	throw(NetMauMau::Common::Exception::SocketException);
@@ -57,8 +57,8 @@ public:
 
 	virtual std::size_t getCardCount() const throw(Common::Exception::SocketException);
 
-	virtual Common::ICard::SUIT getJackChoice(const Common::ICard *uncoveredCard,
-			const Common::ICard *playedCard) const
+	virtual Common::ICard::SUIT getJackChoice(const Common::ICardPtr &uncoveredCard,
+			const Common::ICardPtr &playedCard) const
 	throw(NetMauMau::Common::Exception::SocketException);
 
 	virtual bool getAceRoundChoice() const throw(NetMauMau::Common::Exception::SocketException);
@@ -67,7 +67,7 @@ protected:
 	virtual void shuffleCards() _CONST;
 
 private:
-	_NOUNUSED Common::ICard *findCard(const std::string &offeredCard) const;
+	_NOUNUSED Common::ICardPtr findCard(const std::string &offeredCard) const;
 	uint32_t getClientVersion() const;
 
 private:

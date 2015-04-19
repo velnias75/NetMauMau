@@ -30,6 +30,7 @@ extern "C" {
 #include "stdcardfactory.h"
 #include "random_gen.h"
 #include "cardtools.h"
+#include "smartptr.h"
 #include "iplayer.h"
 #include "logger.h"
 #include "icard.h"
@@ -167,10 +168,8 @@ void LuaState::pushCard(const NetMauMau::Common::ICard *card) const throw() {
 		lua_setfield(m_state, -2, "RANK");
 		lua_pushinteger(m_state, static_cast<lua_Integer>(card->getPoints()));
 		lua_setfield(m_state, -2, "POINTS");
-		const NetMauMau::Common::ICard **bp =
-			reinterpret_cast<const NetMauMau::Common::ICard **>(lua_newuserdata(m_state,
-					sizeof(const NetMauMau::Common::ICard **)));
-		*bp = card;
+		new(lua_newuserdata(m_state, sizeof(NetMauMau::Common::ICardPtr)))
+		NetMauMau::Common::ICardPtr(card);
 		lua_setfield(m_state, -2, INTERFACE);
 
 	} else {
@@ -206,18 +205,20 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 }
 
-const NetMauMau::Common::ICard *LuaState::getCard(lua_State *l, int idx) {
+NetMauMau::Common::ICardPtr LuaState::getCard(lua_State *l, int idx) {
 
-	if(lua_isnil(l, idx)) return 0L;
+	if(lua_isnil(l, idx)) return NetMauMau::Common::ICardPtr();
 
-	const NetMauMau::Common::ICard *c = 0L;
+	NetMauMau::Common::ICardPtr c, *d;
 
 	lua_pushnil(l);
 
 	while(lua_next(l, idx) != 0) {
 
 		if(!std::strncmp(INTERFACE, lua_tostring(l, -2), 9)) {
-			c = *reinterpret_cast<const NetMauMau::Common::ICard **>(lua_touserdata(l, -1));
+			d = reinterpret_cast<NetMauMau::Common::ICardPtr *>(lua_touserdata(l, -1));
+			c = *d;
+			d->~SmartPtr<NetMauMau::Common::ICard>();
 		}
 
 		lua_pop(l, 1);

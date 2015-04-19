@@ -37,7 +37,7 @@ namespace Event {
 class IEventHandler {
 	DISALLOW_COPY_AND_ASSIGN(IEventHandler)
 public:
-	typedef std::vector<Common::ICard *> CARDS;
+	typedef std::vector<Common::ICardPtr> CARDS;
 
 	virtual ~IEventHandler() {}
 

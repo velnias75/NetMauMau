@@ -4,7 +4,8 @@ noinst_LTLIBRARIES = libnetmaumaucommon_private.la
 BUILT_SOURCES = ai-icon.h
 
 noinst_HEADERS = ai-icon.h abstractconnectionimpl.h abstractsocketimpl.h base64.h basiclogger.h \
-	errorstring.h icardfactory.h iplayer.h logger.h mimemagic.h pngcheck.h random_gen.h 
+	errorstring.h icardfactory.h iplayer.h logger.h mimemagic.h pngcheck.h random_gen.h \
+	smartptr.h
 
 MAINTAINERCLEANFILES = ai-icon.h
 

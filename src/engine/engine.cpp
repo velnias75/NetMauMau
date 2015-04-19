@@ -128,8 +128,8 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 			m_dirChangeEnabled = m_players.size() > 2;
 
 			if(player->isAIPlayer()) {
-				getEventHandler().getConnection()->addAIPlayers(std::vector<std::string>(1,
-						player->getName()));
+				getEventHandler().getConnection()->addAIPlayers(std::vector<std::string>
+						(1, player->getName()));
 			}
 
 			player->setRuleSet(getRuleSet());
@@ -183,7 +183,7 @@ bool Engine::distributeCards() throw(Common::Exception::SocketException) {
 
 	if(m_state == NOCARDS || m_state == ACCEPT_PLAYERS) {
 
-		std::vector<std::vector<Common::ICard *> > cards(m_players.size());
+		std::vector<NetMauMau::Player::IPlayer::CARDS> cards(m_players.size());
 
 		const std::size_t icc = getRuleSet()->initialCardCount();
 
@@ -283,7 +283,7 @@ bool Engine::nextTurn() {
 
 		if(m_cfg.getNextMessage()) getEventHandler().nextPlayer(player);
 
-		const Common::ICard *uc = m_talon->getUncoveredCard();
+		const Common::ICardPtr uc(m_talon->getUncoveredCard());
 
 		if(!m_initialChecked) {
 			getRuleSet()->checkInitial(player, uc);
@@ -298,8 +298,8 @@ bool Engine::nextTurn() {
 		assert(uc->getRank() != Common::ICard::JACK || (uc->getRank() == Common::ICard::JACK &&
 				((m_jackMode || m_initialJack) && js != Common::ICard::SUIT_ILLEGAL)));
 
-		Common::ICard *pc = !csuspend ? player->requestCard(uc, (m_jackMode || m_initialJack)
-							? &js : 0L, getRuleSet()->takeCardCount()) : 0L;
+		Common::ICardPtr pc(!csuspend ? player->requestCard(uc, (m_jackMode || m_initialJack)
+							? &js : 0L, getRuleSet()->takeCardCount()) : Common::ICardPtr());
 
 		if(m_initialJack && !pc) m_jackMode = true;
 
@@ -316,7 +316,7 @@ sevenRule:
 			if(!pc) {
 
 				if(!noCardOk) {
-					player->receiveCard(pc = m_talon->takeCard());
+					player->receiveCard((pc = m_talon->takeCard()));
 					getEventHandler().playerPicksCard(player);
 				}
 
@@ -326,17 +326,14 @@ sevenRule:
 
 				if(reason == Player::IPlayer::SUSPEND) {
 					suspends(player);
-					pc = 0L;
+					pc = Common::ICardPtr();
 				} else if(!player->isAIPlayer() && reason == Player::IPlayer::NOMATCH) {
-
 					pc = player->requestCard(uc, m_jackMode ? &js : 0L,
 											 getRuleSet()->takeCardCount());
 				}
 
 			} else if(pc->getSuit() == Common::ICard::SUIT_ILLEGAL) {
-
 				pc = player->requestCard(uc, m_jackMode ? &js : 0L, getRuleSet()->takeCardCount());
-
 				goto sevenRule;
 			}
 
@@ -366,16 +363,16 @@ sevenRule:
 
 					case Player::IPlayer::NOMATCH:
 
-						player->receiveCard(pc = m_talon->takeCard());
+						player->receiveCard((pc = m_talon->takeCard()));
 						getEventHandler().playerPicksCard(player, pc);
 
 						suspend = true;
-						pc = getRuleSet()->suspendIfNoMatchingCard() || decidedSuspend ? 0L : pc;
-
+						pc = getRuleSet()->suspendIfNoMatchingCard() ||
+							 decidedSuspend ? Common::ICardPtr() : pc;
 						break;
 
 					default:
-						pc = 0L;
+						pc = Common::ICardPtr();
 						break;
 					}
 				}

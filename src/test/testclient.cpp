@@ -23,6 +23,7 @@
 #include "testclient.h"
 
 #include "cardtools.h"
+#include "smartptr.h"
 
 namespace {
 #ifndef DISABLE_ANSI

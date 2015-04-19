@@ -42,28 +42,13 @@ const NetMauMau::Common::ICard::SUIT SUIT[4] = {
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-struct cardGreater : std::binary_function < NetMauMau::Common::ICard *, NetMauMau::Common::ICard *,
-		bool > {
-	bool operator()(const NetMauMau::Common::ICard *x, NetMauMau::Common::ICard *y) const {
+struct cardGreater : std::binary_function < NetMauMau::Common::ICardPtr,
+		NetMauMau::Common::ICardPtr, bool > {
+	bool operator()(const NetMauMau::Common::ICardPtr &x,
+					const NetMauMau::Common::ICardPtr &y) const {
 		return !(x->getPoints() < y->getPoints());
 	}
 };
-
-#if 0
-struct playedOutSuit : std::binary_function<std::string, NetMauMau::Common::ICard::SUIT, bool> {
-	bool operator()(const std::string &desc, NetMauMau::Common::ICard::SUIT suit) const {
-
-		NetMauMau::Common::ICard::RANK r = NetMauMau::Common::ICard::RANK_ILLEGAL;
-		NetMauMau::Common::ICard::SUIT s = NetMauMau::Common::ICard::SUIT_ILLEGAL;
-
-		if(NetMauMau::Common::parseCardDesc(desc, &s, &r)) {
-			return s == suit;
-		}
-
-		return false;
-	}
-};
-#endif
 
 struct playedOutRank : std::binary_function<std::string, NetMauMau::Common::ICard::RANK, bool> {
 	bool operator()(const std::string &desc, NetMauMau::Common::ICard::RANK rank) const {
@@ -79,18 +64,18 @@ struct playedOutRank : std::binary_function<std::string, NetMauMau::Common::ICar
 	}
 };
 
-struct pointSum : std::binary_function<std::size_t, NetMauMau::Common::ICard *, std::size_t> {
-	std::size_t operator()(std::size_t i, const NetMauMau::Common::ICard *c) const {
+struct pointSum : std::binary_function<std::size_t, NetMauMau::Common::ICardPtr, std::size_t> {
+	std::size_t operator()(std::size_t i, const NetMauMau::Common::ICardPtr &c) const {
 		return i + c->getPoints();
 	}
 };
 
-struct _isSpecialRank : std::binary_function < NetMauMau::Common::ICard *,
+struct _isSpecialRank : std::binary_function < NetMauMau::Common::ICardPtr,
 		NetMauMau::Common::ICard::RANK, bool > {
 
 	explicit _isSpecialRank(bool nineIsEight) : m_nineIsEight(nineIsEight) {}
 
-	bool operator()(const NetMauMau::Common::ICard *c, NetMauMau::Common::ICard::RANK r) const {
+	bool operator()(const NetMauMau::Common::ICardPtr &c, NetMauMau::Common::ICard::RANK r) const {
 		return m_nineIsEight && r == NetMauMau::Common::ICard::EIGHT ?
 			   (c->getRank() == NetMauMau::Common::ICard::EIGHT ||
 				c->getRank() == NetMauMau::Common::ICard::NINE) : c->getRank() == r;
@@ -100,23 +85,23 @@ private:
 	bool m_nineIsEight;
 };
 
-struct _pushIfPossible : std::unary_function<NetMauMau::Common::ICard *, void> {
+struct _pushIfPossible : std::unary_function<NetMauMau::Common::ICardPtr, void> {
 
 	inline explicit _pushIfPossible(NetMauMau::Player::IPlayer::CARDS &c,
-									const NetMauMau::Common::ICard *const uc,
+									const NetMauMau::Common::ICardPtr &uc,
 									const NetMauMau::RuleSet::IRuleSet *const rs,
 									const NetMauMau::Common::ICard::SUIT *const s) : cards(c),
 		uncoveredCard(uc), ruleset(rs), suit(s), aceRoundRank(rs->getAceRoundRank()),
 		ucRank(uc->getRank()), isAceRound(rs->isAceRound()) {}
 
-	inline void operator()(NetMauMau::Common::ICard *card) const {
+	inline void operator()(const NetMauMau::Common::ICardPtr &card) const {
 
 		if(suit && card->getSuit() != *suit) return;
 
 		const NetMauMau::Common::ICard::RANK rank = card->getRank();
 
 		const bool accepted = isAceRound ? rank == aceRoundRank :
-							  ruleset->checkCard(card, uncoveredCard);
+							  ruleset->checkCard(NetMauMau::Common::ICardPtr(card), uncoveredCard);
 
 		const bool jack = (rank == NetMauMau::Common::ICard::JACK &&
 						   ucRank != NetMauMau::Common::ICard::JACK) && !isAceRound;
@@ -127,7 +112,7 @@ struct _pushIfPossible : std::unary_function<NetMauMau::Common::ICard *, void> {
 	NetMauMau::Player::IPlayer::CARDS &cards;
 
 private:
-	const NetMauMau::Common::ICard *const uncoveredCard;
+	const NetMauMau::Common::ICardPtr uncoveredCard;
 	const NetMauMau::RuleSet::IRuleSet *const ruleset;
 	const NetMauMau::Common::ICard::SUIT *const suit;
 	NetMauMau::Common::ICard::RANK aceRoundRank;
@@ -142,7 +127,7 @@ using namespace NetMauMau::Player;
 
 bool StdPlayer::m_jackPlayed = false;
 
-bool StdPlayer::_hasRankPath::operator()(const NetMauMau::Common::ICard *c) const {
+bool StdPlayer::_hasRankPath::operator()(const NetMauMau::Common::ICardPtr &c) const {
 
 	bool hrp = false;
 
@@ -209,7 +194,7 @@ void StdPlayer::notifyCardCountChange() {
 	if(m_cco) m_cco->cardCountChanged(this);
 }
 
-void StdPlayer::receiveCard(NetMauMau::Common::ICard *card) {
+void StdPlayer::receiveCard(const NetMauMau::Common::ICardPtr &card) {
 
 	if(card) {
 		m_cards.push_back(card);
@@ -247,23 +232,23 @@ void StdPlayer::countSuits(SUITCOUNT *suitCount, const CARDS &myCards) const {
 	if(!noCards) std::sort(suitCount, suitCount + 4);
 }
 
-NetMauMau::Common::ICard *
-StdPlayer::hasRankPath(const NetMauMau::Common::ICard *uc, NetMauMau::Common::ICard::SUIT s,
+NetMauMau::Common::ICardPtr
+StdPlayer::hasRankPath(const NetMauMau::Common::ICardPtr &uc, NetMauMau::Common::ICard::SUIT s,
 					   NetMauMau::Common::ICard::RANK r, const CARDS &cards, bool nineIsEight) {
 
 	CARDS mCards(cards);
 
 	if(mCards.size() > 1) {
 
-		const CARDS::iterator
-		&e(std::partition(mCards.begin(), mCards.end(), std::bind2nd(_isSpecialRank(nineIsEight),
-						  r)));
+		const CARDS::iterator &e(std::partition(mCards.begin(), mCards.end(),
+												std::bind2nd(_isSpecialRank(nineIsEight), r)));
 
 		if(std::distance(mCards.begin(), e)) {
 
 			CARDS::value_type f_src(NetMauMau::Common::findSuit(uc->getSuit(), mCards.begin(), e));
 
 			if(f_src) {
+
 				CARDS::value_type f_dest(NetMauMau::Common::findSuit(s, mCards.begin(), e));
 
 				if(f_dest) return f_src;
@@ -271,10 +256,10 @@ StdPlayer::hasRankPath(const NetMauMau::Common::ICard *uc, NetMauMau::Common::IC
 		}
 	}
 
-	return 0L;
+	return NetMauMau::Common::ICardPtr();
 }
 
-NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard *uc,
+NetMauMau::Common::ICardPtr StdPlayer::findBestCard(const NetMauMau::Common::ICardPtr &uc,
 		const NetMauMau::Common::ICard::SUIT *js, bool noJack) const {
 
 	CARDS myCards(m_cards);
@@ -285,7 +270,7 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 											 NetMauMau::Common::ICard::JACK)), myCards.end());
 	}
 
-	NetMauMau::Common::ICard *bestCard = 0L;
+	NetMauMau::Common::ICardPtr bestCard;
 
 	if(m_playedOutCards.size() > (4 * getTalonFactor()) &&
 			uc->getRank() == NetMauMau::Common::ICard::SEVEN) {
@@ -294,8 +279,8 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 								 std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit), *js)) :
 								 myCards.end());
 
-		const CARDS::value_type f = NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN,
-									myCards.begin(), e);
+		const CARDS::value_type f =
+			NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN, myCards.begin(), e);
 
 		if(f) {
 			bestCard = f;
@@ -312,7 +297,8 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 
 		const CARDS::value_type nine = m_dirChgEnabled ?
 									   NetMauMau::Common::findRank(NetMauMau::Common::ICard::NINE,
-											   myCards.begin(), myCards.end()) : 0L;
+											   myCards.begin(), myCards.end()) :
+									   NetMauMau::Common::ICardPtr();
 
 		const CARDS::value_type seven = NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN,
 										myCards.begin(), myCards.end());
@@ -340,8 +326,8 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 											suitCount[p].suit));
 
 				const CARDS::value_type f =
-					NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN, myCards.begin(),
-												myCards.end());
+					NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN,
+												myCards.begin(), myCards.end());
 
 				if(f) {
 					m_powerSuit = f->getSuit();
@@ -361,10 +347,10 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 
 		if(!bestCard) {
 
-			const CARDS::iterator
-			&e(std::partition(myCards.begin(), myCards.end(),
-							  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-										   NetMauMau::Common::ICard::SEVEN)));
+			const CARDS::iterator &e(std::partition(
+										 myCards.begin(), myCards.end(),
+										 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+												 NetMauMau::Common::ICard::SEVEN)));
 
 			const CARDS::value_type f = NetMauMau::Common::findSuit(js ? *js : uc->getSuit(),
 										myCards.begin(), e);
@@ -433,9 +419,10 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 								  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
 											   NetMauMau::Common::ICard::SEVEN)));
 
-				if(!noJack) std::partition(e, myCards.end(), std::not1
-											   (std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-													   NetMauMau::Common::ICard::JACK)));
+				if(!noJack) std::partition(e, myCards.end(),
+											   std::not1(std::bind2nd
+														 (std::ptr_fun(NetMauMau::Common::isRank),
+														  NetMauMau::Common::ICard::JACK)));
 
 				const CARDS::value_type f = NetMauMau::Common::findSuit(js ? *js : uc->getSuit(),
 											myCards.begin(), myCards.end());
@@ -449,8 +436,8 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 
 		m_tryAceRound = std::count_if(myCards.begin(), myCards.end(),
 									  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-											  m_ruleset->getAceRoundRank())) >
-						(m_tryAceRound ? 0 : 1);
+											  m_ruleset->getAceRoundRank()))
+						> (m_tryAceRound ? 0 : 1);
 
 		if(m_tryAceRound) {
 			std::partition(myCards.begin(), myCards.end(),
@@ -481,32 +468,35 @@ NetMauMau::Common::ICard *StdPlayer::findBestCard(const NetMauMau::Common::ICard
 	return bestCard;
 }
 
-NetMauMau::Common::ICard *StdPlayer::requestCard(const NetMauMau::Common::ICard *uc,
+NetMauMau::Common::ICardPtr StdPlayer::requestCard(const NetMauMau::Common::ICardPtr &uc,
 		const NetMauMau::Common::ICard::SUIT *js, std::size_t) const {
 
 	if(m_ruleset) {
 		if(m_cards.size() == 1 &&
 				!(uc->getRank() == NetMauMau::Common::ICard::JACK &&
 				  (*m_cards.begin())->getRank() == NetMauMau::Common::ICard::JACK)) {
-			return m_ruleset->checkCard(uc, *m_cards.begin()) ? *m_cards.begin() : 0L;
+			return m_ruleset->checkCard(uc, NetMauMau::Common::ICardPtr(*m_cards.begin())) ?
+				   NetMauMau::Common::ICardPtr(*m_cards.begin()) : NetMauMau::Common::ICardPtr();
 		} else if(m_cards.size() == 1) {
-			return 0L;
+			return NetMauMau::Common::ICardPtr();
 		}
 	}
 
-	NetMauMau::Common::ICard *bestCard = findBestCard(uc, js, false);
+	NetMauMau::Common::ICardPtr bestCard = findBestCard(uc, js, false);
 
 	if(bestCard && bestCard->getRank() == NetMauMau::Common::ICard::JACK &&
 			uc->getRank() == NetMauMau::Common::ICard::JACK) {
 		bestCard = findBestCard(uc, js, true);
 	}
 
-	return m_ruleset ? (m_ruleset->checkCard(uc, bestCard) ? bestCard : 0L) : bestCard;
+	return m_ruleset ? (m_ruleset->checkCard(uc, NetMauMau::Common::ICardPtr(bestCard)) ?
+						NetMauMau::Common::ICardPtr(bestCard) : NetMauMau::Common::ICardPtr()) :
+			   NetMauMau::Common::ICardPtr(bestCard);
 }
 
 NetMauMau::Common::ICard::SUIT
-StdPlayer::getJackChoice(const NetMauMau::Common::ICard *uncoveredCard,
-						 const NetMauMau::Common::ICard *playedCard) const {
+StdPlayer::getJackChoice(const NetMauMau::Common::ICardPtr &uncoveredCard,
+						 const NetMauMau::Common::ICardPtr &playedCard) const {
 
 	if(m_powerSuit != NetMauMau::Common::ICard::SUIT_ILLEGAL) {
 
@@ -522,9 +512,8 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICard *uncoveredCard,
 	if(m_cards.size() == 2 && NetMauMau::Common::findRank(NetMauMau::Common::ICard::JACK,
 			m_cards.begin(), m_cards.end())) {
 
-		const CARDS::const_iterator &f(std::find_if(m_cards.begin(), m_cards.end(),
-									   std::not1(std::bind2nd(
-											   std::ptr_fun(NetMauMau::Common::isRank),
+		const CARDS::const_iterator &f(std::find_if(m_cards.begin(), m_cards.end(), std::not1
+									   (std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
 											   NetMauMau::Common::ICard::JACK))));
 
 		if(f != m_cards.end()) {
@@ -535,7 +524,7 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICard *uncoveredCard,
 
 	if(m_cards.size() < 8) {
 
-		const NetMauMau::Common::ICard *bc = 0L;
+		NetMauMau::Common::ICardPtr bc;
 
 		if((bc = findBestCard(uncoveredCard, 0L, true)) &&
 				bc->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL) {
@@ -582,13 +571,11 @@ NetMauMau::Common::ICard::SUIT StdPlayer::getMaxPlayedOffSuit(CARDS::difference_
 		NetMauMau::Common::ICard::RANK r;
 
 		if(NetMauMau::Common::parseCardDesc(*i, &s, &r)) {
-			pcVec.push_back(NetMauMau::StdCardFactory().create(s, r));
+			pcVec.push_back(NetMauMau::Common::ICardPtr(NetMauMau::StdCardFactory().create(s, r)));
 		}
 	}
 
 	countSuits(poSuitCount, pcVec);
-
-	for(CARDS::const_iterator i(pcVec.begin()); i != pcVec.end(); ++i) delete *i;
 
 	if(count) *count = poSuitCount[0].count;
 
@@ -610,7 +597,7 @@ NetMauMau::Common::ICard::SUIT StdPlayer::findJackChoice() const {
 	}
 }
 
-IPlayer::REASON StdPlayer::getNoCardReason(const NetMauMau::Common::ICard *,
+IPlayer::REASON StdPlayer::getNoCardReason(const NetMauMau::Common::ICardPtr &,
 		const NetMauMau::Common::ICard::SUIT *) const {
 	return m_cards.empty() ? MAUMAU : NOMATCH;
 }
@@ -653,7 +640,7 @@ std::size_t StdPlayer::getPoints() const {
 	return static_cast<std::size_t>(std::accumulate(m_cards.begin(), m_cards.end(), 0, pointSum()));
 }
 
-IPlayer::CARDS StdPlayer::getPossibleCards(const NetMauMau::Common::ICard *uncoveredCard,
+IPlayer::CARDS StdPlayer::getPossibleCards(const NetMauMau::Common::ICardPtr &uncoveredCard,
 		const NetMauMau::Common::ICard::SUIT *suit) const {
 
 	CARDS posCards;
@@ -682,4 +669,4 @@ std::size_t StdPlayer::getTalonFactor() const {
 	return m_engineCfg ? m_engineCfg->getTalonFactor() : 1;
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

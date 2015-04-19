@@ -23,19 +23,17 @@
 #include <stack>
 #include <vector>
 
-#include "linkercontrol.h"
+#include "icard.h"
+#include "smartptr.h"
 
 namespace NetMauMau {
 
 class ICardFactory;
 class ITalonChange;
 
-namespace Common {
-class ICard;
-}
-
 class Talon {
 	DISALLOW_COPY_AND_ASSIGN(Talon)
+	typedef std::vector<Common::ICardPtr> CARDS;
 public:
 	explicit Talon(const ITalonChange *tchg, std::size_t factor) throw();
 	~Talon();
@@ -44,7 +42,7 @@ public:
 		return m_cardStack.empty();
 	}
 
-	inline Common::ICard *top() const {
+	inline Common::ICardPtr top() const {
 		return m_cardStack.top();
 	}
 
@@ -52,25 +50,26 @@ public:
 		m_cardStack.pop();
 	}
 
-	Common::ICard *uncoverCard();
+	Common::ICardPtr uncoverCard();
 
-	inline Common::ICard *getUncoveredCard() const {
+	inline Common::ICardPtr getUncoveredCard() const {
 		return m_uncovered.top();
 	}
 
-	void playCard(Common::ICard *card);
+	void playCard(const Common::ICardPtr &card);
 
-	Common::ICard *takeCard();
-
-private:
-	typedef std::vector<Common::ICard *> CARDS;
-	CARDS createCards(std::size_t factor) const throw();
+	Common::ICardPtr takeCard();
 
 private:
-	mutable CARDS m_allCards;
+	typedef std::stack<CARDS::value_type, CARDS> CARDSTACK;
+
+	static CARDSTACK::container_type createCards(std::size_t factor) throw();
+
+private:
+// 	mutable CARDS m_allCards;
 	const ITalonChange *m_talonChangeListener;
-	std::stack<Common::ICard *, CARDS> m_cardStack;
-	std::stack<Common::ICard *, CARDS> m_uncovered;
+	CARDSTACK m_cardStack;
+	CARDSTACK m_uncovered;
 };
 
 }

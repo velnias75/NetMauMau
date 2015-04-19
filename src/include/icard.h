@@ -100,6 +100,10 @@ protected:
 	explicit ICard() {}
 };
 
+template<class> class SmartPtr;
+
+typedef SmartPtr<ICard> ICardPtr;
+
 }
 
 }

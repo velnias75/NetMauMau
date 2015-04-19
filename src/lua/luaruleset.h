@@ -41,15 +41,15 @@ public:
 	virtual ~LuaRuleSet();
 
 	virtual void checkInitial(const Player::IPlayer *player,
-							  const Common::ICard *playedCard) throw(Lua::Exception::LuaException);
-	virtual bool checkCard(const Player::IPlayer *player, const Common::ICard *uncoveredCard,
-						   const Common::ICard *playedCard,
+							  const Common::ICardPtr &playedCard) throw(Lua::Exception::LuaException);
+	virtual bool checkCard(const Player::IPlayer *player, const Common::ICardPtr &uncoveredCard,
+						   const Common::ICardPtr &playedCard,
 						   bool ai) throw(Lua::Exception::LuaException);
-	virtual bool checkCard(const Common::ICard *uncoveredCard,
-						   const Common::ICard *playedCard) const
+	virtual bool checkCard(const Common::ICardPtr &uncoveredCard,
+						   const Common::ICardPtr &playedCard) const
 	throw(Lua::Exception::LuaException);
 
-	virtual std::size_t lostPointFactor(const Common::ICard *uncoveredCard) const
+	virtual std::size_t lostPointFactor(const Common::ICardPtr &uncoveredCard) const
 	throw(Lua::Exception::LuaException);
 
 	virtual bool hasToSuspend() const throw(Lua::Exception::LuaException);

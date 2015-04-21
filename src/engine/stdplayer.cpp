@@ -144,7 +144,7 @@ StdPlayer::StdPlayer(const std::string &name) : IPlayer(), m_name(name), m_cards
 	m_cardsTaken(false), m_ruleset(0), m_playerHasFewCards(false),
 	m_powerSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL), m_powerPlay(false), m_tryAceRound(false),
 	m_nineIsEight(false), m_leftCount(0), m_rightCount(0), m_dirChgEnabled(false),
-	m_playerCount(0), m_engineCfg(0L), m_cco(0L) {
+	m_playerCount(0), m_engineCfg(0L), m_cardCountObserver(0L) {
 	m_cards.reserve(32);
 }
 
@@ -187,11 +187,11 @@ void StdPlayer::setEngineConfig(const NetMauMau::EngineConfig *engineCfg) {
 }
 
 void StdPlayer::setCardCountObserver(const NetMauMau::ICardCountObserver *cco) {
-	m_cco = cco;
+	m_cardCountObserver = cco;
 }
 
 void StdPlayer::notifyCardCountChange() {
-	if(m_cco) m_cco->cardCountChanged(this);
+	if(m_cardCountObserver) m_cardCountObserver->cardCountChanged(this);
 }
 
 void StdPlayer::receiveCard(const NetMauMau::Common::ICardPtr &card) {
@@ -669,4 +669,4 @@ std::size_t StdPlayer::getTalonFactor() const {
 	return m_engineCfg ? m_engineCfg->getTalonFactor() : 1;
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

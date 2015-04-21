@@ -54,7 +54,7 @@ cppcheck:
 	$(CPPCHECK) $(srcdir)/src -q --inline-suppr --enable=style,performance \
 		--std=posix --std=c++03 --template="{file}:{line}: {severity}: {message} ({id})" \
 		--inconclusive -I$(builddir) -I$(srcdir)/src/include -I$(srcdir)/src/common \
-		-I$(srcdir)/src/sqlite -I$(srcdir)/src/lua -I$(srcdir)/src/engine \
-		-I$(srcdir)/src/server -I$(srcdir)/src/client -I$(srcdir)/src/test \
-		-i$(srcdir)/src/test
+		-I$(srcdir)/src/sqlite -I$(srcdir)/src/lua -I$(srcdir)/src/aidt \
+		-I$(srcdir)/src/engine -I$(srcdir)/src/server -I$(srcdir)/src/client \
+		-I$(srcdir)/src/test -i$(srcdir)/src/test
 endif

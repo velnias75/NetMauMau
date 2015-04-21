@@ -33,7 +33,6 @@ extern "C" {
 #include "smartptr.h"
 #include "iplayer.h"
 #include "logger.h"
-#include "icard.h"
 
 namespace {
 const char *INTERFACE = "INTERFACE";

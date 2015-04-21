@@ -66,7 +66,6 @@ private:
 	static CARDSTACK::container_type createCards(std::size_t factor) throw();
 
 private:
-// 	mutable CARDS m_allCards;
 	const ITalonChange *m_talonChangeListener;
 	CARDSTACK m_cardStack;
 	CARDSTACK m_uncovered;

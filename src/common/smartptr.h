@@ -37,7 +37,7 @@ public:
 
 	explicit SmartPtr(const T *p = 0L);
 
-	SmartPtr(const SmartPtr &o) throw() : m_refCounter(0L), m_crp(o.m_crp) {
+	SmartPtr(const SmartPtr &o) throw() : m_refCounter(0L), m_constRawPtr(o.m_constRawPtr) {
 		acquire(o.m_refCounter);
 	}
 
@@ -47,7 +47,7 @@ public:
 
 	SmartPtr &operator=(const T *p) {
 		release();
-		m_crp = p;
+		m_constRawPtr = p;
 		return *this;
 	}
 
@@ -55,7 +55,7 @@ public:
 
 	template<class O> friend class SmartPtr;
 
-	template<class O> SmartPtr(const SmartPtr<O> &o) throw() : m_crp(o.m_crp) {
+	template<class O> SmartPtr(const SmartPtr<O> &o) throw() : m_constRawPtr(o.m_constRawPtr) {
 		acquire(o.m_refCounter);
 	}
 
@@ -64,22 +64,22 @@ public:
 		if(this != &o) {
 			release();
 			acquire(o.m_refCounter);
-			m_crp = o.m_crp;
+			m_constRawPtr = o.m_constRawPtr;
 		}
 
 		return *this;
 	}
 
 	T &operator*() const throw() {
-		return m_refCounter ? *m_refCounter->m_ptr : *m_crp;
+		return m_refCounter ? *m_refCounter->m_ptr : *m_constRawPtr;
 	}
 
 	const T *operator->() const throw() {
-		return  m_refCounter ? m_refCounter->m_ptr : m_crp;
+		return  m_refCounter ? m_refCounter->m_ptr : m_constRawPtr;
 	}
 
 	operator bool() const throw() {
-		return this->operator const T * ();
+		return this->operator const T * () != 0L;
 	}
 
 	operator T *() const throw() {
@@ -87,11 +87,11 @@ public:
 	}
 
 	operator const T *() const throw() {
-		return m_refCounter ? m_refCounter->m_ptr : (m_crp ? m_crp : 0L);
+		return m_refCounter ? m_refCounter->m_ptr : (m_constRawPtr ? m_constRawPtr : 0L);
 	}
 
 	bool unique() const throw() {
-		return (m_refCounter ? m_refCounter->m_count == 1ULL : true);
+		return (m_refCounter ? m_refCounter->m_count == 1U : true);
 	}
 
 private:
@@ -106,26 +106,26 @@ private:
 
 private:
 	struct refCounter {
-		refCounter(T *p = 0L, unsigned long long int c = 1ULL) : m_ptr(p), m_count(c) {}
+		refCounter(T *p = 0L, unsigned int c = 1U) : m_ptr(p), m_count(c) {}
 		T *const m_ptr;
-		unsigned long long int m_count;
+		unsigned int m_count;
 	} *m_refCounter;
 
-	const T *m_crp;
+	const T *m_constRawPtr;
 };
 
 template<class T>
-SmartPtr<T>::SmartPtr(T *p) : m_refCounter(p ? new refCounter(p) : 0L), m_crp(0L) {}
+SmartPtr<T>::SmartPtr(T *p) : m_refCounter(p ? new refCounter(p) : 0L), m_constRawPtr(0L) {}
 
 template<class T>
-SmartPtr<T>::SmartPtr(const T *p) : m_refCounter(0L), m_crp(p) {}
+SmartPtr<T>::SmartPtr(const T *p) : m_refCounter(0L), m_constRawPtr(p) {}
 
 template<class T>
 void SmartPtr<T>::release() {
 
 	if(m_refCounter) {
 
-		if(--m_refCounter->m_count == 0ULL) {
+		if(--m_refCounter->m_count == 0U) {
 			delete m_refCounter->m_ptr;
 			delete m_refCounter;
 			m_refCounter = 0L;
@@ -139,7 +139,7 @@ SmartPtr<T> &SmartPtr<T>::operator=(const SmartPtr<T> &o) {
 	if(this != &o) {
 		release();
 		acquire(o.m_refCounter);
-		m_crp = o.m_crp;
+		m_constRawPtr = o.m_constRawPtr;
 	}
 
 	return *this;

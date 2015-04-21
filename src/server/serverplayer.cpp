@@ -24,7 +24,6 @@
 #include "serverplayerexception.h"
 #include "serverconnection.h"
 #include "cardtools.h"
-#include "smartptr.h"
 #include "iruleset.h"
 #include "engine.h"
 

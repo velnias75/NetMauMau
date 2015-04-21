@@ -61,7 +61,7 @@ const std::string SUIT[] _INIT_PRIO(101) = { SUIT_DIAMONDS, SUIT_HEARTS, SUIT_SP
 #pragma GCC diagnostic pop
 #endif
 
-const std::string IC("ILLEGAL_CARD");
+const std::string IC("ILLEGAL CARD");
 
 class _ICARD : public NetMauMau::Common::ICard {
 	DISALLOW_COPY_AND_ASSIGN(_ICARD)
@@ -87,7 +87,8 @@ public:
 
 } ILLEGAL_CARD;
 
-const std::map<const std::string, NetMauMau::Common::ICard::SUIT>::value_type SSP[] = {
+const std::map<const std::string, NetMauMau::Common::ICard::SUIT>::value_type
+SSP[] _INIT_PRIO(102) = {
 	std::make_pair(SUIT[2], NetMauMau::Common::ICard::SPADES),
 	std::make_pair(SUIT[3], NetMauMau::Common::ICard::CLUBS),
 	std::make_pair(SUIT[1], NetMauMau::Common::ICard::HEARTS),
@@ -151,7 +152,7 @@ std::string NetMauMau::Common::suitToSymbol(ICard::SUIT suit, bool ansi, bool en
 
 #ifndef DISABLE_ANSI
 
-	if(ansi && endansi) d.append("\x1B[39m");
+	if(ansi && endansi) d.append(ANSI_DFT);
 
 #endif
 
@@ -369,7 +370,7 @@ std::string NetMauMau::Common::createCardDesc(ICard::SUIT s, ICard::RANK v, bool
 
 #ifndef DISABLE_ANSI
 
-	if(ansi) d.append("\x1B[39m");
+	if(ansi) d.append(ANSI_DFT);
 
 #endif
 

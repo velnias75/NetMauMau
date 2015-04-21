@@ -155,7 +155,7 @@ private:
 	bool m_dirChgEnabled;
 	std::size_t m_playerCount;
 	const EngineConfig *m_engineCfg;
-	const ICardCountObserver *m_cco;
+	const ICardCountObserver *m_cardCountObserver;
 
 	static bool m_jackPlayed;
 };

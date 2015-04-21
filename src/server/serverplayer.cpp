@@ -27,6 +27,10 @@
 #include "iruleset.h"
 #include "engine.h"
 
+namespace {
+const std::string ILLEGAL_CARD(NetMauMau::Common::getIllegalCard()->description());
+}
+
 using namespace NetMauMau::Server;
 
 Player::Player(const std::string &name, int sockfd, Connection &con) : StdPlayer(name),
@@ -117,7 +121,7 @@ NetMauMau::Common::ICardPtr Player::requestCard(const NetMauMau::Common::ICardPt
 
 		if(offeredCard == "SUSPEND") {
 			return NetMauMau::Common::ICardPtr();
-		} else if(offeredCard == "ILLEGAL CARD") {
+		} else if(offeredCard == ILLEGAL_CARD) {
 			return NetMauMau::Common::ICardPtr(const_cast<const NetMauMau::Common::ICard *>
 											   (NetMauMau::Common::getIllegalCard()));
 		}

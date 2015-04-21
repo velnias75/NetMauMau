@@ -30,7 +30,7 @@ namespace {
 
 const NetMauMau::StdCardFactory CF;
 
-const NetMauMau::Common::ICardPtr _DECK[32] = {
+const NetMauMau::Common::ICardPtr _DECK[32] _INIT_PRIO(501) = {
 	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS,
 	NetMauMau::Common::ICard::SEVEN)),
 	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS,

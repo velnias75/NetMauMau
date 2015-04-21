@@ -79,7 +79,7 @@ public:
 	}
 
 	operator bool() const throw() {
-		return this->operator const T * () != 0L;
+		return !!(this->operator const T * ());
 	}
 
 	operator T *() const throw() {

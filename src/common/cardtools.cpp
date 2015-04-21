@@ -26,11 +26,11 @@
 namespace {
 
 #ifndef DISABLE_ANSI
-const std::string ANSI_RED("\x1B[31m");
-const std::string ANSI_DFT("\x1B[39m");
+const std::string ANSI_RED _INIT_PRIO(101) = "\x1B[31m";
+const std::string ANSI_DFT _INIT_PRIO(101) = "\x1B[39m";
 #else
-const std::string ANSI_RED;
-const std::string ANSI_DFT;
+const std::string ANSI_RED _INIT_PRIO(101);
+const std::string ANSI_DFT _INIT_PRIO(101);
 #endif
 
 #ifndef _WIN32
@@ -39,11 +39,24 @@ const std::string SERVER_EXE(std::string(NMM_EXE_PATH).append(1, '/').append(NMM
 const std::string SERVER_EXE(NMM_EXE_NAME);
 #endif
 
+#ifndef SUIT_DIAMONDS
+#define SUIT_DIAMONDS "\u2666"
+#endif
+#ifndef SUIT_HEARTS
+#define SUIT_HEARTS "\u2665"
+#endif
+#ifndef SUIT_SPADES
+#define SUIT_SPADES "\u2660"
+#endif
+#ifndef SUIT_CLUBS
+#define SUIT_CLUBS "\u2663"
+#endif
+
 #ifndef __clang__
 #pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
 #pragma GCC diagnostic push
 #endif
-const std::string SUIT[] = { "\u2666", "\u2665", "\u2660", "\u2663" };
+const std::string SUIT[] _INIT_PRIO(101) = { SUIT_DIAMONDS, SUIT_HEARTS, SUIT_SPADES, SUIT_CLUBS };
 #ifndef __clang__
 #pragma GCC diagnostic pop
 #endif

@@ -94,7 +94,7 @@ public:
 	 * @param ansi @c true if ANSI color code should be used, @c false otherwise
 	 * @return the textual description of the card
 	 */
-	virtual std::string description(bool ansi = false) const = 0;
+	virtual const std::string &description(bool ansi = false) const = 0;
 
 protected:
 	explicit ICard() {}

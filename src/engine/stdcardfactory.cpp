@@ -30,7 +30,9 @@ Common::ICard *StdCardFactory::create(Common::ICard::SUIT s, Common::ICard::RANK
 	return new StdCard(s, r);
 }
 
-StdCardFactory::StdCard::StdCard(ICard::SUIT s, ICard::RANK r) : ICard(), m_suit(s), m_rank(r) {}
+StdCardFactory::StdCard::StdCard(ICard::SUIT s, ICard::RANK r) : ICard(), m_suit(s), m_rank(r),
+	m_desc(Common::createCardDesc(m_suit, m_rank, false)),
+	m_descAnsi(Common::createCardDesc(m_suit, m_rank, true)) {}
 
 StdCardFactory::StdCard::~StdCard() {}
 
@@ -46,8 +48,8 @@ std::size_t StdCardFactory::StdCard::getPoints() const {
 	return Common::getCardPoints(m_rank);
 }
 
-std::string StdCardFactory::StdCard::description(bool ansi) const {
-	return Common::createCardDesc(m_suit, m_rank, ansi);
+const std::string &StdCardFactory::StdCard::description(bool ansi) const {
+	return !ansi ? m_desc : m_descAnsi;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

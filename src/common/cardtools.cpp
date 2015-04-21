@@ -48,6 +48,8 @@ const std::string SUIT[] = { "\u2666", "\u2665", "\u2660", "\u2663" };
 #pragma GCC diagnostic pop
 #endif
 
+const std::string IC("ILLEGAL_CARD");
+
 class _ICARD : public NetMauMau::Common::ICard {
 	DISALLOW_COPY_AND_ASSIGN(_ICARD)
 public:
@@ -66,8 +68,8 @@ public:
 		return 0;
 	}
 
-	virtual std::string description(bool) const {
-		return "ILLEGAL CARD";
+	virtual const std::string &description(bool) const {
+		return IC;
 	}
 
 } ILLEGAL_CARD;
@@ -91,31 +93,42 @@ const std::string *NetMauMau::Common::getSuitSymbols() {
 std::string NetMauMau::Common::suitToSymbol(ICard::SUIT suit, bool ansi, bool endansi) {
 
 	std::string d;
-	d.reserve(50);
+	d.reserve(20);
+
+#ifndef DISABLE_ANSI
+
+	if(ansi) {
+		switch(suit) {
+		case ICard::DIAMONDS:
+		case ICard::HEARTS:
+			d.append(ANSI_RED);
+			break;
+
+		case ICard::SPADES:
+		case ICard::CLUBS:
+		case ICard::SUIT_ILLEGAL:
+			d.append(ANSI_DFT);
+			break;
+		}
+	}
+
+#endif
 
 	switch(suit) {
 	case ICard::DIAMONDS:
-		if(ansi) d.append(ANSI_RED);
-
-		d.append("\u2666");
+		d.append(SUIT[0]);
 		break;
 
 	case ICard::HEARTS:
-		if(ansi) d.append(ANSI_RED);
-
-		d.append("\u2665");
+		d.append(SUIT[1]);
 		break;
 
 	case ICard::SPADES:
-		if(ansi) d.append(ANSI_DFT);
-
-		d.append("\u2660");
+		d.append(SUIT[2]);
 		break;
 
 	case ICard::CLUBS:
-		if(ansi) d.append(ANSI_DFT);
-
-		d.append("\u2663");
+		d.append(SUIT[3]);
 		break;
 
 	case ICard::SUIT_ILLEGAL:
@@ -266,7 +279,7 @@ NetMauMau::Common::ICard *NetMauMau::Common::getIllegalCard() {
 bool NetMauMau::Common::parseCardDesc(const std::string &desc, ICard::SUIT *suit,
 									  ICard::RANK *rank) {
 
-	if(desc == "ILLEGAL CARD") {
+	if(desc == IC) {
 		*suit = ICard::SUIT_ILLEGAL;
 		*rank = ICard::RANK_ILLEGAL;
 		return true;
@@ -276,7 +289,7 @@ bool NetMauMau::Common::parseCardDesc(const std::string &desc, ICard::SUIT *suit
 
 	if(p == std::string::npos || !suit || !rank) return false;
 
-	const std::string r(desc.substr(p + 1));
+	const std::string &r(desc.substr(p + 1));
 	const std::string::value_type rc(r[0]);
 
 	*suit = symbolToSuit(desc.substr(0, p));

@@ -42,11 +42,13 @@ private:
 		virtual RANK getRank() const _PURE;
 		virtual std::size_t getPoints() const _PURE;
 
-		virtual std::string description(bool ansi) const;
+		virtual const std::string &description(bool ansi) const _CONST;
 
 	private:
 		const ICard::SUIT m_suit;
 		const ICard::RANK m_rank;
+		const std::string m_desc;
+		const std::string m_descAnsi;
 	};
 };
 

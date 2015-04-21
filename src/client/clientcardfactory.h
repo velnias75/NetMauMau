@@ -42,7 +42,7 @@ private:
 		explicit Card(Common::ICard::SUIT s, ICard::RANK r, const std::string &desc);
 		virtual ~Card();
 
-		virtual std::string description(bool ansi = false) const;
+		virtual const std::string &description(bool ansi = false) const _CONST;
 		virtual std::size_t getPoints() const _PURE;
 
 		virtual SUIT getSuit() const _PURE;
@@ -52,6 +52,7 @@ private:
 		Common::ICard::SUIT m_suit;
 		Common::ICard::RANK m_rank;
 		std::string m_desc;
+		std::string m_descAnsi;
 	};
 
 	std::string m_cardDesc;

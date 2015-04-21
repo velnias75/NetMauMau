@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -41,7 +41,8 @@ NetMauMau::Common::ICard *CardFactory::create(NetMauMau::Common::ICard::SUIT,
 }
 
 CardFactory::Card::Card(NetMauMau::Common::ICard::SUIT s, NetMauMau::Common::ICard::RANK v,
-						const std::string &desc) : m_suit(s), m_rank(v), m_desc(desc) {}
+						const std::string &desc) : m_suit(s), m_rank(v), m_desc(desc),
+	m_descAnsi(NetMauMau::Common::createCardDesc(m_suit, m_rank, true)) {}
 
 CardFactory::Card::~Card() {}
 
@@ -49,8 +50,8 @@ std::size_t CardFactory::Card::getPoints() const {
 	return NetMauMau::Common::getCardPoints(m_rank);
 }
 
-std::string CardFactory::Card::description(bool ansi) const {
-	return ansi ? NetMauMau::Common::createCardDesc(m_suit, m_rank, ansi) : m_desc;
+const std::string &CardFactory::Card::description(bool ansi) const {
+	return !ansi ? m_desc : m_descAnsi;
 }
 
 NetMauMau::Common::ICard::SUIT CardFactory::Card::getSuit() const {

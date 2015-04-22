@@ -70,7 +70,7 @@ public:
 		return *this;
 	}
 
-	T &operator*() const throw() {
+	const T &operator*() const throw() {
 		return m_refCounter ? *m_refCounter->m_ptr : *m_constRawPtr;
 	}
 

@@ -24,4 +24,4 @@ libengine_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include \
 	-I$(top_srcdir)/src/lua $(GSL_CFLAGS) $(NO_RTTI_FLAGS)
 libengine_la_SOURCES = engineconfig.cpp stdcardfactory.cpp talon.cpp 
 libengine_la_LIBADD = ../lua/libluaruleset.la libengine_private.la libeventhandler.la \
-	../common/libnetmaumaucommon.la $(GSL_LIBS)
+	../sqlite/libsqlite.la ../common/libnetmaumaucommon.la $(GSL_LIBS)

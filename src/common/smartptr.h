@@ -41,9 +41,7 @@ public:
 		acquire(o.m_refCounter);
 	}
 
-	~SmartPtr() {
-		release();
-	}
+	~SmartPtr();
 
 	SmartPtr &operator=(const T *p) {
 		release();
@@ -119,6 +117,11 @@ SmartPtr<T>::SmartPtr(T *p) : m_refCounter(p ? new refCounter(p) : 0L), m_constR
 
 template<class T>
 SmartPtr<T>::SmartPtr(const T *p) : m_refCounter(0L), m_constRawPtr(p) {}
+
+template<class T>
+SmartPtr<T>::~SmartPtr() {
+	release();
+}
 
 template<class T>
 void SmartPtr<T>::release() {

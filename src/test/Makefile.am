@@ -30,14 +30,13 @@ test_netmaumau_CPPFLAGS = $(GSL)
 test_netmaumau_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/engine
 test_netmaumau_SOURCES = test_netmaumau.cpp testeventhandler.cpp
-test_netmaumau_LDADD = ../common/libnetmaumaucommon.la ../engine/libengine.la \
-	../sqlite/libsqlite.la
+test_netmaumau_LDADD = ../engine/libengine.la
 test_netmaumau_LDFLAGS = -no-install
 
-test_aidt_CPPFLAGS = -I$(top_srcdir)/src/aidt -I$(top_srcdir)/src/include \
-	-I$(top_srcdir)/src/common
+test_aidt_CPPFLAGS = $(GSL) -I$(top_srcdir)/src/aidt -I$(top_srcdir)/src/include \
+	-I$(top_srcdir)/src/common -I$(top_srcdir)/src/lua -I$(top_srcdir)/src/engine
 test_aidt_SOURCES = test_aidt.cpp
-test_aidt_LDADD = ../aidt/libaidt.la
+test_aidt_LDADD = ../engine/libengine.la ../aidt/libaidt.la
 test_aidt_LDFLAGS = -no-install
 
 if ENABLE_CLI_CLIENT

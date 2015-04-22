@@ -20,13 +20,38 @@
 #include <iostream>
 #include <cstdlib>
 
+#include "aistate.h"
+#include "cardtools.h"
+#include "luaruleset.h"
 #include "decisiontree.h"
+#include "luaexception.h"
+
+using namespace NetMauMau;
 
 int main(int, const char **) {
 
-	NetMauMau::Engine::AIDT::DecisionTree dt;
+	const char *luaRules = getenv("NETMAUMAU_RULES");
 
-	std::cout << dt.getCard()->description(true) << std::endl;
+	if(!luaRules) {
+		std::cerr << "No environment variable NETMAUMAU_RULES set" << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	try {
+
+		Engine::AIDT::AIState state(Player::IPlayer::CARDS(), Common::ICardPtr
+									(const_cast<const Common::ICard *>(Common::getIllegalCard())),
+									Common::SmartPtr<RuleSet::IRuleSet>
+									(new RuleSet::LuaRuleSet(luaRules, true)));
+
+		Engine::AIDT::DecisionTree dt(state);
+
+		std::cout << dt.getCard()->description(true) << std::endl;
+
+	} catch(const Lua::Exception::LuaException &e) {
+		std::cerr << e.what() << std::endl;
+		return EXIT_FAILURE;
+	}
 
 	return EXIT_SUCCESS;
 }

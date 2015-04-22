@@ -24,12 +24,16 @@
 
 using namespace NetMauMau::Engine::AIDT;
 
-DecisionTree::DecisionTree() :
-	m_rootCondition(NetMauMau::Common::SmartPtr<ICondition>(new JackOnlyCondition())) {}
+DecisionTree::DecisionTree(const AIState &state) :
+	m_rootCondition(NetMauMau::Common::SmartPtr<ICondition>(new JackOnlyCondition())),
+	m_state(state) {}
 
 DecisionTree::~DecisionTree() {}
 
-const NetMauMau::Common::ICardPtr &DecisionTree::getCard() {
+const NetMauMau::Common::ICardPtr &DecisionTree::getCard() const {
+
+	(*m_rootCondition)(m_state);
+
 	static NetMauMau::Common::ICardPtr IC(const_cast<const NetMauMau::Common::ICard *>
 										  (NetMauMau::Common::getIllegalCard()));
 	return IC;

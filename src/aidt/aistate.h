@@ -31,12 +31,26 @@ namespace AIDT {
 class AIState {
 	DISALLOW_COPY_AND_ASSIGN(AIState)
 public:
-	AIState();
+	AIState(const Player::IPlayer::CARDS &cards, const Common::ICardPtr &uc,
+			const RuleSet::IRuleSet *ruleSet);
 	~AIState();
 
-	const Player::IPlayer::CARDS &getCards() const;
-	const Common::ICardPtr &getUncoveredCard() const;
-	const RuleSet::IRuleSet *getRuleSet() const;
+	const Player::IPlayer::CARDS &getCards() const {
+		return m_cards;
+	}
+
+	const Common::ICardPtr &getUncoveredCard() const {
+		return m_uncoveredCard;
+	}
+
+	const RuleSet::IRuleSet *getRuleSet() const {
+		return m_ruleSet;
+	}
+
+private:
+	const Player::IPlayer::CARDS &m_cards;
+	const Common::ICardPtr &m_uncoveredCard;
+	const RuleSet::IRuleSet *const m_ruleSet;
 };
 
 }

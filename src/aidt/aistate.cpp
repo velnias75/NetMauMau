@@ -21,14 +21,11 @@
 
 using namespace NetMauMau::Engine::AIDT;
 
-AIState::AIState() {}
+AIState::AIState(const NetMauMau::Player::IPlayer::CARDS &cards,
+				 const NetMauMau::Common::ICardPtr &uc,
+				 const NetMauMau::RuleSet::IRuleSet *ruleSet) : m_cards(cards), m_uncoveredCard(uc),
+	m_ruleSet(ruleSet) {}
 
 AIState::~AIState() {}
-
-const NetMauMau::RuleSet::IRuleSet *AIState::getRuleSet() const {}
-
-const NetMauMau::Player::IPlayer::CARDS &AIState::getCards() const {}
-
-const NetMauMau::Common::ICardPtr &AIState::getUncoveredCard() const {}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

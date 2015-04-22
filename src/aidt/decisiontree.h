@@ -29,18 +29,20 @@ namespace Engine {
 
 namespace AIDT {
 
+class AIState;
 class ICondition;
 
 class DecisionTree {
 	DISALLOW_COPY_AND_ASSIGN(DecisionTree)
 public:
-	DecisionTree();
+	DecisionTree(const AIState &state);
 	~DecisionTree();
 
-	const Common::ICardPtr &getCard();
+	const Common::ICardPtr &getCard() const;
 
 private:
 	const Common::SmartPtr<ICondition> m_rootCondition;
+	const AIState &m_state;
 };
 
 }

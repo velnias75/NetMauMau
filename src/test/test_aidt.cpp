@@ -17,38 +17,18 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_ENGINE_AIDT_DECISIONTREE_H
-#define NETMAUMAU_ENGINE_AIDT_DECISIONTREE_H
+#include <iostream>
+#include <cstdlib>
 
-#include "icard.h"
-#include "smartptr.h"
+#include "decisiontree.h"
 
-namespace NetMauMau {
+int main(int, const char **) {
 
-namespace Engine {
+	NetMauMau::Engine::AIDT::DecisionTree dt;
 
-namespace AIDT {
+	std::cout << dt.getCard()->description(true) << std::endl;
 
-class ICondition;
-
-class DecisionTree {
-	DISALLOW_COPY_AND_ASSIGN(DecisionTree)
-public:
-	DecisionTree();
-	~DecisionTree();
-
-	const Common::ICardPtr &getCard();
-
-private:
-	const Common::SmartPtr<ICondition> m_rootCondition;
-};
-
+	return EXIT_SUCCESS;
 }
-
-}
-
-}
-
-#endif /* NETMAUMAU_ENGINE_AIDT_DECISIONTREE_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

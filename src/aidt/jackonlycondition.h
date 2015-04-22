@@ -17,11 +17,10 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_ENGINE_AIDT_DECISIONTREE_H
-#define NETMAUMAU_ENGINE_AIDT_DECISIONTREE_H
+#ifndef NETMAUMAU_ENGINE_AIDT_JACKONLYACTION_H
+#define NETMAUMAU_ENGINE_AIDT_JACKONLYACTION_H
 
-#include "icard.h"
-#include "smartptr.h"
+#include "icondition.h"
 
 namespace NetMauMau {
 
@@ -29,18 +28,13 @@ namespace Engine {
 
 namespace AIDT {
 
-class ICondition;
-
-class DecisionTree {
-	DISALLOW_COPY_AND_ASSIGN(DecisionTree)
+class JackOnlyCondition : public ICondition {
+	DISALLOW_COPY_AND_ASSIGN(JackOnlyCondition)
 public:
-	DecisionTree();
-	~DecisionTree();
+	JackOnlyCondition();
+	virtual ~JackOnlyCondition();
 
-	const Common::ICardPtr &getCard();
-
-private:
-	const Common::SmartPtr<ICondition> m_rootCondition;
+	virtual const Common::SmartPtr<IAction> &operator()(const AIState &state) const;
 };
 
 }
@@ -49,6 +43,6 @@ private:
 
 }
 
-#endif /* NETMAUMAU_ENGINE_AIDT_DECISIONTREE_H */
+#endif /* NETMAUMAU_ENGINE_AIDT_JACKONLYACTION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

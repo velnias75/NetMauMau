@@ -1,7 +1,10 @@
 noinst_LTLIBRARIES = libaidt.la
 
-noinst_HEADERS = decisiontree.h iaction.h icondition.h
+noinst_HEADERS = aistate.h decisiontree.h iaction.h icondition.h jackonlycondition.h \
+	playjackaction.h suspendaction.h
 
-libaidt_la_CPPFLAGS = -I$(top_srcdir)/src/include
+libaidt_la_CPPFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common
 libaidt_la_CXXFLAGS = $(NO_RTTI_FLAGS)
-libaidt_la_SOURCES = decisiontree.cpp
+libaidt_la_SOURCES = aistate.cpp decisiontree.cpp jackonlycondition.cpp playjackaction.cpp \
+	suspendaction.cpp
+libaidt_la_LIBADD = ../common/libnetmaumaucommon.la

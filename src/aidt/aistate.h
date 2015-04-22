@@ -17,11 +17,10 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_ENGINE_AIDT_DECISIONTREE_H
-#define NETMAUMAU_ENGINE_AIDT_DECISIONTREE_H
+#ifndef NETMAUMAU_ENGINE_AIDT_AISTATE_H
+#define NETMAUMAU_ENGINE_AIDT_AISTATE_H
 
-#include "icard.h"
-#include "smartptr.h"
+#include "iplayer.h"
 
 namespace NetMauMau {
 
@@ -29,18 +28,15 @@ namespace Engine {
 
 namespace AIDT {
 
-class ICondition;
-
-class DecisionTree {
-	DISALLOW_COPY_AND_ASSIGN(DecisionTree)
+class AIState {
+	DISALLOW_COPY_AND_ASSIGN(AIState)
 public:
-	DecisionTree();
-	~DecisionTree();
+	AIState();
+	~AIState();
 
-	const Common::ICardPtr &getCard();
-
-private:
-	const Common::SmartPtr<ICondition> m_rootCondition;
+	const Player::IPlayer::CARDS &getCards() const;
+	const Common::ICardPtr &getUncoveredCard() const;
+	const RuleSet::IRuleSet *getRuleSet() const;
 };
 
 }
@@ -49,6 +45,6 @@ private:
 
 }
 
-#endif /* NETMAUMAU_ENGINE_AIDT_DECISIONTREE_H */
+#endif /* ETMAUMAU_ENGINE_AIDT_AISTATE_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

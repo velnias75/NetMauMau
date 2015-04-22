@@ -1,4 +1,4 @@
-check_PROGRAMS = test_netmaumau
+check_PROGRAMS = test_netmaumau test_aidt
 noinst_SCRIPTS = stresstest.sh
 
 if ENABLE_CLI_CLIENT
@@ -33,6 +33,12 @@ test_netmaumau_SOURCES = test_netmaumau.cpp testeventhandler.cpp
 test_netmaumau_LDADD = ../common/libnetmaumaucommon.la ../engine/libengine.la \
 	../sqlite/libsqlite.la
 test_netmaumau_LDFLAGS = -no-install
+
+test_aidt_CPPFLAGS = -I$(top_srcdir)/src/aidt -I$(top_srcdir)/src/include \
+	-I$(top_srcdir)/src/common
+test_aidt_SOURCES = test_aidt.cpp
+test_aidt_LDADD = ../aidt/libaidt.la
+test_aidt_LDFLAGS = -no-install
 
 if ENABLE_CLI_CLIENT
 nmm_client_CPPFLAGS = -DCLIENTVERSION=$(CLIENTVERSION)

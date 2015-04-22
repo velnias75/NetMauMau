@@ -17,22 +17,35 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "decisiontree.h"
-
-#include "cardtools.h"
 #include "jackonlycondition.h"
+
+#include "playjackaction.h"
+#include "suspendaction.h"
+#include "aistate.h"
+
+#include "smartptr.h"
+
+namespace {
+const NetMauMau::Common::SmartPtr<NetMauMau::Engine::AIDT::IAction>
+PLAYJACKACTION(new NetMauMau::Engine::AIDT::PlayJackAction());
+
+const NetMauMau::Common::SmartPtr<NetMauMau::Engine::AIDT::IAction>
+SUSPENDACTION(new NetMauMau::Engine::AIDT::SuspendAction());
+}
 
 using namespace NetMauMau::Engine::AIDT;
 
-DecisionTree::DecisionTree() :
-	m_rootCondition(NetMauMau::Common::SmartPtr<ICondition>(new JackOnlyCondition())) {}
+JackOnlyCondition::JackOnlyCondition() : ICondition() {}
 
-DecisionTree::~DecisionTree() {}
+JackOnlyCondition::~JackOnlyCondition() {}
 
-const NetMauMau::Common::ICardPtr &DecisionTree::getCard() {
-	static NetMauMau::Common::ICardPtr IC(const_cast<const NetMauMau::Common::ICard *>
-										  (NetMauMau::Common::getIllegalCard()));
-	return IC;
+const NetMauMau::Common::SmartPtr<IAction> &
+JackOnlyCondition::operator()(const AIState &state) const {
+	return state.getRuleSet() ?
+		   ((state.getCards().size() == 1 &&
+			 !(state.getUncoveredCard()->getRank() == NetMauMau::Common::ICard::JACK &&
+			   (*(state.getCards()).begin())->getRank() == NetMauMau::Common::ICard::JACK))
+			? PLAYJACKACTION : SUSPENDACTION) : SUSPENDACTION; // <- find best card action
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

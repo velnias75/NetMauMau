@@ -33,7 +33,8 @@ class AIState {
 public:
 	AIState(const Player::IPlayer::CARDS &cards, const Common::ICardPtr &uc,
 			const RuleSet::IRuleSet *ruleSet);
-	~AIState();
+
+	~AIState() _CONST;
 
 	const Player::IPlayer::CARDS &getCards() const {
 		return m_cards;

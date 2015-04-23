@@ -21,8 +21,12 @@
 
 using namespace NetMauMau::Engine::AIDT;
 
-PlayJackAction::PlayJackAction() : IAction() {}
+PlayJackAction::PlayJackAction() : AbstractAction() {}
 
 PlayJackAction::~PlayJackAction() {}
+
+const IConditionPtr &PlayJackAction::operator()(const AIState &) const {
+	return AbstractAction::getNullCondition();
+}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

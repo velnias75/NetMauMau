@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_ENGINE_AIDT_SUSPENDACTION_H
 #define NETMAUMAU_ENGINE_AIDT_SUSPENDACTION_H
 
-#include "iaction.h"
+#include "abstractaction.h"
 
 namespace NetMauMau {
 
@@ -28,11 +28,13 @@ namespace Engine {
 
 namespace AIDT {
 
-class SuspendAction : public IAction {
+class SuspendAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(SuspendAction)
 public:
 	SuspendAction();
 	virtual ~SuspendAction();
+
+	virtual const IConditionPtr &operator()(const AIState &state) const _CONST;
 };
 
 }

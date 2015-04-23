@@ -17,29 +17,35 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "decisiontree.h"
+#ifndef NETMAUMAU_ENGINE_AIDT_ABSTRACTACTION_H
+#define NETMAUMAU_ENGINE_AIDT_ABSTRACTACTION_H
 
 #include "iaction.h"
-#include "cardtools.h"
-#include "jackonlycondition.h"
+#include "icondition.h"
 
-using namespace NetMauMau::Engine::AIDT;
+namespace NetMauMau {
 
-DecisionTree::DecisionTree(const AIState &state) :
-	m_rootCondition(IConditionPtr(new JackOnlyCondition())), m_state(state) {}
+namespace Engine {
 
-DecisionTree::~DecisionTree() {}
+namespace AIDT {
 
-const NetMauMau::Common::ICardPtr &DecisionTree::getCard() const {
+class AbstractAction : public IAction {
+	DISALLOW_COPY_AND_ASSIGN(AbstractAction)
+public:
+	virtual ~AbstractAction();
 
-	IConditionPtr cur(m_rootCondition);
-	IActionPtr act;
+protected:
+	AbstractAction();
 
-	while(cur && (act = (*cur)(m_state))) cur = (*act)(m_state);
+	static const IConditionPtr &getNullCondition() _CONST;
+};
 
-	static NetMauMau::Common::ICardPtr IC(const_cast<const NetMauMau::Common::ICard *>
-										  (NetMauMau::Common::getIllegalCard()));
-	return IC;
 }
+
+}
+
+}
+
+#endif /* NETMAUMAU_ENGINE_AIDT_ABSTRACTACTION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

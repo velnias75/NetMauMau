@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_ENGINE_AIDT_PLAYJACKACTION_H
 #define NETMAUMAU_ENGINE_AIDT_PLAYJACKACTION_H
 
-#include "iaction.h"
+#include "abstractaction.h"
 
 namespace NetMauMau {
 
@@ -28,11 +28,13 @@ namespace Engine {
 
 namespace AIDT {
 
-class PlayJackAction : public IAction {
+class PlayJackAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(PlayJackAction)
 public:
 	PlayJackAction();
 	virtual ~PlayJackAction();
+
+	virtual const IConditionPtr &operator()(const AIState &state) const _CONST;
 };
 
 }

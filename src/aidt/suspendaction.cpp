@@ -21,8 +21,12 @@
 
 using namespace NetMauMau::Engine::AIDT;
 
-SuspendAction::SuspendAction() : IAction() {}
+SuspendAction::SuspendAction() : AbstractAction() {}
 
 SuspendAction::~SuspendAction() {}
+
+const IConditionPtr &SuspendAction::operator()(const AIState &) const {
+	return AbstractAction::getNullCondition();
+}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

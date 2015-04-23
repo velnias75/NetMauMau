@@ -21,16 +21,19 @@
 
 #include "playjackaction.h"
 #include "suspendaction.h"
+#include "smartptr.h"
 #include "aistate.h"
 
-#include "smartptr.h"
-
 namespace {
-const NetMauMau::Common::SmartPtr<NetMauMau::Engine::AIDT::IAction>
+
+const NetMauMau::Engine::AIDT::IActionPtr NULLACTION;
+
+const NetMauMau::Engine::AIDT::IActionPtr
 PLAYJACKACTION(new NetMauMau::Engine::AIDT::PlayJackAction());
 
-const NetMauMau::Common::SmartPtr<NetMauMau::Engine::AIDT::IAction>
+const NetMauMau::Engine::AIDT::IActionPtr
 SUSPENDACTION(new NetMauMau::Engine::AIDT::SuspendAction());
+
 }
 
 using namespace NetMauMau::Engine::AIDT;
@@ -39,13 +42,12 @@ JackOnlyCondition::JackOnlyCondition() : ICondition() {}
 
 JackOnlyCondition::~JackOnlyCondition() {}
 
-const NetMauMau::Common::SmartPtr<IAction> &
-JackOnlyCondition::operator()(const AIState &state) const {
+const IActionPtr &JackOnlyCondition::operator()(const AIState &state) const {
 	return state.getRuleSet() ?
 		   ((state.getCards().size() == 1 &&
 			 !(state.getUncoveredCard()->getRank() == NetMauMau::Common::ICard::JACK &&
 			   (*(state.getCards()).begin())->getRank() == NetMauMau::Common::ICard::JACK))
-			? PLAYJACKACTION : SUSPENDACTION) : SUSPENDACTION; // <- find best card action
+			? PLAYJACKACTION : SUSPENDACTION) : NULLACTION; // <- find best card action
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

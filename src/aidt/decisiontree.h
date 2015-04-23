@@ -22,6 +22,7 @@
 
 #include "icard.h"
 #include "smartptr.h"
+#include "icondition.h"
 
 namespace NetMauMau {
 
@@ -30,7 +31,6 @@ namespace Engine {
 namespace AIDT {
 
 class AIState;
-class ICondition;
 
 class DecisionTree {
 	DISALLOW_COPY_AND_ASSIGN(DecisionTree)
@@ -41,7 +41,7 @@ public:
 	const Common::ICardPtr &getCard() const;
 
 private:
-	const Common::SmartPtr<ICondition> m_rootCondition;
+	const IConditionPtr m_rootCondition;
 	const AIState &m_state;
 };
 

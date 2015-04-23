@@ -24,18 +24,29 @@
 
 namespace NetMauMau {
 
+namespace Common {
+template<class> class SmartPtr;
+}
+
 namespace Engine {
 
 namespace AIDT {
+
+class ICondition;
+class AIState;
 
 class IAction {
 	DISALLOW_COPY_AND_ASSIGN(IAction)
 public:
 	virtual ~IAction() {}
 
+	virtual const Common::SmartPtr<ICondition> &operator()(const AIState &state) const = 0;
+
 protected:
 	IAction() {}
 };
+
+typedef Common::SmartPtr<IAction> IActionPtr;
 
 }
 

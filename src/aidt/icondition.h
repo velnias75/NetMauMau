@@ -46,6 +46,8 @@ protected:
 	ICondition() {}
 };
 
+typedef Common::SmartPtr<ICondition> IConditionPtr;
+
 }
 
 }

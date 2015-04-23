@@ -17,29 +17,22 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "decisiontree.h"
+#include "abstractaction.h"
 
-#include "iaction.h"
-#include "cardtools.h"
-#include "jackonlycondition.h"
+#include "smartptr.h"
+
+namespace {
+NetMauMau::Engine::AIDT::IConditionPtr NULLCONDITION;
+}
 
 using namespace NetMauMau::Engine::AIDT;
 
-DecisionTree::DecisionTree(const AIState &state) :
-	m_rootCondition(IConditionPtr(new JackOnlyCondition())), m_state(state) {}
+AbstractAction::AbstractAction() : IAction() {}
 
-DecisionTree::~DecisionTree() {}
+AbstractAction::~AbstractAction() {}
 
-const NetMauMau::Common::ICardPtr &DecisionTree::getCard() const {
-
-	IConditionPtr cur(m_rootCondition);
-	IActionPtr act;
-
-	while(cur && (act = (*cur)(m_state))) cur = (*act)(m_state);
-
-	static NetMauMau::Common::ICardPtr IC(const_cast<const NetMauMau::Common::ICard *>
-										  (NetMauMau::Common::getIllegalCard()));
-	return IC;
+const IConditionPtr &AbstractAction::getNullCondition() {
+	return NULLCONDITION;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

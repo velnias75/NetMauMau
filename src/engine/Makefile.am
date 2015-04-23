@@ -9,7 +9,7 @@ GSL=-DHAVE_GSL
 else
 GSL=
 endif
-	
+
 libeventhandler_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include \
 	$(NO_EXCEPTIONS)
 libeventhandler_la_SOURCES = defaulteventhandler.cpp
@@ -22,6 +22,6 @@ libengine_private_la_SOURCES = engine.cpp nullconnection.cpp stdplayer.cpp
 libengine_la_CPPFLAGS = $(GSL) -DLUADIR=\"$(pkgdatadir)\"
 libengine_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include \
 	-I$(top_srcdir)/src/lua $(GSL_CFLAGS) $(NO_RTTI_FLAGS)
-libengine_la_SOURCES = engineconfig.cpp stdcardfactory.cpp talon.cpp 
-libengine_la_LIBADD = ../lua/libluaruleset.la libengine_private.la libeventhandler.la \
-	../sqlite/libsqlite.la ../common/libnetmaumaucommon.la $(GSL_LIBS)
+libengine_la_SOURCES = engineconfig.cpp stdcardfactory.cpp talon.cpp
+libengine_la_LIBADD = ../sqlite/libsqlite.la libengine_private.la ../lua/libluaruleset.la \
+	libeventhandler.la ../common/libnetmaumaucommon.la $(GSL_LIBS)

@@ -13,7 +13,7 @@ MAINTAINERCLEANFILES = ai-icon.h
 ai-icon.h: $(AI_IMAGE)
 	cat $(AI_IMAGE) | $(SHELL) $(top_srcdir)/src/images/create_ai_icon.sh 'ai_icon_data' \
 		> $(builddir)/$(@F)
-	
+
 if GSL
 GSL=-DHAVE_GSL
 else

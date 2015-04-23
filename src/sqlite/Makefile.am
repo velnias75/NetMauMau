@@ -10,6 +10,6 @@ libsqlite_la_LIBADD = $(LIBSQLITE_LIBS)
 
 install-data-local:
 	$(INSTALL) -d -m 755 $(DESTDIR)/$(localstatedir)/$(PACKAGE)
-	
+
 uninstall-local:
 	rm -rf $(DESTDIR)/$(localstatedir)/$(PACKAGE)

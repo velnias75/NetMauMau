@@ -14,7 +14,7 @@ endif
 if BRANDING
 
 noinst_DATA = ai-icon-deleted
-	
+
 clean-local:
 	-rm -f ai-icon-deleted
 

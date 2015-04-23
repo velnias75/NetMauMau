@@ -19,27 +19,26 @@
 
 #include "decisiontree.h"
 
+#include "aistate.h"
 #include "iaction.h"
-#include "cardtools.h"
+// #include "cardtools.h"
 #include "jackonlycondition.h"
 
 using namespace NetMauMau::Engine::AIDT;
 
-DecisionTree::DecisionTree(const AIState &state) :
+DecisionTree::DecisionTree(AIState &state) :
 	m_rootCondition(IConditionPtr(new JackOnlyCondition())), m_state(state) {}
 
 DecisionTree::~DecisionTree() {}
 
-const NetMauMau::Common::ICardPtr &DecisionTree::getCard() const {
+NetMauMau::Common::ICardPtr DecisionTree::getCard() const {
 
 	IConditionPtr cur(m_rootCondition);
 	IActionPtr act;
 
 	while(cur && (act = (*cur)(m_state))) cur = (*act)(m_state);
 
-	static NetMauMau::Common::ICardPtr IC(const_cast<const NetMauMau::Common::ICard *>
-										  (NetMauMau::Common::getIllegalCard()));
-	return IC;
+	return m_state.getCard();
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

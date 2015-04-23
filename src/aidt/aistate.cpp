@@ -19,13 +19,22 @@
 
 #include "aistate.h"
 
+#include "iruleset.h"
+
 using namespace NetMauMau::Engine::AIDT;
 
 AIState::AIState(const NetMauMau::Player::IPlayer::CARDS &cards,
-				 const NetMauMau::Common::ICardPtr &uc,
-				 const NetMauMau::RuleSet::IRuleSet *ruleSet) : m_cards(cards), m_uncoveredCard(uc),
-	m_ruleSet(ruleSet) {}
+				 const NetMauMau::Common::ICardPtr &uc, const IRuleSetPtr &ruleSet) : m_card(),
+	m_cards(cards), m_uncoveredCard(uc), m_ruleSet(ruleSet) {}
 
 AIState::~AIState() {}
+
+AIState::IRuleSetPtr AIState::getRuleSet() const {
+	return m_ruleSet;
+}
+
+void AIState::setCard(const NetMauMau::Common::ICardPtr &card) {
+	m_card = card;
+}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

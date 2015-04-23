@@ -25,7 +25,7 @@ SuspendAction::SuspendAction() : AbstractAction() {}
 
 SuspendAction::~SuspendAction() {}
 
-const IConditionPtr &SuspendAction::operator()(const AIState &) const {
+const IConditionPtr &SuspendAction::operator()(AIState &) const {
 	return AbstractAction::getNullCondition();
 }
 

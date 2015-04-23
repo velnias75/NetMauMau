@@ -20,7 +20,9 @@
 #ifndef NETMAUMAU_ENGINE_AIDT_AISTATE_H
 #define NETMAUMAU_ENGINE_AIDT_AISTATE_H
 
+#include "smartptr.h"
 #include "iplayer.h"
+#include "icard.h"
 
 namespace NetMauMau {
 
@@ -31,27 +33,34 @@ namespace AIDT {
 class AIState {
 	DISALLOW_COPY_AND_ASSIGN(AIState)
 public:
+	typedef Common::SmartPtr<RuleSet::IRuleSet> IRuleSetPtr;
+
 	AIState(const Player::IPlayer::CARDS &cards, const Common::ICardPtr &uc,
-			const RuleSet::IRuleSet *ruleSet);
+			const IRuleSetPtr &ruleSet);
 
-	~AIState() _CONST;
+	~AIState();
 
-	const Player::IPlayer::CARDS &getCards() const {
+	inline const Player::IPlayer::CARDS &getCards() const {
 		return m_cards;
 	}
 
-	const Common::ICardPtr &getUncoveredCard() const {
+	inline Common::ICardPtr getUncoveredCard() const {
 		return m_uncoveredCard;
 	}
 
-	const RuleSet::IRuleSet *getRuleSet() const {
-		return m_ruleSet;
+	IRuleSetPtr getRuleSet() const;
+
+	void setCard(const Common::ICardPtr &card);
+
+	inline Common::ICardPtr getCard() {
+		return m_card;
 	}
 
 private:
-	const Player::IPlayer::CARDS &m_cards;
-	const Common::ICardPtr &m_uncoveredCard;
-	const RuleSet::IRuleSet *const m_ruleSet;
+	Common::ICardPtr m_card;
+	const Player::IPlayer::CARDS m_cards;
+	const Common::ICardPtr m_uncoveredCard;
+	const IRuleSetPtr m_ruleSet;
 };
 
 }

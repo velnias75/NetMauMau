@@ -40,7 +40,7 @@ class IAction {
 public:
 	virtual ~IAction() {}
 
-	virtual const Common::SmartPtr<ICondition> &operator()(const AIState &state) const = 0;
+	virtual const Common::SmartPtr<ICondition> &operator()(AIState &state) const = 0;
 
 protected:
 	IAction() {}

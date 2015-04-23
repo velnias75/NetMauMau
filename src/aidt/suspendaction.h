@@ -34,7 +34,7 @@ public:
 	SuspendAction();
 	virtual ~SuspendAction();
 
-	virtual const IConditionPtr &operator()(const AIState &state) const _CONST;
+	virtual const IConditionPtr &operator()(AIState &state) const _CONST;
 };
 
 }

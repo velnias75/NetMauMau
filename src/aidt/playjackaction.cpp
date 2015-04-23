@@ -19,13 +19,24 @@
 
 #include "playjackaction.h"
 
+#include "smartptr.h"
+#include "iruleset.h"
+#include "aistate.h"
+#include "icard.h"
+
 using namespace NetMauMau::Engine::AIDT;
 
 PlayJackAction::PlayJackAction() : AbstractAction() {}
 
 PlayJackAction::~PlayJackAction() {}
 
-const IConditionPtr &PlayJackAction::operator()(const AIState &) const {
+const IConditionPtr &PlayJackAction::operator()(AIState &state) const {
+
+	const NetMauMau::Common::ICardPtr firstCard(*state.getCards().begin());
+
+	state.setCard(state.getRuleSet()->checkCard(state.getUncoveredCard(), firstCard) ?
+				  firstCard : NetMauMau::Common::ICardPtr());
+
 	return AbstractAction::getNullCondition();
 }
 

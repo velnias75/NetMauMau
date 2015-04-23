@@ -35,14 +35,14 @@ class AIState;
 class DecisionTree {
 	DISALLOW_COPY_AND_ASSIGN(DecisionTree)
 public:
-	DecisionTree(const AIState &state);
+	DecisionTree(AIState &state);
 	~DecisionTree();
 
-	const Common::ICardPtr &getCard() const;
+	Common::ICardPtr getCard() const;
 
 private:
 	const IConditionPtr m_rootCondition;
-	const AIState &m_state;
+	AIState &m_state;
 };
 
 }

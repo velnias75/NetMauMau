@@ -19,12 +19,13 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <cstdio>
 
 #include "aistate.h"
-#include "cardtools.h"
 #include "luaruleset.h"
 #include "decisiontree.h"
 #include "luaexception.h"
+#include "stdcardfactory.h"
 
 using namespace NetMauMau;
 
@@ -39,14 +40,16 @@ int main(int, const char **) {
 
 	try {
 
-		Engine::AIDT::AIState state(Player::IPlayer::CARDS(), Common::ICardPtr
-									(const_cast<const Common::ICard *>(Common::getIllegalCard())),
-									Common::SmartPtr<RuleSet::IRuleSet>
+		Common::ICardPtr jc(StdCardFactory().create(Common::ICard::HEARTS, Common::ICard::JACK));
+		Common::ICardPtr uc(StdCardFactory().create(Common::ICard::HEARTS, Common::ICard::QUEEN));
+
+		Engine::AIDT::AIState state(Player::IPlayer::CARDS(1, jc), uc,
+									Engine::AIDT::AIState::IRuleSetPtr
 									(new RuleSet::LuaRuleSet(luaRules, true)));
 
 		Engine::AIDT::DecisionTree dt(state);
 
-		std::cout << dt.getCard()->description(true) << std::endl;
+		std::cout << dt.getCard()->description(isatty(fileno(stderr))) << std::endl;
 
 	} catch(const Lua::Exception::LuaException &e) {
 		std::cerr << e.what() << std::endl;

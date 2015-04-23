@@ -1,6 +1,6 @@
 dist_pkgdata_DATA = JC.PNG JD.PNG JH.PNG JS.PNG KC.PNG KD.PNG KH.PNG KS.PNG QC.PNG QD.PNG QH.PNG \
 	QS.PNG
-	
+
 EXTRA_DIST = create_ai_icon.sh
 
 install-data-hook:

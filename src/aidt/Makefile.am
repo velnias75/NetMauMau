@@ -7,4 +7,3 @@ libaidt_la_CPPFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common
 libaidt_la_CXXFLAGS = $(NO_RTTI_FLAGS)
 libaidt_la_SOURCES = abstractaction.cpp aistate.cpp decisiontree.cpp jackonlycondition.cpp \
 	playjackaction.cpp suspendaction.cpp
-libaidt_la_LIBADD = ../common/libnetmaumaucommon.la

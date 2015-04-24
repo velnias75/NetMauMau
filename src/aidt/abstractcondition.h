@@ -17,43 +17,37 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_ENGINE_AIDT_ICONDITION_H
-#define NETMAUMAU_ENGINE_AIDT_ICONDITION_H
+#ifndef NETMAUMAU_ENGINE_AIDT_ABSTRACTCONDITION_H
+#define NETMAUMAU_ENGINE_AIDT_ABSTRACTCONDITION_H
 
-#include "linkercontrol.h"
+#include "icondition.h"
+
+#include "iaction.h"
 
 namespace NetMauMau {
-
-namespace Common {
-template<class> class SmartPtr;
-}
 
 namespace Engine {
 
 namespace AIDT {
 
-class IAction;
-class AIState;
-
-class ICondition {
-	DISALLOW_COPY_AND_ASSIGN(ICondition)
+class AbstractCondition : public ICondition {
+	DISALLOW_COPY_AND_ASSIGN(AbstractCondition)
 public:
-	virtual ~ICondition() {}
-
-	virtual Common::SmartPtr<IAction> operator()(const AIState &state) const = 0;
+	virtual ~AbstractCondition();
 
 protected:
-	ICondition() {}
+	AbstractCondition();
+
+	IActionPtr createNextAction(const IConditionPtr &cond) const;
+	static const IActionPtr &getNullAction() _CONST;
 };
 
-typedef Common::SmartPtr<ICondition> IConditionPtr;
-
 }
 
 }
 
 }
 
-#endif /* NETMAUMAU_ENGINE_AIDT_ICONDITION_H */
+#endif /* NETMAUMAU_ENGINE_AIDT_ABSTRACTCONDITION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

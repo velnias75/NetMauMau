@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_ENGINE_AIDT_JACKONLYACTION_H
 #define NETMAUMAU_ENGINE_AIDT_JACKONLYACTION_H
 
-#include "icondition.h"
+#include "abstractcondition.h"
 
 namespace NetMauMau {
 
@@ -28,13 +28,13 @@ namespace Engine {
 
 namespace AIDT {
 
-class JackOnlyCondition : public ICondition {
+class JackOnlyCondition : public AbstractCondition {
 	DISALLOW_COPY_AND_ASSIGN(JackOnlyCondition)
 public:
 	JackOnlyCondition();
 	virtual ~JackOnlyCondition();
 
-	virtual const Common::SmartPtr<IAction> &operator()(const AIState &state) const;
+	virtual Common::SmartPtr<IAction> operator()(const AIState &state) const;
 };
 
 }

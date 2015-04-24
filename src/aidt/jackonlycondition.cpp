@@ -19,15 +19,15 @@
 
 #include "jackonlycondition.h"
 
+#include "checksevencondition.h"
 #include "playjackaction.h"
 #include "suspendaction.h"
+#include "nextaction.h"
 #include "iruleset.h"
 #include "smartptr.h"
 #include "aistate.h"
 
 namespace {
-
-const NetMauMau::Engine::AIDT::IActionPtr NULLACTION;
 
 const NetMauMau::Engine::AIDT::IActionPtr
 PLAYJACKACTION(new NetMauMau::Engine::AIDT::PlayJackAction());
@@ -35,20 +35,26 @@ PLAYJACKACTION(new NetMauMau::Engine::AIDT::PlayJackAction());
 const NetMauMau::Engine::AIDT::IActionPtr
 SUSPENDACTION(new NetMauMau::Engine::AIDT::SuspendAction());
 
+const NetMauMau::Engine::AIDT::IConditionPtr
+CHECKSEVENCOND(new NetMauMau::Engine::AIDT::CheckSevenCondition());
 }
 
 using namespace NetMauMau::Engine::AIDT;
 
-JackOnlyCondition::JackOnlyCondition() : ICondition() {}
+JackOnlyCondition::JackOnlyCondition() : AbstractCondition() {}
 
 JackOnlyCondition::~JackOnlyCondition() {}
 
-const IActionPtr &JackOnlyCondition::operator()(const AIState &state) const {
+IActionPtr JackOnlyCondition::operator()(const AIState &state) const {
+
+	const NetMauMau::Player::IPlayer::CARDS::size_type s(state.getCards().size());
+
 	return state.getRuleSet() ?
-		   ((state.getCards().size() == 1 &&
-			 !(state.getUncoveredCard()->getRank() == NetMauMau::Common::ICard::JACK &&
-			   (*(state.getCards()).begin())->getRank() == NetMauMau::Common::ICard::JACK))
-			? PLAYJACKACTION : SUSPENDACTION) : NULLACTION; // <- find best card action
+		   ((s == 1 && !(state.getUncoveredCard()->getRank() == NetMauMau::Common::ICard::JACK &&
+						 (*(state.getCards()).begin())->getRank() ==
+						 NetMauMau::Common::ICard::JACK)) ? PLAYJACKACTION :
+			(s == 1 ? SUSPENDACTION : createNextAction(CHECKSEVENCOND))) :
+			   createNextAction(CHECKSEVENCOND);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

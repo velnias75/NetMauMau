@@ -265,7 +265,7 @@ struct returnTypeCheckerTrait<NetMauMau::Common::ICard::RANK> :
 
 template<typename T>
 T checkReturnType(lua_State *ls,
-						 const char *fname) throw(NetMauMau::Lua::Exception::LuaFatalException) {
+				  const char *fname) throw(NetMauMau::Lua::Exception::LuaFatalException) {
 	return returnTypeCheckerTrait<T>()(ls, fname);
 }
 

@@ -50,9 +50,19 @@ public:
 
 	IRuleSetPtr getRuleSet() const;
 
+	inline const std::vector<std::string> &getPlayedOutCards() const {
+		return m_playedOutCards;
+	}
+
+	inline bool hasTakenCards() const {
+		return m_cardsTaken;
+	}
+
+	std::size_t getTalonFactor() const;
+
 	void setCard(const Common::ICardPtr &card);
 
-	inline Common::ICardPtr getCard() {
+	inline Common::ICardPtr getCard() const {
 		return m_card;
 	}
 
@@ -61,6 +71,8 @@ private:
 	const Player::IPlayer::CARDS m_cards;
 	const Common::ICardPtr m_uncoveredCard;
 	const IRuleSetPtr m_ruleSet;
+	std::vector<std::string> m_playedOutCards;
+	bool m_cardsTaken;
 };
 
 }

@@ -17,43 +17,32 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_ENGINE_AIDT_ICONDITION_H
-#define NETMAUMAU_ENGINE_AIDT_ICONDITION_H
+#ifndef NETMAUMAU_ENGINE_AIDT_CHECKSEVENCONDITION_H
+#define NETMAUMAU_ENGINE_AIDT_CHECKSEVENCONDITION_H
 
-#include "linkercontrol.h"
+#include "abstractcondition.h"
 
 namespace NetMauMau {
-
-namespace Common {
-template<class> class SmartPtr;
-}
 
 namespace Engine {
 
 namespace AIDT {
 
-class IAction;
-class AIState;
-
-class ICondition {
-	DISALLOW_COPY_AND_ASSIGN(ICondition)
+class CheckSevenCondition : public AbstractCondition {
+	DISALLOW_COPY_AND_ASSIGN(CheckSevenCondition)
 public:
-	virtual ~ICondition() {}
+	CheckSevenCondition();
+	virtual ~CheckSevenCondition();
 
-	virtual Common::SmartPtr<IAction> operator()(const AIState &state) const = 0;
-
-protected:
-	ICondition() {}
+	virtual Common::SmartPtr<IAction> operator()(const AIState &state) const;
 };
 
-typedef Common::SmartPtr<ICondition> IConditionPtr;
-
 }
 
 }
 
 }
 
-#endif /* NETMAUMAU_ENGINE_AIDT_ICONDITION_H */
+#endif /* NETMAUMAU_ENGINE_AIDT_CHECKSEVENCONDITION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

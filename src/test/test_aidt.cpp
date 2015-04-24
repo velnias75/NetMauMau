@@ -40,16 +40,21 @@ int main(int, const char **) {
 
 	try {
 
-		Common::ICardPtr jc(StdCardFactory().create(Common::ICard::HEARTS, Common::ICard::JACK));
-		Common::ICardPtr uc(StdCardFactory().create(Common::ICard::HEARTS, Common::ICard::QUEEN));
+		Common::ICardPtr jc[2] = {
+			Common::ICardPtr(StdCardFactory().create(Common::ICard::SPADES, Common::ICard::TEN)),
+			Common::ICardPtr(StdCardFactory().create(Common::ICard::SPADES, Common::ICard::NINE))
+		};
 
-		Engine::AIDT::AIState state(Player::IPlayer::CARDS(1, jc), uc,
+		Common::ICardPtr uc(StdCardFactory().create(Common::ICard::SPADES, Common::ICard::SEVEN));
+
+		Engine::AIDT::AIState state(Player::IPlayer::CARDS(jc, jc + 2), uc,
 									Engine::AIDT::AIState::IRuleSetPtr
 									(new RuleSet::LuaRuleSet(luaRules, true)));
 
 		Engine::AIDT::DecisionTree dt(state);
 
-		std::cout << dt.getCard()->description(isatty(fileno(stderr))) << std::endl;
+		std::cout << (dt.getCard() ? dt.getCard()->description(isatty(fileno(stdout))) : "SUSPEND")
+				  << std::endl;
 
 	} catch(const Lua::Exception::LuaException &e) {
 		std::cerr << e.what() << std::endl;

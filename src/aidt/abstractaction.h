@@ -20,9 +20,9 @@
 #ifndef NETMAUMAU_ENGINE_AIDT_ABSTRACTACTION_H
 #define NETMAUMAU_ENGINE_AIDT_ABSTRACTACTION_H
 
-#include "icard.h"
-#include "iplayer.h"
 #include "iaction.h"
+
+#include "iplayer.h"
 #include "icondition.h"
 
 namespace NetMauMau {

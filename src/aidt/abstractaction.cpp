@@ -22,7 +22,6 @@
 #include "abstractaction.h"
 
 #include "cardtools.h"
-#include "smartptr.h"
 #include "aistate.h"
 
 namespace {

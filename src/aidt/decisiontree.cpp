@@ -20,8 +20,6 @@
 #include "decisiontree.h"
 
 #include "aistate.h"
-#include "iaction.h"
-// #include "cardtools.h"
 #include "jackonlycondition.h"
 
 using namespace NetMauMau::Engine::AIDT;

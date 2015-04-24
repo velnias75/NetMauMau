@@ -20,7 +20,6 @@
 #include "servesevenaction.h"
 
 #include "aistate.h"
-#include "smartptr.h"
 #include "cardtools.h"
 
 using namespace NetMauMau::Engine::AIDT;

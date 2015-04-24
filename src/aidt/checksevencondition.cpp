@@ -20,7 +20,6 @@
 #include "checksevencondition.h"
 
 #include "servesevenaction.h"
-#include "smartptr.h"
 #include "aistate.h"
 
 namespace {

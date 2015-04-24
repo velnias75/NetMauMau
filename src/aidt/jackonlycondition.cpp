@@ -22,7 +22,6 @@
 #include "checksevencondition.h"
 #include "playjackaction.h"
 #include "suspendaction.h"
-#include "nextaction.h"
 #include "iruleset.h"
 #include "smartptr.h"
 #include "aistate.h"

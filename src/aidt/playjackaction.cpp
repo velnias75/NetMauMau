@@ -19,10 +19,8 @@
 
 #include "playjackaction.h"
 
-#include "smartptr.h"
 #include "iruleset.h"
 #include "aistate.h"
-#include "icard.h"
 
 using namespace NetMauMau::Engine::AIDT;
 

@@ -20,6 +20,8 @@
 #ifndef NETMAUMAU_ENGINE_AIDT_ABSTRACTACTION_H
 #define NETMAUMAU_ENGINE_AIDT_ABSTRACTACTION_H
 
+#include "icard.h"
+#include "iplayer.h"
 #include "iaction.h"
 #include "icondition.h"
 
@@ -36,6 +38,9 @@ public:
 
 protected:
 	AbstractAction();
+
+	static Player::IPlayer::CARDS pullSuit(const AIState &state,
+										   NetMauMau::Common::ICard::SUIT suit);
 
 	static const IConditionPtr &getNullCondition() _CONST;
 };

@@ -34,12 +34,14 @@ class AIState {
 	DISALLOW_COPY_AND_ASSIGN(AIState)
 public:
 	typedef Common::SmartPtr<RuleSet::IRuleSet> IRuleSetPtr;
+	typedef std::vector<std::string> PLAYEDOUTCARDS;
 
 	AIState(const Player::IPlayer::CARDS &cards, const Common::ICardPtr &uc,
-			const IRuleSetPtr &ruleSet);
+			const IRuleSetPtr &ruleSet, const PLAYEDOUTCARDS &playedOutCards);
 
 	~AIState();
 
+	// cppcheck-suppress functionStatic
 	inline const Player::IPlayer::CARDS &getCards() const {
 		return m_cards;
 	}
@@ -58,6 +60,11 @@ public:
 		return m_cardsTaken;
 	}
 
+	inline void setCardsTaken(bool b) {
+		m_cardsTaken = b;
+	}
+
+	// cppcheck-suppress functionStatic
 	std::size_t getTalonFactor() const;
 
 	void setCard(const Common::ICardPtr &card);
@@ -71,7 +78,7 @@ private:
 	const Player::IPlayer::CARDS m_cards;
 	const Common::ICardPtr m_uncoveredCard;
 	const IRuleSetPtr m_ruleSet;
-	std::vector<std::string> m_playedOutCards;
+	const PLAYEDOUTCARDS m_playedOutCards;
 	bool m_cardsTaken;
 };
 

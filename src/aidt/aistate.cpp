@@ -24,8 +24,9 @@
 using namespace NetMauMau::Engine::AIDT;
 
 AIState::AIState(const NetMauMau::Player::IPlayer::CARDS &cards,
-				 const NetMauMau::Common::ICardPtr &uc, const IRuleSetPtr &ruleSet) : m_card(),
-	m_cards(cards), m_uncoveredCard(uc), m_ruleSet(ruleSet), m_playedOutCards(),
+				 const NetMauMau::Common::ICardPtr &uc, const IRuleSetPtr &ruleSet,
+				 const AIState::PLAYEDOUTCARDS &playedOutCards) : m_card(), m_cards(cards),
+	m_uncoveredCard(uc), m_ruleSet(ruleSet), m_playedOutCards(playedOutCards),
 	m_cardsTaken(false) {}
 
 AIState::~AIState() {}

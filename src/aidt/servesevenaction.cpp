@@ -17,32 +17,33 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_ENGINE_AIDT_CHECKSEVENCONDITION_H
-#define NETMAUMAU_ENGINE_AIDT_CHECKSEVENCONDITION_H
+#include "servesevenaction.h"
 
-#include "abstractcondition.h"
+#include "aistate.h"
+#include "smartptr.h"
+#include "cardtools.h"
 
-namespace NetMauMau {
+using namespace NetMauMau::Engine::AIDT;
 
-namespace Engine {
+ServeSevenAction::ServeSevenAction() : AbstractAction() {}
 
-namespace AIDT {
+ServeSevenAction::~ServeSevenAction() {}
 
-class CheckSevenCondition : public AbstractCondition {
-	DISALLOW_COPY_AND_ASSIGN(CheckSevenCondition)
-public:
-	CheckSevenCondition();
-	virtual ~CheckSevenCondition();
+const IConditionPtr &ServeSevenAction::operator()(AIState &state) const {
 
-	virtual IActionPtr operator()(const AIState &state) const;
-};
+	const NetMauMau::Player::IPlayer::CARDS::value_type f =
+		NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN, state.getCards().begin(),
+									state.getCards().end());
 
+	if(f) {
+		state.setCard(f);
+	} else if(!state.hasTakenCards()) {
+		state.setCard(NetMauMau::Common::ICardPtr(const_cast<const NetMauMau::Common::ICard *>
+					  (NetMauMau::Common::getIllegalCard())));
+		state.setCardsTaken(true);
+	}
+
+	return AbstractAction::getNullCondition();
 }
-
-}
-
-}
-
-#endif /* NETMAUMAU_ENGINE_AIDT_CHECKSEVENCONDITION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

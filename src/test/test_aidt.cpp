@@ -47,9 +47,14 @@ int main(int, const char **) {
 
 		Common::ICardPtr uc(StdCardFactory().create(Common::ICard::SPADES, Common::ICard::SEVEN));
 
+		Engine::AIDT::AIState::PLAYEDOUTCARDS::value_type poc[5] = {
+			"", "", "", "", ""
+		};
+
 		Engine::AIDT::AIState state(Player::IPlayer::CARDS(jc, jc + 2), uc,
 									Engine::AIDT::AIState::IRuleSetPtr
-									(new RuleSet::LuaRuleSet(luaRules, true)));
+									(new RuleSet::LuaRuleSet(luaRules, true)),
+									Engine::AIDT::AIState::PLAYEDOUTCARDS(poc, poc + 5));
 
 		Engine::AIDT::DecisionTree dt(state);
 

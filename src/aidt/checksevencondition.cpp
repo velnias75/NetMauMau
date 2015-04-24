@@ -19,7 +19,14 @@
 
 #include "checksevencondition.h"
 
+#include "servesevenaction.h"
 #include "smartptr.h"
+#include "aistate.h"
+
+namespace {
+NetMauMau::Engine::AIDT::IActionPtr
+SERVESEVENACTION(new NetMauMau::Engine::AIDT::ServeSevenAction());
+}
 
 using namespace NetMauMau::Engine::AIDT;
 
@@ -27,8 +34,10 @@ CheckSevenCondition::CheckSevenCondition() {}
 
 CheckSevenCondition::~CheckSevenCondition() {}
 
-NetMauMau::Common::SmartPtr<IAction> CheckSevenCondition::operator()(const AIState &) const {
-	return AbstractCondition::getNullAction();
+IActionPtr CheckSevenCondition::operator()(const AIState &state) const {
+	return state.getPlayedOutCards().size() > (4 * state.getTalonFactor()) &&
+		   state.getUncoveredCard()->getRank() == NetMauMau::Common::ICard::SEVEN ?
+		   SERVESEVENACTION : AbstractCondition::getNullAction();
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

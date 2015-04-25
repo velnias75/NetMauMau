@@ -103,3 +103,4 @@ start-server.sh
 test-driver
 V*.xml
 win32
+src/aidt/

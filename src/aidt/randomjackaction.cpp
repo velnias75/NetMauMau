@@ -17,8 +17,6 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <algorithm>
-
 #include "randomjackaction.h"
 
 #include "random_gen.h"

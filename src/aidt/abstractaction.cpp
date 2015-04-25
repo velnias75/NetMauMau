@@ -18,13 +18,11 @@
  */
 
 #include <cstring>
-#include <algorithm>
 
 #include "abstractaction.h"
 
 #include "stdcardfactory.h"
 #include "cardtools.h"
-#include "smartptr.h"
 #include "iaistate.h"
 
 namespace {

@@ -20,7 +20,6 @@
 #include "randomjackcondition.h"
 
 #include "randomjackaction.h"
-#include "smartptr.h"
 #include "iaistate.h"
 
 using namespace NetMauMau::AIDT;

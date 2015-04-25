@@ -17,8 +17,6 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <algorithm>
-
 #include "maxsuitaction.h"
 
 #include "aceroundcondition.h"

@@ -21,7 +21,6 @@
 #define NETMAUMAU_ENGINE_AIDT_IAISTATE_H
 
 #include "iplayer.h"
-#include "icard.h"
 
 namespace NetMauMau {
 

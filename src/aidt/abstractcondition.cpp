@@ -20,7 +20,6 @@
 #include "abstractcondition.h"
 
 #include "iaistate.h"
-#include "smartptr.h"
 #include "cardtools.h"
 #include "nextaction.h"
 

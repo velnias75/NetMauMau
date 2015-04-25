@@ -20,7 +20,6 @@
 #ifndef NETMAUMAU_PLAYER_STDPLAYER_H
 #define NETMAUMAU_PLAYER_STDPLAYER_H
 
-#include "iplayer.h"
 #include "iaistate.h"
 #include "smartptr.h"
 

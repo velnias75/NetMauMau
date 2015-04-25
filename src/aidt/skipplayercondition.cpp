@@ -23,7 +23,6 @@
 #include "skipplayeraction.h"
 #include "cardtools.h"
 #include "iaistate.h"
-#include "smartptr.h"
 
 namespace {
 

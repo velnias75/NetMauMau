@@ -22,7 +22,6 @@
 #include "aceroundcondition.h"
 #include "maxsuitaction.h"
 #include "iaistate.h"
-#include "smartptr.h"
 
 namespace {
 NetMauMau::AIDT::IConditionPtr ACEROUNDCOND(new NetMauMau::AIDT::AceRoundCondition());

@@ -22,7 +22,6 @@
 #include "checkjacksuitaction.h"
 #include "staticcondition.h"
 #include "decisiontree.h"
-#include "iaistate.h"
 
 namespace {
 NetMauMau::AIDT::IConditionPtr

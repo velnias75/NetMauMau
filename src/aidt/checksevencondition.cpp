@@ -21,7 +21,6 @@
 
 #include "skipplayercondition.h"
 #include "servesevenaction.h"
-#include "smartptr.h"
 #include "iaistate.h"
 
 namespace {

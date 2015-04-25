@@ -23,7 +23,6 @@
 #include "playjackaction.h"
 #include "suspendaction.h"
 #include "iruleset.h"
-#include "smartptr.h"
 #include "iaistate.h"
 
 namespace {

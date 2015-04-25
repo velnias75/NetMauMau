@@ -24,8 +24,6 @@
 #include "jacksuitaction.h"
 #include "nextaction.h"
 #include "cardtools.h"
-#include "iaistate.h"
-#include "smartptr.h"
 
 namespace {
 

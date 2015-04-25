@@ -22,7 +22,6 @@
 #include "cardtools.h"
 #include "iaistate.h"
 #include "iruleset.h"
-#include "smartptr.h"
 
 using namespace NetMauMau::AIDT;
 

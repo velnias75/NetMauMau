@@ -17,13 +17,10 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <algorithm>
-
 #include "powersuitaction.h"
 
 #include "powersuitcondition.h"
 #include "cardtools.h"
-#include "smartptr.h"
 #include "iaistate.h"
 
 namespace {

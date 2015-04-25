@@ -24,7 +24,6 @@
 #include "havelessthancondition.h"
 #include "bestjackaction.h"
 #include "cardtools.h"
-#include "iaistate.h"
 
 namespace {
 

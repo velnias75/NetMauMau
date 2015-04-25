@@ -21,7 +21,6 @@
 
 #include "iruleset.h"
 #include "iaistate.h"
-#include "smartptr.h"
 
 using namespace NetMauMau::AIDT;
 

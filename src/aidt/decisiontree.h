@@ -20,21 +20,24 @@
 #ifndef NETMAUMAU_ENGINE_AIDT_DECISIONTREE_H
 #define NETMAUMAU_ENGINE_AIDT_DECISIONTREE_H
 
-#include "icard.h"
-#include "smartptr.h"
+#include "iaistate.h"
 #include "icondition.h"
 
 namespace NetMauMau {
 
 namespace AIDT {
 
-class IAIState;
-
+template<class RootCond>
 class DecisionTree {
 	DISALLOW_COPY_AND_ASSIGN(DecisionTree)
 public:
-	DecisionTree(IAIState &state);
-	~DecisionTree();
+	DecisionTree(IAIState &state, const IActionPtr &trueAct, const IActionPtr &falseAct) :
+		m_rootCondition(IConditionPtr(new RootCond(trueAct, falseAct))), m_state(state) {}
+
+	DecisionTree(IAIState &state) : m_rootCondition(IConditionPtr(new RootCond())),
+		m_state(state) {}
+
+	~DecisionTree() {}
 
 	Common::ICardPtr getCard() const;
 
@@ -42,6 +45,17 @@ private:
 	const IConditionPtr m_rootCondition;
 	IAIState &m_state;
 };
+
+template<class RootCond>
+Common::ICardPtr DecisionTree<RootCond>::getCard() const {
+
+	IConditionPtr cond(m_rootCondition);
+	IActionPtr act;
+
+	while(cond && (act = (*cond)(m_state))) cond = (*act)(m_state);
+
+	return m_state.getCard();
+}
 
 }
 

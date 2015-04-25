@@ -20,16 +20,17 @@
 #ifndef NETMAUMAU_ENGINE_AIDT_POWERSUITCONDITION_H
 #define NETMAUMAU_ENGINE_AIDT_POWERSUITCONDITION_H
 
-#include "abstractcondition.h"
+#include "binarycondition.h"
 
 namespace NetMauMau {
 
 namespace AIDT {
 
-class PowerSuitCondition : public AbstractCondition {
+class PowerSuitCondition : public BinaryCondition {
 	DISALLOW_COPY_AND_ASSIGN(PowerSuitCondition)
 public:
-	PowerSuitCondition();
+	explicit PowerSuitCondition();
+	explicit PowerSuitCondition(const IActionPtr &actTrue, const IActionPtr &actFalse);
 	virtual ~PowerSuitCondition();
 
 	virtual IActionPtr operator()(const IAIState &state) const;

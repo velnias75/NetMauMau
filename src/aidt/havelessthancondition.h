@@ -17,30 +17,37 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "powersuitcondition.h"
+#ifndef NETMAUMAU_ENGINE_AIDT_HAVELESSTHANCONDITION_H
+#define NETMAUMAU_ENGINE_AIDT_HAVELESSTHANCONDITION_H
 
-#include "aceroundcondition.h"
-#include "maxsuitaction.h"
+#include <cstdlib>
+
+#include "binarycondition.h"
+
 #include "iaistate.h"
-#include "smartptr.h"
 
-namespace {
-NetMauMau::AIDT::IConditionPtr ACEROUNDCOND(new NetMauMau::AIDT::AceRoundCondition());
+namespace NetMauMau {
+
+namespace AIDT {
+
+template<std::size_t Bound>
+class HaveLessThanCondition : public BinaryCondition {
+	DISALLOW_COPY_AND_ASSIGN(HaveLessThanCondition)
+public:
+	HaveLessThanCondition(const IActionPtr &actTrue, const IActionPtr &actFalse) :
+		BinaryCondition(actTrue, actFalse) {}
+
+	virtual ~HaveLessThanCondition() {}
+
+	virtual IActionPtr operator()(const IAIState &state) const {
+		return state.getPlayerCards().size() < Bound ? getTrueAction() : getFalseAction();
+	}
+};
+
 }
 
-using namespace NetMauMau::AIDT;
-
-PowerSuitCondition::PowerSuitCondition() : BinaryCondition(NetMauMau::AIDT::IActionPtr
-			(new NetMauMau::AIDT::MaxSuitAction()), createNextAction(ACEROUNDCOND)) {}
-
-PowerSuitCondition::PowerSuitCondition(const IActionPtr &actTrue, const IActionPtr &actFalse) :
-	BinaryCondition(actTrue, actFalse) {}
-
-PowerSuitCondition::~PowerSuitCondition() {}
-
-IActionPtr PowerSuitCondition::operator()(const IAIState &state) const {
-	return state.getPowerSuit() == NetMauMau::Common::ICard::SUIT_ILLEGAL ?
-		   getTrueAction() : getFalseAction();
 }
+
+#endif /* NETMAUMAU_ENGINE_AIDT_HAVELESSTHANCONDITION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

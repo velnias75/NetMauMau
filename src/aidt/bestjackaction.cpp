@@ -17,30 +17,28 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "powersuitcondition.h"
+#include "bestjackaction.h"
 
-#include "aceroundcondition.h"
-#include "maxsuitaction.h"
+#include "decisiontree.h"
 #include "iaistate.h"
-#include "smartptr.h"
-
-namespace {
-NetMauMau::AIDT::IConditionPtr ACEROUNDCOND(new NetMauMau::AIDT::AceRoundCondition());
-}
 
 using namespace NetMauMau::AIDT;
 
-PowerSuitCondition::PowerSuitCondition() : BinaryCondition(NetMauMau::AIDT::IActionPtr
-			(new NetMauMau::AIDT::MaxSuitAction()), createNextAction(ACEROUNDCOND)) {}
+BestJackAction::BestJackAction() : AbstractAction() {}
 
-PowerSuitCondition::PowerSuitCondition(const IActionPtr &actTrue, const IActionPtr &actFalse) :
-	BinaryCondition(actTrue, actFalse) {}
+BestJackAction::~BestJackAction() {}
 
-PowerSuitCondition::~PowerSuitCondition() {}
+const IConditionPtr &BestJackAction::operator()(IAIState &state) const {
 
-IActionPtr PowerSuitCondition::operator()(const IAIState &state) const {
-	return state.getPowerSuit() == NetMauMau::Common::ICard::SUIT_ILLEGAL ?
-		   getTrueAction() : getFalseAction();
+	state.setNoJack(true);
+
+	const NetMauMau::Common::ICardPtr bc(state.getDecisionTree()->getCard());
+
+	if(bc->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL) state.setCard(bc);
+
+	state.setNoJack(false);
+
+	return getNullCondition();
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

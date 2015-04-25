@@ -17,30 +17,28 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "powersuitcondition.h"
+#ifndef NETMAUMAU_ENGINE_AIDT_POWERPLAYACTION_H
+#define NETMAUMAU_ENGINE_AIDT_POWERPLAYACTION_H
 
-#include "aceroundcondition.h"
-#include "maxsuitaction.h"
-#include "iaistate.h"
-#include "smartptr.h"
+#include "abstractaction.h"
 
-namespace {
-NetMauMau::AIDT::IConditionPtr ACEROUNDCOND(new NetMauMau::AIDT::AceRoundCondition());
+namespace NetMauMau {
+
+namespace AIDT {
+
+class PowerPlayAction : public AbstractAction {
+	DISALLOW_COPY_AND_ASSIGN(PowerPlayAction)
+public:
+	PowerPlayAction();
+	virtual ~PowerPlayAction();
+
+	virtual const IConditionPtr &operator()(IAIState &state) const;
+};
+
 }
 
-using namespace NetMauMau::AIDT;
-
-PowerSuitCondition::PowerSuitCondition() : BinaryCondition(NetMauMau::AIDT::IActionPtr
-			(new NetMauMau::AIDT::MaxSuitAction()), createNextAction(ACEROUNDCOND)) {}
-
-PowerSuitCondition::PowerSuitCondition(const IActionPtr &actTrue, const IActionPtr &actFalse) :
-	BinaryCondition(actTrue, actFalse) {}
-
-PowerSuitCondition::~PowerSuitCondition() {}
-
-IActionPtr PowerSuitCondition::operator()(const IAIState &state) const {
-	return state.getPowerSuit() == NetMauMau::Common::ICard::SUIT_ILLEGAL ?
-		   getTrueAction() : getFalseAction();
 }
+
+#endif /* NETMAUMAU_ENGINE_AIDT_POWERPLAYACTION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -27,10 +27,15 @@ namespace NetMauMau {
 
 namespace AIDT {
 
+class JackOnlyCondition;
+template<class> class DecisionTree;
+
 class IAIState {
 	DISALLOW_COPY_AND_ASSIGN(IAIState)
 public:
 	typedef std::vector<std::string> PLAYEDOUTCARDS;
+	typedef Common::SmartPtr < AIDT::DecisionTree
+	<NetMauMau::AIDT::JackOnlyCondition> > DecisionTreePtr;
 
 	virtual ~IAIState() {}
 
@@ -75,6 +80,8 @@ public:
 	virtual Common::ICard::SUIT getPowerSuit() const = 0;
 
 	virtual void setPowerSuit(Common::ICard::SUIT suit) = 0;
+
+	virtual const DecisionTreePtr &getDecisionTree() const = 0;
 
 protected:
 	IAIState() {}

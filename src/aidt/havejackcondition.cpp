@@ -17,26 +17,37 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "decisiontree.h"
+#include "havejackcondition.h"
 
+#include "havelessthancondition.h"
+#include "bestjackaction.h"
+#include "nextaction.h"
+#include "cardtools.h"
 #include "iaistate.h"
-#include "jackonlycondition.h"
+#include "smartptr.h"
+
+namespace {
+
+NetMauMau::AIDT::IConditionPtr
+HAVELESSTHANEIGHTCOND(new NetMauMau::AIDT::HaveLessThanCondition<8>(
+						  NetMauMau::AIDT::IActionPtr(new NetMauMau::AIDT::BestJackAction()),
+						  NetMauMau::AIDT::IActionPtr()));
+
+}
 
 using namespace NetMauMau::AIDT;
 
-DecisionTree::DecisionTree(IAIState &state) :
-	m_rootCondition(IConditionPtr(new JackOnlyCondition())), m_state(state) {}
+HaveJackCondition::HaveJackCondition() : AbstractCondition() {}
 
-DecisionTree::~DecisionTree() {}
+HaveJackCondition::~HaveJackCondition() {}
 
-NetMauMau::Common::ICardPtr DecisionTree::getCard() const {
+IActionPtr HaveJackCondition::operator()(const IAIState &state) const {
 
-	IConditionPtr cond(m_rootCondition);
-	IActionPtr act;
+	(state.getPlayerCards().size() == 2 &&
+	 NetMauMau::Common::findRank(NetMauMau::Common::ICard::JACK,
+								 state.getPlayerCards().begin(), state.getPlayerCards().end()));
 
-	while(cond && (act = (*cond)(m_state))) cond = (*act)(m_state);
-
-	return m_state.getCard();
+	return createNextAction(HAVELESSTHANEIGHTCOND);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

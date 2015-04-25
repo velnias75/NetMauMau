@@ -17,30 +17,14 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "powersuitcondition.h"
-
-#include "aceroundcondition.h"
-#include "maxsuitaction.h"
-#include "iaistate.h"
-#include "smartptr.h"
-
-namespace {
-NetMauMau::AIDT::IConditionPtr ACEROUNDCOND(new NetMauMau::AIDT::AceRoundCondition());
-}
+#include "powerplayaction.h"
 
 using namespace NetMauMau::AIDT;
 
-PowerSuitCondition::PowerSuitCondition() : BinaryCondition(NetMauMau::AIDT::IActionPtr
-			(new NetMauMau::AIDT::MaxSuitAction()), createNextAction(ACEROUNDCOND)) {}
+PowerPlayAction::PowerPlayAction() : AbstractAction() {}
 
-PowerSuitCondition::PowerSuitCondition(const IActionPtr &actTrue, const IActionPtr &actFalse) :
-	BinaryCondition(actTrue, actFalse) {}
+PowerPlayAction::~PowerPlayAction() {}
 
-PowerSuitCondition::~PowerSuitCondition() {}
-
-IActionPtr PowerSuitCondition::operator()(const IAIState &state) const {
-	return state.getPowerSuit() == NetMauMau::Common::ICard::SUIT_ILLEGAL ?
-		   getTrueAction() : getFalseAction();
-}
+const IConditionPtr &PowerPlayAction::operator()(IAIState &) const {}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

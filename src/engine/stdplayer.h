@@ -27,7 +27,9 @@
 namespace NetMauMau {
 
 namespace AIDT {
-class DecisionTree;
+class JackOnlyCondition;
+class PowerSuitCondition;
+template<class> class DecisionTree;
 }
 
 namespace Player {
@@ -176,8 +178,11 @@ private:
 
 	virtual Common::ICardPtr getCard() const;
 
+	virtual const DecisionTreePtr &getDecisionTree() const _CONST;
+
 private:
-	typedef Common::SmartPtr<AIDT::DecisionTree> DecisionTreePtr;
+	typedef Common::SmartPtr
+	<AIDT::DecisionTree<NetMauMau::AIDT::PowerSuitCondition> > JackDecisionTreePtr;
 
 	const std::string m_name;
 	CARDS m_cards;
@@ -197,7 +202,8 @@ private:
 	const ICardCountObserver *m_cardCountObserver;
 
 	DecisionTreePtr m_decisisionTree;
-	Common::ICardPtr m_card;
+	JackDecisionTreePtr m_jackDecisisionTree;
+	mutable Common::ICardPtr m_card;
 	mutable Common::ICardPtr m_uncoveredCard;
 	bool m_noJack;
 	mutable Common::ICard::SUIT *m_jackSuit;

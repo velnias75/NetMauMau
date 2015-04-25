@@ -33,7 +33,7 @@ public:
 	explicit PowerSuitCondition(const IActionPtr &actTrue, const IActionPtr &actFalse);
 	virtual ~PowerSuitCondition();
 
-	virtual IActionPtr operator()(const IAIState &state) const;
+	virtual IActionPtr perform(const IAIState &state, const Player::IPlayer::CARDS &cards) const;
 };
 
 }

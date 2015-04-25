@@ -132,30 +132,4 @@ CheckJackSuitAction::hasRankPath(const NetMauMau::Common::ICardPtr &uc,
 	return NetMauMau::Common::ICardPtr();
 }
 
-NetMauMau::Common::ICard::SUIT CheckJackSuitAction::getMaxPlayedOffSuit(const IAIState &state,
-		NetMauMau::Player::IPlayer::CARDS::difference_type *count) const {
-
-	AbstractAction::SUITCOUNT poSuitCount[4];
-	NetMauMau::Player::IPlayer::CARDS pcVec;
-
-	pcVec.reserve(state.getPlayedOutCards().size());
-
-	for(std::vector<std::string>::const_iterator i(state.getPlayedOutCards().begin());
-			i != state.getPlayedOutCards().end(); ++i) {
-
-		NetMauMau::Common::ICard::SUIT s;
-		NetMauMau::Common::ICard::RANK r;
-
-		if(NetMauMau::Common::parseCardDesc(*i, &s, &r)) {
-			pcVec.push_back(NetMauMau::Common::ICardPtr(NetMauMau::StdCardFactory().create(s, r)));
-		}
-	}
-
-	AbstractAction::countSuits(poSuitCount, pcVec);
-
-	if(count) *count = poSuitCount[0].count;
-
-	return poSuitCount[0].suit;
-}
-
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

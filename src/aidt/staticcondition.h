@@ -34,7 +34,7 @@ public:
 
 	virtual ~StaticCondition() {}
 
-	virtual IActionPtr operator()(const IAIState &) const {
+	virtual IActionPtr perform(const IAIState &, const Player::IPlayer::CARDS &) const {
 		return IActionPtr(new Action());
 	}
 };

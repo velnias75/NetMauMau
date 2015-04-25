@@ -29,7 +29,9 @@ RandomJackCondition::RandomJackCondition() : AbstractCondition() {}
 
 RandomJackCondition::~RandomJackCondition() {}
 
-IActionPtr RandomJackCondition::operator()(const IAIState &state) const {
+IActionPtr RandomJackCondition::perform(const IAIState &state,
+										const NetMauMau::Player::IPlayer::CARDS &) const {
+
 	return !state.isNoJack() && (state.getPowerSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL) ?
 		   IActionPtr(new RandomJackAction()) : getNullAction();
 }

@@ -39,7 +39,7 @@ public:
 
 	~DecisionTree() {}
 
-	Common::ICardPtr getCard() const;
+	Common::ICardPtr getCard(bool noJack = false) const;
 
 private:
 	const IConditionPtr m_rootCondition;
@@ -47,12 +47,18 @@ private:
 };
 
 template<class RootCond>
-Common::ICardPtr DecisionTree<RootCond>::getCard() const {
+Common::ICardPtr DecisionTree<RootCond>::getCard(bool noJack) const {
 
 	IConditionPtr cond(m_rootCondition);
 	IActionPtr act;
 
+	const bool oj = m_state.isNoJack();
+
+	m_state.setNoJack(noJack);
+
 	while(cond && (act = (*cond)(m_state))) cond = (*act)(m_state);
+
+	m_state.setNoJack(oj);
 
 	return m_state.getCard();
 }

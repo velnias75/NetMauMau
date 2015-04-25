@@ -97,6 +97,10 @@ public:
 
 	virtual void setPowerSuit(Common::ICard::SUIT suit);
 
+	virtual bool isPowerPlay() const _PURE;
+
+	virtual void setPowerPlay(bool b);
+
 	virtual Common::ICardPtr getUncoveredCard() const;
 
 	virtual bool hasPlayerFewCards() const _PURE;
@@ -125,6 +129,8 @@ private:
 	virtual Common::ICard::SUIT *getJackSuit() const _PURE;
 
 	virtual bool nineIsEight() const _PURE;
+
+	virtual bool isDirChgEnabled() const _PURE;
 
 	virtual bool tryAceRound() const _PURE;
 
@@ -165,7 +171,7 @@ private:
 	JackDecisionTreePtr m_jackDecisisionTree;
 	mutable Common::ICardPtr m_card;
 	mutable Common::ICardPtr m_uncoveredCard;
-	bool m_noJack;
+	mutable bool m_noJack;
 	mutable Common::ICard::SUIT *m_jackSuit;
 
 	static bool m_jackPlayed;

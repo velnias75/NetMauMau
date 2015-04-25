@@ -17,31 +17,28 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "bestjackaction.h"
+#ifndef NETMAUMAU_ENGINE_AIDT_JACKSUITACTION_H
+#define NETMAUMAU_ENGINE_AIDT_JACKSUITACTION_H
 
-#include "checkjacksuitaction.h"
-#include "staticcondition.h"
-#include "decisiontree.h"
-#include "iaistate.h"
+#include "abstractaction.h"
 
-namespace {
-NetMauMau::AIDT::IConditionPtr
-CHECKJACKSUITACTION(new NetMauMau::AIDT::StaticCondition<NetMauMau::AIDT::CheckJackSuitAction>());
+namespace NetMauMau {
+
+namespace AIDT {
+
+class JackSuitAction : public AbstractAction {
+	DISALLOW_COPY_AND_ASSIGN(JackSuitAction)
+public:
+	JackSuitAction();
+	virtual ~JackSuitAction();
+
+	virtual const IConditionPtr &operator()(IAIState &state) const;
+};
+
 }
 
-using namespace NetMauMau::AIDT;
-
-BestJackAction::BestJackAction() : AbstractAction() {}
-
-BestJackAction::~BestJackAction() {}
-
-const IConditionPtr &BestJackAction::operator()(IAIState &state) const {
-
-	const NetMauMau::Common::ICardPtr bc(state.getDecisionTree()->getCard(true));
-
-	if(bc && bc->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL) state.setCard(bc);
-
-	return CHECKJACKSUITACTION;
 }
+
+#endif /* NETMAUMAU_ENGINE_AIDT_JACKSUITACTION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

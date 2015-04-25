@@ -43,7 +43,7 @@ const IConditionPtr &ServeSevenAction::operator()(IAIState &state) const {
 		state.setCardsTaken(true);
 	}
 
-	return AbstractAction::getNullCondition();
+	return getNullCondition();
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

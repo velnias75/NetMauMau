@@ -53,10 +53,6 @@ private:
 
 	Common::ICard::SUIT findJackChoice(const IAIState &state) const;
 
-	Common::ICard::SUIT
-	getMaxPlayedOffSuit(const IAIState &state,
-						Player::IPlayer::CARDS::difference_type *count = 0L) const;
-
 	static Common::ICardPtr hasRankPath(const Common::ICardPtr &uc,  Common::ICard::SUIT s,
 										Common::ICard::RANK r, const Player::IPlayer::CARDS &cards,
 										bool nineIsEight);

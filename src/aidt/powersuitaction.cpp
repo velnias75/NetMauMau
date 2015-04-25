@@ -68,6 +68,9 @@ const IConditionPtr &PowerSuitAction::operator()(IAIState &state) const {
 					break;
 				}
 			}
+
+		} else {
+// 			state.setPowerSuit(getMaxPlayedOffSuit(state));
 		}
 
 	} else {

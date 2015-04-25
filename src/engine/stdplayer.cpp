@@ -43,28 +43,6 @@ NetMauMau::AIDT::IConditionPtr HAVEJACKCOND(new NetMauMau::AIDT::HaveJackConditi
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-struct cardGreater : std::binary_function < NetMauMau::Common::ICardPtr,
-		NetMauMau::Common::ICardPtr, bool > {
-	bool operator()(const NetMauMau::Common::ICardPtr &x,
-					const NetMauMau::Common::ICardPtr &y) const {
-		return !(x->getPoints() < y->getPoints());
-	}
-};
-
-struct playedOutRank : std::binary_function<std::string, NetMauMau::Common::ICard::RANK, bool> {
-	bool operator()(const std::string &desc, NetMauMau::Common::ICard::RANK rank) const {
-
-		NetMauMau::Common::ICard::RANK r = NetMauMau::Common::ICard::RANK_ILLEGAL;
-		NetMauMau::Common::ICard::SUIT s = NetMauMau::Common::ICard::SUIT_ILLEGAL;
-
-		if(NetMauMau::Common::parseCardDesc(desc, &s, &r)) {
-			return r == rank;
-		}
-
-		return false;
-	}
-};
-
 struct pointSum : std::binary_function<std::size_t, NetMauMau::Common::ICardPtr, std::size_t> {
 	std::size_t operator()(std::size_t i, const NetMauMau::Common::ICardPtr &c) const {
 		return i + c->getPoints();
@@ -127,7 +105,7 @@ StdPlayer::StdPlayer(const std::string &name) : IPlayer(), IAIState(), m_name(na
 										 NetMauMau::AIDT::IActionPtr
 										 (new NetMauMau::AIDT::NextAction(HAVEJACKCOND)),
 										 NetMauMau::AIDT::IActionPtr
-										 (new NetMauMau::AIDT::PowerPlayAction())))),
+										 (new NetMauMau::AIDT::PowerPlayAction(true))))),
 	m_card(), m_uncoveredCard(), m_noJack(false), m_jackSuit(0L) {
 	m_cards.reserve(32);
 }
@@ -135,6 +113,7 @@ StdPlayer::StdPlayer(const std::string &name) : IPlayer(), IAIState(), m_name(na
 StdPlayer::~StdPlayer() {}
 
 void StdPlayer::reset() throw() {
+
 	m_powerSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
 	m_cardsTaken = false;
 	m_powerPlay = false;
@@ -142,6 +121,11 @@ void StdPlayer::reset() throw() {
 	m_leftCount = m_rightCount = m_playerCount = 0;
 	m_dirChgEnabled = false;
 	m_cards.clear();
+
+	m_card = NetMauMau::Common::ICardPtr();
+	m_uncoveredCard = NetMauMau::Common::ICardPtr();
+	m_noJack = false;
+	m_jackSuit = 0L;
 
 	notifyCardCountChange();
 }
@@ -206,6 +190,7 @@ NetMauMau::Common::ICardPtr StdPlayer::findBestCard(const NetMauMau::Common::ICa
 	CARDS myCards(m_cards);
 
 	if(noJack) {
+		m_noJack = true;
 		myCards.erase(std::remove_if(myCards.begin(), myCards.end(),
 									 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
 											 NetMauMau::Common::ICard::JACK)), myCards.end());
@@ -421,24 +406,11 @@ NetMauMau::Common::ICardPtr StdPlayer::requestCard(const NetMauMau::Common::ICar
 	m_uncoveredCard = uc;
 	m_jackSuit = const_cast<NetMauMau::Common::ICard::SUIT *>(js);
 
-// 	if(m_ruleset) {
-// 		if(m_cards.size() == 1 &&
-// 				!(uc->getRank() == NetMauMau::Common::ICard::JACK &&
-// 				  (*m_cards.begin())->getRank() == NetMauMau::Common::ICard::JACK)) {
-// 			return m_ruleset->checkCard(uc, NetMauMau::Common::ICardPtr(*m_cards.begin())) ?
-// 				   NetMauMau::Common::ICardPtr(*m_cards.begin()) : NetMauMau::Common::ICardPtr();
-// 		} else if(m_cards.size() == 1) {
-// 			return NetMauMau::Common::ICardPtr();
-// 		}
-// 	}
-
 	NetMauMau::Common::ICardPtr bestCard(m_decisisionTree->getCard());
-
-// 	NetMauMau::Common::ICardPtr bestCard(findBestCard(uc, js, false));
 
 	if(bestCard && bestCard->getRank() == NetMauMau::Common::ICard::JACK &&
 			uc->getRank() == NetMauMau::Common::ICard::JACK) {
-		bestCard = findBestCard(uc, js, true);
+		bestCard = m_decisisionTree->getCard(true);
 	}
 
 	return m_ruleset ? (m_ruleset->checkCard(uc, NetMauMau::Common::ICardPtr(bestCard)) ?
@@ -455,7 +427,7 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICardPtr &uncoveredCard,
 	m_card = playedCard;
 	m_uncoveredCard = uncoveredCard;
 
-	const NetMauMau::Common::ICard::SUIT s = m_jackDecisisionTree->getCard()->getSuit();
+	const NetMauMau::Common::ICard::SUIT s = m_jackDecisisionTree->getCard(true)->getSuit();
 
 	m_card = c;
 
@@ -677,6 +649,18 @@ void StdPlayer::setTryAceRound(bool b) {
 
 const NetMauMau::AIDT::IAIState::DecisionTreePtr &StdPlayer::getDecisionTree() const {
 	return m_decisisionTree;
+}
+
+bool StdPlayer::isDirChgEnabled() const {
+	return m_dirChgEnabled;
+}
+
+bool StdPlayer::isPowerPlay() const {
+	return m_powerPlay;
+}
+
+void StdPlayer::setPowerPlay(bool b) {
+	m_powerPlay = b;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

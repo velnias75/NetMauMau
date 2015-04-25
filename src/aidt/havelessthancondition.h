@@ -39,8 +39,8 @@ public:
 
 	virtual ~HaveLessThanCondition() {}
 
-	virtual IActionPtr operator()(const IAIState &state) const {
-		return state.getPlayerCards().size() < Bound ? getTrueAction() : getFalseAction();
+	virtual IActionPtr perform(const IAIState &, const Player::IPlayer::CARDS &cards) const {
+		return cards.size() < Bound ? getTrueAction() : getFalseAction();
 	}
 };
 

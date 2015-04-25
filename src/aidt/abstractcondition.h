@@ -23,6 +23,7 @@
 #include "icondition.h"
 
 #include "iaction.h"
+#include "iplayer.h"
 
 namespace NetMauMau {
 
@@ -33,11 +34,19 @@ class AbstractCondition : public ICondition {
 public:
 	virtual ~AbstractCondition();
 
+	virtual IActionPtr operator()(const IAIState &state) const;
+
 protected:
 	AbstractCondition();
 
+	virtual IActionPtr perform(const IAIState &state,
+							   const Player::IPlayer::CARDS &cards) const = 0;
+
 	IActionPtr createNextAction(const IConditionPtr &cond) const;
 	static const IActionPtr &getNullAction() _CONST;
+
+private:
+	Player::IPlayer::CARDS removeJack(const Player::IPlayer::CARDS &cards) const;
 };
 
 }

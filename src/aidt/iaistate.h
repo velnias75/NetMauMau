@@ -73,6 +73,8 @@ public:
 
 	virtual bool nineIsEight() const = 0;
 
+	virtual bool isDirChgEnabled() const = 0;
+
 	virtual bool tryAceRound() const = 0;
 
 	virtual void setTryAceRound(bool b) = 0;
@@ -80,6 +82,10 @@ public:
 	virtual Common::ICard::SUIT getPowerSuit() const = 0;
 
 	virtual void setPowerSuit(Common::ICard::SUIT suit) = 0;
+
+	virtual bool isPowerPlay() const = 0;
+
+	virtual void setPowerPlay(bool b) = 0;
 
 	virtual const DecisionTreePtr &getDecisionTree() const = 0;
 

@@ -19,7 +19,9 @@
 
 #include "abstractcondition.h"
 
+#include "iaistate.h"
 #include "smartptr.h"
+#include "cardtools.h"
 #include "nextaction.h"
 
 namespace {
@@ -38,6 +40,23 @@ IActionPtr AbstractCondition::createNextAction(const IConditionPtr &cond) const 
 
 const IActionPtr &AbstractCondition::getNullAction() {
 	return NULLACTION;
+}
+
+IActionPtr AbstractCondition::operator()(const IAIState &state) const {
+	return perform(state, state.isNoJack() ? removeJack(state.getPlayerCards()) :
+				   state.getPlayerCards());
+}
+
+NetMauMau::Player::IPlayer::CARDS
+AbstractCondition::removeJack(const NetMauMau::Player::IPlayer::CARDS &cards) const {
+
+	NetMauMau::Player::IPlayer::CARDS myCards(cards);
+
+	myCards.erase(std::remove_if(myCards.begin(), myCards.end(),
+								 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+										 NetMauMau::Common::ICard::JACK)), myCards.end());
+
+	return myCards;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

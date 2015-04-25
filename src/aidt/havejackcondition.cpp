@@ -21,6 +21,7 @@
 
 #include "havelessthancondition.h"
 #include "bestjackaction.h"
+#include "jacksuitaction.h"
 #include "nextaction.h"
 #include "cardtools.h"
 #include "iaistate.h"
@@ -41,13 +42,12 @@ HaveJackCondition::HaveJackCondition() : AbstractCondition() {}
 
 HaveJackCondition::~HaveJackCondition() {}
 
-IActionPtr HaveJackCondition::operator()(const IAIState &state) const {
-
-	(state.getPlayerCards().size() == 2 &&
-	 NetMauMau::Common::findRank(NetMauMau::Common::ICard::JACK,
-								 state.getPlayerCards().begin(), state.getPlayerCards().end()));
-
-	return createNextAction(HAVELESSTHANEIGHTCOND);
+IActionPtr HaveJackCondition::perform(const IAIState &state,
+									  const NetMauMau::Player::IPlayer::CARDS &cards) const {
+	return (state.getPlayerCards().size() == 2 &&
+			NetMauMau::Common::findRank(NetMauMau::Common::ICard::JACK, cards.begin(),
+										cards.end())) ? IActionPtr(new JackSuitAction()) :
+		   createNextAction(HAVELESSTHANEIGHTCOND);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -17,31 +17,44 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "bestjackaction.h"
+#include <cassert>
 
-#include "checkjacksuitaction.h"
-#include "staticcondition.h"
-#include "decisiontree.h"
+#include "jacksuitaction.h"
+
+#include "havelessthancondition.h"
+#include "bestjackaction.h"
+#include "cardtools.h"
 #include "iaistate.h"
 
 namespace {
+
 NetMauMau::AIDT::IConditionPtr
-CHECKJACKSUITACTION(new NetMauMau::AIDT::StaticCondition<NetMauMau::AIDT::CheckJackSuitAction>());
+HAVELESSTHANEIGHTCOND(new NetMauMau::AIDT::HaveLessThanCondition<8>(
+						  NetMauMau::AIDT::IActionPtr(new NetMauMau::AIDT::BestJackAction()),
+						  NetMauMau::AIDT::IActionPtr()));
+
 }
 
 using namespace NetMauMau::AIDT;
 
-BestJackAction::BestJackAction() : AbstractAction() {}
+JackSuitAction::JackSuitAction() : AbstractAction() {}
 
-BestJackAction::~BestJackAction() {}
+JackSuitAction::~JackSuitAction() {}
 
-const IConditionPtr &BestJackAction::operator()(IAIState &state) const {
+const IConditionPtr &JackSuitAction::operator()(IAIState &state) const {
 
-	const NetMauMau::Common::ICardPtr bc(state.getDecisionTree()->getCard(true));
+	const NetMauMau::Player::IPlayer::CARDS::const_iterator
+	&f(std::find_if(state.getPlayerCards().begin(), state.getPlayerCards().end(), std::not1
+					(std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+								  NetMauMau::Common::ICard::JACK))));
 
-	if(bc && bc->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL) state.setCard(bc);
+	if(f != state.getPlayerCards().end()) {
+		assert((*f)->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL);
+		state.setCard(*f);
+		return getNullCondition();
+	}
 
-	return CHECKJACKSUITACTION;
+	return HAVELESSTHANEIGHTCOND;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

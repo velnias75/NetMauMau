@@ -38,7 +38,8 @@ PowerSuitCondition::PowerSuitCondition(const IActionPtr &actTrue, const IActionP
 
 PowerSuitCondition::~PowerSuitCondition() {}
 
-IActionPtr PowerSuitCondition::operator()(const IAIState &state) const {
+IActionPtr PowerSuitCondition::perform(const IAIState &state,
+									   const NetMauMau::Player::IPlayer::CARDS &) const {
 	return state.getPowerSuit() == NetMauMau::Common::ICard::SUIT_ILLEGAL ?
 		   getTrueAction() : getFalseAction();
 }

@@ -32,7 +32,7 @@ public:
 	RandomJackCondition();
 	virtual ~RandomJackCondition();
 
-	virtual IActionPtr operator()(const IAIState &state) const;
+	virtual IActionPtr perform(const IAIState &state, const Player::IPlayer::CARDS &cards) const;
 };
 
 }

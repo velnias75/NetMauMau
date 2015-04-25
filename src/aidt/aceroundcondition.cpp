@@ -39,7 +39,8 @@ AceRoundCondition::AceRoundCondition() : AbstractCondition() {}
 
 AceRoundCondition::~AceRoundCondition() {}
 
-IActionPtr AceRoundCondition::operator()(const IAIState &state) const {
+IActionPtr AceRoundCondition::perform(const IAIState &state,
+									  const NetMauMau::Player::IPlayer::CARDS &) const {
 	return state.tryAceRound() || (!state.getRuleSet()->isAceRound() &&
 								   state.getRuleSet()->isAceRoundPossible()) ?
 		   ACEROUNDACTION : createNextAction(RANDOMJACKCOND);

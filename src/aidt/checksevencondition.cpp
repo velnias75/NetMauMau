@@ -38,7 +38,8 @@ CheckSevenCondition::CheckSevenCondition() : AbstractCondition() {}
 
 CheckSevenCondition::~CheckSevenCondition() {}
 
-IActionPtr CheckSevenCondition::operator()(const IAIState &state) const {
+IActionPtr CheckSevenCondition::perform(const IAIState &state,
+										const NetMauMau::Player::IPlayer::CARDS &) const {
 	return state.getPlayedOutCards().size() > (4 * state.getTalonFactor()) &&
 		   state.getUncoveredCard()->getRank() == NetMauMau::Common::ICard::SEVEN ?
 		   SERVESEVENACTION : createNextAction(SKIPPLAYERACTION);

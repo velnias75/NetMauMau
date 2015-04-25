@@ -20,6 +20,7 @@
 #include "skipplayercondition.h"
 
 #include "bestsuitcondition.h"
+#include "skipplayeraction.h"
 #include "cardtools.h"
 #include "iaistate.h"
 #include "smartptr.h"
@@ -53,14 +54,13 @@ SkipPlayerCondition::SkipPlayerCondition() : AbstractCondition() {}
 
 SkipPlayerCondition::~SkipPlayerCondition() {}
 
-IActionPtr SkipPlayerCondition::operator()(const IAIState &state) const {
-
-	state.getPlayerCount() > 2 && (state.getRightCount() < state.getPlayerCards().size() ||
-								   state.getRightCount() < state.getLeftCount()) &&
-	std::count_if(state.getPlayedOutCards().begin(), state.getPlayedOutCards().end(),
-				  std::bind2nd(playedOutRank(), NetMauMau::Common::ICard::SEVEN));
-
-	return AbstractCondition::createNextAction(BESTSUITCOND);
+IActionPtr SkipPlayerCondition::perform(const IAIState &state,
+										const NetMauMau::Player::IPlayer::CARDS &) const {
+	return state.getPlayerCount() > 2 && (state.getRightCount() < state.getPlayerCards().size() ||
+										  state.getRightCount() < state.getLeftCount()) &&
+		   std::count_if(state.getPlayedOutCards().begin(), state.getPlayedOutCards().end(),
+						 std::bind2nd(playedOutRank(), NetMauMau::Common::ICard::SEVEN)) ?
+		   IActionPtr(new SkipPlayerAction()) : AbstractCondition::createNextAction(BESTSUITCOND);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

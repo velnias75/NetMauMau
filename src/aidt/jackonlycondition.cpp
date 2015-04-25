@@ -42,15 +42,15 @@ JackOnlyCondition::JackOnlyCondition() : AbstractCondition() {}
 
 JackOnlyCondition::~JackOnlyCondition() {}
 
-IActionPtr JackOnlyCondition::operator()(const IAIState &state) const {
+IActionPtr JackOnlyCondition::perform(const IAIState &state,
+									  const NetMauMau::Player::IPlayer::CARDS &cards) const {
 
-	const NetMauMau::Player::IPlayer::CARDS::size_type s(state.getPlayerCards().size());
+	const NetMauMau::Player::IPlayer::CARDS::size_type s(cards.size());
 
 	return state.getRuleSet() ?
 		   ((s == 1 && !(state.getUncoveredCard()->getRank() == NetMauMau::Common::ICard::JACK &&
-						 (*(state.getPlayerCards()).begin())->getRank() ==
-						 NetMauMau::Common::ICard::JACK)) ? PLAYJACKACTION :
-			(s == 1 ? SUSPENDACTION : createNextAction(CHECKSEVENCOND))) :
+						 (*cards.begin())->getRank() == NetMauMau::Common::ICard::JACK)) ?
+			PLAYJACKACTION : (s == 1 ? SUSPENDACTION : createNextAction(CHECKSEVENCOND))) :
 			   createNextAction(CHECKSEVENCOND);
 }
 

@@ -57,6 +57,10 @@ protected:
 
 	const NetMauMau::Common::ICard::SUIT *getSuits() const _CONST;
 
+	Common::ICard::SUIT
+	getMaxPlayedOffSuit(const IAIState &state,
+						Player::IPlayer::CARDS::difference_type *count = 0L) const;
+
 	static const IConditionPtr &getNullCondition() _CONST;
 };
 

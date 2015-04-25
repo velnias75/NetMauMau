@@ -29,10 +29,13 @@ namespace AIDT {
 class PowerPlayAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(PowerPlayAction)
 public:
-	PowerPlayAction();
+	PowerPlayAction(bool set = false);
 	virtual ~PowerPlayAction();
 
 	virtual const IConditionPtr &operator()(IAIState &state) const;
+
+private:
+	const bool m_set;
 };
 
 }

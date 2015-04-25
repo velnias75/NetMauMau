@@ -32,7 +32,7 @@ public:
 	JackOnlyCondition();
 	virtual ~JackOnlyCondition();
 
-	virtual Common::SmartPtr<IAction> operator()(const IAIState &state) const;
+	virtual IActionPtr perform(const IAIState &state, const Player::IPlayer::CARDS &cards) const;
 };
 
 }

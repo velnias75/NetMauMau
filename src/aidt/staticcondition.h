@@ -17,37 +17,32 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "bestjackaction.h"
+#ifndef NETMAUMAU_ENGINE_AIDT_STATICCONDITION_H
+#define NETMAUMAU_ENGINE_AIDT_STATICCONDITION_H
 
-#include "checkjacksuitaction.h"
-#include "staticcondition.h"
-#include "decisiontree.h"
-#include "iaistate.h"
+#include "abstractcondition.h"
 
-namespace {
-NetMauMau::AIDT::IConditionPtr
-CHECKJACKSUITACTION(new NetMauMau::AIDT::StaticCondition<NetMauMau::AIDT::CheckJackSuitAction>());
+namespace NetMauMau {
+
+namespace AIDT {
+
+template<class Action>
+class StaticCondition : public AbstractCondition {
+	DISALLOW_COPY_AND_ASSIGN(StaticCondition)
+public:
+	StaticCondition() : AbstractCondition() {}
+
+	virtual ~StaticCondition() {}
+
+	virtual IActionPtr operator()(const IAIState &) const {
+		return IActionPtr(new Action());
+	}
+};
+
 }
 
-using namespace NetMauMau::AIDT;
-
-BestJackAction::BestJackAction() : AbstractAction() {}
-
-BestJackAction::~BestJackAction() {}
-
-const IConditionPtr &BestJackAction::operator()(IAIState &state) const {
-
-	const bool oj = state.isNoJack();
-
-	state.setNoJack(true);
-
-	const NetMauMau::Common::ICardPtr bc(state.getDecisionTree()->getCard());
-
-	if(bc && bc->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL) state.setCard(bc);
-
-	state.setNoJack(oj);
-
-	return CHECKJACKSUITACTION;
 }
+
+#endif /* NETMAUMAU_ENGINE_AIDT_STATICCONDITION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

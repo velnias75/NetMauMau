@@ -117,48 +117,8 @@ protected:
 	bool isAceRoundAllowed() const;
 
 private:
-
-#pragma GCC diagnostic ignored "-Weffc++"
-#pragma GCC diagnostic push
-	struct _hasRankPath : std::unary_function<Common::ICardPtr, bool> {
-
-		explicit _hasRankPath(const CARDS &c, Common::ICard::RANK r, bool nie) : mCards(c), rank(r),
-			nineIsEight(nie) {}
-
-		bool operator()(const Common::ICardPtr &c) const;
-
-	private:
-		const CARDS &mCards;
-		const Common::ICard::RANK rank;
-		bool nineIsEight;
-	};
-#pragma GCC diagnostic pop
-
-	typedef struct _suitCount {
-		bool operator<(const _suitCount &sc) const {
-			return !(count < sc.count);
-		}
-
-		bool operator==(Common::ICard::SUIT s) const {
-			return suit == s;
-		}
-
-		Common::ICard::SUIT suit;
-		CARDS::difference_type count;
-	} SUITCOUNT;
-
-	void countSuits(SUITCOUNT *suitCount, const CARDS &myCards) const;
-
-	Common::ICard::SUIT getMaxPlayedOffSuit(CARDS::difference_type *count = 0L) const;
-
-	static Common::ICardPtr hasRankPath(const Common::ICardPtr &uc,  Common::ICard::SUIT s,
-										Common::ICard::RANK r, const CARDS &cards,
-										bool nineIsEight);
-
 	Common::ICardPtr findBestCard(const Common::ICardPtr &uc, const Common::ICard::SUIT *js,
 								  bool noJack) const;
-
-	Common::ICard::SUIT findJackChoice() const;
 
 	virtual std::size_t getTalonFactor() const _PURE;
 

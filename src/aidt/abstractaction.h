@@ -33,10 +33,6 @@ namespace AIDT {
 class AbstractAction : public IAction {
 	DISALLOW_COPY_AND_ASSIGN(AbstractAction)
 public:
-	virtual ~AbstractAction();
-
-protected:
-
 	typedef struct _suitCount {
 
 		bool operator<(const _suitCount &sc) const {
@@ -52,9 +48,14 @@ protected:
 
 	} SUITCOUNT;
 
+	virtual ~AbstractAction();
+
+	static void countSuits(SUITCOUNT *suitCount, const Player::IPlayer::CARDS &myCards);
+
+protected:
 	AbstractAction();
 
-	void countSuits(SUITCOUNT *suitCount, const Player::IPlayer::CARDS &myCards) const;
+	const NetMauMau::Common::ICard::SUIT *getSuits() const _CONST;
 
 	static const IConditionPtr &getNullCondition() _CONST;
 };

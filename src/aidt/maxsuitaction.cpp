@@ -69,7 +69,7 @@ const IConditionPtr &MaxSuitAction::operator()(IAIState &state) const {
 	NetMauMau::Player::IPlayer::CARDS mc(state.getPlayerCards());
 
 	SUITCOUNT suitCount[4];
-	countSuits(suitCount, mc);
+	AbstractAction::countSuits(suitCount, mc);
 
 	NetMauMau::Common::ICardPtr bestCard;
 

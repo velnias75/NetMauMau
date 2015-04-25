@@ -47,7 +47,7 @@ const IConditionPtr &PowerSuitAction::operator()(IAIState &state) const {
 		NetMauMau::Player::IPlayer::CARDS myCards(state.getPlayerCards());
 
 		SUITCOUNT suitCount[4];
-		countSuits(suitCount, myCards);
+		AbstractAction::countSuits(suitCount, myCards);
 
 		if(std::count_if(myCards.begin(), myCards.end(),
 						 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),

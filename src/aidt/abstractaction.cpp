@@ -45,7 +45,7 @@ AbstractAction::AbstractAction() : IAction() {}
 AbstractAction::~AbstractAction() {}
 
 void AbstractAction::countSuits(SUITCOUNT *suitCount,
-								const NetMauMau::Player::IPlayer::CARDS &myCards) const {
+								const NetMauMau::Player::IPlayer::CARDS &myCards) {
 
 	std::memset(suitCount, 0, sizeof(SUITCOUNT) * 4);
 
@@ -59,6 +59,10 @@ void AbstractAction::countSuits(SUITCOUNT *suitCount,
 	}
 
 	if(!noCards) std::sort(suitCount, suitCount + 4);
+}
+
+const NetMauMau::Common::ICard::SUIT *AbstractAction::getSuits() const {
+	return SUIT;
 }
 
 const IConditionPtr &AbstractAction::getNullCondition() {

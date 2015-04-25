@@ -24,33 +24,31 @@
 #include "suspendaction.h"
 #include "iruleset.h"
 #include "smartptr.h"
-#include "aistate.h"
+#include "iaistate.h"
 
 namespace {
 
-const NetMauMau::Engine::AIDT::IActionPtr
-PLAYJACKACTION(new NetMauMau::Engine::AIDT::PlayJackAction());
+const NetMauMau::AIDT::IActionPtr PLAYJACKACTION(new NetMauMau::AIDT::PlayJackAction());
 
-const NetMauMau::Engine::AIDT::IActionPtr
-SUSPENDACTION(new NetMauMau::Engine::AIDT::SuspendAction());
+const NetMauMau::AIDT::IActionPtr SUSPENDACTION(new NetMauMau::AIDT::SuspendAction());
 
-const NetMauMau::Engine::AIDT::IConditionPtr
-CHECKSEVENCOND(new NetMauMau::Engine::AIDT::CheckSevenCondition());
+const NetMauMau::AIDT::IConditionPtr CHECKSEVENCOND(new NetMauMau::AIDT::CheckSevenCondition());
+
 }
 
-using namespace NetMauMau::Engine::AIDT;
+using namespace NetMauMau::AIDT;
 
 JackOnlyCondition::JackOnlyCondition() : AbstractCondition() {}
 
 JackOnlyCondition::~JackOnlyCondition() {}
 
-IActionPtr JackOnlyCondition::operator()(const AIState &state) const {
+IActionPtr JackOnlyCondition::operator()(const IAIState &state) const {
 
-	const NetMauMau::Player::IPlayer::CARDS::size_type s(state.getCards().size());
+	const NetMauMau::Player::IPlayer::CARDS::size_type s(state.getPlayerCards().size());
 
 	return state.getRuleSet() ?
 		   ((s == 1 && !(state.getUncoveredCard()->getRank() == NetMauMau::Common::ICard::JACK &&
-						 (*(state.getCards()).begin())->getRank() ==
+						 (*(state.getPlayerCards()).begin())->getRank() ==
 						 NetMauMau::Common::ICard::JACK)) ? PLAYJACKACTION :
 			(s == 1 ? SUSPENDACTION : createNextAction(CHECKSEVENCOND))) :
 			   createNextAction(CHECKSEVENCOND);

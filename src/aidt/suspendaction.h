@@ -24,8 +24,6 @@
 
 namespace NetMauMau {
 
-namespace Engine {
-
 namespace AIDT {
 
 class SuspendAction : public AbstractAction {
@@ -34,10 +32,8 @@ public:
 	SuspendAction();
 	virtual ~SuspendAction();
 
-	virtual const IConditionPtr &operator()(AIState &state) const _CONST;
+	virtual const IConditionPtr &operator()(IAIState &state) const _CONST;
 };
-
-}
 
 }
 

@@ -19,20 +19,21 @@
 
 #include "servesevenaction.h"
 
-#include "aistate.h"
+#include "iaistate.h"
+#include "smartptr.h"
 #include "cardtools.h"
 
-using namespace NetMauMau::Engine::AIDT;
+using namespace NetMauMau::AIDT;
 
 ServeSevenAction::ServeSevenAction() : AbstractAction() {}
 
 ServeSevenAction::~ServeSevenAction() {}
 
-const IConditionPtr &ServeSevenAction::operator()(AIState &state) const {
+const IConditionPtr &ServeSevenAction::operator()(IAIState &state) const {
 
 	const NetMauMau::Player::IPlayer::CARDS::value_type f =
-		NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN, state.getCards().begin(),
-									state.getCards().end());
+		NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN, state.getPlayerCards().begin(),
+									state.getPlayerCards().end());
 
 	if(f) {
 		state.setCard(f);

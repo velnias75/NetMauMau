@@ -17,32 +17,59 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cstring>
 #include <algorithm>
 
 #include "abstractaction.h"
 
 #include "cardtools.h"
-#include "aistate.h"
+#include "smartptr.h"
+#include "iaistate.h"
 
 namespace {
-NetMauMau::Engine::AIDT::IConditionPtr NULLCONDITION;
+NetMauMau::AIDT::IConditionPtr NULLCONDITION;
+
+const NetMauMau::Common::ICard::SUIT SUIT[4] = {
+	NetMauMau::Common::ICard::HEARTS,
+	NetMauMau::Common::ICard::DIAMONDS,
+	NetMauMau::Common::ICard::SPADES,
+	NetMauMau::Common::ICard::CLUBS
+};
+
 }
 
-using namespace NetMauMau::Engine::AIDT;
+using namespace NetMauMau::AIDT;
 
 AbstractAction::AbstractAction() : IAction() {}
 
 AbstractAction::~AbstractAction() {}
 
-NetMauMau::Player::IPlayer::CARDS AbstractAction::pullSuit(const AIState &state,
+NetMauMau::Player::IPlayer::CARDS AbstractAction::pullSuit(const IAIState &state,
 		NetMauMau::Common::ICard::SUIT suit) {
 
-	NetMauMau::Player::IPlayer::CARDS myCards(state.getCards());
+	NetMauMau::Player::IPlayer::CARDS myCards(state.getPlayerCards());
 
 	std::partition(myCards.begin(), myCards.end(),
 				   std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit), suit));
 
 	return myCards;
+}
+
+void AbstractAction::countSuits(SUITCOUNT *suitCount,
+								const NetMauMau::Player::IPlayer::CARDS &myCards) const {
+
+	std::memset(suitCount, 0, sizeof(SUITCOUNT) * 4);
+
+	const bool noCards = myCards.empty();
+
+	for(std::size_t i = 0; i < 4; ++i) {
+		const SUITCOUNT sc = { SUIT[i], noCards ? 0 : std::count_if(myCards.begin(), myCards.end(),
+							   std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit), SUIT[i]))
+							 };
+		suitCount[i] = sc;
+	}
+
+	if(!noCards) std::sort(suitCount, suitCount + 4);
 }
 
 const IConditionPtr &AbstractAction::getNullCondition() {

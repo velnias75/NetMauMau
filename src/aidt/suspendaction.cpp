@@ -19,13 +19,13 @@
 
 #include "suspendaction.h"
 
-using namespace NetMauMau::Engine::AIDT;
+using namespace NetMauMau::AIDT;
 
 SuspendAction::SuspendAction() : AbstractAction() {}
 
 SuspendAction::~SuspendAction() {}
 
-const IConditionPtr &SuspendAction::operator()(AIState &) const {
+const IConditionPtr &SuspendAction::operator()(IAIState &) const {
 	return AbstractAction::getNullCondition();
 }
 

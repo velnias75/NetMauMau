@@ -19,24 +19,29 @@
 
 #include "checksevencondition.h"
 
+#include "skipplayercondition.h"
 #include "servesevenaction.h"
-#include "aistate.h"
+#include "smartptr.h"
+#include "iaistate.h"
 
 namespace {
-NetMauMau::Engine::AIDT::IActionPtr
-SERVESEVENACTION(new NetMauMau::Engine::AIDT::ServeSevenAction());
+
+NetMauMau::AIDT::IActionPtr SERVESEVENACTION(new NetMauMau::AIDT::ServeSevenAction());
+
+NetMauMau::AIDT::IConditionPtr SKIPPLAYERACTION(new NetMauMau::AIDT::SkipPlayerCondition());
+
 }
 
-using namespace NetMauMau::Engine::AIDT;
+using namespace NetMauMau::AIDT;
 
-CheckSevenCondition::CheckSevenCondition() {}
+CheckSevenCondition::CheckSevenCondition() : AbstractCondition() {}
 
 CheckSevenCondition::~CheckSevenCondition() {}
 
-IActionPtr CheckSevenCondition::operator()(const AIState &state) const {
+IActionPtr CheckSevenCondition::operator()(const IAIState &state) const {
 	return state.getPlayedOutCards().size() > (4 * state.getTalonFactor()) &&
 		   state.getUncoveredCard()->getRank() == NetMauMau::Common::ICard::SEVEN ?
-		   SERVESEVENACTION : AbstractCondition::getNullAction();
+		   SERVESEVENACTION : createNextAction(SKIPPLAYERACTION);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

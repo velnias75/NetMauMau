@@ -28,27 +28,23 @@ namespace Common {
 template<class> class SmartPtr;
 }
 
-namespace Engine {
-
 namespace AIDT {
 
 class IAction;
-class AIState;
+class IAIState;
 
 class ICondition {
 	DISALLOW_COPY_AND_ASSIGN(ICondition)
 public:
 	virtual ~ICondition() {}
 
-	virtual Common::SmartPtr<IAction> operator()(const AIState &state) const = 0;
+	virtual Common::SmartPtr<IAction> operator()(const IAIState &state) const = 0;
 
 protected:
 	ICondition() {}
 };
 
 typedef Common::SmartPtr<ICondition> IConditionPtr;
-
-}
 
 }
 

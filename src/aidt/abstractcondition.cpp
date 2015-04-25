@@ -23,12 +23,12 @@
 #include "nextaction.h"
 
 namespace {
-const NetMauMau::Engine::AIDT::IActionPtr NULLACTION;
+const NetMauMau::AIDT::IActionPtr NULLACTION;
 }
 
-using namespace NetMauMau::Engine::AIDT;
+using namespace NetMauMau::AIDT;
 
-AbstractCondition::AbstractCondition() {}
+AbstractCondition::AbstractCondition() : ICondition() {}
 
 AbstractCondition::~AbstractCondition() {}
 

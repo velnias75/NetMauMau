@@ -1,4 +1,4 @@
-check_PROGRAMS = test_netmaumau test_aidt 
+check_PROGRAMS = test_netmaumau
 noinst_SCRIPTS = stresstest.sh
 
 if ENABLE_CLI_CLIENT
@@ -28,16 +28,10 @@ noinst_HEADERS = testeventhandler.h testclient.h testimg.h
 
 test_netmaumau_CPPFLAGS = $(GSL)
 test_netmaumau_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
-	-I$(top_srcdir)/src/engine
+	-I$(top_srcdir)/src/engine -I$(top_srcdir)/src/aidt
 test_netmaumau_SOURCES = test_netmaumau.cpp testeventhandler.cpp
 test_netmaumau_LDADD = ../engine/libengine.la
 test_netmaumau_LDFLAGS = -no-install
-
-test_aidt_CPPFLAGS = $(GSL) -I$(top_srcdir)/src/aidt -I$(top_srcdir)/src/include \
-	-I$(top_srcdir)/src/common -I$(top_srcdir)/src/lua -I$(top_srcdir)/src/engine
-test_aidt_SOURCES = test_aidt.cpp
-test_aidt_LDADD = ../engine/libengine.la 
-test_aidt_LDFLAGS = -no-install
 
 if ENABLE_CLI_CLIENT
 nmm_client_CPPFLAGS = -DCLIENTVERSION=$(CLIENTVERSION)

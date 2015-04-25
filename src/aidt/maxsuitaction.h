@@ -17,31 +17,33 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "aistate.h"
+#ifndef NETMAUMAU_ENGINE_AIDT_MAXSUITACTION_H
+#define NETMAUMAU_ENGINE_AIDT_MAXSUITACTION_H
 
-#include "iruleset.h"
+#include "abstractaction.h"
 
-using namespace NetMauMau::Engine::AIDT;
+namespace NetMauMau {
 
-AIState::AIState(const NetMauMau::Player::IPlayer::CARDS &cards,
-				 const NetMauMau::Common::ICardPtr &uc, const IRuleSetPtr &ruleSet,
-				 const AIState::PLAYEDOUTCARDS &playedOutCards) : m_card(), m_cards(cards),
-	m_uncoveredCard(uc), m_ruleSet(ruleSet), m_playedOutCards(playedOutCards),
-	m_cardsTaken(false) {}
+namespace AIDT {
 
-AIState::~AIState() {}
+class MaxSuitAction : public AbstractAction {
+	DISALLOW_COPY_AND_ASSIGN(MaxSuitAction)
+public:
+	MaxSuitAction();
+	virtual ~MaxSuitAction();
 
-AIState::IRuleSetPtr AIState::getRuleSet() const {
-	return m_ruleSet;
+	virtual const IConditionPtr &operator()(IAIState &state) const;
+
+private:
+	static Common::ICardPtr hasRankPath(const Common::ICardPtr &uc, Common::ICard::SUIT s,
+										Common::ICard::RANK r, const Player::IPlayer::CARDS &cards,
+										bool nineIsEight);
+};
+
 }
 
-void AIState::setCard(const NetMauMau::Common::ICardPtr &card) {
-	m_card = card;
 }
 
-#warning TODO implement 'AIState::getTalonFactor()' using 'EngineConfig'
-std::size_t AIState::getTalonFactor() const {
-	return 1;
-}
+#endif /* NETMAUMAU_ENGINE_AIDT_MAXSUITACTION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

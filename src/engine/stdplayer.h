@@ -21,13 +21,18 @@
 #define NETMAUMAU_PLAYER_STDPLAYER_H
 
 #include "iplayer.h"
+#include "iaistate.h"
 #include "smartptr.h"
 
 namespace NetMauMau {
 
+namespace AIDT {
+class DecisionTree;
+}
+
 namespace Player {
 
-class _EXPORT StdPlayer : public IPlayer {
+class _EXPORT StdPlayer : public IPlayer, public AIDT::IAIState {
 	DISALLOW_COPY_AND_ASSIGN(StdPlayer)
 public:
 	explicit StdPlayer(const std::string &name);
@@ -74,17 +79,33 @@ public:
 		m_jackPlayed = false;
 	}
 
+	virtual const CARDS &getPlayerCards() const _CONST;
+
+	virtual const RuleSet::IRuleSet *getRuleSet() const _PURE;
+
+	virtual const std::vector<std::string> &getPlayedOutCards() const _CONST;
+
+	virtual std::size_t getPlayerCount() const _PURE;
+
+	virtual std::size_t getLeftCount() const _PURE;
+
+	virtual std::size_t getRightCount() const _PURE;
+
+	virtual Common::ICard::SUIT getPowerSuit() const _PURE;
+
+	virtual void setPowerSuit(Common::ICard::SUIT suit);
+
+	virtual Common::ICardPtr getUncoveredCard() const;
+
+	virtual bool hasPlayerFewCards() const _PURE;
+
+	virtual bool hasTakenCards() const _PURE;
+
+	virtual void setCardsTaken(bool b);
+
 protected:
 	CARDS getPossibleCards(const Common::ICardPtr &uncoveredCard,
 						   const Common::ICard::SUIT *suit) const;
-
-	inline const CARDS &getPlayerCards() const {
-		return m_cards;
-	}
-
-	inline const RuleSet::IRuleSet *getRuleSet() const {
-		return m_ruleset;
-	}
 
 	// cppcheck-suppress functionConst
 	void notifyCardCountChange();
@@ -137,9 +158,27 @@ private:
 
 	Common::ICard::SUIT findJackChoice() const;
 
-	std::size_t getTalonFactor() const _PURE;
+	virtual std::size_t getTalonFactor() const _PURE;
+
+	virtual Common::ICard::SUIT *getJackSuit() const _PURE;
+
+	virtual bool nineIsEight() const _PURE;
+
+	virtual bool tryAceRound() const _PURE;
+
+	virtual void setTryAceRound(bool b);
+
+	virtual bool isNoJack() const _PURE;
+
+	virtual void setNoJack(bool b);
+
+	virtual void setCard(const Common::ICardPtr &card);
+
+	virtual Common::ICardPtr getCard() const;
 
 private:
+	typedef Common::SmartPtr<AIDT::DecisionTree> DecisionTreePtr;
+
 	const std::string m_name;
 	CARDS m_cards;
 	mutable bool m_cardsTaken;
@@ -156,6 +195,12 @@ private:
 	std::size_t m_playerCount;
 	const EngineConfig *m_engineCfg;
 	const ICardCountObserver *m_cardCountObserver;
+
+	DecisionTreePtr m_decisisionTree;
+	Common::ICardPtr m_card;
+	mutable Common::ICardPtr m_uncoveredCard;
+	bool m_noJack;
+	mutable Common::ICard::SUIT *m_jackSuit;
 
 	static bool m_jackPlayed;
 };

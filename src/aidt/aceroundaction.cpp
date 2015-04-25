@@ -17,24 +17,38 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "playjackaction.h"
+#include "aceroundaction.h"
 
-#include "iruleset.h"
+#include "cardtools.h"
 #include "iaistate.h"
+#include "iruleset.h"
 #include "smartptr.h"
 
 using namespace NetMauMau::AIDT;
 
-PlayJackAction::PlayJackAction() : AbstractAction() {}
+AceRoundAction::AceRoundAction() : AbstractAction() {}
 
-PlayJackAction::~PlayJackAction() {}
+AceRoundAction::~AceRoundAction() {}
 
-const IConditionPtr &PlayJackAction::operator()(IAIState &state) const {
+const IConditionPtr &AceRoundAction::operator()(IAIState &state) const {
 
-	const NetMauMau::Common::ICardPtr firstCard(*state.getPlayerCards().begin());
+	NetMauMau::Player::IPlayer::CARDS myCards(state.getPlayerCards());
 
-	state.setCard(state.getRuleSet()->checkCard(state.getUncoveredCard(), firstCard) ?
-				  firstCard : NetMauMau::Common::ICardPtr());
+	state.setTryAceRound(std::count_if(myCards.begin(), myCards.end(),
+									   std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+											   state.getRuleSet()->getAceRoundRank()))
+						 > (state.tryAceRound() ? 0 : 1));
+
+	if(state.tryAceRound()) {
+
+		std::partition(myCards.begin(), myCards.end(),
+					   std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+									state.getRuleSet()->getAceRoundRank()));
+
+		state.setCard(*myCards.begin());
+
+		return AbstractAction::getNullCondition();
+	}
 
 	return AbstractAction::getNullCondition();
 }

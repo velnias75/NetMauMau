@@ -17,28 +17,29 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_ENGINE_AIDT_SERVESEVENACTION_H
-#define NETMAUMAU_ENGINE_AIDT_SERVESEVENACTION_H
+#include "aceroundcondition.h"
 
-#include "abstractaction.h"
+#include "aceroundaction.h"
+#include "smartptr.h"
+#include "iaistate.h"
+#include "iruleset.h"
 
-namespace NetMauMau {
-
-namespace AIDT {
-
-class ServeSevenAction : public AbstractAction {
-	DISALLOW_COPY_AND_ASSIGN(ServeSevenAction)
-public:
-	ServeSevenAction();
-	virtual ~ServeSevenAction();
-
-	virtual const IConditionPtr &operator()(IAIState &state) const;
-};
-
+namespace {
+NetMauMau::AIDT::IActionPtr ACEROUNDACTION(new NetMauMau::AIDT::AceRoundAction());
 }
 
-}
+using namespace NetMauMau::AIDT;
 
-#endif /* NETMAUMAU_ENGINE_AIDT_SERVESEVENACTION_H */
+AceRoundCondition::AceRoundCondition() : AbstractCondition() {}
+
+AceRoundCondition::~AceRoundCondition() {}
+
+IActionPtr AceRoundCondition::operator()(const IAIState &state) const {
+
+	if(state.tryAceRound() || (!state.getRuleSet()->isAceRound() &&
+							   state.getRuleSet()->isAceRoundPossible())) {
+		return ACEROUNDACTION;
+	}
+}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

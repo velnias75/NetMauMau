@@ -24,8 +24,6 @@
 
 namespace NetMauMau {
 
-namespace Engine {
-
 namespace AIDT {
 
 class PlayJackAction : public AbstractAction {
@@ -34,10 +32,8 @@ public:
 	PlayJackAction();
 	virtual ~PlayJackAction();
 
-	virtual const IConditionPtr &operator()(AIState &state) const;
+	virtual const IConditionPtr &operator()(IAIState &state) const;
 };
-
-}
 
 }
 

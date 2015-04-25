@@ -23,11 +23,10 @@
 #include "iaction.h"
 
 #include "iplayer.h"
+#include "smartptr.h"
 #include "icondition.h"
 
 namespace NetMauMau {
-
-namespace Engine {
 
 namespace AIDT {
 
@@ -37,15 +36,31 @@ public:
 	virtual ~AbstractAction();
 
 protected:
+
+	typedef struct _suitCount {
+
+		bool operator<(const _suitCount &sc) const {
+			return !(count < sc.count);
+		}
+
+		bool operator==(Common::ICard::SUIT s) const {
+			return suit == s;
+		}
+
+		Common::ICard::SUIT suit;
+		Player::IPlayer::CARDS::difference_type count;
+
+	} SUITCOUNT;
+
 	AbstractAction();
 
-	static Player::IPlayer::CARDS pullSuit(const AIState &state,
+	void countSuits(SUITCOUNT *suitCount, const Player::IPlayer::CARDS &myCards) const;
+
+	static Player::IPlayer::CARDS pullSuit(const IAIState &state,
 										   NetMauMau::Common::ICard::SUIT suit);
 
 	static const IConditionPtr &getNullCondition() _CONST;
 };
-
-}
 
 }
 

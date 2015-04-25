@@ -24,8 +24,6 @@
 
 namespace NetMauMau {
 
-namespace Engine {
-
 namespace AIDT {
 
 class NextAction : public AbstractAction {
@@ -34,13 +32,11 @@ public:
 	NextAction(const IConditionPtr &cond);
 	virtual ~NextAction();
 
-	virtual const Common::SmartPtr<ICondition> &operator()(AIState &state) const _PURE;
+	virtual const Common::SmartPtr<ICondition> &operator()(IAIState &state) const _PURE;
 
 private:
 	const IConditionPtr &m_condition;
 };
-
-}
 
 }
 

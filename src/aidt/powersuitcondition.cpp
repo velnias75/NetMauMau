@@ -17,28 +17,27 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_ENGINE_AIDT_SERVESEVENACTION_H
-#define NETMAUMAU_ENGINE_AIDT_SERVESEVENACTION_H
+#include "powersuitcondition.h"
 
-#include "abstractaction.h"
+#include "aceroundcondition.h"
+#include "maxsuitaction.h"
+#include "iaistate.h"
+#include "smartptr.h"
 
-namespace NetMauMau {
-
-namespace AIDT {
-
-class ServeSevenAction : public AbstractAction {
-	DISALLOW_COPY_AND_ASSIGN(ServeSevenAction)
-public:
-	ServeSevenAction();
-	virtual ~ServeSevenAction();
-
-	virtual const IConditionPtr &operator()(IAIState &state) const;
-};
-
+namespace {
+NetMauMau::AIDT::IConditionPtr ACEROUNDCOND(new NetMauMau::AIDT::AceRoundCondition());
 }
 
-}
+using namespace NetMauMau::AIDT;
 
-#endif /* NETMAUMAU_ENGINE_AIDT_SERVESEVENACTION_H */
+PowerSuitCondition::PowerSuitCondition() : AbstractCondition() {}
+
+PowerSuitCondition::~PowerSuitCondition() {}
+
+IActionPtr PowerSuitCondition::operator()(const IAIState &state) const {
+	return state.getPowerSuit() == NetMauMau::Common::ICard::SUIT_ILLEGAL ?
+		   NetMauMau::AIDT::IActionPtr(new NetMauMau::AIDT::MaxSuitAction())
+		   : createNextAction(ACEROUNDCOND);
+}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

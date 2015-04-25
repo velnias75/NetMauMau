@@ -24,8 +24,6 @@
 
 namespace NetMauMau {
 
-namespace Engine {
-
 namespace AIDT {
 
 class CheckSevenCondition : public AbstractCondition {
@@ -34,10 +32,8 @@ public:
 	CheckSevenCondition();
 	virtual ~CheckSevenCondition();
 
-	virtual IActionPtr operator()(const AIState &state) const;
+	virtual IActionPtr operator()(const IAIState &state) const;
 };
-
-}
 
 }
 

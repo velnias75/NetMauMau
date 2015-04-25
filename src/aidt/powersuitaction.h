@@ -17,8 +17,8 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_ENGINE_AIDT_SERVESEVENACTION_H
-#define NETMAUMAU_ENGINE_AIDT_SERVESEVENACTION_H
+#ifndef NETMAUMAU_ENGINE_AIDT_POWERSUITACTION_H
+#define NETMAUMAU_ENGINE_AIDT_POWERSUITACTION_H
 
 #include "abstractaction.h"
 
@@ -26,19 +26,24 @@ namespace NetMauMau {
 
 namespace AIDT {
 
-class ServeSevenAction : public AbstractAction {
-	DISALLOW_COPY_AND_ASSIGN(ServeSevenAction)
+class PowerSuitAction : public AbstractAction {
+	DISALLOW_COPY_AND_ASSIGN(PowerSuitAction)
 public:
-	ServeSevenAction();
-	virtual ~ServeSevenAction();
+	PowerSuitAction();
+	PowerSuitAction(Common::ICard::SUIT suit);
+	virtual ~PowerSuitAction();
 
 	virtual const IConditionPtr &operator()(IAIState &state) const;
+
+private:
+	const bool m_determineSuit;
+	Common::ICard::SUIT m_suit;
 };
 
 }
 
 }
 
-#endif /* NETMAUMAU_ENGINE_AIDT_SERVESEVENACTION_H */
+#endif /* NETMAUMAU_ENGINE_AIDT_POWERSUITACTION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -19,22 +19,22 @@
 
 #include "decisiontree.h"
 
-#include "aistate.h"
+#include "iaistate.h"
 #include "jackonlycondition.h"
 
-using namespace NetMauMau::Engine::AIDT;
+using namespace NetMauMau::AIDT;
 
-DecisionTree::DecisionTree(AIState &state) :
+DecisionTree::DecisionTree(IAIState &state) :
 	m_rootCondition(IConditionPtr(new JackOnlyCondition())), m_state(state) {}
 
 DecisionTree::~DecisionTree() {}
 
 NetMauMau::Common::ICardPtr DecisionTree::getCard() const {
 
-	IConditionPtr cur(m_rootCondition);
+	IConditionPtr cond(m_rootCondition);
 	IActionPtr act;
 
-	while(cur && (act = (*cur)(m_state))) cur = (*act)(m_state);
+	while(cond && (act = (*cond)(m_state))) cond = (*act)(m_state);
 
 	return m_state.getCard();
 }

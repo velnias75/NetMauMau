@@ -19,13 +19,13 @@
 
 #include "nextaction.h"
 
-using namespace NetMauMau::Engine::AIDT;
+using namespace NetMauMau::AIDT;
 
 NextAction::NextAction(const IConditionPtr &cond) : m_condition(cond) {}
 
 NextAction::~NextAction() {}
 
-const NetMauMau::Common::SmartPtr<ICondition> &NextAction::operator()(AIState &) const {
+const NetMauMau::Common::SmartPtr<ICondition> &NextAction::operator()(IAIState &) const {
 	return m_condition;
 }
 

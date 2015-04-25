@@ -26,26 +26,22 @@
 
 namespace NetMauMau {
 
-namespace Engine {
-
 namespace AIDT {
 
-class AIState;
+class IAIState;
 
 class DecisionTree {
 	DISALLOW_COPY_AND_ASSIGN(DecisionTree)
 public:
-	DecisionTree(AIState &state);
+	DecisionTree(IAIState &state);
 	~DecisionTree();
 
 	Common::ICardPtr getCard() const;
 
 private:
 	const IConditionPtr m_rootCondition;
-	AIState &m_state;
+	IAIState &m_state;
 };
-
-}
 
 }
 

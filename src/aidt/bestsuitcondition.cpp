@@ -17,28 +17,29 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_ENGINE_AIDT_SERVESEVENACTION_H
-#define NETMAUMAU_ENGINE_AIDT_SERVESEVENACTION_H
+#include "bestsuitcondition.h"
 
-#include "abstractaction.h"
+#include "powersuitaction.h"
+#include "cardtools.h"
+#include "iaistate.h"
+#include "smartptr.h"
 
-namespace NetMauMau {
+using namespace NetMauMau::AIDT;
 
-namespace AIDT {
+BestSuitCondition::BestSuitCondition() : AbstractCondition() {}
 
-class ServeSevenAction : public AbstractAction {
-	DISALLOW_COPY_AND_ASSIGN(ServeSevenAction)
-public:
-	ServeSevenAction();
-	virtual ~ServeSevenAction();
+BestSuitCondition::~BestSuitCondition() {}
 
-	virtual const IConditionPtr &operator()(IAIState &state) const;
-};
+IActionPtr BestSuitCondition::operator()(const IAIState &state) const {
 
+	if(!state.isNoJack() && state.hasPlayerFewCards() &&
+			std::count_if(state.getPlayerCards().begin(), state.getPlayerCards().end(),
+						  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+									   NetMauMau::Common::ICard::JACK))) {
+		return IActionPtr(new PowerSuitAction());
+	} else {
+		return IActionPtr(new PowerSuitAction(NetMauMau::Common::ICard::SUIT_ILLEGAL));
+	}
 }
-
-}
-
-#endif /* NETMAUMAU_ENGINE_AIDT_SERVESEVENACTION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

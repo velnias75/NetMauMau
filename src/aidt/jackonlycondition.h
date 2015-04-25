@@ -24,8 +24,6 @@
 
 namespace NetMauMau {
 
-namespace Engine {
-
 namespace AIDT {
 
 class JackOnlyCondition : public AbstractCondition {
@@ -34,10 +32,8 @@ public:
 	JackOnlyCondition();
 	virtual ~JackOnlyCondition();
 
-	virtual Common::SmartPtr<IAction> operator()(const AIState &state) const;
+	virtual Common::SmartPtr<IAction> operator()(const IAIState &state) const;
 };
-
-}
 
 }
 

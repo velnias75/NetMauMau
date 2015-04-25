@@ -17,28 +17,28 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_ENGINE_AIDT_SERVESEVENACTION_H
-#define NETMAUMAU_ENGINE_AIDT_SERVESEVENACTION_H
+#ifndef NETMAUMAU_ENGINE_AIDT_BESTSUITCONDITION_H
+#define NETMAUMAU_ENGINE_AIDT_BESTSUITCONDITION_H
 
-#include "abstractaction.h"
+#include "abstractcondition.h"
 
 namespace NetMauMau {
 
 namespace AIDT {
 
-class ServeSevenAction : public AbstractAction {
-	DISALLOW_COPY_AND_ASSIGN(ServeSevenAction)
+class BestSuitCondition : public AbstractCondition {
+	DISALLOW_COPY_AND_ASSIGN(BestSuitCondition)
 public:
-	ServeSevenAction();
-	virtual ~ServeSevenAction();
+	BestSuitCondition();
+	virtual ~BestSuitCondition();
 
-	virtual const IConditionPtr &operator()(IAIState &state) const;
+	virtual IActionPtr operator()(const IAIState &state) const;
 };
 
 }
 
 }
 
-#endif /* NETMAUMAU_ENGINE_AIDT_SERVESEVENACTION_H */
+#endif /* NETMAUMAU_ENGINE_AIDT_BESTSUITCONDITION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -26,8 +26,6 @@
 
 namespace NetMauMau {
 
-namespace Engine {
-
 namespace AIDT {
 
 class AbstractCondition : public ICondition {
@@ -41,8 +39,6 @@ protected:
 	IActionPtr createNextAction(const IConditionPtr &cond) const;
 	static const IActionPtr &getNullAction() _CONST;
 };
-
-}
 
 }
 

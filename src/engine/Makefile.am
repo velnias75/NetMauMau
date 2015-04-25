@@ -16,12 +16,13 @@ libeventhandler_la_SOURCES = defaulteventhandler.cpp
 
 libengine_private_la_CPPFLAGS = $(GSL)
 libengine_private_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include \
-	-I$(top_srcdir)/src/lua -I$(top_srcdir)/src/sqlite $(GSL_CFLAGS)
+	-I$(top_srcdir)/src/lua -I$(top_srcdir)/src/sqlite -I$(top_srcdir)/src/aidt $(GSL_CFLAGS)
 libengine_private_la_SOURCES = engine.cpp nullconnection.cpp stdplayer.cpp
+libengine_private_la_LIBADD = ../aidt/libaidt.la
 
 libengine_la_CPPFLAGS = $(GSL) -DLUADIR=\"$(pkgdatadir)\"
 libengine_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include \
 	-I$(top_srcdir)/src/lua $(GSL_CFLAGS) $(NO_RTTI_FLAGS)
 libengine_la_SOURCES = engineconfig.cpp stdcardfactory.cpp talon.cpp
-libengine_la_LIBADD = ../sqlite/libsqlite.la libengine_private.la ../aidt/libaidt.la \
-	../lua/libluaruleset.la libeventhandler.la ../common/libnetmaumaucommon.la $(GSL_LIBS)
+libengine_la_LIBADD = ../sqlite/libsqlite.la libengine_private.la ../lua/libluaruleset.la \
+	libeventhandler.la ../common/libnetmaumaucommon.la $(GSL_LIBS)

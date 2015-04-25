@@ -37,6 +37,13 @@ public:
 	virtual IActionPtr perform(const IAIState &, const Player::IPlayer::CARDS &) const {
 		return IActionPtr(new Action());
 	}
+
+#ifdef TRACE_AI
+protected:
+	inline virtual std::string traceLog() const {
+		return "StaticCondition";
+	}
+#endif
 };
 
 }

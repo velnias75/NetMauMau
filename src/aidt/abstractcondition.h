@@ -45,6 +45,10 @@ protected:
 	IActionPtr createNextAction(const IConditionPtr &cond) const;
 	static const IActionPtr &getNullAction() _CONST;
 
+#ifdef TRACE_AI
+	virtual std::string traceLog() const = 0;
+#endif
+
 private:
 	Player::IPlayer::CARDS removeJack(const Player::IPlayer::CARDS &cards) const;
 };

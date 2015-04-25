@@ -33,6 +33,13 @@ public:
 	virtual ~HaveJackCondition();
 
 	virtual IActionPtr perform(const IAIState &state, const Player::IPlayer::CARDS &cards) const;
+
+#ifdef TRACE_AI
+protected:
+	inline virtual std::string traceLog() const {
+		return "HaveJackCondition";
+	}
+#endif
 };
 
 }

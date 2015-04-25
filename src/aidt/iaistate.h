@@ -39,6 +39,8 @@ public:
 
 	virtual ~IAIState() {}
 
+	virtual std::string getName() const = 0;
+
 	virtual void setCard(const Common::ICardPtr &card) = 0;
 
 	virtual Common::ICardPtr getCard() const = 0;

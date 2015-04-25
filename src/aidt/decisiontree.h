@@ -20,8 +20,14 @@
 #ifndef NETMAUMAU_ENGINE_AIDT_DECISIONTREE_H
 #define NETMAUMAU_ENGINE_AIDT_DECISIONTREE_H
 
+#include <cstdlib>
+
 #include "iaistate.h"
 #include "icondition.h"
+
+#ifdef TRACE_AI
+#include "logger.h"
+#endif
 
 namespace NetMauMau {
 
@@ -56,7 +62,19 @@ Common::ICardPtr DecisionTree<RootCond>::getCard(bool noJack) const {
 
 	m_state.setNoJack(noJack);
 
+#ifdef TRACE_AI
+
+	if(!getenv("NMM_NO_TRACE")) logDebug("-> BEGIN trace of AI \"" << m_state.getName() << "\"");
+
+#endif
+
 	while(cond && (act = (*cond)(m_state))) cond = (*act)(m_state);
+
+#ifdef TRACE_AI
+
+	if(!getenv("NMM_NO_TRACE")) logDebug("END trace of AI \"" << m_state.getName() << "\" <-");
+
+#endif
 
 	m_state.setNoJack(oj);
 

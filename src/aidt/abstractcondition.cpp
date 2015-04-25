@@ -24,6 +24,10 @@
 #include "cardtools.h"
 #include "nextaction.h"
 
+#ifdef TRACE_AI
+#include "logger.h"
+#endif
+
 namespace {
 const NetMauMau::AIDT::IActionPtr NULLACTION;
 }
@@ -43,6 +47,12 @@ const IActionPtr &AbstractCondition::getNullAction() {
 }
 
 IActionPtr AbstractCondition::operator()(const IAIState &state) const {
+#ifdef TRACE_AI
+
+	if(!getenv("NMM_NO_TRACE")) logDebug("* " << traceLog());
+
+#endif
+
 	return perform(state, state.isNoJack() ? removeJack(state.getPlayerCards()) :
 				   state.getPlayerCards());
 }
@@ -55,7 +65,6 @@ AbstractCondition::removeJack(const NetMauMau::Player::IPlayer::CARDS &cards) co
 	myCards.erase(std::remove_if(myCards.begin(), myCards.end(),
 								 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
 										 NetMauMau::Common::ICard::JACK)), myCards.end());
-
 	return myCards;
 }
 

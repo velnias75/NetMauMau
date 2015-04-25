@@ -17,32 +17,28 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "aceroundcondition.h"
+#ifndef NETMAUMAU_ENGINE_AIDT_RANDOMJACKCONDITION_H
+#define NETMAUMAU_ENGINE_AIDT_RANDOMJACKCONDITION_H
 
-#include "randomjackcondition.h"
-#include "aceroundaction.h"
-#include "smartptr.h"
-#include "iaistate.h"
-#include "iruleset.h"
+#include "abstractcondition.h"
 
-namespace {
+namespace NetMauMau {
 
-NetMauMau::AIDT::IActionPtr ACEROUNDACTION(new NetMauMau::AIDT::AceRoundAction());
+namespace AIDT {
 
-NetMauMau::AIDT::IConditionPtr RANDOMJACKCOND(new NetMauMau::AIDT::RandomJackCondition());
+class RandomJackCondition : public AbstractCondition {
+	DISALLOW_COPY_AND_ASSIGN(RandomJackCondition)
+public:
+	RandomJackCondition();
+	virtual ~RandomJackCondition();
+
+	virtual IActionPtr operator()(const IAIState &state) const;
+};
 
 }
 
-using namespace NetMauMau::AIDT;
-
-AceRoundCondition::AceRoundCondition() : AbstractCondition() {}
-
-AceRoundCondition::~AceRoundCondition() {}
-
-IActionPtr AceRoundCondition::operator()(const IAIState &state) const {
-	return state.tryAceRound() || (!state.getRuleSet()->isAceRound() &&
-								   state.getRuleSet()->isAceRoundPossible()) ?
-		   ACEROUNDACTION : createNextAction(RANDOMJACKCOND);
 }
+
+#endif /* NETMAUMAU_ENGINE_AIDT_RANDOMJACKCONDITION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

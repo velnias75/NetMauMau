@@ -44,17 +44,6 @@ AbstractAction::AbstractAction() : IAction() {}
 
 AbstractAction::~AbstractAction() {}
 
-NetMauMau::Player::IPlayer::CARDS AbstractAction::pullSuit(const IAIState &state,
-		NetMauMau::Common::ICard::SUIT suit) {
-
-	NetMauMau::Player::IPlayer::CARDS myCards(state.getPlayerCards());
-
-	std::partition(myCards.begin(), myCards.end(),
-				   std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit), suit));
-
-	return myCards;
-}
-
 void AbstractAction::countSuits(SUITCOUNT *suitCount,
 								const NetMauMau::Player::IPlayer::CARDS &myCards) const {
 

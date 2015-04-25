@@ -17,32 +17,21 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "aceroundcondition.h"
-
 #include "randomjackcondition.h"
-#include "aceroundaction.h"
+
+#include "randomjackaction.h"
 #include "smartptr.h"
 #include "iaistate.h"
-#include "iruleset.h"
-
-namespace {
-
-NetMauMau::AIDT::IActionPtr ACEROUNDACTION(new NetMauMau::AIDT::AceRoundAction());
-
-NetMauMau::AIDT::IConditionPtr RANDOMJACKCOND(new NetMauMau::AIDT::RandomJackCondition());
-
-}
 
 using namespace NetMauMau::AIDT;
 
-AceRoundCondition::AceRoundCondition() : AbstractCondition() {}
+RandomJackCondition::RandomJackCondition() : AbstractCondition() {}
 
-AceRoundCondition::~AceRoundCondition() {}
+RandomJackCondition::~RandomJackCondition() {}
 
-IActionPtr AceRoundCondition::operator()(const IAIState &state) const {
-	return state.tryAceRound() || (!state.getRuleSet()->isAceRound() &&
-								   state.getRuleSet()->isAceRoundPossible()) ?
-		   ACEROUNDACTION : createNextAction(RANDOMJACKCOND);
+IActionPtr RandomJackCondition::operator()(const IAIState &state) const {
+	return !state.isNoJack() && (state.getPowerSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL) ?
+		   IActionPtr(new RandomJackAction()) : getNullAction();
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

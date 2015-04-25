@@ -56,9 +56,6 @@ protected:
 
 	void countSuits(SUITCOUNT *suitCount, const Player::IPlayer::CARDS &myCards) const;
 
-	static Player::IPlayer::CARDS pullSuit(const IAIState &state,
-										   NetMauMau::Common::ICard::SUIT suit);
-
 	static const IConditionPtr &getNullCondition() _CONST;
 };
 

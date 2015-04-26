@@ -56,6 +56,10 @@
 #endif
 
 namespace {
+
+const std::string TALONUNDERFLOW("TALON-UNDERFLOW: More cards taken from the talon, "\
+								 "than available!");
+
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
 struct PlayerNameEqual : public std::binary_function < NetMauMau::Player::IPlayer *,
@@ -315,9 +319,11 @@ sevenRule:
 
 			if(!pc) {
 
-				if(!noCardOk) {
-					player->receiveCard((pc = m_talon->takeCard()));
+				if(!noCardOk && (pc = m_talon->takeCard())) {
+					player->receiveCard(pc);
 					getEventHandler().playerPicksCard(player);
+				} else if(!pc && !noCardOk) {
+					throw Common::Exception::SocketException(TALONUNDERFLOW);
 				}
 
 				const Player::IPlayer::REASON reason = noCardOk ? Player::IPlayer::SUSPEND :
@@ -363,12 +369,17 @@ sevenRule:
 
 					case Player::IPlayer::NOMATCH:
 
-						player->receiveCard((pc = m_talon->takeCard()));
-						getEventHandler().playerPicksCard(player, pc);
+						if((pc = m_talon->takeCard())) {
+							player->receiveCard(pc);
+							getEventHandler().playerPicksCard(player, pc);
 
-						suspend = true;
-						pc = getRuleSet()->suspendIfNoMatchingCard() ||
-							 decidedSuspend ? Common::ICardPtr() : pc;
+							suspend = true;
+							pc = getRuleSet()->suspendIfNoMatchingCard() ||
+								 decidedSuspend ? Common::ICardPtr() : pc;
+						} else {
+							throw Common::Exception::SocketException(TALONUNDERFLOW);
+						}
+
 						break;
 
 					default:
@@ -484,6 +495,12 @@ sevenRule:
 
 		logDebug("SocketException: " << e);
 
+		if(TALONUNDERFLOW == e.what()) {
+			try {
+				getEventHandler().error(TALONUNDERFLOW);
+			} catch(const Common::Exception::SocketException &) {}
+		}
+
 		Common::IConnection *con = getEventHandler().getConnection();
 		const std::string &pName(con->getPlayerName(e.sockfd()));
 
@@ -574,7 +591,16 @@ throw(Common::Exception::SocketException) {
 
 	if(cardCount) {
 
-		for(std::size_t i = 0; i < cardCount; ++i) player->receiveCard(m_talon->takeCard());
+		for(std::size_t i = 0; i < cardCount; ++i) {
+
+			Common::ICardPtr c(m_talon->takeCard());
+
+			if(!c) {
+				throw Common::Exception::SocketException(TALONUNDERFLOW);
+			}
+
+			player->receiveCard(c);
+		}
 
 		getEventHandler().playerPicksCards(player, cardCount);
 		getRuleSet()->hasTakenCards();

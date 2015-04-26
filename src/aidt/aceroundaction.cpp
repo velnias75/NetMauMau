@@ -19,9 +19,14 @@
 
 #include "aceroundaction.h"
 
+#include "randomjackcondition.h"
 #include "cardtools.h"
 #include "iaistate.h"
 #include "iruleset.h"
+
+namespace {
+NetMauMau::AIDT::IConditionPtr RANDOMJACKCOND(new NetMauMau::AIDT::RandomJackCondition());
+}
 
 using namespace NetMauMau::AIDT;
 
@@ -50,7 +55,7 @@ const IConditionPtr &AceRoundAction::perform(IAIState &state,
 		return AbstractAction::getNullCondition();
 	}
 
-	return AbstractAction::getNullCondition();
+	return RANDOMJACKCOND;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

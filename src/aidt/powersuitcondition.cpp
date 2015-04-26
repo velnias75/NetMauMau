@@ -39,8 +39,9 @@ PowerSuitCondition::~PowerSuitCondition() {}
 
 IActionPtr PowerSuitCondition::perform(const IAIState &state,
 									   const NetMauMau::Player::IPlayer::CARDS &) const {
-	return state.getPowerSuit() == NetMauMau::Common::ICard::SUIT_ILLEGAL ?
-		   getTrueAction() : getFalseAction();
+	return /*(!state.getCard() || state.getPlayedCard()) &&*/
+		state.getPowerSuit() == NetMauMau::Common::ICard::SUIT_ILLEGAL ? getTrueAction() :
+		getFalseAction();
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -105,3 +105,4 @@ V*.xml
 win32
 src/aidt/.deps/
 src/aidt/.libs/
+nmm-ai.flw

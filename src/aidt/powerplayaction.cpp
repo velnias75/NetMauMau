@@ -57,14 +57,15 @@ using namespace NetMauMau::AIDT;
 PowerPlayAction::PowerPlayAction(bool set) : AbstractAction(), m_set(set) {}
 
 PowerPlayAction::~PowerPlayAction() {}
-
+#include "logger.h"
 const IConditionPtr &PowerPlayAction::perform(IAIState &state,
 		const NetMauMau::Player::IPlayer::CARDS &cards) const {
 
 	if(m_set) {
-		const NetMauMau::Common::ICard::SUIT s = state.getPowerSuit();
-		state.setPowerSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL);
 
+		const NetMauMau::Common::ICard::SUIT s = state.getPowerSuit();
+
+		state.setPowerSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL);
 		state.setPowerPlay(true);
 
 		assert(s != NetMauMau::Common::ICard::SUIT_ILLEGAL);
@@ -98,11 +99,9 @@ const IConditionPtr &PowerPlayAction::perform(IAIState &state,
 						 state.getTalonFactor()))) state.setCard(f);
 
 		state.setPowerPlay(false);
-
-		return f ? getNullCondition() : MAXSUITACTION;
 	}
 
-	return MAXSUITACTION;
+	return state.getCard() ? getNullCondition() : MAXSUITACTION;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

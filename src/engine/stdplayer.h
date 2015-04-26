@@ -168,8 +168,8 @@ private:
 	const EngineConfig *m_engineCfg;
 	const ICardCountObserver *m_cardCountObserver;
 
-	DecisionTreePtr m_decisisionTree;
-	JackDecisionTreePtr m_jackDecisisionTree;
+	DecisionTreePtr m_decisionTree;
+	JackDecisionTreePtr m_jackDecisionTree;
 	mutable Common::ICardPtr m_card;
 	mutable Common::ICardPtr m_uncoveredCard;
 	mutable Common::ICardPtr m_playedCard;

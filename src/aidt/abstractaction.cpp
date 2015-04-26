@@ -44,6 +44,11 @@ AbstractAction::AbstractAction() : IAction(), JackRemoverBase() {}
 AbstractAction::~AbstractAction() {}
 
 const IConditionPtr &AbstractAction::operator()(IAIState &state) const {
+
+#ifndef NDEBUG
+	state.getCardCount();
+#endif
+
 	return perform(state, state.isNoJack() ? JackRemoverBase::removeJack(state.getPlayerCards()) :
 				   state.getPlayerCards());
 }

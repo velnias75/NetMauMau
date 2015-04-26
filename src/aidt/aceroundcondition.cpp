@@ -26,11 +26,8 @@
 #include "iruleset.h"
 
 namespace {
-
 NetMauMau::AIDT::IActionPtr ACEROUNDACTION(new NetMauMau::AIDT::AceRoundAction());
-
 NetMauMau::AIDT::IConditionPtr RANDOMJACKCOND(new NetMauMau::AIDT::RandomJackCondition());
-
 }
 
 using namespace NetMauMau::AIDT;
@@ -43,7 +40,7 @@ IActionPtr AceRoundCondition::perform(const IAIState &state,
 									  const NetMauMau::Player::IPlayer::CARDS &) const {
 	return state.tryAceRound() || (!state.getRuleSet()->isAceRound() &&
 								   state.getRuleSet()->isAceRoundPossible()) ?
-		   createNextAction(RANDOMJACKCOND) : ACEROUNDACTION;
+		   ACEROUNDACTION : createNextAction(RANDOMJACKCOND);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -55,7 +55,7 @@ SkipPlayerCondition::~SkipPlayerCondition() {}
 
 IActionPtr SkipPlayerCondition::perform(const IAIState &state,
 										const NetMauMau::Player::IPlayer::CARDS &) const {
-	return state.getPlayerCount() > 2 && (state.getRightCount() < state.getPlayerCards().size() ||
+	return state.getPlayerCount() > 2 && (state.getRightCount() < state.getCardCount() ||
 										  state.getRightCount() < state.getLeftCount()) &&
 		   std::count_if(state.getPlayedOutCards().begin(), state.getPlayedOutCards().end(),
 						 std::bind2nd(playedOutRank(), NetMauMau::Common::ICard::SEVEN)) ?

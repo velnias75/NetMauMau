@@ -39,6 +39,8 @@ public:
 
 	virtual Common::ICardPtr getCard() const = 0;
 
+	virtual std::size_t getCardCount() const = 0;
+
 	virtual Common::ICardPtr getPlayedCard() const = 0;
 
 	virtual const Player::IPlayer::CARDS &getPlayerCards() const = 0;

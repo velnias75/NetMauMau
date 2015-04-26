@@ -97,7 +97,7 @@ Common::ICard::RANK EngineConfig::getAceRoundRank() const {
 std::size_t EngineConfig::getTalonFactor() const {
 	return m_talonFactor;
 }
-#include "logger.h"
+
 std::string EngineConfig::getLuaScriptPath() {
 
 	char *luaDir = std::getenv("NETMAUMAU_RULES");

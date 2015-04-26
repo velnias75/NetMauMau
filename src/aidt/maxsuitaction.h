@@ -32,7 +32,8 @@ public:
 	MaxSuitAction();
 	virtual ~MaxSuitAction();
 
-	virtual const IConditionPtr &operator()(IAIState &state) const;
+	virtual const IConditionPtr &perform(IAIState &state,
+										 const Player::IPlayer::CARDS &cards) const;
 
 private:
 	static Common::ICardPtr hasRankPath(const Common::ICardPtr &uc, Common::ICard::SUIT s,

@@ -39,9 +39,14 @@ const NetMauMau::Common::ICard::SUIT SUIT[4] = {
 
 using namespace NetMauMau::AIDT;
 
-AbstractAction::AbstractAction() : IAction() {}
+AbstractAction::AbstractAction() : IAction(), JackRemoverBase() {}
 
 AbstractAction::~AbstractAction() {}
+
+const IConditionPtr &AbstractAction::operator()(IAIState &state) const {
+	return perform(state, state.isNoJack() ? JackRemoverBase::removeJack(state.getPlayerCards()) :
+				   state.getPlayerCards());
+}
 
 void AbstractAction::countSuits(SUITCOUNT *suitCount,
 								const NetMauMau::Player::IPlayer::CARDS &myCards) {

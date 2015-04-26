@@ -32,7 +32,8 @@ public:
 	PlayJackAction();
 	virtual ~PlayJackAction();
 
-	virtual const IConditionPtr &operator()(IAIState &state) const;
+	virtual const IConditionPtr &perform(IAIState &state,
+										 const Player::IPlayer::CARDS &cards) const;
 };
 
 }

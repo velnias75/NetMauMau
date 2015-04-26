@@ -32,7 +32,8 @@ public:
 	NextAction(const IConditionPtr &cond);
 	virtual ~NextAction();
 
-	virtual const Common::SmartPtr<ICondition> &operator()(IAIState &state) const _PURE;
+	virtual const IConditionPtr &perform(IAIState &state,
+										 const Player::IPlayer::CARDS &cards) const _PURE;
 
 private:
 	const IConditionPtr &m_condition;

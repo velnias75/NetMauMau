@@ -32,7 +32,8 @@ public:
 	CheckJackSuitAction();
 	virtual ~CheckJackSuitAction();
 
-	virtual const IConditionPtr &operator()(IAIState &state) const;
+	virtual const IConditionPtr &perform(IAIState &state,
+										 const Player::IPlayer::CARDS &cards) const;
 
 private:
 #pragma GCC diagnostic ignored "-Weffc++"

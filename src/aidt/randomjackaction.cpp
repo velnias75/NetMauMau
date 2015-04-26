@@ -29,7 +29,8 @@ RandomJackAction::RandomJackAction() : AbstractAction() {}
 
 RandomJackAction::~RandomJackAction() {}
 
-const IConditionPtr &RandomJackAction::operator()(IAIState &state) const {
+const IConditionPtr &RandomJackAction::perform(IAIState &state,
+		const NetMauMau::Player::IPlayer::CARDS &) const {
 
 	NetMauMau::Player::IPlayer::CARDS myCards(state.getPlayerCards());
 

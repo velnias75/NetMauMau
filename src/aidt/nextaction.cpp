@@ -25,7 +25,8 @@ NextAction::NextAction(const IConditionPtr &cond) : m_condition(cond) {}
 
 NextAction::~NextAction() {}
 
-const NetMauMau::Common::SmartPtr<ICondition> &NextAction::operator()(IAIState &) const {
+const IConditionPtr &NextAction::perform(IAIState &,
+		const NetMauMau::Player::IPlayer::CARDS &) const {
 	return m_condition;
 }
 

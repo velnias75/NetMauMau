@@ -20,7 +20,6 @@
 #include "abstractcondition.h"
 
 #include "iaistate.h"
-#include "cardtools.h"
 #include "nextaction.h"
 
 #ifdef TRACE_AI
@@ -33,7 +32,7 @@ const NetMauMau::AIDT::IActionPtr NULLACTION;
 
 using namespace NetMauMau::AIDT;
 
-AbstractCondition::AbstractCondition() : ICondition() {}
+AbstractCondition::AbstractCondition() : ICondition(), JackRemoverBase() {}
 
 AbstractCondition::~AbstractCondition() {}
 
@@ -52,19 +51,8 @@ IActionPtr AbstractCondition::operator()(const IAIState &state) const {
 
 #endif
 
-	return perform(state, state.isNoJack() ? removeJack(state.getPlayerCards()) :
+	return perform(state, state.isNoJack() ? JackRemoverBase::removeJack(state.getPlayerCards()) :
 				   state.getPlayerCards());
-}
-
-NetMauMau::Player::IPlayer::CARDS
-AbstractCondition::removeJack(const NetMauMau::Player::IPlayer::CARDS &cards) const {
-
-	NetMauMau::Player::IPlayer::CARDS myCards(cards);
-
-	myCards.erase(std::remove_if(myCards.begin(), myCards.end(),
-								 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-										 NetMauMau::Common::ICard::JACK)), myCards.end());
-	return myCards;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

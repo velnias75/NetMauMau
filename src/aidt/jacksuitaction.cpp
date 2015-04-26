@@ -40,7 +40,8 @@ JackSuitAction::JackSuitAction() : AbstractAction() {}
 
 JackSuitAction::~JackSuitAction() {}
 
-const IConditionPtr &JackSuitAction::operator()(IAIState &state) const {
+const IConditionPtr &JackSuitAction::perform(IAIState &state,
+		const NetMauMau::Player::IPlayer::CARDS &) const {
 
 	const NetMauMau::Player::IPlayer::CARDS::const_iterator
 	&f(std::find_if(state.getPlayerCards().begin(), state.getPlayerCards().end(), std::not1

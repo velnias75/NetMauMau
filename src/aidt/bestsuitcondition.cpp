@@ -20,6 +20,7 @@
 #include "bestsuitcondition.h"
 
 #include "powersuitaction.h"
+#include "powerplayaction.h"
 #include "cardtools.h"
 #include "iaistate.h"
 
@@ -38,7 +39,7 @@ IActionPtr BestSuitCondition::perform(const IAIState &state,
 									   NetMauMau::Common::ICard::JACK))) {
 		return IActionPtr(new PowerSuitAction());
 	} else {
-		return IActionPtr(new PowerSuitAction(NetMauMau::Common::ICard::SUIT_ILLEGAL));
+		return IActionPtr(new PowerPlayAction());
 	}
 }
 

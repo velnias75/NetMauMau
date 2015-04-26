@@ -25,7 +25,8 @@ SuspendAction::SuspendAction() : AbstractAction() {}
 
 SuspendAction::~SuspendAction() {}
 
-const IConditionPtr &SuspendAction::operator()(IAIState &) const {
+const IConditionPtr &SuspendAction::perform(IAIState &,
+		const NetMauMau::Player::IPlayer::CARDS &) const {
 	return AbstractAction::getNullCondition();
 }
 

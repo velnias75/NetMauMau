@@ -143,9 +143,9 @@ private:
 
 	virtual Common::ICardPtr getCard() const;
 
-	virtual const DecisionTreePtr &getDecisionTree() const _CONST;
-
 private:
+	typedef Common::SmartPtr < AIDT::DecisionTree
+	<NetMauMau::AIDT::JackOnlyCondition> > DecisionTreePtr;
 	typedef Common::SmartPtr
 	<AIDT::DecisionTree<NetMauMau::AIDT::PowerSuitCondition> > JackDecisionTreePtr;
 

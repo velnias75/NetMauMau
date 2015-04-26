@@ -647,10 +647,6 @@ void StdPlayer::setTryAceRound(bool b) {
 	m_tryAceRound = b;
 }
 
-const NetMauMau::AIDT::IAIState::DecisionTreePtr &StdPlayer::getDecisionTree() const {
-	return m_decisisionTree;
-}
-
 bool StdPlayer::isDirChgEnabled() const {
 	return m_dirChgEnabled;
 }

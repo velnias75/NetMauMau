@@ -37,7 +37,8 @@ PowerSuitAction::PowerSuitAction(NetMauMau::Common::ICard::SUIT suit) : Abstract
 
 PowerSuitAction::~PowerSuitAction() {}
 
-const IConditionPtr &PowerSuitAction::operator()(IAIState &state) const {
+const IConditionPtr &PowerSuitAction::perform(IAIState &state,
+		const NetMauMau::Player::IPlayer::CARDS &) const {
 
 	if(m_determineSuit) {
 
@@ -67,7 +68,7 @@ const IConditionPtr &PowerSuitAction::operator()(IAIState &state) const {
 			}
 
 		} else {
-// 			state.setPowerSuit(getMaxPlayedOffSuit(state));
+			state.setPowerSuit(getMaxPlayedOffSuit(state));
 		}
 
 	} else {

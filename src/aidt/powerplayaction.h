@@ -32,7 +32,8 @@ public:
 	PowerPlayAction(bool set = false);
 	virtual ~PowerPlayAction();
 
-	virtual const IConditionPtr &operator()(IAIState &state) const;
+	virtual const IConditionPtr &perform(IAIState &state,
+										 const Player::IPlayer::CARDS &cards) const;
 
 private:
 	const bool m_set;

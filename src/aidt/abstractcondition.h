@@ -21,6 +21,7 @@
 #define NETMAUMAU_ENGINE_AIDT_ABSTRACTCONDITION_H
 
 #include "icondition.h"
+#include "jackremoverbase.h"
 
 #include "iaction.h"
 #include "iplayer.h"
@@ -29,7 +30,7 @@ namespace NetMauMau {
 
 namespace AIDT {
 
-class AbstractCondition : public ICondition {
+class AbstractCondition : public ICondition, protected JackRemoverBase {
 	DISALLOW_COPY_AND_ASSIGN(AbstractCondition)
 public:
 	virtual ~AbstractCondition();
@@ -50,7 +51,7 @@ protected:
 #endif
 
 private:
-	Player::IPlayer::CARDS removeJack(const Player::IPlayer::CARDS &cards) const;
+
 };
 
 }

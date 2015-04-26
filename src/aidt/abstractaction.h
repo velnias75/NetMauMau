@@ -21,6 +21,7 @@
 #define NETMAUMAU_ENGINE_AIDT_ABSTRACTACTION_H
 
 #include "iaction.h"
+#include "jackremoverbase.h"
 
 #include "iplayer.h"
 #include "smartptr.h"
@@ -30,9 +31,17 @@ namespace NetMauMau {
 
 namespace AIDT {
 
-class AbstractAction : public IAction {
+class AbstractAction : public IAction, protected JackRemoverBase {
 	DISALLOW_COPY_AND_ASSIGN(AbstractAction)
 public:
+	virtual ~AbstractAction();
+
+	virtual const IConditionPtr &operator()(IAIState &state) const;
+
+	virtual const IConditionPtr &perform(IAIState &state,
+										 const Player::IPlayer::CARDS &cards) const = 0;
+
+protected:
 	typedef struct _suitCount {
 
 		bool operator<(const _suitCount &sc) const {
@@ -48,14 +57,11 @@ public:
 
 	} SUITCOUNT;
 
-	virtual ~AbstractAction();
-
-	static void countSuits(SUITCOUNT *suitCount, const Player::IPlayer::CARDS &myCards);
-
-protected:
 	AbstractAction();
 
 	const NetMauMau::Common::ICard::SUIT *getSuits() const _CONST;
+
+	static void countSuits(SUITCOUNT *suitCount, const Player::IPlayer::CARDS &myCards);
 
 	Common::ICard::SUIT
 	getMaxPlayedOffSuit(const IAIState &state,

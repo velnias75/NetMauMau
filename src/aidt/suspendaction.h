@@ -32,7 +32,8 @@ public:
 	SuspendAction();
 	virtual ~SuspendAction();
 
-	virtual const IConditionPtr &operator()(IAIState &state) const _CONST;
+	virtual const IConditionPtr &perform(IAIState &state,
+										 const Player::IPlayer::CARDS &cards) const _CONST;
 };
 
 }

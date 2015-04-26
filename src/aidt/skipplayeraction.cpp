@@ -33,7 +33,8 @@ SkipPlayerAction::SkipPlayerAction() : AbstractAction() {}
 
 SkipPlayerAction::~SkipPlayerAction() {}
 
-const IConditionPtr &SkipPlayerAction::operator()(IAIState &state) const {
+const IConditionPtr &SkipPlayerAction::perform(IAIState &state,
+		const NetMauMau::Player::IPlayer::CARDS &) const {
 
 	const NetMauMau::Player::IPlayer::CARDS::value_type nine = state.isDirChgEnabled() ?
 			NetMauMau::Common::findRank(NetMauMau::Common::ICard::NINE,

@@ -62,9 +62,10 @@ MaxSuitAction::MaxSuitAction() {}
 
 MaxSuitAction::~MaxSuitAction() {}
 
-const IConditionPtr &MaxSuitAction::operator()(IAIState &state) const {
+const IConditionPtr &MaxSuitAction::perform(IAIState &state,
+		const NetMauMau::Player::IPlayer::CARDS &cards) const {
 
-	NetMauMau::Player::IPlayer::CARDS mc(state.getPlayerCards());
+	NetMauMau::Player::IPlayer::CARDS mc(cards);
 
 	SUITCOUNT suitCount[4];
 	AbstractAction::countSuits(suitCount, mc);

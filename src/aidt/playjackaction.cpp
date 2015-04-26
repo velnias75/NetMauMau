@@ -28,7 +28,8 @@ PlayJackAction::PlayJackAction() : AbstractAction() {}
 
 PlayJackAction::~PlayJackAction() {}
 
-const IConditionPtr &PlayJackAction::operator()(IAIState &state) const {
+const IConditionPtr &PlayJackAction::perform(IAIState &state,
+		const NetMauMau::Player::IPlayer::CARDS &) const {
 
 	const NetMauMau::Common::ICardPtr firstCard(*state.getPlayerCards().begin());
 

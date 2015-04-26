@@ -17,33 +17,26 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "servesevenaction.h"
+#include "jackremoverbase.h"
 
-#include "iaistate.h"
+#include "smartptr.h"
 #include "cardtools.h"
 
 using namespace NetMauMau::AIDT;
 
-ServeSevenAction::ServeSevenAction() : AbstractAction() {}
+JackRemoverBase::JackRemoverBase() {}
 
-ServeSevenAction::~ServeSevenAction() {}
+JackRemoverBase::~JackRemoverBase() {}
 
-const IConditionPtr &ServeSevenAction::perform(IAIState &state,
-		const NetMauMau::Player::IPlayer::CARDS &) const {
+NetMauMau::Player::IPlayer::CARDS
+JackRemoverBase::removeJack(const NetMauMau::Player::IPlayer::CARDS &cards) {
 
-	const NetMauMau::Player::IPlayer::CARDS::value_type f =
-		NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN, state.getPlayerCards().begin(),
-									state.getPlayerCards().end());
+	NetMauMau::Player::IPlayer::CARDS myCards(cards);
 
-	if(f) {
-		state.setCard(f);
-	} else if(!state.hasTakenCards()) {
-		state.setCard(NetMauMau::Common::ICardPtr(const_cast<const NetMauMau::Common::ICard *>
-					  (NetMauMau::Common::getIllegalCard())));
-		state.setCardsTaken(true);
-	}
-
-	return getNullCondition();
+	myCards.erase(std::remove_if(myCards.begin(), myCards.end(),
+								 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+										 NetMauMau::Common::ICard::JACK)), myCards.end());
+	return myCards;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

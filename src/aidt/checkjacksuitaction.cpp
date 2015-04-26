@@ -69,7 +69,8 @@ CheckJackSuitAction::CheckJackSuitAction() : AbstractAction() {}
 
 CheckJackSuitAction::~CheckJackSuitAction() {}
 
-const IConditionPtr &CheckJackSuitAction::operator()(IAIState &state) const {
+const IConditionPtr &CheckJackSuitAction::perform(IAIState &state,
+		const NetMauMau::Player::IPlayer::CARDS &) const {
 
 	NetMauMau::Common::ICard::SUIT s = findJackChoice(state);
 

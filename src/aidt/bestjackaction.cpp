@@ -20,6 +20,7 @@
 #include "bestjackaction.h"
 
 #include "checkjacksuitaction.h"
+#include "checksevencondition.h"
 #include "staticcondition.h"
 #include "decisiontree.h"
 
@@ -34,9 +35,10 @@ BestJackAction::BestJackAction() : AbstractAction() {}
 
 BestJackAction::~BestJackAction() {}
 
-const IConditionPtr &BestJackAction::operator()(IAIState &state) const {
+const IConditionPtr &BestJackAction::perform(IAIState &state,
+		const NetMauMau::Player::IPlayer::CARDS &) const {
 
-	const NetMauMau::Common::ICardPtr bc(state.getDecisionTree()->getCard(true));
+	const NetMauMau::Common::ICardPtr bc(DecisionTree<CheckSevenCondition>(state).getCard(true));
 
 	if(bc && bc->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL) state.setCard(bc);
 

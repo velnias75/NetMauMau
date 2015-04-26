@@ -29,7 +29,8 @@ AceRoundAction::AceRoundAction() : AbstractAction() {}
 
 AceRoundAction::~AceRoundAction() {}
 
-const IConditionPtr &AceRoundAction::operator()(IAIState &state) const {
+const IConditionPtr &AceRoundAction::perform(IAIState &state,
+		const NetMauMau::Player::IPlayer::CARDS &) const {
 
 	NetMauMau::Player::IPlayer::CARDS myCards(state.getPlayerCards());
 

@@ -58,7 +58,8 @@ PowerPlayAction::PowerPlayAction(bool set) : AbstractAction(), m_set(set) {}
 
 PowerPlayAction::~PowerPlayAction() {}
 
-const IConditionPtr &PowerPlayAction::operator()(IAIState &state) const {
+const IConditionPtr &PowerPlayAction::perform(IAIState &state,
+		const NetMauMau::Player::IPlayer::CARDS &) const {
 
 	if(m_set) {
 		const NetMauMau::Common::ICard::SUIT s = state.getPowerSuit();

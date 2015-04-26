@@ -33,7 +33,8 @@ public:
 	PowerSuitAction(Common::ICard::SUIT suit);
 	virtual ~PowerSuitAction();
 
-	virtual const IConditionPtr &operator()(IAIState &state) const;
+	virtual const IConditionPtr &perform(IAIState &state,
+										 const Player::IPlayer::CARDS &cards) const;
 
 private:
 	const bool m_determineSuit;

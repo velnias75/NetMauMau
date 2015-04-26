@@ -143,6 +143,8 @@ private:
 
 	virtual Common::ICardPtr getCard() const;
 
+	virtual Common::ICardPtr getPlayedCard() const;
+
 private:
 	typedef Common::SmartPtr < AIDT::DecisionTree
 	<NetMauMau::AIDT::JackOnlyCondition> > DecisionTreePtr;
@@ -170,6 +172,7 @@ private:
 	JackDecisionTreePtr m_jackDecisisionTree;
 	mutable Common::ICardPtr m_card;
 	mutable Common::ICardPtr m_uncoveredCard;
+	mutable Common::ICardPtr m_playedCard;
 	mutable bool m_noJack;
 	mutable Common::ICard::SUIT *m_jackSuit;
 

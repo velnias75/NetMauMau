@@ -106,7 +106,7 @@ StdPlayer::StdPlayer(const std::string &name) : IPlayer(), IAIState(), m_name(na
 										 (new NetMauMau::AIDT::NextAction(HAVEJACKCOND)),
 										 NetMauMau::AIDT::IActionPtr
 										 (new NetMauMau::AIDT::PowerPlayAction(true))))),
-	m_card(), m_uncoveredCard(), m_noJack(false), m_jackSuit(0L) {
+	m_card(), m_uncoveredCard(), m_playedCard(), m_noJack(false), m_jackSuit(0L) {
 	m_cards.reserve(32);
 }
 
@@ -122,8 +122,7 @@ void StdPlayer::reset() throw() {
 	m_dirChgEnabled = false;
 	m_cards.clear();
 
-	m_card = NetMauMau::Common::ICardPtr();
-	m_uncoveredCard = NetMauMau::Common::ICardPtr();
+	m_card = m_uncoveredCard = m_playedCard = NetMauMau::Common::ICardPtr();
 	m_noJack = false;
 	m_jackSuit = 0L;
 
@@ -424,12 +423,13 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICardPtr &uncoveredCard,
 
 	const NetMauMau::Common::ICardPtr c(m_card);
 
-	m_card = playedCard;
+	m_card = m_playedCard = playedCard;
 	m_uncoveredCard = uncoveredCard;
 
 	const NetMauMau::Common::ICard::SUIT s = m_jackDecisisionTree->getCard(true)->getSuit();
 
 	m_card = c;
+	m_playedCard = NetMauMau::Common::ICardPtr();
 
 	return s;
 
@@ -601,6 +601,10 @@ void StdPlayer::setCardsTaken(bool b) {
 
 NetMauMau::Common::ICardPtr StdPlayer::getUncoveredCard() const {
 	return m_uncoveredCard;
+}
+
+NetMauMau::Common::ICardPtr StdPlayer::getPlayedCard() const {
+	return m_playedCard;
 }
 
 NetMauMau::Common::ICardPtr StdPlayer::getCard() const {

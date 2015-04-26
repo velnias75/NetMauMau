@@ -20,11 +20,15 @@
 #include "powersuitaction.h"
 
 #include "powersuitcondition.h"
+#include "powerplayaction.h"
+#include "staticcondition.h"
 #include "cardtools.h"
 #include "iaistate.h"
 
 namespace {
 NetMauMau::AIDT::IConditionPtr POWERSUITCOND(new NetMauMau::AIDT::PowerSuitCondition());
+NetMauMau::AIDT::IConditionPtr
+POWERPLAYACTION(new NetMauMau::AIDT::StaticCondition<NetMauMau::AIDT::PowerPlayAction>());
 }
 
 using namespace NetMauMau::AIDT;
@@ -75,7 +79,7 @@ const IConditionPtr &PowerSuitAction::perform(IAIState &state,
 		state.setPowerSuit(m_suit);
 	}
 
-	return POWERSUITCOND;
+	return !state.getCard() ? POWERPLAYACTION : POWERSUITCOND;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

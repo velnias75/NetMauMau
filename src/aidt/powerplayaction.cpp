@@ -59,7 +59,7 @@ PowerPlayAction::PowerPlayAction(bool set) : AbstractAction(), m_set(set) {}
 PowerPlayAction::~PowerPlayAction() {}
 
 const IConditionPtr &PowerPlayAction::perform(IAIState &state,
-		const NetMauMau::Player::IPlayer::CARDS &) const {
+		const NetMauMau::Player::IPlayer::CARDS &cards) const {
 
 	if(m_set) {
 		const NetMauMau::Common::ICard::SUIT s = state.getPowerSuit();
@@ -74,9 +74,9 @@ const IConditionPtr &PowerPlayAction::perform(IAIState &state,
 
 		return HAVEJACKCOND;
 
-	} else if(state.getCard()) {
+	} else if(!state.getCard()) {
 
-		NetMauMau::Player::IPlayer::CARDS myCards(state.getPlayerCards());
+		NetMauMau::Player::IPlayer::CARDS myCards(cards);
 
 		const NetMauMau::Player::IPlayer::CARDS::iterator &e(std::partition(myCards.begin(),
 				myCards.end(), std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),

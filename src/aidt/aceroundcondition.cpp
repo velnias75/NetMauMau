@@ -43,7 +43,7 @@ IActionPtr AceRoundCondition::perform(const IAIState &state,
 									  const NetMauMau::Player::IPlayer::CARDS &) const {
 	return state.tryAceRound() || (!state.getRuleSet()->isAceRound() &&
 								   state.getRuleSet()->isAceRoundPossible()) ?
-		   ACEROUNDACTION : createNextAction(RANDOMJACKCOND);
+		   createNextAction(RANDOMJACKCOND) : ACEROUNDACTION;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

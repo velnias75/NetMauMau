@@ -595,7 +595,8 @@ throw(Common::Exception::SocketException) {
 
 			Common::ICardPtr c(m_talon->takeCard());
 
-			if(!c) throw Common::Exception::SocketException(TALONUNDERFLOW);
+// 			if(!c) throw Common::Exception::SocketException(TALONUNDERFLOW);
+			if(!c) break; // TODO better handling of Talon underflow
 
 			player->receiveCard(c);
 		}

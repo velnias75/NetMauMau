@@ -30,9 +30,9 @@ RandomJackAction::RandomJackAction() : AbstractAction() {}
 RandomJackAction::~RandomJackAction() {}
 
 const IConditionPtr &RandomJackAction::perform(IAIState &state,
-		const NetMauMau::Player::IPlayer::CARDS &) const {
+		const NetMauMau::Player::IPlayer::CARDS &cards) const {
 
-	NetMauMau::Player::IPlayer::CARDS myCards(state.getPlayerCards());
+	NetMauMau::Player::IPlayer::CARDS myCards(cards);
 
 	const NetMauMau::Player::IPlayer::CARDS::size_type jackCnt =
 		static_cast<NetMauMau::Player::IPlayer::CARDS::size_type>(std::count_if(myCards.begin(),
@@ -40,16 +40,18 @@ const IConditionPtr &RandomJackAction::perform(IAIState &state,
 											NetMauMau::Common::ICard::JACK)));
 
 	if(jackCnt) {
-		std::partition(myCards.begin(), myCards.end(),
-					   std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-									NetMauMau::Common::ICard::JACK));
 
-		state.setCard(
-			myCards[static_cast<std::size_t>(NetMauMau::Common::genRandom
-											 <NetMauMau::Player::IPlayer::CARDS::difference_type>
-											 (static_cast
-											  <NetMauMau::Player::IPlayer::CARDS::difference_type>
-											  (jackCnt)))]);
+		std::stable_partition(myCards.begin(), myCards.end(),
+							  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+										   NetMauMau::Common::ICard::JACK));
+
+		NetMauMau::Player::IPlayer::CARDS::difference_type r = NetMauMau::Common::genRandom
+				<NetMauMau::Player::IPlayer::CARDS::difference_type>
+				(static_cast
+				 <NetMauMau::Player::IPlayer::CARDS::difference_type>
+				 (jackCnt));
+
+		state.setCard(myCards[static_cast<NetMauMau::Player::IPlayer::CARDS::size_type>(r)]);
 	}
 
 	return getNullCondition();

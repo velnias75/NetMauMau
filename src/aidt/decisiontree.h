@@ -43,7 +43,10 @@ public:
 	DecisionTree(IAIState &state) : m_rootCondition(IConditionPtr(new RootCond())),
 		m_state(state) {}
 
-	~DecisionTree() {}
+	~DecisionTree() {
+		m_state.clearJackSuit();
+		m_state.setCard(Common::ICardPtr());
+	}
 
 	Common::ICardPtr getCard(bool noJack = false) const;
 

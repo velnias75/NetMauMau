@@ -76,10 +76,6 @@ public:
 
 	virtual void reset() throw();
 
-	inline static void resetJackState() throw() {
-		m_jackPlayed = false;
-	}
-
 	virtual const CARDS &getPlayerCards() const _CONST;
 
 	virtual const RuleSet::IRuleSet *getRuleSet() const _PURE;
@@ -120,12 +116,11 @@ protected:
 	bool isAceRoundAllowed() const;
 
 private:
-	Common::ICardPtr findBestCard(const Common::ICardPtr &uc, const Common::ICard::SUIT *js,
-								  bool noJack) const;
-
 	virtual std::size_t getTalonFactor() const _PURE;
 
 	virtual Common::ICard::SUIT *getJackSuit() const _PURE;
+
+	virtual void clearJackSuit();
 
 	virtual bool nineIsEight() const _PURE;
 
@@ -175,8 +170,6 @@ private:
 	mutable Common::ICardPtr m_playedCard;
 	mutable bool m_noJack;
 	mutable Common::ICard::SUIT *m_jackSuit;
-
-	static bool m_jackPlayed;
 };
 
 }

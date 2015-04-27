@@ -21,6 +21,11 @@
 
 #include "iaistate.h"
 #include "cardtools.h"
+#include "skipplayercondition.h"
+
+namespace {
+NetMauMau::AIDT::IConditionPtr SKIPPLAYERCOND(new NetMauMau::AIDT::SkipPlayerCondition());
+}
 
 using namespace NetMauMau::AIDT;
 
@@ -29,21 +34,22 @@ ServeSevenAction::ServeSevenAction() : AbstractAction() {}
 ServeSevenAction::~ServeSevenAction() {}
 
 const IConditionPtr &ServeSevenAction::perform(IAIState &state,
-		const NetMauMau::Player::IPlayer::CARDS &) const {
+		const NetMauMau::Player::IPlayer::CARDS &cards) const {
 
 	const NetMauMau::Player::IPlayer::CARDS::value_type f =
-		NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN, state.getPlayerCards().begin(),
-									state.getPlayerCards().end());
+		NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN, cards.begin(), cards.end());
 
 	if(f) {
 		state.setCard(f);
+		return getNullCondition();
 	} else if(!state.hasTakenCards()) {
 		state.setCard(NetMauMau::Common::ICardPtr(const_cast<const NetMauMau::Common::ICard *>
 					  (NetMauMau::Common::getIllegalCard())));
 		state.setCardsTaken(true);
+		return getNullCondition();
 	}
 
-	return getNullCondition();
+	return SKIPPLAYERCOND;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

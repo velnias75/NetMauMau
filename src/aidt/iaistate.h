@@ -55,6 +55,8 @@ public:
 
 	virtual Common::ICard::SUIT *getJackSuit() const = 0;
 
+	virtual void clearJackSuit() = 0;
+
 	virtual bool isNoJack() const = 0;
 
 	virtual void setNoJack(bool b) = 0;

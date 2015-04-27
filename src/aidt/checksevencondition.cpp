@@ -24,11 +24,8 @@
 #include "iaistate.h"
 
 namespace {
-
 NetMauMau::AIDT::IActionPtr SERVESEVENACTION(new NetMauMau::AIDT::ServeSevenAction());
-
 NetMauMau::AIDT::IConditionPtr SKIPPLAYERACTION(new NetMauMau::AIDT::SkipPlayerCondition());
-
 }
 
 using namespace NetMauMau::AIDT;

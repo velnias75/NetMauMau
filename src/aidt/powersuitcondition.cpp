@@ -20,7 +20,7 @@
 #include "powersuitcondition.h"
 
 #include "aceroundcondition.h"
-#include "maxsuitaction.h"
+#include "powerplayaction.h"
 #include "iaistate.h"
 
 namespace {
@@ -30,7 +30,7 @@ NetMauMau::AIDT::IConditionPtr ACEROUNDCOND(new NetMauMau::AIDT::AceRoundConditi
 using namespace NetMauMau::AIDT;
 
 PowerSuitCondition::PowerSuitCondition() : BinaryCondition(NetMauMau::AIDT::IActionPtr
-			(new NetMauMau::AIDT::MaxSuitAction()), createNextAction(ACEROUNDCOND)) {}
+			(new NetMauMau::AIDT::PowerPlayAction()), createNextAction(ACEROUNDCOND)) {}
 
 PowerSuitCondition::PowerSuitCondition(const IActionPtr &actTrue, const IActionPtr &actFalse) :
 	BinaryCondition(actTrue, actFalse) {}
@@ -39,9 +39,8 @@ PowerSuitCondition::~PowerSuitCondition() {}
 
 IActionPtr PowerSuitCondition::perform(const IAIState &state,
 									   const NetMauMau::Player::IPlayer::CARDS &) const {
-	return /*(!state.getCard() || state.getPlayedCard()) &&*/
-		state.getPowerSuit() == NetMauMau::Common::ICard::SUIT_ILLEGAL ? getTrueAction() :
-		getFalseAction();
+	return state.getPowerSuit() == NetMauMau::Common::ICard::SUIT_ILLEGAL ? getTrueAction() :
+		   getFalseAction();
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -77,8 +77,7 @@ public:
 	}
 
 	operator bool() const throw() {
-// 		return !!(this->operator const T * ());
-		return !!(m_refCounter ? m_refCounter->m_ptr : (m_constRawPtr ? m_constRawPtr : 0L));
+		return !!(this->operator const T * ());
 	}
 
 	operator T *() const throw() {

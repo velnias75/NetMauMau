@@ -22,6 +22,7 @@
 #include "powerplayaction.h"
 
 #include "havejackcondition.h"
+#include "aceroundcondition.h"
 #include "staticcondition.h"
 #include "stdcardfactory.h"
 #include "maxsuitaction.h"
@@ -29,9 +30,10 @@
 #include "iaistate.h"
 
 namespace {
-NetMauMau::AIDT::IConditionPtr HAVEJACKCOND(new NetMauMau::AIDT::HaveJackCondition());
 NetMauMau::AIDT::IConditionPtr
 MAXSUITACTION(new NetMauMau::AIDT::StaticCondition<NetMauMau::AIDT::MaxSuitAction>());
+NetMauMau::AIDT::IConditionPtr HAVEJACKCOND(new NetMauMau::AIDT::HaveJackCondition());
+NetMauMau::AIDT::IConditionPtr ACEROUNDCOND(new NetMauMau::AIDT::AceRoundCondition());
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
@@ -57,7 +59,7 @@ using namespace NetMauMau::AIDT;
 PowerPlayAction::PowerPlayAction(bool set) : AbstractAction(), m_set(set) {}
 
 PowerPlayAction::~PowerPlayAction() {}
-#include "logger.h"
+
 const IConditionPtr &PowerPlayAction::perform(IAIState &state,
 		const NetMauMau::Player::IPlayer::CARDS &cards) const {
 
@@ -101,7 +103,7 @@ const IConditionPtr &PowerPlayAction::perform(IAIState &state,
 		state.setPowerPlay(false);
 	}
 
-	return state.getCard() ? getNullCondition() : MAXSUITACTION;
+	return state.getCard() ? ACEROUNDCOND : MAXSUITACTION;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

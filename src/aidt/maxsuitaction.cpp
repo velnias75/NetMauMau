@@ -67,7 +67,7 @@ MaxSuitAction::~MaxSuitAction() {}
 const IConditionPtr &MaxSuitAction::perform(IAIState &state,
 		const NetMauMau::Player::IPlayer::CARDS &cards) const {
 
-// 	assert(!state.getCard());
+	assert(!state.getCard());
 
 	NetMauMau::Player::IPlayer::CARDS mc(cards);
 

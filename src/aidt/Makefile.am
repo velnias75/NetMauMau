@@ -7,9 +7,9 @@ GSL=
 endif
 
 noinst_HEADERS = abstractaction.h abstractcondition.h aceroundaction.h aceroundcondition.h \
-	bestjackaction.h bestsuitcondition.h binarycondition.h checksevencondition.h \
-	checkjacksuitaction.h decisiontree.h havejackcondition.h havelessthancondition.h iaction.h \
-	iaistate.h icondition.h jackonlycondition.h jackremoverbase.h jacksuitaction.h \
+	bestjackaction.h bestsuitcondition.h binarycondition.h checkjacksuitaction.h \
+	checksevencondition.h decisiontree.h havejackcondition.h havelessthancondition.h \
+	iaction.h iaistate.h icondition.h jackonlycondition.h jackremoverbase.h jacksuitaction.h \
 	maxsuitaction.h nextaction.h playjackaction.h powerplayaction.h powersuitaction.h \
 	powersuitcondition.h randomjackaction.h randomjackcondition.h servesevenaction.h \
 	skipplayeraction.h skipplayercondition.h staticcondition.h suspendaction.h

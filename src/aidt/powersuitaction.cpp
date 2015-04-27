@@ -20,15 +20,13 @@
 #include "powersuitaction.h"
 
 #include "powersuitcondition.h"
-#include "powerplayaction.h"
-#include "staticcondition.h"
+#include "aceroundcondition.h"
 #include "cardtools.h"
 #include "iaistate.h"
 
 namespace {
+NetMauMau::AIDT::IConditionPtr ACEREOUNDCOND(new NetMauMau::AIDT::AceRoundCondition());
 NetMauMau::AIDT::IConditionPtr POWERSUITCOND(new NetMauMau::AIDT::PowerSuitCondition());
-NetMauMau::AIDT::IConditionPtr
-POWERPLAYACTION(new NetMauMau::AIDT::StaticCondition<NetMauMau::AIDT::PowerPlayAction>());
 }
 
 using namespace NetMauMau::AIDT;
@@ -67,19 +65,23 @@ const IConditionPtr &PowerSuitAction::perform(IAIState &state,
 
 				if(f) {
 					state.setPowerSuit(f->getSuit());
-					break;
+					return f->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL ? ACEREOUNDCOND :
+						   POWERSUITCOND;
 				}
 			}
 
 		} else {
-			state.setPowerSuit(getMaxPlayedOffSuit(state));
+			NetMauMau::Common::ICard::SUIT s = getMaxPlayedOffSuit(state);
+			state.setPowerSuit(s);
+			return s != NetMauMau::Common::ICard::SUIT_ILLEGAL ? ACEREOUNDCOND : POWERSUITCOND;
 		}
 
 	} else {
 		state.setPowerSuit(m_suit);
+		return m_suit != NetMauMau::Common::ICard::SUIT_ILLEGAL ? ACEREOUNDCOND : POWERSUITCOND;
 	}
 
-	return !state.getCard() ? POWERPLAYACTION : POWERSUITCOND;
+	return POWERSUITCOND;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

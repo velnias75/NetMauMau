@@ -20,11 +20,13 @@
 #include "skipplayeraction.h"
 
 #include "powersuitcondition.h"
+#include "bestsuitcondition.h"
 #include "cardtools.h"
 #include "iaistate.h"
 
 namespace {
 NetMauMau::AIDT::IConditionPtr POWERSUITCOND(new NetMauMau::AIDT::PowerSuitCondition());
+NetMauMau::AIDT::IConditionPtr BESTSUITCOND(new NetMauMau::AIDT::BestSuitCondition());
 }
 
 using namespace NetMauMau::AIDT;
@@ -50,7 +52,7 @@ const IConditionPtr &SkipPlayerAction::perform(IAIState &state,
 				  NetMauMau::Common::findRank(NetMauMau::Common::ICard::EIGHT,
 						  state.getPlayerCards().begin(), state.getPlayerCards().end()));
 
-	return state.getCard() ? getNullCondition() : POWERSUITCOND;
+	return (state.getCard() || state.hasPlayerFewCards()) ? BESTSUITCOND : POWERSUITCOND;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

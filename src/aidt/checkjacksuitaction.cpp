@@ -89,6 +89,11 @@ const IConditionPtr &CheckJackSuitAction::perform(IAIState &state,
 
 NetMauMau::Common::ICard::SUIT CheckJackSuitAction::findJackChoice(const IAIState &state) const {
 
+	if(state.getCard()) {
+		assert(state.getCard()->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL);
+		return state.getCard()->getSuit();
+	}
+
 	const NetMauMau::Player::IPlayer::CARDS::const_iterator
 	&f(std::find_if(state.getPlayerCards().begin(), state.getPlayerCards().end(),
 					_hasRankPath(state.getPlayerCards(), NetMauMau::Common::ICard::EIGHT,

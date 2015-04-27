@@ -41,7 +41,8 @@ const IConditionPtr &BestJackAction::perform(IAIState &state,
 	const NetMauMau::Common::ICardPtr sc(state.getCard());
 	state.setCard(NetMauMau::Common::ICardPtr());
 	const NetMauMau::Common::ICardPtr bc(DecisionTree<CheckSevenCondition>(state).getCard(true));
-	state.setCard((bc && bc->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL) ? bc : sc);
+	state.setCard((bc && bc->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL) ? bc :
+				  NetMauMau::Common::ICardPtr());
 
 	return CHECKJACKSUITACTION;
 }

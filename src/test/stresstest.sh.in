@@ -24,6 +24,12 @@ if [ -n "$1" ]; then
   let seed=$1
 fi
 
+if [ -n "$2" ]; then
+  let mseed=$2
+else
+  let mseed=-1
+fi
+
 export GSL_RNG_TYPE=ranlxs2
 export GSL_RNG_SEED=$seed
 export NETMAUMAU_RULES=@RULES@
@@ -36,7 +42,7 @@ terminate() {
 
 trap terminate SIGINT SIGTERM
 
-while(@check_PROGRAMS@); do
+while(@check_PROGRAMS@ && test $mseed -eq -1 -o $seed -lt $mseed ); do
   let seed=seed+1 ;
   export GSL_RNG_SEED=$seed ;
 done

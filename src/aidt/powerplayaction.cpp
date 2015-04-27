@@ -34,24 +34,6 @@ NetMauMau::AIDT::IConditionPtr
 MAXSUITACTION(new NetMauMau::AIDT::StaticCondition<NetMauMau::AIDT::MaxSuitAction>());
 NetMauMau::AIDT::IConditionPtr HAVEJACKCOND(new NetMauMau::AIDT::HaveJackCondition());
 NetMauMau::AIDT::IConditionPtr ACEROUNDCOND(new NetMauMau::AIDT::AceRoundCondition());
-
-#pragma GCC diagnostic ignored "-Weffc++"
-#pragma GCC diagnostic push
-struct playedOutRank : std::binary_function<std::string, NetMauMau::Common::ICard::RANK, bool> {
-	bool operator()(const std::string &desc, NetMauMau::Common::ICard::RANK rank) const {
-
-		NetMauMau::Common::ICard::RANK r = NetMauMau::Common::ICard::RANK_ILLEGAL;
-		NetMauMau::Common::ICard::SUIT s = NetMauMau::Common::ICard::SUIT_ILLEGAL;
-
-		if(NetMauMau::Common::parseCardDesc(desc, &s, &r)) {
-			return r == rank;
-		}
-
-		return false;
-	}
-};
-#pragma GCC diagnostic pop
-
 }
 
 using namespace NetMauMau::AIDT;
@@ -81,9 +63,8 @@ const IConditionPtr &PowerPlayAction::perform(IAIState &state,
 
 		NetMauMau::Player::IPlayer::CARDS myCards(cards);
 
-		const NetMauMau::Player::IPlayer::CARDS::iterator &e(std::partition(myCards.begin(),
-				myCards.end(), std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-											NetMauMau::Common::ICard::SEVEN)));
+		const NetMauMau::Player::IPlayer::CARDS::iterator &e(pullRank(myCards,
+				NetMauMau::Common::ICard::SEVEN));
 
 		const NetMauMau::Player::IPlayer::CARDS::value_type f =
 			NetMauMau::Common::findSuit(state.getJackSuit() ? *state.getJackSuit() :
@@ -93,8 +74,8 @@ const IConditionPtr &PowerPlayAction::perform(IAIState &state,
 			std::distance(myCards.begin(), e);
 
 		const NetMauMau::Player::IPlayer::CARDS::difference_type poSevens =
-			std::count_if(state.getPlayedOutCards().begin(), state.getPlayedOutCards().end(),
-						  std::bind2nd(playedOutRank(), NetMauMau::Common::ICard::SEVEN));
+			JackRemoverBase::countPlayedOutRank(state.getPlayedOutCards(),
+												NetMauMau::Common::ICard::SEVEN);
 
 		if(f && (state.isPowerPlay() || mySevens + poSevens >
 				 static_cast<NetMauMau::Player::IPlayer::CARDS::difference_type>(2 *

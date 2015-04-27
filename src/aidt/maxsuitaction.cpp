@@ -78,16 +78,12 @@ const IConditionPtr &MaxSuitAction::perform(IAIState &state,
 
 	for(std::size_t i = 0; i < 4; ++i) {
 
-		const NetMauMau::Player::IPlayer::CARDS::iterator
-		&e(std::partition(mc.begin(), mc.end(),
-						  std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit),
-									   suitCount[i].suit)));
+		const NetMauMau::Player::IPlayer::CARDS::iterator &e(pullSuit(mc, suitCount[i].suit));
 
 		if(state.getJackSuit()) {
 
 			if(suitCount[i].count && (suitCount[i].suit == *state.getJackSuit())) {
-				std::partition(mc.begin(), e, std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-							   NetMauMau::Common::ICard::SEVEN));
+				pullRank(mc.begin(), e, NetMauMau::Common::ICard::SEVEN);
 				bestCard = mc.front();
 				break;
 			}
@@ -103,9 +99,7 @@ const IConditionPtr &MaxSuitAction::perform(IAIState &state,
 
 			std::sort(mc.begin(), e, cardGreater());
 
-			std::stable_partition(mc.begin(), e,
-								  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-											   NetMauMau::Common::ICard::SEVEN));
+			pullRank(mc.begin(), e, NetMauMau::Common::ICard::SEVEN);
 
 			const NetMauMau::Player::IPlayer::CARDS::value_type f =
 				NetMauMau::Common::findRank(state.getUncoveredCard()->getRank(), mc.begin(), e);
@@ -120,15 +114,10 @@ const IConditionPtr &MaxSuitAction::perform(IAIState &state,
 
 	if(!bestCard) {
 
-		const NetMauMau::Player::IPlayer::CARDS::iterator
-		&e(std::partition(mc.begin(), mc.end(),
-						  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-									   NetMauMau::Common::ICard::SEVEN)));
+		const NetMauMau::Player::IPlayer::CARDS::iterator &e(pullRank(mc.begin(), mc.end(),
+				NetMauMau::Common::ICard::SEVEN));
 
-		if(!state.isNoJack()) std::partition(e, mc.end(),
-												 std::not1(std::bind2nd
-														 (std::ptr_fun(NetMauMau::Common::isRank),
-																 NetMauMau::Common::ICard::JACK)));
+		if(!state.isNoJack()) pushRank(e, mc.end(), NetMauMau::Common::ICard::JACK);
 
 		const NetMauMau::Player::IPlayer::CARDS::value_type f =
 			NetMauMau::Common::findSuit(state.getJackSuit() ? *state.getJackSuit() :
@@ -143,7 +132,8 @@ const IConditionPtr &MaxSuitAction::perform(IAIState &state,
 }
 
 NetMauMau::Common::ICardPtr
-MaxSuitAction::hasRankPath(const NetMauMau::Common::ICardPtr &uc, NetMauMau::Common::ICard::SUIT s,
+MaxSuitAction::hasRankPath(const NetMauMau::Common::ICardPtr &uc,
+						   NetMauMau::Common::ICard::SUIT s,
 						   NetMauMau::Common::ICard::RANK r,
 						   const NetMauMau::Player::IPlayer::CARDS &cards, bool nineIsEight) {
 

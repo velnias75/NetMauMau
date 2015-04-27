@@ -20,7 +20,6 @@
 #include "bestsuitcondition.h"
 
 #include "powersuitaction.h"
-#include "cardtools.h"
 #include "iaistate.h"
 
 using namespace NetMauMau::AIDT;
@@ -33,9 +32,7 @@ IActionPtr BestSuitCondition::perform(const IAIState &state,
 									  const NetMauMau::Player::IPlayer::CARDS &cards) const {
 
 	if(!state.getCard() && !state.isNoJack() && state.hasPlayerFewCards() &&
-			std::count_if(cards.begin(), cards.end(),
-						  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-									   NetMauMau::Common::ICard::JACK))) {
+			JackRemoverBase::countRank(cards, NetMauMau::Common::ICard::JACK)) {
 		return IActionPtr(new PowerSuitAction());
 	} else {
 		return IActionPtr(new PowerSuitAction(NetMauMau::Common::ICard::SUIT_ILLEGAL));

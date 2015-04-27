@@ -21,6 +21,7 @@
 #define NETMAUMAU_ENGINE_AIDT_JACKREMOVERBASE_H
 
 #include "iplayer.h"
+#include "smartptr.h"
 
 namespace NetMauMau {
 
@@ -31,7 +32,17 @@ class JackRemoverBase {
 public:
 	virtual ~JackRemoverBase();
 
+	static std::vector<std::string>::difference_type
+	countPlayedOutRank(const std::vector<std::string> &porv,
+					   NetMauMau::Common::ICard::RANK rank);
+
 	static Player::IPlayer::CARDS removeJack(const Player::IPlayer::CARDS &cards);
+
+	static Player::IPlayer::CARDS::difference_type countSuit(const Player::IPlayer::CARDS &cards,
+			Common::ICard::SUIT suit);
+
+	static Player::IPlayer::CARDS::difference_type countRank(const Player::IPlayer::CARDS &cards,
+			Common::ICard::RANK rank);
 
 protected:
 	JackRemoverBase();

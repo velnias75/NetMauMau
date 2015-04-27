@@ -61,9 +61,11 @@ void AbstractAction::countSuits(SUITCOUNT *suitCount,
 	const bool noCards = myCards.empty();
 
 	for(std::size_t i = 0; i < 4; ++i) {
-		const SUITCOUNT sc = { SUIT[i], noCards ? 0 : std::count_if(myCards.begin(), myCards.end(),
-							   std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit), SUIT[i]))
-							 };
+
+		const SUITCOUNT sc = {
+			SUIT[i], noCards ? 0 : JackRemoverBase::countSuit(myCards, SUIT[i])
+		};
+
 		suitCount[i] = sc;
 	}
 
@@ -102,6 +104,36 @@ const NetMauMau::Common::ICard::SUIT *AbstractAction::getSuits() const {
 
 const IConditionPtr &AbstractAction::getNullCondition() {
 	return NULLCONDITION;
+}
+
+NetMauMau::Player::IPlayer::CARDS::iterator
+AbstractAction::pullSuit(NetMauMau::Player::IPlayer::CARDS &cards,
+						 NetMauMau::Common::ICard::SUIT suit) const {
+	return std::partition(cards.begin(), cards.end(),
+						  std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit), suit));
+}
+
+NetMauMau::Player::IPlayer::CARDS::iterator
+AbstractAction::pullRank(NetMauMau::Player::IPlayer::CARDS &cards,
+						 NetMauMau::Common::ICard::RANK rank) const {
+	return std::stable_partition(cards.begin(), cards.end(),
+								 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank), rank));
+}
+
+NetMauMau::Player::IPlayer::CARDS::iterator
+AbstractAction::pullRank(const NetMauMau::Player::IPlayer::CARDS::iterator &first,
+						 const NetMauMau::Player::IPlayer::CARDS::iterator &last,
+						 NetMauMau::Common::ICard::RANK rank) const {
+	return std::stable_partition(first, last, std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+								 rank));
+}
+
+NetMauMau::Player::IPlayer::CARDS::iterator
+AbstractAction::pushRank(const NetMauMau::Player::IPlayer::CARDS::iterator &first,
+						 const NetMauMau::Player::IPlayer::CARDS::iterator &last,
+						 NetMauMau::Common::ICard::RANK rank) const {
+	return std::partition(first, last,
+						  std::not1(std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank), rank)));
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

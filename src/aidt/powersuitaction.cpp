@@ -49,15 +49,11 @@ const IConditionPtr &PowerSuitAction::perform(IAIState &state,
 		SUITCOUNT suitCount[4];
 		AbstractAction::countSuits(suitCount, myCards);
 
-		if(std::count_if(myCards.begin(), myCards.end(),
-						 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-									  NetMauMau::Common::ICard::SEVEN))) {
+		if(JackRemoverBase::countRank(myCards, NetMauMau::Common::ICard::SEVEN)) {
 
 			for(int p = 0; p < 4; ++p) {
 
-				std::partition(myCards.begin(), myCards.end(),
-							   std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit),
-											suitCount[p].suit));
+				pullSuit(myCards, suitCount[p].suit);
 
 				const NetMauMau::Player::IPlayer::CARDS::value_type f =
 					NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN,

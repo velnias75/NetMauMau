@@ -20,7 +20,6 @@
 #include "randomjackaction.h"
 
 #include "random_gen.h"
-#include "cardtools.h"
 #include "iaistate.h"
 
 using namespace NetMauMau::AIDT;
@@ -35,21 +34,16 @@ const IConditionPtr &RandomJackAction::perform(IAIState &state,
 	NetMauMau::Player::IPlayer::CARDS myCards(cards);
 
 	const NetMauMau::Player::IPlayer::CARDS::size_type jackCnt =
-		static_cast<NetMauMau::Player::IPlayer::CARDS::size_type>(std::count_if(myCards.begin(),
-				myCards.end(), std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-											NetMauMau::Common::ICard::JACK)));
+		static_cast<NetMauMau::Player::IPlayer::CARDS::size_type>
+		(JackRemoverBase::countRank(myCards, NetMauMau::Common::ICard::JACK));
 
 	if(jackCnt) {
 
-		std::stable_partition(myCards.begin(), myCards.end(),
-							  std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-										   NetMauMau::Common::ICard::JACK));
+		pullRank(myCards, NetMauMau::Common::ICard::JACK);
 
-		NetMauMau::Player::IPlayer::CARDS::difference_type r = NetMauMau::Common::genRandom
-				<NetMauMau::Player::IPlayer::CARDS::difference_type>
-				(static_cast
-				 <NetMauMau::Player::IPlayer::CARDS::difference_type>
-				 (jackCnt));
+		const NetMauMau::Player::IPlayer::CARDS::difference_type r =
+			NetMauMau::Common::genRandom<NetMauMau::Player::IPlayer::CARDS::difference_type>
+			(static_cast<NetMauMau::Player::IPlayer::CARDS::difference_type>(jackCnt));
 
 		state.setCard(myCards[static_cast<NetMauMau::Player::IPlayer::CARDS::size_type>(r)]);
 	}

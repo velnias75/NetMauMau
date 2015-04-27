@@ -59,6 +59,22 @@ protected:
 
 	AbstractAction();
 
+	NetMauMau::Player::IPlayer::CARDS::iterator pullSuit(Player::IPlayer::CARDS &cards,
+			Common::ICard::SUIT suit) const;
+
+	NetMauMau::Player::IPlayer::CARDS::iterator pullRank(Player::IPlayer::CARDS &cards,
+			Common::ICard::RANK rank) const;
+
+	NetMauMau::Player::IPlayer::CARDS::iterator
+	pullRank(const NetMauMau::Player::IPlayer::CARDS::iterator &first,
+			 const NetMauMau::Player::IPlayer::CARDS::iterator &last,
+			 Common::ICard::RANK rank) const;
+
+	NetMauMau::Player::IPlayer::CARDS::iterator
+	pushRank(const NetMauMau::Player::IPlayer::CARDS::iterator &first,
+			 const NetMauMau::Player::IPlayer::CARDS::iterator &last,
+			 Common::ICard::RANK rank) const;
+
 	const NetMauMau::Common::ICard::SUIT *getSuits() const _CONST;
 
 	static void countSuits(SUITCOUNT *suitCount, const Player::IPlayer::CARDS &myCards);

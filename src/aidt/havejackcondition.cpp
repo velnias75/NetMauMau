@@ -26,12 +26,10 @@
 #include "cardtools.h"
 
 namespace {
-
 NetMauMau::AIDT::IConditionPtr
 HAVELESSTHANEIGHTCOND(new NetMauMau::AIDT::HaveLessThanCondition<8>(
 						  NetMauMau::AIDT::IActionPtr(new NetMauMau::AIDT::BestJackAction()),
 						  NetMauMau::AIDT::IActionPtr()));
-
 }
 
 using namespace NetMauMau::AIDT;

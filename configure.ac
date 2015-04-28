@@ -23,6 +23,7 @@ AC_ARG_ENABLE([ansi], [AS_HELP_STRING([--disable-ansi], [disables ANSI support])
       CPPFLAGS="${CPPFLAGS} -DDISABLE_ANSI"
     fi
   ])
+
 AC_ARG_ENABLE([client], [AS_HELP_STRING([--disable-client], [disables build of client library])],
   [ AM_CONDITIONAL([ENABLE_CLIENT], [ test x$enable_client = xyes ]) ],
   [ AM_CONDITIONAL([ENABLE_CLIENT], [ true ]) ])
@@ -46,6 +47,13 @@ fi
 AC_ARG_ENABLE([ai-image], [AS_HELP_STRING([--enable-ai-image], [path to image of AI player])],
   [ AM_CONDITIONAL([BRANDING], [ test x$enable_ai_image != xno ]) ],
   [ AM_CONDITIONAL([BRANDING], [ false ]) ])
+
+AC_ARG_ENABLE([ai-tracing], [AS_HELP_STRING([--enable-ai-tracing], 
+  [enables tracing of AI decisions (useful for developers only, needs NDEBUG undefined)])], 
+  [  if test x$enable_ai_tracing = xyes; then
+       AC_DEFINE([TRACE_AI], [1], [Define to 1 to enable tracing of AI decisions])
+     fi
+  ])
 
 if test ! -z "$enable_ai_image" -a "x$enable_ai_image" != "xno"; then
   AC_SUBST([AI_IMAGE], [$enable_ai_image])

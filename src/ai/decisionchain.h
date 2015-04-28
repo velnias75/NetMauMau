@@ -20,6 +20,10 @@
 #ifndef NETMAUMAU_ENGINE_AI_DECISIONTREE_H
 #define NETMAUMAU_ENGINE_AI_DECISIONTREE_H
 
+#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
+#include "config.h"
+#endif
+
 #include <cstdlib>
 
 #include "iaction.h"
@@ -83,14 +87,17 @@ Common::ICardPtr DecisionChain<RootCond, Jack>::getCard(bool noJack) const {
 
 #if defined(TRACE_AI) && !defined(NDEBUG)
 
-	// cppcheck-suppress unreadVariable
-	const bool ansi = isatty(fileno(stderr));
-	const Common::ICardPtr c(m_state.getCard());
+	if(!getenv("NMM_NO_TRACE")) {
 
-	if(!getenv("NMM_NO_TRACE")) logDebug("   END " << (Jack ? "-jack- " : "") << "trace of AI \""
-											 << m_state.getName() << "\" -> " << (c ? (Jack ?
-													 Common::suitToSymbol(c->getSuit(), ansi, ansi)
-													 : c->description(ansi)) : "NO CARD") << " <-");
+		// cppcheck-suppress unreadVariable
+		const bool ansi = isatty(fileno(stderr));
+		const Common::ICardPtr c(m_state.getCard());
+
+		logDebug("   END " << (Jack ? "-jack- " : "") << "trace of AI \""
+				 << m_state.getName() << "\" -> " << (c ? (Jack ?
+						 Common::suitToSymbol(c->getSuit(), ansi, ansi)
+						 : c->description(ansi)) : "NO CARD") << " <-");
+	}
 
 #endif
 

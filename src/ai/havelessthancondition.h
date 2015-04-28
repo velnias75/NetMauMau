@@ -43,7 +43,7 @@ public:
 		return state.getPlayerCards().size() < Bound ? getTrueAction() : getFalseAction();
 	}
 
-#ifdef TRACE_AI
+#if defined(TRACE_AI) && !defined(NDEBUG)
 protected:
 	inline virtual std::string traceLog() const {
 		return "HaveLessThanCondition";

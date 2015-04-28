@@ -25,7 +25,7 @@
 #include "decisionchain.h"
 
 namespace {
-NetMauMau::AI::IConditionPtr
+const NetMauMau::AI::IConditionPtr
 CHECKJACKSUITACTION(new NetMauMau::AI::StaticCondition<NetMauMau::AI::CheckJackSuitAction>());
 }
 
@@ -40,7 +40,8 @@ const IConditionPtr &BestJackAction::perform(IAIState &state,
 
 	const NetMauMau::Common::ICardPtr sc(state.getCard());
 	state.setCard(NetMauMau::Common::ICardPtr());
-	const NetMauMau::Common::ICardPtr bc(DecisionChain<CheckSevenCondition>(state).getCard(true));
+	const NetMauMau::Common::ICardPtr bc(DecisionChain < CheckSevenCondition,
+										 true > (state).getCard(true));
 	state.setCard((bc && bc->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL) ? bc :
 				  NetMauMau::Common::ICardPtr());
 

@@ -34,6 +34,12 @@ public:
 
 	virtual const IConditionPtr &perform(IAIState &state,
 										 const Player::IPlayer::CARDS &cards) const;
+#if defined(TRACE_AI) && !defined(NDEBUG)
+protected:
+	inline virtual std::string traceLog() const {
+		return "CheckJackSuitAction";
+	}
+#endif
 
 private:
 #pragma GCC diagnostic ignored "-Weffc++"

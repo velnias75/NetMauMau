@@ -22,7 +22,7 @@
 #include "iaistate.h"
 #include "nextaction.h"
 
-#ifdef TRACE_AI
+#if defined(TRACE_AI) && !defined(NDEBUG)
 #include "logger.h"
 #endif
 
@@ -45,9 +45,9 @@ const IActionPtr &AbstractCondition::getNullAction() {
 }
 
 IActionPtr AbstractCondition::operator()(const IAIState &state) const {
-#ifdef TRACE_AI
+#if defined(TRACE_AI) && !defined(NDEBUG)
 
-	if(!getenv("NMM_NO_TRACE")) logDebug("* " << traceLog());
+	if(!getenv("NMM_NO_TRACE")) logDebug(" * " << traceLog());
 
 #endif
 

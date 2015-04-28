@@ -26,7 +26,7 @@
 #include "cardtools.h"
 
 namespace {
-NetMauMau::AI::IConditionPtr
+const NetMauMau::AI::IConditionPtr
 HAVELESSTHANEIGHTCOND(new NetMauMau::AI::HaveLessThanCondition<8>(
 						  NetMauMau::AI::IActionPtr(new NetMauMau::AI::BestJackAction()),
 						  NetMauMau::AI::IActionPtr()));

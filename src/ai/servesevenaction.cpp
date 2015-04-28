@@ -24,7 +24,7 @@
 #include "skipplayercondition.h"
 
 namespace {
-NetMauMau::AI::IConditionPtr SKIPPLAYERCOND(new NetMauMau::AI::SkipPlayerCondition());
+const NetMauMau::AI::IConditionPtr SKIPPLAYERCOND(new NetMauMau::AI::SkipPlayerCondition());
 }
 
 using namespace NetMauMau::AI;

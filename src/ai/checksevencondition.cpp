@@ -24,8 +24,8 @@
 #include "iaistate.h"
 
 namespace {
-NetMauMau::AI::IActionPtr SERVESEVENACTION(new NetMauMau::AI::ServeSevenAction());
-NetMauMau::AI::IConditionPtr SKIPPLAYERACTION(new NetMauMau::AI::SkipPlayerCondition());
+const NetMauMau::AI::IActionPtr SERVESEVENACTION(new NetMauMau::AI::ServeSevenAction());
+const NetMauMau::AI::IConditionPtr SKIPPLAYERACTION(new NetMauMau::AI::SkipPlayerCondition());
 }
 
 using namespace NetMauMau::AI;

@@ -34,7 +34,7 @@ public:
 
 	virtual IActionPtr perform(const IAIState &state, const Player::IPlayer::CARDS &cards) const;
 
-#ifdef TRACE_AI
+#if defined(TRACE_AI) && !defined(NDEBUG)
 protected:
 	inline virtual std::string traceLog() const {
 		return "CheckSevenCondition";

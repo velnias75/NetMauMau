@@ -45,7 +45,7 @@ protected:
 	IActionPtr createNextAction(const IConditionPtr &cond) const;
 	static const IActionPtr &getNullAction() _CONST;
 
-#ifdef TRACE_AI
+#if defined(TRACE_AI) && !defined(NDEBUG)
 	virtual std::string traceLog() const = 0;
 #endif
 

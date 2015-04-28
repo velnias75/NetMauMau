@@ -34,6 +34,13 @@ public:
 
 	virtual const IConditionPtr &perform(IAIState &state,
 										 const Player::IPlayer::CARDS &cards) const;
+#if defined(TRACE_AI) && !defined(NDEBUG)
+protected:
+	virtual inline std::string traceLog() const {
+		return "AceRoundAction";
+	}
+#endif
+
 };
 
 }

@@ -24,7 +24,7 @@
 #include "iruleset.h"
 
 namespace {
-NetMauMau::AI::IConditionPtr RANDOMJACKCOND(new NetMauMau::AI::RandomJackCondition());
+const NetMauMau::AI::IConditionPtr RANDOMJACKCOND(new NetMauMau::AI::RandomJackCondition());
 }
 
 using namespace NetMauMau::AI;

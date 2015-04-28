@@ -25,8 +25,8 @@
 #include "iaistate.h"
 
 namespace {
-NetMauMau::AI::IConditionPtr ACEREOUNDCOND(new NetMauMau::AI::AceRoundCondition());
-NetMauMau::AI::IConditionPtr POWERSUITCOND(new NetMauMau::AI::PowerSuitCondition());
+const NetMauMau::AI::IConditionPtr ACEREOUNDCOND(new NetMauMau::AI::AceRoundCondition());
+const NetMauMau::AI::IConditionPtr POWERSUITCOND(new NetMauMau::AI::PowerSuitCondition());
 }
 
 using namespace NetMauMau::AI;

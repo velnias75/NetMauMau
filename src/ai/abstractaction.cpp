@@ -25,8 +25,12 @@
 #include "cardtools.h"
 #include "iaistate.h"
 
+#if defined(TRACE_AI) && !defined(NDEBUG)
+#include "logger.h"
+#endif
+
 namespace {
-NetMauMau::AI::IConditionPtr NULLCONDITION;
+const NetMauMau::AI::IConditionPtr NULLCONDITION;
 
 const NetMauMau::Common::ICard::SUIT SUIT[4] = {
 	NetMauMau::Common::ICard::HEARTS,
@@ -62,6 +66,11 @@ AbstractAction::AbstractAction() : IAction(), DecisionBase() {}
 AbstractAction::~AbstractAction() {}
 
 const IConditionPtr &AbstractAction::operator()(IAIState &state) const {
+#if defined(TRACE_AI) && !defined(NDEBUG)
+
+	if(!getenv("NMM_NO_TRACE")) logDebug("-> " << traceLog());
+
+#endif
 
 #ifndef NDEBUG
 	state.getCardCount();

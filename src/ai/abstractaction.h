@@ -83,6 +83,10 @@ protected:
 
 	static const IConditionPtr &getNullCondition() _CONST;
 
+#if defined(TRACE_AI) && !defined(NDEBUG)
+	virtual std::string traceLog() const = 0;
+#endif
+
 private:
 	static Player::IPlayer::CARDS::iterator pullSpecialRank(Player::IPlayer::CARDS &cards,
 			Common::ICard::RANK rank, bool nineIsEight);

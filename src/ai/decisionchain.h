@@ -26,7 +26,9 @@
 #include "iaistate.h"
 #include "icondition.h"
 
-#ifdef TRACE_AI
+#if defined(TRACE_AI) && !defined(NDEBUG)
+#include <cstdio>
+#include "cardtools.h"
 #include "logger.h"
 #endif
 
@@ -34,7 +36,7 @@ namespace NetMauMau {
 
 namespace AI {
 
-template<class RootCond>
+template<class RootCond, bool Jack = false>
 class DecisionChain {
 	DISALLOW_COPY_AND_ASSIGN(DecisionChain)
 public:
@@ -53,8 +55,8 @@ private:
 	IAIState &m_state;
 };
 
-template<class RootCond>
-Common::ICardPtr DecisionChain<RootCond>::getCard(bool noJack) const {
+template<class RootCond, bool Jack>
+Common::ICardPtr DecisionChain<RootCond, Jack>::getCard(bool noJack) const {
 
 	IConditionPtr cond(m_rootCondition);
 	IActionPtr act;
@@ -63,21 +65,34 @@ Common::ICardPtr DecisionChain<RootCond>::getCard(bool noJack) const {
 
 	m_state.setNoJack(noJack);
 
-#ifdef TRACE_AI
+#if defined(TRACE_AI) && !defined(NDEBUG)
 
-	if(!getenv("NMM_NO_TRACE")) logDebug("-> BEGIN trace of AI \"" << m_state.getName() << "\"");
-
-#endif
-
-	while(cond && (act = (*cond)(m_state))) cond = (*act)(m_state);
-
-#ifdef TRACE_AI
-
-	if(!getenv("NMM_NO_TRACE")) logDebug("END trace of AI \"" << m_state.getName() << "\" <-");
+	if(!getenv("NMM_NO_TRACE")) logDebug("-> BEGIN " << (Jack ? "-jack- " : "") << "trace of AI \""
+											 << m_state.getName() << "\"");
 
 #endif
+
+	while(cond && (act = (*cond)(m_state))) {
+
+		cond = (*act)(m_state);
+
+// 		if(m_state.getCard()) break;
+	}
 
 	m_state.setNoJack(oj);
+
+#if defined(TRACE_AI) && !defined(NDEBUG)
+
+	// cppcheck-suppress unreadVariable
+	const bool ansi = isatty(fileno(stderr));
+	const Common::ICardPtr c(m_state.getCard());
+
+	if(!getenv("NMM_NO_TRACE")) logDebug("   END " << (Jack ? "-jack- " : "") << "trace of AI \""
+											 << m_state.getName() << "\" -> " << (c ? (Jack ?
+													 Common::suitToSymbol(c->getSuit(), ansi, ansi)
+													 : c->description(ansi)) : "NO CARD") << " <-");
+
+#endif
 
 	return m_state.getCard();
 }

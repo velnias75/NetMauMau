@@ -26,13 +26,9 @@
 #include "iaistate.h"
 
 namespace {
-
 const NetMauMau::AI::IActionPtr PLAYJACKACTION(new NetMauMau::AI::PlayJackAction());
-
 const NetMauMau::AI::IActionPtr SUSPENDACTION(new NetMauMau::AI::SuspendAction());
-
 const NetMauMau::AI::IConditionPtr CHECKSEVENCOND(new NetMauMau::AI::CheckSevenCondition());
-
 }
 
 using namespace NetMauMau::AI;

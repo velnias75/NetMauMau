@@ -30,10 +30,10 @@
 #include "iaistate.h"
 
 namespace {
-NetMauMau::AI::IConditionPtr
+const NetMauMau::AI::IConditionPtr
 MAXSUITACTION(new NetMauMau::AI::StaticCondition<NetMauMau::AI::MaxSuitAction>());
-NetMauMau::AI::IConditionPtr HAVEJACKCOND(new NetMauMau::AI::HaveJackCondition());
-NetMauMau::AI::IConditionPtr ACEROUNDCOND(new NetMauMau::AI::AceRoundCondition());
+const NetMauMau::AI::IConditionPtr HAVEJACKCOND(new NetMauMau::AI::HaveJackCondition());
+const NetMauMau::AI::IConditionPtr ACEROUNDCOND(new NetMauMau::AI::AceRoundCondition());
 }
 
 using namespace NetMauMau::AI;

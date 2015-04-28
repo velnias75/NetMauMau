@@ -24,7 +24,7 @@
 #include "iaistate.h"
 
 namespace {
-NetMauMau::AI::IConditionPtr BESTSUITCOND(new NetMauMau::AI::BestSuitCondition());
+const NetMauMau::AI::IConditionPtr BESTSUITCOND(new NetMauMau::AI::BestSuitCondition());
 }
 
 using namespace NetMauMau::AI;

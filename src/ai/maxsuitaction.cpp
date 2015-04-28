@@ -28,7 +28,7 @@
 
 namespace {
 
-NetMauMau::AI::IConditionPtr ACEROUNDCOND(new NetMauMau::AI::AceRoundCondition());
+const NetMauMau::AI::IConditionPtr ACEROUNDCOND(new NetMauMau::AI::AceRoundCondition());
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push

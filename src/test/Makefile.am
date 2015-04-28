@@ -29,7 +29,7 @@ noinst_HEADERS = testeventhandler.h testclient.h testimg.h
 
 test_netmaumau_CPPFLAGS = $(GSL)
 test_netmaumau_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
-	-I$(top_srcdir)/src/engine -I$(top_srcdir)/src/aidt
+	-I$(top_srcdir)/src/engine -I$(top_srcdir)/src/ai
 test_netmaumau_SOURCES = test_netmaumau.cpp testeventhandler.cpp
 test_netmaumau_LDADD = ../engine/libengine.la
 test_netmaumau_LDFLAGS = -no-install

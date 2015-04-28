@@ -27,8 +27,8 @@
 #include "cardtools.h"
 #include "random_gen.h"
 #include "nextaction.h"
-#include "decisiontree.h"
 #include "engineconfig.h"
+#include "decisionchain.h"
 #include "stdcardfactory.h"
 #include "socketexception.h"
 #include "powerplayaction.h"
@@ -41,7 +41,7 @@
 
 namespace {
 
-NetMauMau::AIDT::IConditionPtr HAVEJACKCOND(new NetMauMau::AIDT::HaveJackCondition());
+NetMauMau::AI::IConditionPtr HAVEJACKCOND(new NetMauMau::AI::HaveJackCondition());
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
@@ -96,16 +96,16 @@ StdPlayer::StdPlayer(const std::string &name) : IPlayer(), IAIState(), m_name(na
 	m_powerSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL), m_powerPlay(false), m_tryAceRound(false),
 	m_nineIsEight(false), m_leftCount(0), m_rightCount(0), m_dirChgEnabled(false),
 	m_playerCount(0), m_engineCfg(0L), m_cardCountObserver(0L),
-	m_decisionTree(NetMauMau::Common::SmartPtr < NetMauMau::AIDT::DecisionTree
-				   <NetMauMau::AIDT::JackOnlyCondition> > (new NetMauMau::AIDT::DecisionTree
-						   <NetMauMau::AIDT::JackOnlyCondition>(*this))),
-	m_jackDecisionTree(NetMauMau::Common::SmartPtr < NetMauMau::AIDT::DecisionTree
-					   <NetMauMau::AIDT::PowerSuitCondition> > (new NetMauMau::AIDT::DecisionTree
-							   <NetMauMau::AIDT::PowerSuitCondition>(*this,
-									   NetMauMau::AIDT::IActionPtr
-									   (new NetMauMau::AIDT::NextAction(HAVEJACKCOND)),
-									   NetMauMau::AIDT::IActionPtr
-									   (new NetMauMau::AIDT::PowerPlayAction(true))))),
+	m_decisionTree(NetMauMau::Common::SmartPtr < NetMauMau::AI::DecisionChain
+				   <NetMauMau::AI::JackOnlyCondition> > (new NetMauMau::AI::DecisionChain
+						   <NetMauMau::AI::JackOnlyCondition>(*this))),
+	m_jackDecisionTree(NetMauMau::Common::SmartPtr < NetMauMau::AI::DecisionChain
+					   <NetMauMau::AI::PowerSuitCondition> > (new NetMauMau::AI::DecisionChain
+							   <NetMauMau::AI::PowerSuitCondition>(*this,
+									   NetMauMau::AI::IActionPtr
+									   (new NetMauMau::AI::NextAction(HAVEJACKCOND)),
+									   NetMauMau::AI::IActionPtr
+									   (new NetMauMau::AI::PowerPlayAction(true))))),
 	m_card(), m_uncoveredCard(), m_playedCard(), m_noJack(false), m_jackSuit(0L) {
 	m_cards.reserve(32);
 }

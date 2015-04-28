@@ -25,15 +25,15 @@
 
 namespace NetMauMau {
 
-namespace AIDT {
+namespace AI {
 class JackOnlyCondition;
 class PowerSuitCondition;
-template<class> class DecisionTree;
+template<class> class DecisionChain;
 }
 
 namespace Player {
 
-class _EXPORT StdPlayer : public IPlayer, public AIDT::IAIState {
+class _EXPORT StdPlayer : public IPlayer, public AI::IAIState {
 	DISALLOW_COPY_AND_ASSIGN(StdPlayer)
 public:
 	explicit StdPlayer(const std::string &name);
@@ -141,10 +141,8 @@ private:
 	virtual Common::ICardPtr getPlayedCard() const;
 
 private:
-	typedef Common::SmartPtr < AIDT::DecisionTree
-	<NetMauMau::AIDT::JackOnlyCondition> > DecisionTreePtr;
-	typedef Common::SmartPtr
-	<AIDT::DecisionTree<NetMauMau::AIDT::PowerSuitCondition> > JackDecisionTreePtr;
+	typedef Common::SmartPtr<AI::DecisionChain<AI::JackOnlyCondition> > DecisionChainPtr;
+	typedef Common::SmartPtr<AI::DecisionChain<AI::PowerSuitCondition> > JackDecisionChainPtr;
 
 	const std::string m_name;
 	CARDS m_cards;
@@ -163,8 +161,8 @@ private:
 	const EngineConfig *m_engineCfg;
 	const ICardCountObserver *m_cardCountObserver;
 
-	DecisionTreePtr m_decisionTree;
-	JackDecisionTreePtr m_jackDecisionTree;
+	DecisionChainPtr m_decisionTree;
+	JackDecisionChainPtr m_jackDecisionTree;
 	mutable Common::ICardPtr m_card;
 	mutable Common::ICardPtr m_uncoveredCard;
 	mutable Common::ICardPtr m_playedCard;

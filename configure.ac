@@ -202,5 +202,5 @@ AC_CONFIG_FILES([src/server/netmaumau.rc doc/client.dox netmaumau.h2m])
 AC_MSG_RESULT([You may want to install a client too: https://github.com/velnias75/NetMauMau-Qt-Client])
 
 AC_OUTPUT([Makefile src/images/Makefile src/include/Makefile src/Makefile src/common/Makefile 
-  src/sqlite/Makefile src/lua/Makefile src/aidt/Makefile src/engine/Makefile src/server/Makefile 
+  src/sqlite/Makefile src/lua/Makefile src/ai/Makefile src/engine/Makefile src/server/Makefile 
   src/client/Makefile src/test/Makefile doc/Makefile])

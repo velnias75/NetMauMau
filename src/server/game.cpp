@@ -178,7 +178,6 @@ void Game::reset(bool playerLost) throw() {
 			for(std::vector<NetMauMau::Player::StdPlayer *>::const_iterator i(m_aiPlayers.begin());
 					i != m_aiPlayers.end(); ++i) {
 
-				(*i)->resetJackState();
 				(*i)->reset();
 
 				NetMauMau::DB::SQLite::getInstance().

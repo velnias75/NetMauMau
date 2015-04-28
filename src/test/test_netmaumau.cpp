@@ -58,7 +58,9 @@ int main(int, const char **) {
 		engine.distributeCards();
 
 		while(engine.hasPlayers()) {
-			if(!engine.nextTurn()) return EXIT_FAILURE;
+			if(!engine.nextTurn()) {
+				return EXIT_FAILURE;
+			}
 		}
 
 	} catch(const NetMauMau::Common::Exception::SocketException &e) {

@@ -50,7 +50,7 @@ public:
 	throw(NetMauMau::Common::Exception::SocketException);
 	virtual void playerPlaysCard(const NetMauMau::Player::IPlayer *player,
 								 const NetMauMau::Common::ICard *playedCard,
-								 const NetMauMau::Common::ICard *unvoredCard) const
+								 const NetMauMau::Common::ICard *uncoveredCard) const
 	throw(NetMauMau::Common::Exception::SocketException);
 	virtual void playerChooseJackSuit(const NetMauMau::Player::IPlayer *player,
 									  NetMauMau::Common::ICard::SUIT suit) const

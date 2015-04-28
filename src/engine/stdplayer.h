@@ -20,14 +20,18 @@
 #ifndef NETMAUMAU_PLAYER_STDPLAYER_H
 #define NETMAUMAU_PLAYER_STDPLAYER_H
 
-#include "iplayer.h"
-#include "smartptr.h"
+#include "aiplayer.h"
 
 namespace NetMauMau {
 
+namespace AI {
+class JackOnlyCondition;
+class PowerSuitCondition;
+}
+
 namespace Player {
 
-class _EXPORT StdPlayer : public IPlayer {
+class StdPlayer : public AI::AIPlayer<AI::JackOnlyCondition, AI::PowerSuitCondition> {
 	DISALLOW_COPY_AND_ASSIGN(StdPlayer)
 public:
 	explicit StdPlayer(const std::string &name);
@@ -70,21 +74,35 @@ public:
 
 	virtual void reset() throw();
 
-	inline static void resetJackState() throw() {
-		m_jackPlayed = false;
-	}
+	virtual const CARDS &getPlayerCards() const _CONST;
+
+	virtual const RuleSet::IRuleSet *getRuleSet() const _PURE;
+
+	virtual const std::vector<std::string> &getPlayedOutCards() const _CONST;
+
+	virtual std::size_t getPlayerCount() const _PURE;
+
+	virtual std::size_t getLeftCount() const _PURE;
+
+	virtual std::size_t getRightCount() const _PURE;
+
+	virtual Common::ICard::SUIT getPowerSuit() const _PURE;
+
+	virtual void setPowerSuit(Common::ICard::SUIT suit);
+
+	virtual bool isPowerPlay() const _PURE;
+
+	virtual void setPowerPlay(bool b);
+
+	virtual bool hasPlayerFewCards() const _PURE;
+
+	virtual bool hasTakenCards() const _PURE;
+
+	virtual void setCardsTaken(bool b);
 
 protected:
 	CARDS getPossibleCards(const Common::ICardPtr &uncoveredCard,
 						   const Common::ICard::SUIT *suit) const;
-
-	inline const CARDS &getPlayerCards() const {
-		return m_cards;
-	}
-
-	inline const RuleSet::IRuleSet *getRuleSet() const {
-		return m_ruleset;
-	}
 
 	// cppcheck-suppress functionConst
 	void notifyCardCountChange();
@@ -93,51 +111,15 @@ protected:
 
 	bool isAceRoundAllowed() const;
 
-private:
+	virtual std::size_t getTalonFactor() const _PURE;
 
-#pragma GCC diagnostic ignored "-Weffc++"
-#pragma GCC diagnostic push
-	struct _hasRankPath : std::unary_function<Common::ICardPtr, bool> {
+	virtual bool nineIsEight() const _PURE;
 
-		explicit _hasRankPath(const CARDS &c, Common::ICard::RANK r, bool nie) : mCards(c), rank(r),
-			nineIsEight(nie) {}
+	virtual bool isDirChgEnabled() const _PURE;
 
-		bool operator()(const Common::ICardPtr &c) const;
+	virtual bool tryAceRound() const _PURE;
 
-	private:
-		const CARDS &mCards;
-		const Common::ICard::RANK rank;
-		bool nineIsEight;
-	};
-#pragma GCC diagnostic pop
-
-	typedef struct _suitCount {
-		bool operator<(const _suitCount &sc) const {
-			return !(count < sc.count);
-		}
-
-		bool operator==(Common::ICard::SUIT s) const {
-			return suit == s;
-		}
-
-		Common::ICard::SUIT suit;
-		CARDS::difference_type count;
-	} SUITCOUNT;
-
-	void countSuits(SUITCOUNT *suitCount, const CARDS &myCards) const;
-
-	Common::ICard::SUIT getMaxPlayedOffSuit(CARDS::difference_type *count = 0L) const;
-
-	static Common::ICardPtr hasRankPath(const Common::ICardPtr &uc,  Common::ICard::SUIT s,
-										Common::ICard::RANK r, const CARDS &cards,
-										bool nineIsEight);
-
-	Common::ICardPtr findBestCard(const Common::ICardPtr &uc, const Common::ICard::SUIT *js,
-								  bool noJack) const;
-
-	Common::ICard::SUIT findJackChoice() const;
-
-	std::size_t getTalonFactor() const _PURE;
+	virtual void setTryAceRound(bool b);
 
 private:
 	const std::string m_name;
@@ -156,8 +138,6 @@ private:
 	std::size_t m_playerCount;
 	const EngineConfig *m_engineCfg;
 	const ICardCountObserver *m_cardCountObserver;
-
-	static bool m_jackPlayed;
 };
 
 }

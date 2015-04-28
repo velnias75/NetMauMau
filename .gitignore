@@ -103,4 +103,6 @@ start-server.sh
 test-driver
 V*.xml
 win32
-src/aidt/
+src/ai/.deps/
+src/ai/.libs/
+nmm-ai.flw

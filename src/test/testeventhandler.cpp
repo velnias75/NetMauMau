@@ -124,11 +124,11 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 void TestEventHandler::playerPlaysCard(const NetMauMau::Player::IPlayer *player,
 									   const NetMauMau::Common::ICard *playedCard,
-									   const NetMauMau::Common::ICard *unvoredCard) const
+									   const NetMauMau::Common::ICard *uc) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::cerr << PLAYER << "plays " << std::setw(6 + OFF) << playedCard->description(m_isatty)
-			  << " over " << std::setw(16 + OFF) << unvoredCard->description(m_isatty) << "("
+			  << " over " << std::setw(16 + OFF) << uc->description(m_isatty) << "("
 			  << player->getCardCount() << ")" << std::endl;
 }
 

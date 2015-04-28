@@ -1,1 +1,1 @@
-SUBDIRS = include images common sqlite lua engine server client test
+SUBDIRS = include images common sqlite lua ai engine server client test

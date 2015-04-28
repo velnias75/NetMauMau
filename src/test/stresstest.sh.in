@@ -33,6 +33,7 @@ fi
 export GSL_RNG_TYPE=ranlxs2
 export GSL_RNG_SEED=$seed
 export NETMAUMAU_RULES=@RULES@
+export NMM_NO_TRACE=1
 
 terminate() {
   echo

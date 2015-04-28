@@ -49,7 +49,7 @@ const IConditionPtr &JackSuitAction::perform(IAIState &state,
 	if(f != state.getPlayerCards().end()) {
 		assert((*f)->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL);
 		state.setCard(*f);
-		return getNullCondition();
+		return AbstractAction::getNullCondition();
 	}
 
 	return HAVELESSTHANEIGHTCOND;

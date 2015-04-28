@@ -52,11 +52,7 @@ private:
 	};
 #pragma GCC diagnostic pop
 
-	Common::ICard::SUIT findJackChoice(const IAIState &state) const;
-
-	static Common::ICardPtr hasRankPath(const Common::ICardPtr &uc,  Common::ICard::SUIT s,
-										Common::ICard::RANK r, const Player::IPlayer::CARDS &cards,
-										bool nineIsEight);
+	static Common::ICard::SUIT findJackChoice(const IAIState &state);
 };
 
 }

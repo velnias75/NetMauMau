@@ -53,11 +53,11 @@ const IConditionPtr &PowerSuitAction::perform(IAIState &state,
 
 			for(int p = 0; p < 4; ++p) {
 
-				pullSuit(myCards, suitCount[p].suit);
+				AbstractAction::pullSuit(myCards, suitCount[p].suit);
 
 				const NetMauMau::Player::IPlayer::CARDS::value_type f =
-					NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN,
-												myCards.begin(), myCards.end());
+					NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN, myCards.begin(),
+												myCards.end());
 
 				if(f) {
 					state.setPowerSuit(f->getSuit());
@@ -67,7 +67,7 @@ const IConditionPtr &PowerSuitAction::perform(IAIState &state,
 			}
 
 		} else {
-			NetMauMau::Common::ICard::SUIT s = getMaxPlayedOffSuit(state);
+			NetMauMau::Common::ICard::SUIT s = AbstractAction::getMaxPlayedOffSuit(state);
 			state.setPowerSuit(s);
 			return s != NetMauMau::Common::ICard::SUIT_ILLEGAL ? ACEREOUNDCOND : POWERSUITCOND;
 		}

@@ -22,6 +22,7 @@
 
 #include <cstdlib>
 
+#include "iaction.h"
 #include "iaistate.h"
 #include "icondition.h"
 
@@ -43,10 +44,7 @@ public:
 	DecisionChain(IAIState &state) : m_rootCondition(IConditionPtr(new RootCond())),
 		m_state(state) {}
 
-	~DecisionChain() {
-		m_state.clearJackSuit();
-		m_state.setCard(Common::ICardPtr());
-	}
+	~DecisionChain() {}
 
 	Common::ICardPtr getCard(bool noJack = false) const;
 

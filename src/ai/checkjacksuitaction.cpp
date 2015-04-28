@@ -26,28 +26,6 @@
 #include "cardtools.h"
 #include "iaistate.h"
 
-namespace {
-
-#pragma GCC diagnostic ignored "-Weffc++"
-#pragma GCC diagnostic push
-struct _isSpecialRank : std::binary_function < NetMauMau::Common::ICardPtr,
-		NetMauMau::Common::ICard::RANK, bool > {
-
-	explicit _isSpecialRank(bool nineIsEight) : m_nineIsEight(nineIsEight) {}
-
-	bool operator()(const NetMauMau::Common::ICardPtr &c, NetMauMau::Common::ICard::RANK r) const {
-		return m_nineIsEight && r == NetMauMau::Common::ICard::EIGHT ?
-			   (c->getRank() == NetMauMau::Common::ICard::EIGHT ||
-				c->getRank() == NetMauMau::Common::ICard::NINE) : c->getRank() == r;
-	}
-
-private:
-	bool m_nineIsEight;
-};
-#pragma GCC diagnostic pop
-
-}
-
 using namespace NetMauMau::AI;
 
 bool CheckJackSuitAction::_hasRankPath::operator()(const NetMauMau::Common::ICardPtr &c) const {
@@ -55,10 +33,10 @@ bool CheckJackSuitAction::_hasRankPath::operator()(const NetMauMau::Common::ICar
 	bool hrp = false;
 
 	if(c->getRank() != rank) {
-		for(NetMauMau::Player::IPlayer::CARDS::const_iterator i(mCards.begin()); i != mCards.end();
-				++i) {
-			if((hrp = CheckJackSuitAction::hasRankPath(c, (*i)->getSuit(), rank, mCards,
-					  nineIsEight))) break;
+		for(NetMauMau::Player::IPlayer::CARDS::const_iterator i(mCards.begin());
+				i != mCards.end(); ++i) {
+			if((hrp = AbstractAction::hasRankPath(c, (*i)->getSuit(), rank, mCards,
+												  nineIsEight))) break;
 		}
 	}
 
@@ -72,10 +50,10 @@ CheckJackSuitAction::~CheckJackSuitAction() {}
 const IConditionPtr &CheckJackSuitAction::perform(IAIState &state,
 		const NetMauMau::Player::IPlayer::CARDS &) const {
 
-	NetMauMau::Common::ICard::SUIT s = findJackChoice(state);
+	NetMauMau::Common::ICard::SUIT s = CheckJackSuitAction::findJackChoice(state);
 
 	if(s == NetMauMau::Common::ICard::SUIT_ILLEGAL) {
-		while(((s = getSuits()[NetMauMau::Common::genRandom<std::ptrdiff_t>(4)]) ==
+		while(((s = AbstractAction::getSuits()[NetMauMau::Common::genRandom<std::ptrdiff_t>(4)]) ==
 				state.getUncoveredCard()->getSuit() || s == state.getPlayedCard()->getSuit()));
 	}
 
@@ -84,10 +62,10 @@ const IConditionPtr &CheckJackSuitAction::perform(IAIState &state,
 	state.setCard(NetMauMau::Common::ICardPtr(NetMauMau::StdCardFactory().create(s,
 				  NetMauMau::Common::ICard::RANK_ILLEGAL)));
 
-	return getNullCondition();
+	return AbstractAction::getNullCondition();
 }
 
-NetMauMau::Common::ICard::SUIT CheckJackSuitAction::findJackChoice(const IAIState &state) const {
+NetMauMau::Common::ICard::SUIT CheckJackSuitAction::findJackChoice(const IAIState &state) {
 
 	if(state.getCard()) {
 		assert(state.getCard()->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL);
@@ -103,39 +81,9 @@ NetMauMau::Common::ICard::SUIT CheckJackSuitAction::findJackChoice(const IAIStat
 		return (*f)->getSuit();
 	} else {
 		NetMauMau::Player::IPlayer::CARDS::difference_type count = 0;
-		const NetMauMau::Common::ICard::SUIT s = getMaxPlayedOffSuit(state, &count);
+		const NetMauMau::Common::ICard::SUIT s = AbstractAction::getMaxPlayedOffSuit(state, &count);
 		return count ? s : NetMauMau::Common::ICard::SUIT_ILLEGAL;
 	}
-}
-
-NetMauMau::Common::ICardPtr
-CheckJackSuitAction::hasRankPath(const NetMauMau::Common::ICardPtr &uc,
-								 NetMauMau::Common::ICard::SUIT s, NetMauMau::Common::ICard::RANK r,
-								 const NetMauMau::Player::IPlayer::CARDS &cards, bool nineIsEight) {
-
-	NetMauMau::Player::IPlayer::CARDS mCards(cards);
-
-	if(mCards.size() > 1) {
-
-		const NetMauMau::Player::IPlayer::CARDS::iterator &e(std::partition(mCards.begin(),
-				mCards.end(), std::bind2nd(_isSpecialRank(nineIsEight), r)));
-
-		if(std::distance(mCards.begin(), e)) {
-
-			NetMauMau::Player::IPlayer::CARDS::value_type
-			f_src(NetMauMau::Common::findSuit(uc->getSuit(), mCards.begin(), e));
-
-			if(f_src) {
-
-				NetMauMau::Player::IPlayer::CARDS::value_type
-				f_dest(NetMauMau::Common::findSuit(s, mCards.begin(), e));
-
-				if(f_dest) return f_src;
-			}
-		}
-	}
-
-	return NetMauMau::Common::ICardPtr();
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

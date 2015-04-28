@@ -39,7 +39,7 @@ const IConditionPtr &RandomJackAction::perform(IAIState &state,
 
 	if(jackCnt) {
 
-		pullRank(myCards, NetMauMau::Common::ICard::JACK);
+		AbstractAction::pullRank(myCards, NetMauMau::Common::ICard::JACK);
 
 		const NetMauMau::Player::IPlayer::CARDS::difference_type r =
 			NetMauMau::Common::genRandom<NetMauMau::Player::IPlayer::CARDS::difference_type>
@@ -48,7 +48,7 @@ const IConditionPtr &RandomJackAction::perform(IAIState &state,
 		state.setCard(myCards[static_cast<NetMauMau::Player::IPlayer::CARDS::size_type>(r)]);
 	}
 
-	return getNullCondition();
+	return AbstractAction::getNullCondition();
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

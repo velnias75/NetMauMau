@@ -43,7 +43,7 @@ const IConditionPtr &AceRoundAction::perform(IAIState &state,
 
 	if(state.tryAceRound()) {
 
-		pullRank(myCards, state.getRuleSet()->getAceRoundRank());
+		AbstractAction::pullRank(myCards, state.getRuleSet()->getAceRoundRank());
 		state.setCard(*myCards.begin());
 
 		return AbstractAction::getNullCondition();

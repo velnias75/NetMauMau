@@ -20,20 +20,18 @@
 #ifndef NETMAUMAU_PLAYER_STDPLAYER_H
 #define NETMAUMAU_PLAYER_STDPLAYER_H
 
-#include "iaistate.h"
-#include "smartptr.h"
+#include "aiplayer.h"
 
 namespace NetMauMau {
 
 namespace AI {
 class JackOnlyCondition;
 class PowerSuitCondition;
-template<class> class DecisionChain;
 }
 
 namespace Player {
 
-class _EXPORT StdPlayer : public IPlayer, public AI::IAIState {
+class StdPlayer : public AI::AIPlayer<AI::JackOnlyCondition, AI::PowerSuitCondition> {
 	DISALLOW_COPY_AND_ASSIGN(StdPlayer)
 public:
 	explicit StdPlayer(const std::string &name);
@@ -96,8 +94,6 @@ public:
 
 	virtual void setPowerPlay(bool b);
 
-	virtual Common::ICardPtr getUncoveredCard() const;
-
 	virtual bool hasPlayerFewCards() const _PURE;
 
 	virtual bool hasTakenCards() const _PURE;
@@ -115,12 +111,7 @@ protected:
 
 	bool isAceRoundAllowed() const;
 
-private:
 	virtual std::size_t getTalonFactor() const _PURE;
-
-	virtual Common::ICard::SUIT *getJackSuit() const _PURE;
-
-	virtual void clearJackSuit();
 
 	virtual bool nineIsEight() const _PURE;
 
@@ -130,20 +121,7 @@ private:
 
 	virtual void setTryAceRound(bool b);
 
-	virtual bool isNoJack() const _PURE;
-
-	virtual void setNoJack(bool b);
-
-	virtual void setCard(const Common::ICardPtr &card);
-
-	virtual Common::ICardPtr getCard() const;
-
-	virtual Common::ICardPtr getPlayedCard() const;
-
 private:
-	typedef Common::SmartPtr<AI::DecisionChain<AI::JackOnlyCondition> > DecisionChainPtr;
-	typedef Common::SmartPtr<AI::DecisionChain<AI::PowerSuitCondition> > JackDecisionChainPtr;
-
 	const std::string m_name;
 	CARDS m_cards;
 	mutable bool m_cardsTaken;
@@ -160,14 +138,6 @@ private:
 	std::size_t m_playerCount;
 	const EngineConfig *m_engineCfg;
 	const ICardCountObserver *m_cardCountObserver;
-
-	DecisionChainPtr m_decisionTree;
-	JackDecisionChainPtr m_jackDecisionTree;
-	mutable Common::ICardPtr m_card;
-	mutable Common::ICardPtr m_uncoveredCard;
-	mutable Common::ICardPtr m_playedCard;
-	mutable bool m_noJack;
-	mutable Common::ICard::SUIT *m_jackSuit;
 };
 
 }

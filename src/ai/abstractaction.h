@@ -57,31 +57,35 @@ protected:
 
 	AbstractAction();
 
-	NetMauMau::Player::IPlayer::CARDS::iterator pullSuit(Player::IPlayer::CARDS &cards,
-			Common::ICard::SUIT suit) const;
+	static Player::IPlayer::CARDS::iterator pullSuit(Player::IPlayer::CARDS &cards,
+			Common::ICard::SUIT suit);
 
-	NetMauMau::Player::IPlayer::CARDS::iterator pullRank(Player::IPlayer::CARDS &cards,
-			Common::ICard::RANK rank) const;
+	static Player::IPlayer::CARDS::iterator pullRank(Player::IPlayer::CARDS &cards,
+			Common::ICard::RANK rank);
 
-	NetMauMau::Player::IPlayer::CARDS::iterator
-	pullRank(const NetMauMau::Player::IPlayer::CARDS::iterator &first,
-			 const NetMauMau::Player::IPlayer::CARDS::iterator &last,
-			 Common::ICard::RANK rank) const;
+	static Player::IPlayer::CARDS::iterator pullRank(const Player::IPlayer::CARDS::iterator &first,
+			const Player::IPlayer::CARDS::iterator &last, Common::ICard::RANK rank);
 
-	NetMauMau::Player::IPlayer::CARDS::iterator
-	pushRank(const NetMauMau::Player::IPlayer::CARDS::iterator &first,
-			 const NetMauMau::Player::IPlayer::CARDS::iterator &last,
-			 Common::ICard::RANK rank) const;
+	static Common::ICardPtr hasRankPath(const Common::ICardPtr &uc, Common::ICard::SUIT s,
+										Common::ICard::RANK r, const Player::IPlayer::CARDS &mCards,
+										bool nineIsEight);
 
-	const NetMauMau::Common::ICard::SUIT *getSuits() const _CONST;
+	static Player::IPlayer::CARDS::iterator pushRank(const Player::IPlayer::CARDS::iterator &first,
+			const Player::IPlayer::CARDS::iterator &last, Common::ICard::RANK rank);
+
+	static const Common::ICard::SUIT *getSuits() _CONST;
 
 	static void countSuits(SUITCOUNT *suitCount, const Player::IPlayer::CARDS &myCards);
 
-	Common::ICard::SUIT
+	static Common::ICard::SUIT
 	getMaxPlayedOffSuit(const IAIState &state,
-						Player::IPlayer::CARDS::difference_type *count = 0L) const;
+						Player::IPlayer::CARDS::difference_type *count = 0L);
 
 	static const IConditionPtr &getNullCondition() _CONST;
+
+private:
+	static Player::IPlayer::CARDS::iterator pullSpecialRank(Player::IPlayer::CARDS &cards,
+			Common::ICard::RANK rank, bool nineIsEight);
 };
 
 }

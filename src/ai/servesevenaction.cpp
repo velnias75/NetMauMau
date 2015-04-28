@@ -41,12 +41,12 @@ const IConditionPtr &ServeSevenAction::perform(IAIState &state,
 
 	if(f) {
 		state.setCard(f);
-		return getNullCondition();
+		return AbstractAction::getNullCondition();
 	} else if(!state.hasTakenCards()) {
 		state.setCard(NetMauMau::Common::ICardPtr(const_cast<const NetMauMau::Common::ICard *>
 					  (NetMauMau::Common::getIllegalCard())));
 		state.setCardsTaken(true);
-		return getNullCondition();
+		return AbstractAction::getNullCondition();
 	}
 
 	return SKIPPLAYERCOND;

@@ -34,11 +34,6 @@ public:
 
 	virtual const IConditionPtr &perform(IAIState &state,
 										 const Player::IPlayer::CARDS &cards) const;
-
-private:
-	static Common::ICardPtr hasRankPath(const Common::ICardPtr &uc, Common::ICard::SUIT s,
-										Common::ICard::RANK r, const Player::IPlayer::CARDS &cards,
-										bool nineIsEight);
 };
 
 }

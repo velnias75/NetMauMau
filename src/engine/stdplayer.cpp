@@ -18,7 +18,6 @@
  */
 
 #include <cassert>
-#include <cstring>
 #include <numeric>
 
 #include "stdplayer.h"
@@ -28,16 +27,12 @@
 #include "random_gen.h"
 #include "nextaction.h"
 #include "engineconfig.h"
-#include "decisionchain.h"
-#include "stdcardfactory.h"
 #include "socketexception.h"
 #include "powerplayaction.h"
 #include "jackonlycondition.h"
 #include "havejackcondition.h"
 #include "powersuitcondition.h"
 #include "icardcountobserver.h"
-
-#include "randomjackcondition.h"
 
 namespace {
 
@@ -91,22 +86,14 @@ private:
 
 using namespace NetMauMau::Player;
 
-StdPlayer::StdPlayer(const std::string &name) : IPlayer(), IAIState(), m_name(name), m_cards(),
+StdPlayer::StdPlayer(const std::string &name) :
+	AI::AIPlayer<NetMauMau::AI::JackOnlyCondition, NetMauMau::AI::PowerSuitCondition>
+	(NetMauMau::AI::IActionPtr(new NetMauMau::AI::NextAction(HAVEJACKCOND)),
+	 NetMauMau::AI::IActionPtr(new NetMauMau::AI::PowerPlayAction(true))), m_name(name), m_cards(),
 	m_cardsTaken(false), m_ruleset(0L), m_playerHasFewCards(false),
 	m_powerSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL), m_powerPlay(false), m_tryAceRound(false),
-	m_nineIsEight(false), m_leftCount(0), m_rightCount(0), m_dirChgEnabled(false),
-	m_playerCount(0), m_engineCfg(0L), m_cardCountObserver(0L),
-	m_decisionTree(NetMauMau::Common::SmartPtr < NetMauMau::AI::DecisionChain
-				   <NetMauMau::AI::JackOnlyCondition> > (new NetMauMau::AI::DecisionChain
-						   <NetMauMau::AI::JackOnlyCondition>(*this))),
-	m_jackDecisionTree(NetMauMau::Common::SmartPtr < NetMauMau::AI::DecisionChain
-					   <NetMauMau::AI::PowerSuitCondition> > (new NetMauMau::AI::DecisionChain
-							   <NetMauMau::AI::PowerSuitCondition>(*this,
-									   NetMauMau::AI::IActionPtr
-									   (new NetMauMau::AI::NextAction(HAVEJACKCOND)),
-									   NetMauMau::AI::IActionPtr
-									   (new NetMauMau::AI::PowerPlayAction(true))))),
-	m_card(), m_uncoveredCard(), m_playedCard(), m_noJack(false), m_jackSuit(0L) {
+	m_nineIsEight(false), m_leftCount(0), m_rightCount(0), m_dirChgEnabled(false), m_playerCount(0),
+	m_engineCfg(0L), m_cardCountObserver(0L) {
 	m_cards.reserve(32);
 }
 
@@ -122,9 +109,7 @@ void StdPlayer::reset() throw() {
 	m_dirChgEnabled = false;
 	m_cards.clear();
 
-	m_card = m_uncoveredCard = m_playedCard = NetMauMau::Common::ICardPtr();
-	m_noJack = false;
-	m_jackSuit = 0L;
+	AIPlayer<NetMauMau::AI::JackOnlyCondition, NetMauMau::AI::PowerSuitCondition>::reset();
 
 	notifyCardCountChange();
 }
@@ -190,13 +175,13 @@ NetMauMau::Common::ICardPtr StdPlayer::requestCard(const NetMauMau::Common::ICar
 	m_uncoveredCard = uc;
 	m_jackSuit = js ? const_cast<NetMauMau::Common::ICard::SUIT *>(js) : 0L;
 
-	NetMauMau::Common::ICardPtr bestCard(m_decisionTree->getCard());
+	NetMauMau::Common::ICardPtr bestCard(getDecisionChain()->getCard());
 
 	m_playedCard = m_card = NetMauMau::Common::ICardPtr();
 
 	if(bestCard && bestCard->getRank() == NetMauMau::Common::ICard::JACK &&
 			uc->getRank() == NetMauMau::Common::ICard::JACK) {
-		bestCard = m_decisionTree->getCard(true);
+		bestCard = getDecisionChain()->getCard(true);
 	}
 
 	return m_ruleset ? (m_ruleset->checkCard(uc, NetMauMau::Common::ICardPtr(bestCard)) ?
@@ -214,7 +199,7 @@ StdPlayer::getJackChoice(const NetMauMau::Common::ICardPtr &uncoveredCard,
 	m_card = m_playedCard = playedCard;
 	m_uncoveredCard = uncoveredCard;
 
-	const NetMauMau::Common::ICardPtr &rc(m_jackDecisionTree->getCard(true));
+	const NetMauMau::Common::ICardPtr &rc(getJackDecisionChain()->getCard(true));
 	assert(rc);
 	const NetMauMau::Common::ICard::SUIT s = rc->getSuit();
 
@@ -261,6 +246,16 @@ bool StdPlayer::cardAccepted(const NetMauMau::Common::ICard *playedCard) {
 	return m_cards.empty();
 }
 
+IPlayer::CARDS StdPlayer::getPossibleCards(const NetMauMau::Common::ICardPtr &uncoveredCard,
+		const NetMauMau::Common::ICard::SUIT *suit) const {
+
+	CARDS posCards;
+	posCards.reserve(m_cards.size());
+
+	return std::for_each(m_cards.begin(), m_cards.end(), _pushIfPossible(posCards, uncoveredCard,
+						 getRuleSet(), suit)).cards;
+}
+
 void StdPlayer::cardPlayed(NetMauMau::Common::ICard *playedCard) {
 	m_playedOutCards.push_back(playedCard->description());
 }
@@ -280,16 +275,6 @@ std::size_t StdPlayer::getCardCount() const {
 
 std::size_t StdPlayer::getPoints() const {
 	return static_cast<std::size_t>(std::accumulate(m_cards.begin(), m_cards.end(), 0, pointSum()));
-}
-
-IPlayer::CARDS StdPlayer::getPossibleCards(const NetMauMau::Common::ICardPtr &uncoveredCard,
-		const NetMauMau::Common::ICard::SUIT *suit) const {
-
-	CARDS posCards;
-	posCards.reserve(m_cards.size());
-
-	return std::for_each(m_cards.begin(), m_cards.end(), _pushIfPossible(posCards, uncoveredCard,
-						 getRuleSet(), suit)).cards;
 }
 
 void StdPlayer::informAIStat(const IPlayer *, std::size_t count) {
@@ -343,30 +328,6 @@ void StdPlayer::setCardsTaken(bool b) {
 	m_cardsTaken = b;
 }
 
-NetMauMau::Common::ICardPtr StdPlayer::getUncoveredCard() const {
-	return m_uncoveredCard;
-}
-
-NetMauMau::Common::ICardPtr StdPlayer::getPlayedCard() const {
-	return m_playedCard;
-}
-
-NetMauMau::Common::ICardPtr StdPlayer::getCard() const {
-	return m_card;
-}
-
-void StdPlayer::setCard(const NetMauMau::Common::ICardPtr &card) {
-	m_card = card;
-}
-
-bool StdPlayer::isNoJack() const {
-	return m_noJack;
-}
-
-void StdPlayer::setNoJack(bool b) {
-	m_noJack = b;
-}
-
 bool StdPlayer::hasPlayerFewCards() const {
 	return m_playerHasFewCards;
 }
@@ -377,14 +338,6 @@ NetMauMau::Common::ICard::SUIT StdPlayer::getPowerSuit() const {
 
 void StdPlayer::setPowerSuit(NetMauMau::Common::ICard::SUIT suit) {
 	m_powerSuit = suit;
-}
-
-NetMauMau::Common::ICard::SUIT *StdPlayer::getJackSuit() const {
-	return m_jackSuit;
-}
-
-void StdPlayer::clearJackSuit() {
-	m_jackSuit = 0L;
 }
 
 bool StdPlayer::nineIsEight() const {

@@ -20,6 +20,7 @@
 #include "aceroundaction.h"
 
 #include "randomjackcondition.h"
+#include "cardtools.h"
 #include "iaistate.h"
 #include "iruleset.h"
 
@@ -34,9 +35,15 @@ AceRoundAction::AceRoundAction() : AbstractAction() {}
 AceRoundAction::~AceRoundAction() {}
 
 const IConditionPtr &AceRoundAction::perform(IAIState &state,
-		const NetMauMau::Player::IPlayer::CARDS &) const {
+		const NetMauMau::Player::IPlayer::CARDS &cards) const {
 
-	NetMauMau::Player::IPlayer::CARDS myCards(state.getPlayerCards());
+	if(state.getRuleSet()->isAceRound()) {
+		state.setCard(NetMauMau::Common::findRank(NetMauMau::Common::ICard::ACE, cards.begin(),
+					  cards.end()));
+		return AbstractAction::getNullCondition();
+	}
+
+	NetMauMau::Player::IPlayer::CARDS myCards(cards);
 
 	state.setTryAceRound(DecisionBase::countRank(myCards, state.getRuleSet()->getAceRoundRank())
 						 > (state.tryAceRound() ? 0 : 1));

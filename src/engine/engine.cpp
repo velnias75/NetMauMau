@@ -406,13 +406,18 @@ sevenRule:
 
 					PLAYERS::iterator f(m_players.begin());
 					std::advance(f, m_nxtPlayer);
-					const PLAYERS::iterator nxt = m_players.erase(f);
+
+					if(f != m_players.end()) {
+
+						const PLAYERS::iterator nxt = m_players.erase(f);
+						m_nxtPlayer = nxt != m_players.end() ?
+									  static_cast<std::size_t>(std::distance(m_players.begin(),
+															   nxt)) : 0;
+					} else {
+						m_nxtPlayer = 0;
+					}
 
 					getRuleSet()->setCurPlayers(m_players.size());
-
-					m_nxtPlayer = nxt != m_players.end() ?
-								  static_cast<std::size_t>(std::distance(m_players.begin(), nxt))
-								  : 0;
 
 					if(!hasPlayers()) {
 

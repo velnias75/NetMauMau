@@ -41,8 +41,7 @@ int main(int, const char **) {
 	try {
 
 		TestEventHandler evHdlr;
-		EngineConfig cfg(evHdlr, 0L, false, 'A', true);
-		// 	EngineConfig cfg(evHdlr, true, 0L, false, 'A');
+		EngineConfig cfg(evHdlr, true, 0L, false, 'A');
 		Engine engine(cfg);
 
 		Player::HardPlayer p1("Cathy");

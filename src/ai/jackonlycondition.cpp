@@ -21,11 +21,13 @@
 
 #include "checksevencondition.h"
 #include "playjackaction.h"
+#include "aceroundaction.h"
 #include "suspendaction.h"
 #include "iruleset.h"
 #include "iaistate.h"
 
 namespace {
+const NetMauMau::AI::IActionPtr ACEROUNDACTION(new NetMauMau::AI::AceRoundAction());
 const NetMauMau::AI::IActionPtr PLAYJACKACTION(new NetMauMau::AI::PlayJackAction());
 const NetMauMau::AI::IActionPtr SUSPENDACTION(new NetMauMau::AI::SuspendAction());
 const NetMauMau::AI::IConditionPtr CHECKSEVENCOND(new NetMauMau::AI::CheckSevenCondition());
@@ -42,10 +44,13 @@ IActionPtr JackOnlyCondition::perform(const IAIState &state,
 
 	const NetMauMau::Player::IPlayer::CARDS::size_type s(cards.size());
 
-	return state.getRuleSet() ?
-		   ((s == 1 && !(state.getUncoveredCard()->getRank() == NetMauMau::Common::ICard::JACK &&
-						 (*cards.begin())->getRank() == NetMauMau::Common::ICard::JACK)) ?
-			PLAYJACKACTION : (s == 1 ? SUSPENDACTION : createNextAction(CHECKSEVENCOND))) :
+	return state.getRuleSet() ? (state.getRuleSet()->isAceRound() ? ACEROUNDACTION :
+								 ((s == 1 && !(state.getUncoveredCard()->getRank() ==
+										 NetMauMau::Common::ICard::JACK &&
+										 (*cards.begin())->getRank() ==
+										 NetMauMau::Common::ICard::JACK)) ?
+								  PLAYJACKACTION : (s == 1 ? SUSPENDACTION :
+										  createNextAction(CHECKSEVENCOND)))) :
 			   createNextAction(CHECKSEVENCOND);
 }
 

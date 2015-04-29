@@ -81,9 +81,13 @@ const IConditionPtr &AbstractAction::operator()(IAIState &state) const {
 }
 
 void AbstractAction::countSuits(SUITCOUNT *suitCount,
-								const NetMauMau::Player::IPlayer::CARDS &myCards) {
+								const NetMauMau::Player::IPlayer::CARDS &cards) {
 
 	std::memset(suitCount, 0, sizeof(SUITCOUNT) * 4);
+
+	NetMauMau::Player::IPlayer::CARDS myCards(cards);
+
+	removeJack(myCards);
 
 	const bool noCards = myCards.empty();
 

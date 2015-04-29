@@ -26,7 +26,7 @@
 
 #include "logger.h"
 #include "engine.h"
-#include "stdplayer.h"
+#include "hardplayer.h"
 #include "engineconfig.h"
 #include "testeventhandler.h"
 
@@ -45,10 +45,10 @@ int main(int, const char **) {
 		// 	EngineConfig cfg(evHdlr, true, 0L, false, 'A');
 		Engine engine(cfg);
 
-		Player::StdPlayer p1("Cathy");
-		Player::StdPlayer p2("Tarik");
-		Player::StdPlayer p3("Alischa");
-		Player::StdPlayer p4("Heiko");
+		Player::HardPlayer p1("Cathy");
+		Player::HardPlayer p2("Tarik");
+		Player::HardPlayer p3("Alischa");
+		Player::HardPlayer p4("Heiko");
 
 		engine.addPlayer(&p1);
 		engine.addPlayer(&p2);

@@ -93,10 +93,9 @@ Common::ICardPtr DecisionChain<RootCond, Jack>::getCard(bool noJack) const {
 		const bool ansi = isatty(fileno(stderr));
 		const Common::ICardPtr c(m_state.getCard());
 
-		logDebug("   END " << (Jack ? "-jack- " : "") << "trace of AI \""
-				 << m_state.getName() << "\" -> " << (c ? (Jack ?
-						 Common::suitToSymbol(c->getSuit(), ansi, ansi)
-						 : c->description(ansi)) : "NO CARD") << " <-");
+		logDebug("   END " << (Jack ? "-jack- " : "") << "trace of AI \"" << m_state.getName()
+				 << "\" -> " << (c ? (Jack ? Common::suitToSymbol(c->getSuit(), ansi, ansi) :
+									  c->description(ansi)) : "NO CARD") << " <-");
 	}
 
 #endif

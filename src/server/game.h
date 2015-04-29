@@ -35,7 +35,7 @@
 namespace NetMauMau {
 
 namespace Player {
-class StdPlayer;
+class AbstractPlayer;
 }
 
 namespace Server {
@@ -76,7 +76,7 @@ private:
 
 	const GameConfig &m_cfg;
 	Engine m_engine;
-	std::vector<Player::StdPlayer *> m_aiPlayers;
+	std::vector<Player::AbstractPlayer *> m_aiPlayers;
 	std::vector<Player::IPlayer *> m_players;
 	long long int m_gameIndex;
 };

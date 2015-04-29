@@ -138,7 +138,7 @@ private:
 
 	void checkPlayersAlive() const throw(Common::Exception::SocketException);
 
-	virtual void cardCountChanged(Player::IPlayer *player) const throw();
+	virtual void cardCountChanged(const Player::IPlayer *player) const throw();
 
 	long getAIDelay() const;
 

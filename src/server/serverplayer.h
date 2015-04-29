@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 
-#include "stdplayer.h"
+#include "abstractplayer.h"
 #include "socketexception.h"
 
 namespace NetMauMau {
@@ -33,7 +33,7 @@ namespace Server {
 
 class Connection;
 
-class Player : public NetMauMau::Player::StdPlayer {
+class Player : public NetMauMau::Player::AbstractPlayer {
 	DISALLOW_COPY_AND_ASSIGN(Player)
 public:
 	explicit Player(const std::string &name, int sockfd, Connection &con);

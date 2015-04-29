@@ -1,6 +1,6 @@
 noinst_LTLIBRARIES = libluaruleset.la
 
-noinst_HEADERS = luafatalexception.h luaexception.h luaruleset.h luastate.h
+noinst_HEADERS = luaexception.h luafatalexception.h luaruleset.h luastate.h
 
 pkgdata_DATA = stdrules.lua
 
@@ -15,5 +15,5 @@ endif
 libluaruleset_la_CPPFLAGS = $(GSL)
 libluaruleset_la_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/engine $(LIBLUA_CFLAGS)
-libluaruleset_la_SOURCES = luafatalexception.cpp luaexception.cpp luaruleset.cpp luastate.cpp
+libluaruleset_la_SOURCES = luaexception.cpp luafatalexception.cpp luaruleset.cpp luastate.cpp
 libluaruleset_la_LIBADD = $(LIBLUA_LIBS)

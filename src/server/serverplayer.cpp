@@ -33,7 +33,7 @@ const std::string ILLEGAL_CARD(NetMauMau::Common::getIllegalCard()->description(
 
 using namespace NetMauMau::Server;
 
-Player::Player(const std::string &name, int sockfd, Connection &con) : StdPlayer(name),
+Player::Player(const std::string &name, int sockfd, Connection &con) : AbstractPlayer(name),
 	m_connection(con), m_sockfd(sockfd) {}
 
 Player::~Player() {}
@@ -69,7 +69,7 @@ void Player::receiveCard(const NetMauMau::Common::ICardPtr &card) {
 void Player::receiveCardSet(const CARDS &cards)
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	NetMauMau::Player::StdPlayer::receiveCardSet(cards);
+	NetMauMau::Player::AbstractPlayer::receiveCardSet(cards);
 
 	try {
 		m_connection.write(m_sockfd, "GETCARDS");
@@ -153,7 +153,7 @@ NetMauMau::Common::ICardPtr Player::findCard(const std::string &offeredCard) con
 bool Player::cardAccepted(const NetMauMau::Common::ICard *playedCard)
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	NetMauMau::Player::StdPlayer::cardAccepted(playedCard);
+	NetMauMau::Player::AbstractPlayer::cardAccepted(playedCard);
 
 	try {
 
@@ -168,7 +168,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 
 void Player::talonShuffled() throw(NetMauMau::Common::Exception::SocketException) {
-	NetMauMau::Player::StdPlayer::talonShuffled();
+	NetMauMau::Player::AbstractPlayer::talonShuffled();
 	m_connection.write(m_sockfd, "TALONSHUFFLED");
 }
 
@@ -177,7 +177,7 @@ Player::IPlayer::REASON Player::getNoCardReason(const NetMauMau::Common::ICardPt
 
 	if(getClientVersion() >= 15) {
 		return !getPossibleCards(uncoveredCard, suit).empty() ? SUSPEND :
-			   StdPlayer::getNoCardReason(uncoveredCard, suit);
+			   AbstractPlayer::getNoCardReason(uncoveredCard, suit);
 	} else {
 		return SUSPEND;
 	}

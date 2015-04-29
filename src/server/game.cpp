@@ -23,7 +23,7 @@
 #include "game.h"
 #include "logger.h"
 #include "sqlite.h"
-#include "stdplayer.h"
+#include "hardplayer.h"
 #include "gameconfig.h"
 #include "ieventhandler.h"
 #include "abstractsocket.h"
@@ -54,7 +54,7 @@ Game::Game(GameConfig &cfg) throw(NetMauMau::Common::Exception::SocketException)
 											 & (cfg.getAIName()[i][1]) : cfg.getAIName()[i]);
 
 				if(!aiSanName.empty()) {
-					m_aiPlayers.push_back(new NetMauMau::Player::StdPlayer(aiSanName));
+					m_aiPlayers.push_back(new NetMauMau::Player::HardPlayer(aiSanName));
 					logInfo("Adding AI player \"" << m_aiPlayers.back()->getName() << "\"");
 					m_engine.addPlayer(m_aiPlayers.back());
 					++aiAdded;
@@ -75,7 +75,7 @@ Game::~Game() {
 		delete *i;
 	}
 
-	for(std::vector<NetMauMau::Player::StdPlayer *>::const_iterator i(m_aiPlayers.begin());
+	for(std::vector<NetMauMau::Player::AbstractPlayer *>::const_iterator i(m_aiPlayers.begin());
 			i != m_aiPlayers.end(); ++i) {
 		delete *i;
 	}
@@ -93,8 +93,8 @@ Game::COLLECT_STATE Game::collectPlayers(std::size_t minPlayers,
 
 		if(m_engine.getPlayerCount() == std::max<std::size_t>(2, minPlayers)) {
 
-			for(std::vector<NetMauMau::Player::StdPlayer *>::const_iterator i(m_aiPlayers.begin());
-					i != m_aiPlayers.end(); ++i) {
+			for(std::vector<NetMauMau::Player::AbstractPlayer *>::const_iterator
+					i(m_aiPlayers.begin()); i != m_aiPlayers.end(); ++i) {
 
 				NetMauMau::DB::SQLite::getInstance().addAIPlayer(*i);
 				NetMauMau::DB::SQLite::getInstance().addPlayerToGame(m_gameIndex,
@@ -175,7 +175,7 @@ void Game::reset(bool playerLost) throw() {
 
 		try {
 
-			for(std::vector<NetMauMau::Player::StdPlayer *>::const_iterator i(m_aiPlayers.begin());
+			for(std::vector<NetMauMau::Player::AbstractPlayer *>::const_iterator i(m_aiPlayers.begin());
 					i != m_aiPlayers.end(); ++i) {
 
 				(*i)->reset();

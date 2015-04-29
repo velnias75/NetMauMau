@@ -17,30 +17,31 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_ICARDCOUNTOBSERVER_H
-#define NETMAUMAU_ICARDCOUNTOBSERVER_H
+// #include <cassert>
 
-#include "linkercontrol.h"
+#include "hardplayer.h"
 
-namespace NetMauMau {
+// #include "iruleset.h"
+#include "nextaction.h"
+// #include "engineconfig.h"
+// #include "socketexception.h"
+#include "powerplayaction.h"
+#include "jackonlycondition.h"
+#include "havejackcondition.h"
+#include "powersuitcondition.h"
 
-namespace Player {
-class IPlayer;
+namespace {
+const NetMauMau::AI::IConditionPtr HAVEJACKCOND(new NetMauMau::AI::HaveJackCondition());
 }
 
-class ICardCountObserver {
-	DISALLOW_COPY_AND_ASSIGN(ICardCountObserver)
-public:
-	virtual ~ICardCountObserver() {}
+using namespace NetMauMau::Player;
 
-	virtual void cardCountChanged(const Player::IPlayer *player) const throw() = 0;
+HardPlayer::HardPlayer(const std::string &name) : AIPlayerBase < NetMauMau::AI::JackOnlyCondition,
+	NetMauMau::AI::PowerSuitCondition > (name, NetMauMau::AI::IActionPtr
+										 (new NetMauMau::AI::NextAction(HAVEJACKCOND)),
+										 NetMauMau::AI::IActionPtr
+										 (new NetMauMau::AI::PowerPlayAction(true))) {}
 
-protected:
-	explicit ICardCountObserver() {}
-};
-
-}
-
-#endif /* NETMAUMAU_ICARDCOUNTOBSERVER_H */
+HardPlayer::~HardPlayer() {}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

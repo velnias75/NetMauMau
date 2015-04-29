@@ -17,30 +17,31 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_ICARDCOUNTOBSERVER_H
-#define NETMAUMAU_ICARDCOUNTOBSERVER_H
+#ifndef NETMAUMAU_PLAYER_HARDPLAYER_H
+#define NETMAUMAU_PLAYER_HARDPLAYER_H
 
-#include "linkercontrol.h"
+#include "aiplayerbase.h"
 
 namespace NetMauMau {
 
-namespace Player {
-class IPlayer;
+namespace AI {
+class JackOnlyCondition;
+class PowerSuitCondition;
 }
 
-class ICardCountObserver {
-	DISALLOW_COPY_AND_ASSIGN(ICardCountObserver)
+namespace Player {
+
+class HardPlayer : public AIPlayerBase<AI::JackOnlyCondition, AI::PowerSuitCondition> {
+	DISALLOW_COPY_AND_ASSIGN(HardPlayer)
 public:
-	virtual ~ICardCountObserver() {}
-
-	virtual void cardCountChanged(const Player::IPlayer *player) const throw() = 0;
-
-protected:
-	explicit ICardCountObserver() {}
+	explicit HardPlayer(const std::string &name);
+	virtual ~HardPlayer();
 };
 
 }
 
-#endif /* NETMAUMAU_ICARDCOUNTOBSERVER_H */
+}
+
+#endif /* NETMAUMAU_PLAYER_HARDPLAYER_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

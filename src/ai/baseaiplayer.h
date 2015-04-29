@@ -17,8 +17,8 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_ENGINE_AI_AIPLAYER_H
-#define NETMAUMAU_ENGINE_AI_AIPLAYER_H
+#ifndef NETMAUMAU_ENGINE_AI_BASEAIPLAYER_H
+#define NETMAUMAU_ENGINE_AI_BASEAIPLAYER_H
 
 #include "smartptr.h"
 #include "decisionchain.h"
@@ -28,21 +28,21 @@ namespace NetMauMau {
 namespace AI {
 
 template<class RootCond, class RootCondJack>
-class AIPlayer : public Player::IPlayer, protected IAIState {
-	DISALLOW_COPY_AND_ASSIGN(AIPlayer)
+class BaseAIPlayer : public virtual Player::IPlayer, protected IAIState {
+	DISALLOW_COPY_AND_ASSIGN(BaseAIPlayer)
 public:
 	typedef RootCond root_condition_type;
 	typedef RootCondJack jack_root_condition_type;
 
-	virtual ~AIPlayer();
+	virtual ~BaseAIPlayer();
 
 protected:
 	typedef Common::SmartPtr<DecisionChain<root_condition_type> > DecisionChainPtr;
 	typedef Common::SmartPtr<DecisionChain<jack_root_condition_type, true> > JackDecisionChainPtr;
 
-	explicit AIPlayer(const IActionPtr &trueAct, const IActionPtr &falseAct) :
-		m_decisionChain(Common::SmartPtr<DecisionChain<root_condition_type> >
-						(new DecisionChain<root_condition_type>(*this))),
+	explicit BaseAIPlayer(const IActionPtr &trueAct, const IActionPtr &falseAct) : IPlayer(),
+		IAIState(), m_decisionChain(Common::SmartPtr<DecisionChain<root_condition_type> >
+									(new DecisionChain<root_condition_type>(*this))),
 		m_jackDecisionChain(Common::SmartPtr<DecisionChain<jack_root_condition_type, true> >
 							(new DecisionChain<jack_root_condition_type, true>(*this,
 									IActionPtr(trueAct), IActionPtr(falseAct)))), m_card(),
@@ -103,12 +103,12 @@ protected:
 };
 
 template<class RootCond, class RootCondJack>
-AIPlayer<RootCond, RootCondJack>::~AIPlayer() {}
+BaseAIPlayer<RootCond, RootCondJack>::~BaseAIPlayer() {}
 
 }
 
 }
 
-#endif /* NETMAUMAU_ENGINE_AI_AIPLAYER_H */
+#endif /* NETMAUMAU_ENGINE_AI_BASEAIPLAYER_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -726,10 +726,10 @@ bool Engine::wait(const Player::IPlayer *p, bool suspend) const {
 	return isAI ? m_alwaysWait : false;
 }
 
-void Engine::cardCountChanged(Player::IPlayer *p) const throw() {
+void Engine::cardCountChanged(const Player::IPlayer *p) const throw() {
 
 	try {
-		getEventHandler().stats(PLAYERS(1, p));
+		getEventHandler().stats(PLAYERS(1, const_cast<Player::IPlayer *>(p)));
 	} catch(const Common::Exception::SocketException &e) {
 		logDebug(__PRETTY_FUNCTION__ << ": failed to handle event \'stats()\': " << e.what());
 	}

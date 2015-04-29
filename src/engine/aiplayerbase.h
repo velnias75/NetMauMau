@@ -120,7 +120,7 @@ template<class RootCond, class RootCondJack>
 inline void AIPlayerBase<RootCond, RootCondJack>::reset() throw() {
 
 	m_powerSuit = Common::ICard::SUIT_ILLEGAL;
-	/*m_tryAceRound =*/ m_powerPlay = false;
+	m_tryAceRound = m_powerPlay = false;
 
 	AI::BaseAIPlayer<RootCond, RootCondJack>::reset();
 	AbstractPlayer::reset();

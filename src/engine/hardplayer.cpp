@@ -17,14 +17,9 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// #include <cassert>
-
 #include "hardplayer.h"
 
-// #include "iruleset.h"
 #include "nextaction.h"
-// #include "engineconfig.h"
-// #include "socketexception.h"
 #include "powerplayaction.h"
 #include "jackonlycondition.h"
 #include "havejackcondition.h"

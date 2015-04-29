@@ -80,7 +80,7 @@ Common::ICardPtr DecisionChain<RootCond, Jack>::getCard(bool noJack) const {
 
 		cond = (*act)(m_state);
 
-// 		if(m_state.getCard()) break;
+		if(m_state.getCard()) break;
 	}
 
 	m_state.setNoJack(oj);

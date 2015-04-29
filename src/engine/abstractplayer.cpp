@@ -243,11 +243,11 @@ void AbstractPlayer::shuffleCards() {
 
 void AbstractPlayer::reset() throw() {
 
-	/*m_playerHasFewCards =*/ m_cardsTaken = m_nineIsEight = false;
+	m_playerHasFewCards = m_cardsTaken = m_nineIsEight = false;
 	m_leftCount = m_rightCount = m_playerCount = 0;
 	m_dirChgEnabled = false;
 	m_cards.clear();
-// 	m_playedOutCards.clear();
+	m_playedOutCards.clear();
 
 	notifyCardCountChange();
 }

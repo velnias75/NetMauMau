@@ -113,7 +113,7 @@ SQLiteImpl::SQLiteImpl() : m_db(0L), m_turnStmt(0L), m_winStmt(0L), m_scoreNormS
 
 	const std::string &db(getDBFilename());
 
-	if(!db.empty()) {
+	if(!db.empty() && !getenv("NMM_NO_SQLITE")) {
 
 		logDebug("SQLite-DB is located at: " << db);
 
@@ -393,13 +393,13 @@ bool SQLiteImpl::addPlayerToGame(long long int gid,
 
 bool SQLiteImpl::turn(long long int gameIndex, std::size_t t) const {
 
-	const bool succ = sqlite3_bind_int64(m_turnStmt, 1, t) == SQLITE_OK &&
+	const bool succ = m_db && sqlite3_bind_int64(m_turnStmt, 1, t) == SQLITE_OK &&
 					  sqlite3_bind_int64(m_turnStmt, 2, gameIndex) == SQLITE_OK &&
 					  sqlite3_step(m_turnStmt) == SQLITE_DONE &&
 					  sqlite3_clear_bindings(m_turnStmt) == SQLITE_OK &&
 					  sqlite3_reset(m_turnStmt) == SQLITE_OK;
 
-	if(!succ) logWarning("SQLite: " << sqlite3_errmsg(m_db));
+	if(!succ && m_db) logWarning("SQLite: " << sqlite3_errmsg(m_db));
 
 	return succ;
 }
@@ -430,15 +430,15 @@ bool SQLiteImpl::playerLost(long long int gameIndex,
 bool SQLiteImpl::playerWins(long long int gameIndex,
 							const NetMauMau::Common::IConnection::NAMESOCKFD &nsf) const {
 
-	const bool succ = sqlite3_bind_text(m_winStmt, 1, nsf.name.c_str(),
-										static_cast<int>(nsf.name.size()),
-										SQLITE_TRANSIENT) == SQLITE_OK &&
+	const bool succ = m_db && sqlite3_bind_text(m_winStmt, 1, nsf.name.c_str(),
+					  static_cast<int>(nsf.name.size()),
+					  SQLITE_TRANSIENT) == SQLITE_OK &&
 					  sqlite3_bind_int64(m_winStmt, 2, gameIndex) == SQLITE_OK &&
 					  sqlite3_step(m_winStmt) == SQLITE_DONE &&
 					  sqlite3_clear_bindings(m_winStmt) == SQLITE_OK &&
 					  sqlite3_reset(m_winStmt) == SQLITE_OK;
 
-	if(!succ) logWarning("SQLite: " << sqlite3_errmsg(m_db));
+	if(!succ && m_db) logWarning("SQLite: " << sqlite3_errmsg(m_db));
 
 	return succ;
 }

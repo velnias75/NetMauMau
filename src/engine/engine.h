@@ -116,7 +116,7 @@ private:
 	void setDirChangeIsSuspend(bool b) throw(Common::Exception::SocketException);
 	void jackModeOff() const throw(Common::Exception::SocketException);
 
-	void checkAndPerformDirChange(const Player::IPlayer *player)
+	void checkAndPerformDirChange(const Player::IPlayer *player, bool won)
 	throw(Common::Exception::SocketException);
 
 	void suspends(Player::IPlayer *p, const Common::ICard *uc = NULL) const

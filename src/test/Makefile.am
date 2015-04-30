@@ -22,6 +22,7 @@ export GSL_RNG_TYPE := ranlxs2
 export GSL_RNG_SEED := 280375
 export NETMAUMAU_RULES := $(abs_top_srcdir)/src/lua/stdrules.lua
 export NMM_NO_TRACE := 1
+export NMM_NO_SQLITE := 1
 
 TESTS = $(check_PROGRAMS)
 

@@ -287,7 +287,7 @@ bool Engine::nextTurn() {
 
 		if(!m_initialChecked) {
 			getRuleSet()->checkInitial(player, uc);
-			checkAndPerformDirChange(player);
+			checkAndPerformDirChange(player, false);
 			m_initialJack = getRuleSet()->isJackMode();
 			m_initialChecked = true;
 		}
@@ -318,8 +318,14 @@ sevenRule:
 				if(!noCardOk && (pc = m_talon->takeCard())) {
 					player->receiveCard(pc);
 					getEventHandler().playerPicksCard(player);
+#ifndef NDEBUG
 				} else if(!pc && !noCardOk) {
-					throw Common::Exception::SocketException(TALONUNDERFLOW);
+					logDebug(TALONUNDERFLOW);
+#ifdef HAVE_GSL
+					logDebug("GSL: name=" << gsl_rng_default->name << "; seed="
+							 << gsl_rng_default_seed);
+#endif
+#endif
 				}
 
 				const Player::IPlayer::REASON reason = noCardOk ? Player::IPlayer::SUSPEND :
@@ -403,15 +409,9 @@ sevenRule:
 					PLAYERS::iterator f(m_players.begin());
 					std::advance(f, m_nxtPlayer);
 
-					if(f != m_players.end()) {
+					if(f != m_players.end()) m_players.erase(f);
 
-						const PLAYERS::iterator nxt = m_players.erase(f);
-						m_nxtPlayer = nxt != m_players.end() ?
-									  static_cast<std::size_t>(std::distance(m_players.begin(),
-															   nxt)) : 0;
-					} else {
-						m_nxtPlayer = 0;
-					}
+					m_nxtPlayer = m_nxtPlayer < m_players.size() ? m_nxtPlayer + 1 : 0;
 
 					getRuleSet()->setCurPlayers(m_players.size());
 
@@ -468,7 +468,7 @@ sevenRule:
 			}
 		}
 
-		checkAndPerformDirChange(player);
+		checkAndPerformDirChange(player, won);
 
 		const Player::IPlayer *curPlayer = player;
 
@@ -561,7 +561,7 @@ void Engine::disconnectError(SOCKET fd) const {
 	}
 }
 
-void Engine::checkAndPerformDirChange(const Player::IPlayer *player)
+void Engine::checkAndPerformDirChange(const Player::IPlayer *player, bool won)
 throw(Common::Exception::SocketException) {
 
 	if(getRuleSet()->hasDirChange()) {
@@ -572,7 +572,7 @@ throw(Common::Exception::SocketException) {
 
 			m_nxtPlayer = static_cast<std::size_t>(std::distance(m_players.begin(),
 												   std::find(m_players.begin(), m_players.end(),
-														   player)));
+														   won ? m_players[m_nxtPlayer] : player)));
 			assert(m_nxtPlayer <= m_players.size());
 
 			getEventHandler().directionChange();

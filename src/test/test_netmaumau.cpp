@@ -21,11 +21,7 @@
 #include "config.h"
 #endif
 
-#include <ctime>
-#include <cstdlib>
-
 #include "logger.h"
-#include "engine.h"
 #include "hardplayer.h"
 #include "engineconfig.h"
 #include "testeventhandler.h"

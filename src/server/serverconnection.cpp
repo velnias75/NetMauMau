@@ -22,9 +22,7 @@
 #endif
 
 #include <algorithm>
-#include <sstream>
 #include <cstring>
-#include <cstdlib>
 #include <cerrno>
 #include <cstdio>
 
@@ -173,7 +171,7 @@ Connection::~Connection() {
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
 
-		NetMauMau::DB::SQLite::getInstance().logOutPlayer(*i);
+		NetMauMau::DB::SQLite::getInstance()->logOutPlayer(*i);
 
 		try {
 			send("BYE", 3, i->sockfd);
@@ -451,7 +449,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 							if(isOk) {
 								accepted = PLAY;
-								NetMauMau::DB::SQLite::getInstance().addPlayer(info);
+								NetMauMau::DB::SQLite::getInstance()->addPlayer(info);
 							} else {
 								shutdown(cfd);
 								accepted = REFUSED;
@@ -544,7 +542,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 														   NULL, 10);
 
 					const
-					NetMauMau::DB::SQLite::SCORES &scores(NetMauMau::DB::SQLite::getInstance().
+					NetMauMau::DB::SQLite::SCORES &scores(NetMauMau::DB::SQLite::getInstance()->
 														  getScores(st, limit));
 
 					std::ostringstream osscores;
@@ -592,13 +590,13 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 }
 
 void Connection::removePlayer(const NetMauMau::Common::IConnection::INFO &info) {
-	NetMauMau::DB::SQLite::getInstance().logOutPlayer(NAMESOCKFD(info.name, "", info.sockfd,
+	NetMauMau::DB::SQLite::getInstance()->logOutPlayer(NAMESOCKFD(info.name, "", info.sockfd,
 			MAKE_VERSION(info.maj, info.min)));
 	NetMauMau::Common::AbstractConnection::removePlayer(info);
 }
 
 void Connection::removePlayer(SOCKET sockfd) {
-	NetMauMau::DB::SQLite::getInstance().logOutPlayer(getPlayerInfo(sockfd));
+	NetMauMau::DB::SQLite::getInstance()->logOutPlayer(getPlayerInfo(sockfd));
 	NetMauMau::Common::AbstractConnection::removePlayer(sockfd);
 }
 
@@ -701,7 +699,7 @@ void Connection::reset() throw() {
 
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
-		NetMauMau::DB::SQLite::getInstance().logOutPlayer(*i);
+		NetMauMau::DB::SQLite::getInstance()->logOutPlayer(*i);
 	}
 
 	AbstractConnection::reset();

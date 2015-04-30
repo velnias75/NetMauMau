@@ -193,7 +193,6 @@ CFLAGS="${CFLAGS} -std=gnu99 -fvisibility-inlines-hidden"
 CXXFLAGS="${CXXFLAGS} -std=gnu++98 -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
 CPPFLAGS="${CPPFLAGS} -DBASICLOGGER_NO_PTHREADS -D_GLIBCXX_VISIBILITY=0"
 NO_EXCEPTIONS="-fno-exceptions" ;
-NO_RTTI_FLAGS="-fno-rtti -fno-exceptions" ;
   
 if test x$CLANG = xyes; then CXXFLAGS="-fexceptions -frtti ${CXXFLAGS}" ; fi
 
@@ -201,7 +200,7 @@ AC_SUBST([LDFLAGS])
 AC_SUBST([CFLAGS])
 AC_SUBST([CXXFLAGS])
 AC_SUBST([CPPFLAGS])
-AC_SUBST([NO_RTTI_FLAGS])
+AC_SUBST([NO_EXCEPTIONS])
 
 AC_CONFIG_MACRO_DIR([m4])
 

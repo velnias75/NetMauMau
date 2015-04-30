@@ -20,10 +20,6 @@
 #ifndef NETMAUMAU_ENGINE_AI_DECISIONBASE_H
 #define NETMAUMAU_ENGINE_AI_DECISIONBASE_H
 
-#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
-#endif
-
 #include "iplayer.h"
 #include "smartptr.h"
 

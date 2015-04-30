@@ -20,7 +20,6 @@
 #ifndef NETMAUMAU_ENGINE_AI_BASEAIPLAYER_H
 #define NETMAUMAU_ENGINE_AI_BASEAIPLAYER_H
 
-#include "smartptr.h"
 #include "decisionchain.h"
 
 namespace NetMauMau {
@@ -28,7 +27,7 @@ namespace NetMauMau {
 namespace AI {
 
 template<class RootCond, class RootCondJack>
-class BaseAIPlayer : public virtual Player::IPlayer, protected IAIState {
+class BaseAIPlayer : protected IAIState {
 	DISALLOW_COPY_AND_ASSIGN(BaseAIPlayer)
 public:
 	typedef RootCond root_condition_type;
@@ -40,9 +39,9 @@ protected:
 	typedef Common::SmartPtr<DecisionChain<root_condition_type> > DecisionChainPtr;
 	typedef Common::SmartPtr<DecisionChain<jack_root_condition_type, true> > JackDecisionChainPtr;
 
-	explicit BaseAIPlayer(const IActionPtr &trueAct, const IActionPtr &falseAct) : IPlayer(),
-		IAIState(), m_decisionChain(Common::SmartPtr<DecisionChain<root_condition_type> >
-									(new DecisionChain<root_condition_type>(*this))),
+	explicit BaseAIPlayer(const IActionPtr &trueAct, const IActionPtr &falseAct) : IAIState(),
+		m_decisionChain(Common::SmartPtr<DecisionChain<root_condition_type> >
+						(new DecisionChain<root_condition_type>(*this))),
 		m_jackDecisionChain(Common::SmartPtr<DecisionChain<jack_root_condition_type, true> >
 							(new DecisionChain<jack_root_condition_type, true>(*this,
 									IActionPtr(trueAct), IActionPtr(falseAct)))), m_card(),

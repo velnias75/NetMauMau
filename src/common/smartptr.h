@@ -20,8 +20,6 @@
 #ifndef NETMAUMAU_COMMON_SMARTPTR_H
 #define NETMAUMAU_COMMON_SMARTPTR_H
 
-#include <iterator>
-
 namespace NetMauMau {
 
 namespace Common {

@@ -22,8 +22,6 @@
 #endif
 
 #include <cassert>
-#include <sstream>
-#include <algorithm>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -38,8 +36,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #endif
-
-#include "engine.h"
 
 #include "talon.h"
 #include "sqlite.h"
@@ -132,7 +128,7 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 			m_dirChangeEnabled = m_players.size() > 2;
 
 			if(player->isAIPlayer()) {
-				getEventHandler().getConnection()->addAIPlayers(std::vector<std::string>
+				getEventHandler().getConnection().addAIPlayers(std::vector<std::string>
 						(1, player->getName()));
 			}
 
@@ -146,7 +142,7 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 		} else if(f != m_players.end()) {
 
 			getEventHandler().playerRejected(player);
-			getEventHandler().getConnection()->removePlayer(player->getSerial());
+			getEventHandler().getConnection().removePlayer(player->getSerial());
 
 			return false;
 		}
@@ -269,13 +265,13 @@ bool Engine::nextTurn() {
 
 		if(m_curTurn != m_turn) {
 
-			DB::SQLite::getInstance().turn(m_gameIndex, m_turn);
+			DB::SQLite::getInstance()->turn(m_gameIndex, m_turn);
 
 			getEventHandler().turn(m_turn);
 
 			if(m_turn == 1) {
 
-				DB::SQLite::getInstance().gamePlayStarted(m_gameIndex);
+				DB::SQLite::getInstance()->gamePlayStarted(m_gameIndex);
 
 				Common::ICard *ic = m_talon->uncoverCard();
 				getEventHandler().initialCard(ic);
@@ -431,10 +427,10 @@ sevenRule:
 							Common::IConnection::NAMESOCKFD(m_players[m_nxtPlayer]->getName(), "",
 															m_players[m_nxtPlayer]->getSerial(),
 															0) :
-							getEventHandler().getConnection()->
+							getEventHandler().getConnection().
 							getPlayerInfo(m_players[m_nxtPlayer]->getSerial());
 
-						DB::SQLite::getInstance().
+						DB::SQLite::getInstance()->
 						playerLost(m_gameIndex, nsf, std::time(0L),
 								   getEventHandler().playerLost(m_players[m_nxtPlayer], m_turn,
 																getRuleSet()->
@@ -448,15 +444,15 @@ sevenRule:
 					const Common::IConnection::NAMESOCKFD nsf = (player->isAIPlayer()) ?
 							Common::IConnection::NAMESOCKFD(player->getName(), "",
 															player->getSerial(), 0) :
-							getEventHandler().getConnection()->
+							getEventHandler().getConnection().
 							getPlayerInfo(player->getSerial());
 
-					DB::SQLite::getInstance().playerWins(m_gameIndex, nsf);
+					DB::SQLite::getInstance()->playerWins(m_gameIndex, nsf);
 
 				} else if(wait(player, true) && (pc->getRank() == Common::ICard::EIGHT ||
 												 (pc->getRank() == Common::ICard::NINE &&
 												  getRuleSet()->getDirChangeIsSuspend()))) {
-					getEventHandler().getConnection()->wait(getAIDelay());
+					getEventHandler().getConnection().wait(getAIDelay());
 					m_alreadyWaited = true;
 				}
 			}
@@ -489,7 +485,7 @@ sevenRule:
 		m_initialJack = false;
 
 		if(!m_alreadyWaited && wait(curPlayer, false)) {
-			getEventHandler().getConnection()->wait(getAIDelay());
+			getEventHandler().getConnection().wait(getAIDelay());
 		}
 
 		informAIStat();
@@ -506,8 +502,8 @@ sevenRule:
 			} catch(const Common::Exception::SocketException &) {}
 		}
 
-		Common::IConnection *con = getEventHandler().getConnection();
-		const std::string &pName(con->getPlayerName(e.sockfd()));
+		Common::IConnection &con(getEventHandler().getConnection());
+		const std::string &pName(con.getPlayerName(e.sockfd()));
 
 		std::vector<std::string> ex(1, pName);
 		const PLAYERS::const_iterator &f(find(pName));
@@ -542,7 +538,7 @@ sevenRule:
 			} catch(const Common::Exception::SocketException &) {}
 		}
 
-		con->removePlayer(e.sockfd());
+		con.removePlayer(e.sockfd());
 		disconnectError(e.sockfd());
 
 		if(f != m_players.end()) removePlayer(*f);
@@ -717,7 +713,7 @@ void Engine::checkPlayersAlive() const throw(Common::Exception::SocketException)
 }
 
 long Engine::getAIDelay() const {
-	return (!getEventHandler().getConnection()->hasHumanPlayers()) ? 0L : m_cfg.getAIDelay();
+	return (!getEventHandler().getConnection().hasHumanPlayers()) ? 0L : m_cfg.getAIDelay();
 }
 
 bool Engine::wait(const Player::IPlayer *p, bool suspend) const {

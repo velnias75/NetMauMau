@@ -27,8 +27,8 @@ DefaultEventHandler::DefaultEventHandler() : IEventHandler() {}
 
 DefaultEventHandler::~DefaultEventHandler() {}
 
-NetMauMau::Common::IConnection *DefaultEventHandler::getConnection() const {
-	return &NetMauMau::NullConnection::getInstance();
+NetMauMau::Common::IConnection &DefaultEventHandler::getConnection() const {
+	return NetMauMau::NullConnection::getInstance();
 }
 
 void DefaultEventHandler::gameAboutToStart() const {}

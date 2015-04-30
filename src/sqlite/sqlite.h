@@ -23,6 +23,7 @@
 #include <ctime>
 
 #include "iconnection.h"
+#include "smartptr.h"
 
 namespace NetMauMau {
 
@@ -37,6 +38,8 @@ class SQLiteImpl;
 class SQLite {
 	DISALLOW_COPY_AND_ASSIGN(SQLite)
 public:
+	typedef Common::SmartPtr<SQLite> SQLitePtr;
+
 	typedef struct {
 		long long int id;
 		std::string name;
@@ -48,7 +51,7 @@ public:
 
 	~SQLite();
 
-	static SQLite &getInstance();
+	static SQLitePtr getInstance();
 
 	std::string getDBFilename() const;
 
@@ -75,6 +78,8 @@ private:
 	explicit SQLite();
 
 private:
+	static SQLitePtr m_instance;
+
 	// cppcheck-suppress unsafeClassCanLeak
 	SQLiteImpl *const _pimpl;
 };

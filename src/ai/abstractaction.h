@@ -77,15 +77,10 @@ protected:
 
 	static void countSuits(SUITCOUNT *suitCount, const Player::IPlayer::CARDS &myCards);
 
-	static Common::ICard::SUIT
-	getMaxPlayedOffSuit(const IAIState &state,
-						Player::IPlayer::CARDS::difference_type *count = 0L);
+	static Common::ICard::SUIT getMaxPlayedOffSuit(const IAIState &state,
+			Player::IPlayer::CARDS::difference_type *count = 0L);
 
 	static const IConditionPtr &getNullCondition() _CONST;
-
-#if defined(TRACE_AI) && !defined(NDEBUG)
-	virtual std::string traceLog() const = 0;
-#endif
 
 private:
 	static Player::IPlayer::CARDS::iterator pullSpecialRank(Player::IPlayer::CARDS &cards,

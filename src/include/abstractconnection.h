@@ -41,7 +41,7 @@ class AbstractConnectionImpl;
  *
  * Handles all registred users.
  */
-class _EXPORT AbstractConnection : public AbstractSocket, public IConnection {
+class _EXPORT AbstractConnection : public virtual IConnection, public AbstractSocket {
 	DISALLOW_COPY_AND_ASSIGN(AbstractConnection)
 	friend class AbstractConnectionImpl;
 public:

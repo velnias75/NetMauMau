@@ -32,9 +32,8 @@
 #endif
 #endif
 
-#include <cstdlib>
-
 #include "linkercontrol.h"
+#include "smartptr.h"
 
 namespace NetMauMau {
 
@@ -43,9 +42,11 @@ namespace Common {
 class MimeMagic {
 	DISALLOW_COPY_AND_ASSIGN(MimeMagic)
 public:
+	typedef SmartPtr<MimeMagic> MimeMagicPtr;
+
 	~MimeMagic() _WCONST;
 
-	static MimeMagic &getInstance();
+	static MimeMagicPtr getInstance();
 
 	// cppcheck-suppress functionStatic
 	bool checkMime(const unsigned char *data, std::size_t dataLen, const char *mime) const _WCONST;
@@ -54,6 +55,8 @@ private:
 	explicit MimeMagic() _WCONST;
 
 private:
+	static MimeMagicPtr m_instance;
+
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
 	magic_t m_magic;
 #endif

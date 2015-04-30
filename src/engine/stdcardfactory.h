@@ -27,7 +27,7 @@ namespace NetMauMau {
 class StdCardFactory : public ICardFactory {
 public:
 	explicit StdCardFactory();
-	~StdCardFactory();
+	virtual ~StdCardFactory();
 
 	virtual _NOUNUSED Common::ICard *create(Common::ICard::SUIT s, Common::ICard::RANK r) const;
 

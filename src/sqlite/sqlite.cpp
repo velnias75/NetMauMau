@@ -22,15 +22,19 @@
 
 using namespace NetMauMau::DB;
 
+SQLite::SQLitePtr SQLite::m_instance;
+
 SQLite::SQLite() : _pimpl(new SQLiteImpl()) {}
 
 SQLite::~SQLite() {
 	delete _pimpl;
 }
 
-SQLite &SQLite::getInstance() {
-	static SQLite instance;
-	return instance;
+SQLite::SQLitePtr SQLite::getInstance() {
+
+	if(!m_instance) m_instance = SQLitePtr(new SQLite());
+
+	return m_instance;
 }
 
 std::string SQLite::getDBFilename() const {

@@ -21,7 +21,7 @@ GSL=
 endif
 
 libnetmaumaucommon_private_la_CPPFLAGS = $(GSL) -DNMM_EXE_PATH=\"$(bindir)\" \
-	-DNMM_EXE_NAME=\"nmm-server$(EXEEXT)\" $(NO_RTTI_FLAGS)
+	-DNMM_EXE_NAME=\"nmm-server$(EXEEXT)\" $(NO_EXCEPTIONS)
 libnetmaumaucommon_private_la_CXXFLAGS = -I$(top_srcdir)/src/include
 libnetmaumaucommon_private_la_SOURCES = cardtools.cpp defaultplayerimage.cpp errorstring.cpp \
 	mimemagic.cpp pngcheck.cpp

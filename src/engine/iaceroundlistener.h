@@ -20,8 +20,6 @@
 #ifndef NETMAUMAU_ENGINE_IACEROUNDLISTENER_H
 #define NETMAUMAU_ENGINE_IACEROUNDLISTENER_H
 
-#include "linkercontrol.h"
-
 #include "icard.h"
 
 namespace NetMauMau {

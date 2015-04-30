@@ -41,7 +41,7 @@ public:
 #if defined(TRACE_AI) && !defined(NDEBUG)
 protected:
 	inline virtual std::string traceLog() const {
-		return "StaticCondition";
+		return std::string("StaticCondition (-> ").append(Action().traceLog()).append(1, ')');
 	}
 #endif
 };

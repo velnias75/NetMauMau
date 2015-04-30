@@ -30,7 +30,6 @@
 #include <cstring>
 #include <cerrno>
 
-#include "abstractconnection.h"
 #include "abstractconnectionimpl.h"
 
 #include "errorstring.h"
@@ -78,8 +77,8 @@ IConnection::_nameSockFD::_nameSockFD() : name(), playerPic(), sockfd(INVALID_SO
 
 IConnection::_nameSockFD::~_nameSockFD() {}
 
-AbstractConnection::AbstractConnection(const char *server, uint16_t port) :
-	AbstractSocket(server, port), IConnection(), _pimpl(new AbstractConnectionImpl()) {}
+AbstractConnection::AbstractConnection(const char *server, uint16_t port) : IConnection(),
+	AbstractSocket(server, port), _pimpl(new AbstractConnectionImpl()) {}
 
 AbstractConnection::~AbstractConnection() {
 	delete _pimpl;

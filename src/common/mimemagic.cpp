@@ -23,6 +23,8 @@
 
 using namespace NetMauMau::Common;
 
+MimeMagic::MimeMagicPtr MimeMagic::m_instance;
+
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
 MimeMagic::MimeMagic() : m_magic(magic_open(MAGIC_MIME_TYPE | MAGIC_NO_CHECK_ASCII |
 									 MAGIC_NO_CHECK_COMPRESS | MAGIC_NO_CHECK_ELF |
@@ -44,9 +46,11 @@ MimeMagic::~MimeMagic() {
 #endif
 }
 
-MimeMagic &MimeMagic::getInstance() {
-	static MimeMagic instance;
-	return instance;
+MimeMagic::MimeMagicPtr MimeMagic::getInstance() {
+
+	if(!m_instance) m_instance = MimeMagicPtr(new MimeMagic());
+
+	return m_instance;
 }
 
 bool MimeMagic::checkMime(const unsigned char *data, std::size_t dataLen,

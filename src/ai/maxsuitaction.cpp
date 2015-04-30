@@ -39,7 +39,7 @@ struct cardGreater : std::binary_function < NetMauMau::Common::ICardPtr,
 		return !(x->getPoints() < y->getPoints());
 	}
 };
-
+#pragma GCC diagnostic pop
 }
 
 using namespace NetMauMau::AI;

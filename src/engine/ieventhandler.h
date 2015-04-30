@@ -41,7 +41,7 @@ public:
 
 	virtual ~IEventHandler() {}
 
-	virtual Common::IConnection *getConnection() const = 0;
+	virtual Common::IConnection &getConnection() const = 0;
 	virtual void gameAboutToStart() const = 0;
 	virtual void gameOver() const throw(Common::Exception::SocketException) = 0;
 	virtual bool shutdown() const throw() = 0;

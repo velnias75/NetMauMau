@@ -33,12 +33,10 @@
 #endif
 
 #include <set>
-#include <ctime>
 #include <cerrno>
 #include <climits>
 #include <cstring>
 #include <fstream>
-#include <sstream>
 #include <iostream>
 #include <algorithm>
 
@@ -71,7 +69,6 @@
 #include "luaexception.h"
 #include "serverplayer.h"
 #include "ttynamecheckdir.h"
-#include "serverconnection.h"
 #include "servereventhandler.h"
 
 #ifndef DP_USER
@@ -309,9 +306,9 @@ void sh_dump(int, siginfo_t *info, void *) {
 		out << "Served games since server start: " << NetMauMau::Server::Game::getServedGames()
 			<< std::endl;
 
-		if(!NetMauMau::DB::SQLite::getInstance().getDBFilename().empty()) {
+		if(!NetMauMau::DB::SQLite::getInstance()->getDBFilename().empty()) {
 			out << "Total served games on this server: "
-				<< NetMauMau::DB::SQLite::getInstance().getServedGames() << std::endl;
+				<< NetMauMau::DB::SQLite::getInstance()->getServedGames() << std::endl;
 		}
 	}
 }
@@ -726,7 +723,7 @@ int main(int argc, const char **argv) {
 			caps.insert(std::make_pair("ACEROUND", aceRound ? std::string(1, arRank ?
 									   ::toupper(arRank[0]) : 'A') : "false"));
 			caps.insert(std::make_pair("HAVE_SCORES",
-									   DB::SQLite::getInstance().getDBFilename().empty() ? "false"
+									   DB::SQLite::getInstance()->getDBFilename().empty() ? "false"
 									   : "true"));
 			caps.insert(std::make_pair("DIRCHANGE", dirChange ? "true" : "false"));
 
@@ -880,7 +877,7 @@ int main(int argc, const char **argv) {
 				updatePlayerCap(caps, game.getPlayerCount(), con, aiOpponent);
 			}
 
-			NetMauMau::DB::SQLite::getInstance().gameEnded(-1LL);
+			NetMauMau::DB::SQLite::getInstance()->gameEnded(-1LL);
 
 		} catch(const Common::Exception::SocketException &e) {
 			logError(e.what());

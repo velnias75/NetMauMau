@@ -28,75 +28,105 @@
 
 namespace {
 
-const NetMauMau::StdCardFactory CF;
-
 const NetMauMau::Common::ICardPtr _DECK[32] _INIT_PRIO(501) = {
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::DIAMONDS,
 	NetMauMau::Common::ICard::SEVEN)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::DIAMONDS,
 	NetMauMau::Common::ICard::EIGHT)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::DIAMONDS,
 	NetMauMau::Common::ICard::NINE)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::DIAMONDS,
 	NetMauMau::Common::ICard::TEN)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::DIAMONDS,
 	NetMauMau::Common::ICard::JACK)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::DIAMONDS,
 	NetMauMau::Common::ICard::QUEEN)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::DIAMONDS,
 	NetMauMau::Common::ICard::KING)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::DIAMONDS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::DIAMONDS,
 	NetMauMau::Common::ICard::ACE)),
 
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::HEARTS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::HEARTS,
 	NetMauMau::Common::ICard::SEVEN)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::HEARTS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::HEARTS,
 	NetMauMau::Common::ICard::EIGHT)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::HEARTS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::HEARTS,
 	NetMauMau::Common::ICard::NINE)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::HEARTS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::HEARTS,
 	NetMauMau::Common::ICard::TEN)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::HEARTS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::HEARTS,
 	NetMauMau::Common::ICard::JACK)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::HEARTS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::HEARTS,
 	NetMauMau::Common::ICard::QUEEN)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::HEARTS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::HEARTS,
 	NetMauMau::Common::ICard::KING)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::HEARTS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::HEARTS,
 	NetMauMau::Common::ICard::ACE)),
 
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::SPADES,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::SPADES,
 	NetMauMau::Common::ICard::SEVEN)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::SPADES,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::SPADES,
 	NetMauMau::Common::ICard::EIGHT)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::SPADES,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::SPADES,
 	NetMauMau::Common::ICard::NINE)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::SPADES,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::SPADES,
 	NetMauMau::Common::ICard::TEN)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::SPADES,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::SPADES,
 	NetMauMau::Common::ICard::JACK)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::SPADES,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::SPADES,
 	NetMauMau::Common::ICard::QUEEN)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::SPADES,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::SPADES,
 	NetMauMau::Common::ICard::KING)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::SPADES,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::SPADES,
 	NetMauMau::Common::ICard::ACE)),
 
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::CLUBS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::CLUBS,
 	NetMauMau::Common::ICard::SEVEN)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::CLUBS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::CLUBS,
 	NetMauMau::Common::ICard::EIGHT)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::CLUBS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::CLUBS,
 	NetMauMau::Common::ICard::NINE)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::CLUBS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::CLUBS,
 	NetMauMau::Common::ICard::TEN)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::CLUBS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::CLUBS,
 	NetMauMau::Common::ICard::JACK)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::CLUBS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::CLUBS,
 	NetMauMau::Common::ICard::QUEEN)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::CLUBS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::CLUBS,
 	NetMauMau::Common::ICard::KING)),
-	NetMauMau::Common::ICardPtr(CF.create(NetMauMau::Common::ICard::CLUBS,
+	NetMauMau::Common::ICardPtr
+	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::CLUBS,
 	NetMauMau::Common::ICard::ACE))
 };
 

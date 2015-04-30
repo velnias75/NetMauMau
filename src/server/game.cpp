@@ -17,7 +17,6 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ctime>
 #include <cstdio>
 
 #include "game.h"
@@ -88,16 +87,16 @@ Game::COLLECT_STATE Game::collectPlayers(std::size_t minPlayers,
 
 		if(!addPlayer(player)) return Game::REFUSED;
 
-		NetMauMau::DB::SQLite::getInstance().addPlayerToGame(m_gameIndex,
-				m_engine.getEventHandler().getConnection()->getPlayerInfo(player->getSerial()));
+		NetMauMau::DB::SQLite::getInstance()->addPlayerToGame(m_gameIndex,
+				m_engine.getEventHandler().getConnection().getPlayerInfo(player->getSerial()));
 
 		if(m_engine.getPlayerCount() == std::max<std::size_t>(2, minPlayers)) {
 
 			for(std::vector<NetMauMau::Player::AbstractPlayer *>::const_iterator
 					i(m_aiPlayers.begin()); i != m_aiPlayers.end(); ++i) {
 
-				NetMauMau::DB::SQLite::getInstance().addAIPlayer(*i);
-				NetMauMau::DB::SQLite::getInstance().addPlayerToGame(m_gameIndex,
+				NetMauMau::DB::SQLite::getInstance()->addAIPlayer(*i);
+				NetMauMau::DB::SQLite::getInstance()->addPlayerToGame(m_gameIndex,
 						NetMauMau::Common::IConnection::NAMESOCKFD((*i)->getName(), "",
 								INVALID_SOCKET, MAKE_VERSION(SERVER_VERSION_MAJOR,
 										SERVER_VERSION_MINOR)));
@@ -180,7 +179,7 @@ void Game::reset(bool playerLost) throw() {
 
 				(*i)->reset();
 
-				NetMauMau::DB::SQLite::getInstance().
+				NetMauMau::DB::SQLite::getInstance()->
 				logOutPlayer(NetMauMau::Common::IConnection::NAMESOCKFD((*i)->getName(), "",
 							 INVALID_SOCKET, MAKE_VERSION(SERVER_VERSION_MAJOR,
 									 SERVER_VERSION_MINOR)));
@@ -210,9 +209,9 @@ void Game::reset(bool playerLost) throw() {
 }
 
 void Game::gameReady() {
-	NetMauMau::DB::SQLite::getInstance().gameEnded(m_gameIndex);
+	NetMauMau::DB::SQLite::getInstance()->gameEnded(m_gameIndex);
 	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Ready for new game...");
-	m_engine.setGameId(m_gameIndex = NetMauMau::DB::SQLite::getInstance().newGame());
+	m_engine.setGameId(m_gameIndex = NetMauMau::DB::SQLite::getInstance()->newGame());
 }
 
 void Game::shutdown(const std::string &reason) const throw() {

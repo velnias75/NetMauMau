@@ -22,7 +22,6 @@
 #endif
 
 #include <cerrno>
-#include <stdint.h>
 
 #include "clientconnectionimpl.h"
 

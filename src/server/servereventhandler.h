@@ -38,7 +38,7 @@ public:
 	explicit EventHandler(Connection &con);
 	virtual ~EventHandler();
 
-	virtual Connection *getConnection() const _PURE;
+	virtual Connection &getConnection() const _PURE;
 	virtual void gameAboutToStart() const;
 	virtual void gameOver() const throw(Common::Exception::SocketException);
 	virtual bool shutdown() const throw() _PURE;

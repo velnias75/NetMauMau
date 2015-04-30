@@ -20,6 +20,7 @@
 #include "randomjackaction.h"
 
 #include "random_gen.h"
+#include "cardtools.h"
 #include "iaistate.h"
 
 using namespace NetMauMau::AI;
@@ -37,15 +38,38 @@ const IConditionPtr &RandomJackAction::perform(IAIState &state,
 		static_cast<NetMauMau::Player::IPlayer::CARDS::size_type>
 		(DecisionBase::countRank(myCards, NetMauMau::Common::ICard::JACK));
 
-	if(jackCnt) {
+	const NetMauMau::Player::IPlayer::CARDS::iterator
+	&e(AbstractAction::pullRank(myCards, NetMauMau::Common::ICard::JACK));
 
-		AbstractAction::pullRank(myCards, NetMauMau::Common::ICard::JACK);
+	if(jackCnt > 1) {
 
-		const NetMauMau::Player::IPlayer::CARDS::difference_type r =
-			NetMauMau::Common::genRandom<NetMauMau::Player::IPlayer::CARDS::difference_type>
-			(static_cast<NetMauMau::Player::IPlayer::CARDS::difference_type>(jackCnt));
+		SUITCOUNT suitCount[4];
+		NetMauMau::Player::IPlayer::CARDS sCards(state.getPlayerCards());
 
-		state.setCard(myCards[static_cast<NetMauMau::Player::IPlayer::CARDS::size_type>(r)]);
+		AbstractAction::countSuits(suitCount, sCards);
+
+		std::sort(std::reverse_iterator<SUITCOUNT *>(suitCount + 4),
+				  std::reverse_iterator<SUITCOUNT *>(suitCount));
+
+		unsigned int i = 0u;
+		NetMauMau::Common::ICardPtr jack;
+
+		do {
+			if((jack = NetMauMau::Common::findSuit(suitCount[i].suit, myCards.begin(), e))) break;
+		} while(++i <= 3u);
+
+		if(jack) {
+			state.setCard(jack);
+		} else {
+			const NetMauMau::Player::IPlayer::CARDS::difference_type r =
+				NetMauMau::Common::genRandom<NetMauMau::Player::IPlayer::CARDS::difference_type>
+				(static_cast<NetMauMau::Player::IPlayer::CARDS::difference_type>(jackCnt));
+
+			state.setCard(myCards[static_cast<NetMauMau::Player::IPlayer::CARDS::size_type>(r)]);
+		}
+
+	} else if(jackCnt == 1) {
+		state.setCard(myCards[0]);
 	}
 
 	return AbstractAction::getNullCondition();

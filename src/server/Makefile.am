@@ -21,7 +21,7 @@ noinst_HEADERS = gameconfig.h game.h serverconnection.h servereventhandler.h \
 	serverplayerexception.h serverplayer.h ttynamecheckdir.h
 
 libnmm_server_private_la_CPPFLAGS = -UDISABLE_ANSI -DDISABLE_ANSI=1
-libnmm_server_private_la_CXXFLAGS = $(NO_RTTI_FLAGS) -I$(top_srcdir)/src/include \
+libnmm_server_private_la_CXXFLAGS = $(NO_EXCEPTIONS) -I$(top_srcdir)/src/include \
 	-I$(top_srcdir)/src/engine
 libnmm_server_private_la_SOURCES = gameconfig.cpp ttynamecheckdir.cpp
 	

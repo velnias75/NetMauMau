@@ -7,7 +7,7 @@ noinst_HEADERS = abstractclientv05impl.h base64bridge.h clientcardfactory.h clie
 	interceptederrorexception.h
 
 libnetmaumauclient_private_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include \
-	 $(NO_RTTI_FLAGS)
+	 $(NO_EXCEPTIONS)
 libnetmaumauclient_private_la_SOURCES = base64bridge.cpp clientcardfactory.cpp
 
 libnetmaumauclient_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include

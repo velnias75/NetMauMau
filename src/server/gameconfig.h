@@ -20,8 +20,6 @@
 #ifndef NETMAUMAU_SERVER_GAMECONFIG_H
 #define NETMAUMAU_SERVER_GAMECONFIG_H
 
-#include <string>
-
 #include "engineconfig.h"
 
 namespace NetMauMau {

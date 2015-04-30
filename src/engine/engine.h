@@ -40,8 +40,8 @@ namespace RuleSet {
 class IRuleSet;
 }
 
-class _EXPORT Engine : protected ITalonChange, protected IAceRoundListener,
-	protected ICardCountObserver {
+class _EXPORT Engine : private ITalonChange, private IAceRoundListener,
+	private ICardCountObserver {
 
 	DISALLOW_COPY_AND_ASSIGN(Engine)
 

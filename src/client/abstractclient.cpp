@@ -21,8 +21,6 @@
 #include <cassert>
 #include <cstring>
 
-#include "abstractclient.h"
-
 #include "interceptederrorexception.h"
 #include "capabilitiesexception.h"
 #include "abstractclientv05impl.h"

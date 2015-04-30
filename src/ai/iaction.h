@@ -20,6 +20,14 @@
 #ifndef NETMAUMAU_ENGINE_AI_IACTION_H
 #define NETMAUMAU_ENGINE_AI_IACTION_H
 
+#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
+#include "config.h"
+#endif
+
+#if defined(TRACE_AI) && !defined(NDEBUG)
+#include <string>
+#endif
+
 #include "linkercontrol.h"
 
 namespace NetMauMau {
@@ -39,6 +47,10 @@ public:
 	virtual ~IAction() {}
 
 	virtual const Common::SmartPtr<ICondition> &operator()(IAIState &state) const = 0;
+
+#if defined(TRACE_AI) && !defined(NDEBUG)
+	virtual std::string traceLog() const = 0;
+#endif
 
 protected:
 	IAction() {}

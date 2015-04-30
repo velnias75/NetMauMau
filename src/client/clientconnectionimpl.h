@@ -22,7 +22,6 @@
 
 #include <sys/time.h>
 
-#include "socketexception.h"
 #include "clientconnection.h"
 
 namespace NetMauMau {

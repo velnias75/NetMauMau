@@ -28,7 +28,7 @@ namespace NetMauMau {
 
 namespace Player {
 
-class AbstractPlayer : public virtual IPlayer {
+class AbstractPlayer : public IPlayer {
 	DISALLOW_COPY_AND_ASSIGN(AbstractPlayer)
 public:
 	virtual ~AbstractPlayer();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -22,7 +22,7 @@
 #include "mimemagic.h"
 
 bool NetMauMau::Common::checkPNG(const unsigned char *pngData, std::size_t pngDataLen) {
-	return MimeMagic::getInstance().checkMime(pngData, pngDataLen, "image/png");
+	return MimeMagic::getInstance()->checkMime(pngData, pngDataLen, "image/png");
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

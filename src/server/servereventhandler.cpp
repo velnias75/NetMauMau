@@ -34,8 +34,8 @@ EventHandler::EventHandler(Connection &con) : DefaultEventHandler(), m_connectio
 
 EventHandler::~EventHandler() {}
 
-Connection *EventHandler::getConnection() const {
-	return &m_connection;
+Connection &EventHandler::getConnection() const {
+	return m_connection;
 }
 
 void EventHandler::gameAboutToStart() const {

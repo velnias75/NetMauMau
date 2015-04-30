@@ -32,7 +32,7 @@ public:
 	explicit DefaultEventHandler();
 	virtual ~DefaultEventHandler();
 
-	virtual Common::IConnection *getConnection() const;
+	virtual Common::IConnection &getConnection() const;
 	virtual void gameAboutToStart() const _CONST;
 	virtual void gameOver() const throw(Common::Exception::SocketException) _CONST;
 	virtual bool shutdown() const throw() _CONST;

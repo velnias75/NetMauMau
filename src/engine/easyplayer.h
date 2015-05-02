@@ -40,7 +40,7 @@ public:
 
 	virtual Common::ICard::SUIT getJackChoice(const Common::ICardPtr &uncoveredCard,
 			const Common::ICardPtr &playedCard) const;
-	virtual bool getAceRoundChoice() const;
+	virtual bool getAceRoundChoice() const _CONST;
 };
 
 }

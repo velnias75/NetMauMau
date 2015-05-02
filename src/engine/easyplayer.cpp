@@ -45,7 +45,7 @@ EasyPlayer::requestCard(const NetMauMau::Common::ICardPtr &uncoveredCard,
 
 		IPlayer::CARDS c(getPossibleCards(uncoveredCard, jackSuit));
 
-		if(!c.empty() && !getAceRoundChoice()) {
+		if(!c.empty() && (std::time(0L) & 3)) {
 
 			std::random_shuffle(c.begin(), c.end(),
 								NetMauMau::Common::genRandom<CARDS::difference_type>);
@@ -96,7 +96,7 @@ EasyPlayer::getJackChoice(const NetMauMau::Common::ICardPtr &,
 }
 
 bool EasyPlayer::getAceRoundChoice() const {
-	return (std::time(0L) + 1) & 1;
+	return false;
 }
 
 IPlayer::TYPE EasyPlayer::getType() const {

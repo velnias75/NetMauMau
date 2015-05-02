@@ -22,7 +22,7 @@
 #include "game.h"
 #include "logger.h"
 #include "sqlite.h"
-#include "hardplayer.h"
+#include "easyplayer.h"
 #include "gameconfig.h"
 #include "ieventhandler.h"
 #include "abstractsocket.h"
@@ -53,8 +53,26 @@ Game::Game(GameConfig &cfg) throw(NetMauMau::Common::Exception::SocketException)
 											 & (cfg.getAIName()[i][1]) : cfg.getAIName()[i]);
 
 				if(!aiSanName.empty()) {
-					m_aiPlayers.push_back(new NetMauMau::Player::HardPlayer(aiSanName));
-					logInfo("Adding AI player \"" << m_aiPlayers.back()->getName() << "\"");
+
+					const std::string::size_type spos = aiSanName.rfind('=');
+
+					NetMauMau::Player::IPlayer::TYPE type = NetMauMau::Player::IPlayer::HARD;
+
+					if(spos != std::string::npos && aiSanName.length() > spos &&
+							(aiSanName.substr(spos + 1)[0] == 'e' ||
+							 aiSanName.substr(spos + 1)[0] == 'E')) {
+						type = NetMauMau::Player::IPlayer::EASY;
+					}
+
+					m_aiPlayers.push_back(type == NetMauMau::Player::IPlayer::HARD ?
+										  new NetMauMau::Player::HardPlayer(aiSanName.
+												  substr(0, spos)) :
+										  new NetMauMau::Player::EasyPlayer(aiSanName.
+												  substr(0, spos)));
+
+					logInfo("Adding AI player \"" << m_aiPlayers.back()->getName() << "\" ("
+							<< (m_aiPlayers.back()->getType() ==
+								NetMauMau::Player::IPlayer::HARD ? "hard" : "easy") << ")");
 					m_engine.addPlayer(m_aiPlayers.back());
 					++aiAdded;
 				}

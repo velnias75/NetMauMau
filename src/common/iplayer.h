@@ -40,6 +40,7 @@ class IPlayer {
 public:
 	typedef std::vector<NetMauMau::Common::ICardPtr> CARDS;
 	typedef enum { MAUMAU, NOMATCH, SUSPEND } REASON;
+	typedef enum { HUMAN, EASY, HARD } TYPE;
 
 	virtual ~IPlayer() {}
 
@@ -47,6 +48,7 @@ public:
 	virtual int  getSerial() const = 0;
 	virtual bool isAIPlayer() const = 0;
 	virtual bool isAlive() const = 0;
+	virtual TYPE getType() const = 0;
 
 	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset) = 0;
 	virtual void setEngineConfig(const EngineConfig *engineCfg) = 0;

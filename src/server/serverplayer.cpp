@@ -46,6 +46,10 @@ bool Player::isAIPlayer() const {
 	return false;
 }
 
+Player::IPlayer::TYPE Player::getType() const {
+	return HUMAN;
+}
+
 bool Player::isAlive() const {
 
 	try {

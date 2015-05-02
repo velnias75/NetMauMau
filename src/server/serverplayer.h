@@ -42,6 +42,7 @@ public:
 	virtual int getSerial() const _PURE;
 	virtual bool isAIPlayer() const _CONST;
 	virtual bool isAlive() const;
+	virtual TYPE getType() const _CONST;
 
 	virtual void receiveCard(const Common::ICardPtr &card);
 	virtual void receiveCardSet(const CARDS &cards) throw(Common::Exception::SocketException);

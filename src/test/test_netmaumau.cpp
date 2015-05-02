@@ -22,7 +22,7 @@
 #endif
 
 #include "logger.h"
-#include "hardplayer.h"
+#include "easyplayer.h"
 #include "engineconfig.h"
 #include "testeventhandler.h"
 
@@ -43,7 +43,7 @@ int main(int, const char **) {
 		Player::HardPlayer p1("Cathy");
 		Player::HardPlayer p2("Tarik");
 		Player::HardPlayer p3("Alischa");
-		Player::HardPlayer p4("Heiko");
+		Player::EasyPlayer p4("Heiko");
 
 		engine.addPlayer(&p1);
 		engine.addPlayer(&p2);

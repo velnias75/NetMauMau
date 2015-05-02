@@ -36,6 +36,8 @@ class HardPlayer : public AIPlayerBase<AI::JackOnlyCondition, AI::PowerSuitCondi
 public:
 	explicit HardPlayer(const std::string &name);
 	virtual ~HardPlayer();
+
+	virtual TYPE getType() const _CONST;
 };
 
 }

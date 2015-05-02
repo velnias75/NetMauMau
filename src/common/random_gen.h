@@ -100,7 +100,7 @@ extern const GSLRNG<std::ptrdiff_t> RNG;
 template<typename T>
 inline T genRandom(T ubound) {
 #if defined(HAVE_GSL)
-	return RNG.rand(ubound);
+	return static_cast<T>(RNG.rand(ubound));
 #elif HAVE_ARC4RANDOM_UNIFORM
 	return ubound > 0 ? ::arc4random_uniform(ubound) : 0;
 #else

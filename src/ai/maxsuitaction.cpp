@@ -73,14 +73,13 @@ const IConditionPtr &MaxSuitAction::perform(IAIState &state,
 				break;
 			}
 
-		} else if(!((state.getRuleSet()->isAceRoundPossible() && (bestCard =
-						 AbstractAction::hasRankPath(state.getUncoveredCard(), suitCount[i].suit,
-								 state.getRuleSet()->getAceRoundRank(), myCards,
-								 state.nineIsEight()))) || (bestCard =
-											 AbstractAction::hasRankPath(state.getUncoveredCard(),
-													 suitCount[i].suit,
-													 NetMauMau::Common::ICard::EIGHT,
-													 myCards, state.nineIsEight())))) {
+		} else if(!((state.getRuleSet()->isAceRoundPossible() &&
+					 (bestCard = AbstractAction::hasRankPath(state.getUncoveredCard(),
+								 suitCount[i].suit, state.getRuleSet()->getAceRoundRank(), myCards,
+								 state.nineIsEight()))) ||
+					(bestCard = AbstractAction::hasRankPath(state.getUncoveredCard(),
+								suitCount[i].suit, NetMauMau::Common::ICard::EIGHT, myCards,
+								state.nineIsEight())))) {
 
 			std::sort(myCards.begin(), e, cardGreater());
 

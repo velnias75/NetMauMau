@@ -133,7 +133,8 @@ poptOption poptOptions[] = {
 	{
 		"ai-name", 'A', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &aiName, 'A',
 		"Set the name of one AI player. Can be given up to 4 times. " \
-		"Whitespaces can get substituted by \'%\', \'%\' itself by \"%%\"", "NAME"
+		"Optionally append =E[asy] or =H[ard] to the name to set the strength. " \
+		"Whitespaces can get substituted by \'%\', \'%\' itself by \"%%\"", "NAME[=E|H]"
 	},
 	{
 		"ai-delay", 'D', POPT_ARG_DOUBLE | POPT_ARGFLAG_SHOW_DEFAULT, &aiDelay,

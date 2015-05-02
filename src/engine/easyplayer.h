@@ -17,30 +17,36 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef NETMAUMAU_PLAYER_EASYPLAYER_H
+#define NETMAUMAU_PLAYER_EASYPLAYER_H
+
 #include "hardplayer.h"
 
-#include "nextaction.h"
-#include "powerplayaction.h"
-#include "jackonlycondition.h"
-#include "havejackcondition.h"
-#include "powersuitcondition.h"
+namespace NetMauMau {
 
-namespace {
-const NetMauMau::AI::IConditionPtr HAVEJACKCOND(new NetMauMau::AI::HaveJackCondition());
+namespace Player {
+
+class EasyPlayer : public HardPlayer {
+	DISALLOW_COPY_AND_ASSIGN(EasyPlayer)
+public:
+	explicit EasyPlayer(const std::string &name);
+	virtual ~EasyPlayer();
+
+	virtual TYPE getType() const _CONST;
+
+	virtual Common::ICardPtr requestCard(const Common::ICardPtr &uncoveredCard,
+										 const Common::ICard::SUIT *jackSuit,
+										 std::size_t takeCount) const;
+
+	virtual Common::ICard::SUIT getJackChoice(const Common::ICardPtr &uncoveredCard,
+			const Common::ICardPtr &playedCard) const;
+	virtual bool getAceRoundChoice() const;
+};
+
 }
 
-using namespace NetMauMau::Player;
-
-HardPlayer::HardPlayer(const std::string &name) : AIPlayerBase < NetMauMau::AI::JackOnlyCondition,
-	NetMauMau::AI::PowerSuitCondition > (name, NetMauMau::AI::IActionPtr
-										 (new NetMauMau::AI::NextAction(HAVEJACKCOND)),
-										 NetMauMau::AI::IActionPtr
-										 (new NetMauMau::AI::PowerPlayAction(true))) {}
-
-HardPlayer::~HardPlayer() {}
-
-IPlayer::TYPE HardPlayer::getType() const {
-	return HARD;
 }
+
+#endif /* NETMAUMAU_PLAYER_EASYPLAYER_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

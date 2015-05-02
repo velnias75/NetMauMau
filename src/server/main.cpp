@@ -740,7 +740,8 @@ int main(int argc, const char **argv) {
 				caps.insert(std::make_pair("INITIAL_CARDS", cc));
 			}
 
-			if(aiOpponent) caps.insert(std::make_pair("AI_NAME", aiNames[0]));
+			if(aiOpponent) caps.insert(std::make_pair("AI_NAME", std::string(aiNames[0]).substr(0,
+										   std::string(aiNames[0]).rfind('='))));
 
 			std::ostringstream mvos;
 			mvos << static_cast<uint16_t>(con.getMinClientVersion() >> 16)

@@ -478,7 +478,8 @@ int main(int argc, const char **argv) {
 			} else if(numAI < 4) {
 				aiNames[numAI++] = aiName;
 			} else {
-				logWarning("At maximum 4 AI players are allowed; ignoring: \"" << aiName << "\"");
+				logWarning("At maximum 4 AI players are allowed; ignoring: \""
+						   << typeStripped << "\"");
 			}
 		}
 		break;

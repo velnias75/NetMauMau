@@ -44,7 +44,7 @@ struct cardGreater : std::binary_function < NetMauMau::Common::ICardPtr,
 
 using namespace NetMauMau::AI;
 
-MaxSuitAction::MaxSuitAction() {}
+MaxSuitAction::MaxSuitAction() : AbstractAction() {}
 
 MaxSuitAction::~MaxSuitAction() {}
 

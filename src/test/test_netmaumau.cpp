@@ -22,7 +22,8 @@
 #endif
 
 #include "logger.h"
-#include "easyplayer.h"
+#include "smartptr.h"
+#include "hardplayer.h"
 #include "engineconfig.h"
 #include "testeventhandler.h"
 
@@ -40,15 +41,15 @@ int main(int, const char **) {
 		EngineConfig cfg(evHdlr, true, 0L, false, 'A');
 		Engine engine(cfg);
 
-		Player::HardPlayer p1("Cathy");
-		Player::HardPlayer p2("Tarik");
-		Player::HardPlayer p3("Alischa");
-		Player::EasyPlayer p4("Heiko");
+		Common::SmartPtr<Player::IPlayer> p1(new Player::HardPlayer("Cathy"));
+		Common::SmartPtr<Player::IPlayer> p2(new Player::HardPlayer("Tarik"));
+		Common::SmartPtr<Player::IPlayer> p3(new Player::HardPlayer("Alischa"));
+		Common::SmartPtr<Player::IPlayer> p4(new Player::HardPlayer("Heiko"));
 
-		engine.addPlayer(&p1);
-		engine.addPlayer(&p2);
-		engine.addPlayer(&p3);
-		engine.addPlayer(&p4);
+		engine.addPlayer(p1);
+		engine.addPlayer(p2);
+		engine.addPlayer(p3);
+		engine.addPlayer(p4);
 
 		engine.distributeCards();
 

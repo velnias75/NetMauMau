@@ -94,6 +94,16 @@ uint16_t port = SERVER_PORT;
 
 volatile bool refuse = false;
 
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+struct _AINameCmp : std::binary_function<std::string, std::string, bool> {
+	bool operator()(const std::string &x, const std::string &y) const {
+		return std::string(x).substr(0, std::string(x).rfind(':')) ==
+			   std::string(y).substr(0, std::string(y).rfind(':'));
+	}
+};
+#pragma GCC diagnostic pop
+
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 #pragma GCC diagnostic push
 char bind[HOST_NAME_MAX] = { 0 };
@@ -133,8 +143,8 @@ poptOption poptOptions[] = {
 	{
 		"ai-name", 'A', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &aiName, 'A',
 		"Set the name of one AI player. Can be given up to 4 times. " \
-		"Optionally append =E[asy] or =H[ard] to the name to set the strength. " \
-		"Whitespaces can get substituted by \'%\', \'%\' itself by \"%%\"", "NAME[=E|H]"
+		"Optionally append :E[asy] or :H[ard] to the name to set the strength. " \
+		"Whitespaces can get substituted by \'%\', \'%\' itself by \"%%\"", "NAME[:E|H]"
 	},
 	{
 		"ai-delay", 'D', POPT_ARG_DOUBLE | POPT_ARGFLAG_SHOW_DEFAULT, &aiDelay,
@@ -457,18 +467,21 @@ int main(int argc, const char **argv) {
 
 	while((c = poptGetNextOpt(pctx)) >= 0) {
 		switch(c) {
-		case 'A':
+		case 'A': {
 
-			if(std::count_if(aiNames, aiNames + numAI, std::bind2nd(std::equal_to<std::string>(),
+			const std::string typeStripped(std::string(inetdParsedString(aiName)).substr(0,
+										   std::string(aiName).rfind(':')));
+
+			if(std::count_if(aiNames, aiNames + numAI, std::bind2nd(_AINameCmp(),
 							 inetdParsedString(aiName)))) {
-				logWarning("Duplicate AI player name: \"" << aiName << "\"");
+				logWarning("Duplicate AI player name: \"" << typeStripped << "\"");
 			} else if(numAI < 4) {
 				aiNames[numAI++] = aiName;
 			} else {
 				logWarning("At maximum 4 AI players are allowed; ignoring: \"" << aiName << "\"");
 			}
-
-			break;
+		}
+		break;
 
 		case 'V': {
 
@@ -741,7 +754,7 @@ int main(int argc, const char **argv) {
 			}
 
 			if(aiOpponent) caps.insert(std::make_pair("AI_NAME", std::string(aiNames[0]).substr(0,
-										   std::string(aiNames[0]).rfind('='))));
+										   std::string(aiNames[0]).rfind(':'))));
 
 			std::ostringstream mvos;
 			mvos << static_cast<uint16_t>(con.getMinClientVersion() >> 16)

@@ -54,7 +54,7 @@ Game::Game(GameConfig &cfg) throw(NetMauMau::Common::Exception::SocketException)
 
 				if(!aiSanName.empty()) {
 
-					const std::string::size_type spos = aiSanName.rfind('=');
+					const std::string::size_type spos = aiSanName.rfind(':');
 
 					NetMauMau::Player::IPlayer::TYPE type = NetMauMau::Player::IPlayer::HARD;
 

@@ -1,10 +1,10 @@
-netmaumau (0.17.3) UNRELEASED; urgency=low
+netmaumau (0.18.0) UNRELEASED; urgency=low
 
   * improved hard AI
   * added easy (entirely random playing) AI
   * many bugfixes
 
- -- Heiko Schäfer <heiko@rangun.de>  Sat, 02 May 2015 11:35:41 +0200
+ -- Heiko Schäfer <heiko@rangun.de>  Sun, 03 May 2015 12:51:06 +0200
 
 netmaumau (0.17.1) UNRELEASED; urgency=low
 

@@ -104,11 +104,11 @@ Add the repository to your system:
 
 PlayDeb.net offers [binaries](http://www.playdeb.net/game/NetMauMau) too.
 
-Debian 7
+Debian 7/8
 --------
-* insert following line into `/etc/apt/sources.list`
+* insert following line into `/etc/apt/sources.list` (replace `V` with `7` or `8` respectively)
 
-    `deb http://download.opensuse.org/repositories/home:/velnias/Debian_7.0 /`
+    `deb http://download.opensuse.org/repositories/home:/velnias/Debian_V.0 /`
 
 * *(optionally)* add the GPG-key
 

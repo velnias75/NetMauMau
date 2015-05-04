@@ -83,7 +83,7 @@ protected:
 		return m_jackDecisionChain;
 	}
 
-	void reset() throw() {
+	void reset() const throw() {
 		m_card = m_uncoveredCard = m_playedCard = Common::ICardPtr();
 		m_noJack = false;
 		m_jackSuit = 0L;

@@ -32,65 +32,30 @@
 #define AUML "\u00e4"
 #endif
 
-#include <set>
-#include <cerrno>
+#include <cstdio>
 #include <climits>
 #include <cstring>
-#include <fstream>
 #include <iostream>
 #include <algorithm>
-
-#include <sys/stat.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-
-#ifndef _WIN32
-#include <ifaddrs.h>
-#include <pwd.h>
-#include <grp.h>
-#else
-#define HOST_NAME_MAX 64
-#endif
-
-#ifdef HAVE_NETDB_H
-#include <netdb.h>
-#endif
-
-#include <signal.h>
 
 #include <popt.h>
 
 #include "game.h"
 #include "sqlite.h"
 #include "logger.h"
+#include "helpers.h"
 #include "gameconfig.h"
 #include "luaexception.h"
 #include "serverplayer.h"
-#include "ttynamecheckdir.h"
 #include "servereventhandler.h"
-
-#ifndef DP_USER
-#define DP_USER "nobody"
-#endif
-
-#ifndef DP_GROUP
-#define DP_GROUP "tty"
-#endif
 
 namespace {
 
-const time_t startTime = std::time(0L);
-
-int decks = 1;
-int initialCardCount = 5;
-bool dirChange = false;
-bool aceRound = false;
-bool ultimate = false;
 bool inetd = false;
-std::size_t minPlayers = 1;
-uint16_t port = SERVER_PORT;
 
 volatile bool refuse = false;
 
@@ -106,38 +71,34 @@ struct _AINameCmp : std::binary_function<std::string, std::string, bool> {
 
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 #pragma GCC diagnostic push
-char bind[HOST_NAME_MAX] = { 0 };
-char *host = bind;
 char *aiName = AI_NAME;
 std::string aiNames[4];
-double aiDelay = 1.0;
-char *arRank = "ACE";
-#ifndef _WIN32
-char *user  = DP_USER;
-char *grp = DP_GROUP;
-char *dpErr = 0L;
-const char *interface;
-#endif
+// #ifndef _WIN32
+// char *user  = DP_USER;
+// char *grp = DP_GROUP;
+// char *dpErr = 0L;
+// const char *interface;
+// #endif
 #pragma GCC diagnostic pop
 
 poptOption poptOptions[] = {
 	{
-		"players", 'p', POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &minPlayers,
+		"players", 'p', POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &NetMauMau::minPlayers,
 		'p', "Set amount of players", "AMOUNT"
 	},
 	{ "ultimate", 'u', POPT_ARG_NONE, NULL, 'u', "Play until last player wins", NULL },
 	{ "direction-change", 'd', POPT_ARG_NONE, NULL, 'd', "Allow direction changes", NULL },
 	{
 		"ace-round", 'a', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT | POPT_ARGFLAG_OPTIONAL,
-		&arRank, 'a', "Enable ace rounds (requires all clients to be at least of version 0.7)",
+		&NetMauMau::arRank, 'a', "Enable ace rounds (requires all clients to be at least of version 0.7)",
 		"ACE|QUEEN|KING"
 	},
 	{
-		"decks", 0, POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &decks,
+		"decks", 0, POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &NetMauMau::decks,
 		0, "Amount of card decks to use", "AMOUNT"
 	},
 	{
-		"initial-card-count", 'c', POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &initialCardCount,
+		"initial-card-count", 'c', POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &NetMauMau::initialCardCount,
 		0, "Amount of cards each player gets at game start", "AMOUNT"
 	},
 	{
@@ -147,7 +108,7 @@ poptOption poptOptions[] = {
 		"Whitespaces can get substituted by \'%\', \'%\' itself by \"%%\"", "NAME[:E|H]"
 	},
 	{
-		"ai-delay", 'D', POPT_ARG_DOUBLE | POPT_ARGFLAG_SHOW_DEFAULT, &aiDelay,
+		"ai-delay", 'D', POPT_ARG_DOUBLE | POPT_ARGFLAG_SHOW_DEFAULT, &NetMauMau::aiDelay,
 		0, "Delay after AI turns", "SECONDS"
 	},
 #ifndef _WIN32
@@ -156,21 +117,21 @@ poptOption poptOptions[] = {
 		"Put the server in a mode suitable for (x)inetd", NULL
 	},
 #endif
-	{ "bind", 'b', POPT_ARG_STRING, &host, 0, "Bind to HOST", "HOST" },
+	{ "bind", 'b', POPT_ARG_STRING, &NetMauMau::host, 0, "Bind to HOST", "HOST" },
 #ifndef _WIN32
-	{ "iface", 'I', POPT_ARG_STRING, &interface, 'I', "Bind to INTERFACE", "INTERFACE" },
+	{ "iface", 'I', POPT_ARG_STRING, &NetMauMau::interface, 'I', "Bind to INTERFACE", "INTERFACE" },
 #endif
 	{
-		"port", 0, POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &port, 0,
+		"port", 0, POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &NetMauMau::port, 0,
 		"Set the port to listen to", "PORT"
 	},
 #ifndef _WIN32
 	{
-		"user", 0, POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &user, 0,
+		"user", 0, POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &NetMauMau::user, 0,
 		"Set the user to run as (only if started as root)", "USER"
 	},
 	{
-		"group", 0, POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &grp, 0,
+		"group", 0, POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &NetMauMau::grp, 0,
 		"Set the group to run as (only if started as root)", "GROUP"
 	},
 #endif
@@ -178,282 +139,6 @@ poptOption poptOptions[] = {
 	POPT_AUTOHELP
 	POPT_TABLEEND
 };
-
-void updatePlayerCap(NetMauMau::Server::Connection::CAPABILITIES &caps, std::size_t count,
-					 NetMauMau::Server::Connection &con, bool aiOpponent) {
-
-	std::ostringstream os;
-
-	os << count - (aiOpponent ? 1 : 0);
-	caps["CUR_PLAYERS"] = os.str();
-	con.setCapabilities(caps);
-}
-
-char *inetdParsedString(char *str) {
-
-	if(str) {
-
-		char *ptr = str;
-
-		while(*ptr) {
-			if(*ptr == '%' && (*(ptr + 1) && *(ptr + 1) != '%')) {
-				*ptr = ' ';
-			} else if(*ptr == '%' && (*(ptr + 1) && *(ptr + 1) == '%')) {
-				std::strncpy(ptr, ptr + 1, std::strlen(ptr + 1) + 1);
-			}
-
-			++ptr;
-		}
-
-		return str;
-
-	} else {
-		return 0L;
-	}
-}
-
-volatile bool interrupt = false;
-
-void sh_interrupt(int) {
-
-	logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Server is about to shut down");
-	NetMauMau::Server::EventHandler::setInterrupted();
-	interrupt = true;
-}
-
-#ifndef _WIN32
-
-void sh_dump(int, siginfo_t *info, void *) {
-
-	char *p = NULL;
-
-	if(info) {
-
-		char sp[PATH_MAX] = "";
-
-#ifndef __OpenBSD__
-		std::snprintf(sp, PATH_MAX, "/proc/%d/stat", info->si_pid);
-#else
-		std::snprintf(sp, PATH_MAX, "/proc/%d/status", info->si_pid);
-#endif
-
-		int tty_nr = 0;
-
-		FILE *spf;
-
-		if((spf = std::fopen(sp, "r"))) {
-
-			int  iDummy;
-
-#ifndef __OpenBSD__
-
-			char cDummy, *sDummy;
-
-			// cppcheck-suppress invalidscanf_libc
-			// cppcheck-suppress invalidscanf
-			if(std::fscanf(spf, "%d %ms %c %d %d %d %d", &iDummy, &sDummy, &cDummy, &iDummy,
-						   &iDummy, &iDummy, &tty_nr)) {}
-
-			free(sDummy);
-#else
-			char sDevice[20], sCmd[256];
-
-			// cppcheck-suppress invalidscanf_libc
-			// cppcheck-suppress invalidscanf
-			if(std::fscanf(spf, "%255s %d %d %d %d %19s", sCmd, &iDummy, &iDummy, &iDummy,
-						   &iDummy, sDevice)) {
-				logDebug("BSD emitter: " << sCmd); // why (swapper) and not (kill)?
-				logDebug("BSD tty device: " << sDevice); // why (-1,-1)?
-			}
-
-#endif
-
-			std::fclose(spf);
-		}
-
-		if(!(p = NetMauMau::Server::ttynameCheckDir(static_cast<dev_t>(tty_nr), "/dev/pts"))) {
-			p = NetMauMau::Server::ttynameCheckDir(static_cast<dev_t>(tty_nr), "/dev");
-		}
-	}
-
-	std::ofstream out(p ? p : "/dev/null");
-
-	free(p);
-
-	if(out.is_open()) {
-
-		out << std::boolalpha << "== Options ==" << std::endl;
-		out << "AI-delay: " << static_cast<float>(aiDelay) << " sec" << std::endl;
-		out << "A/K/Q rounds: " << aceRound << std::endl;
-
-		if(aceRound) out << "A/K/Q rank: " << ((arRank != 0L) ? arRank : "ACE") << std::endl;
-
-		out << "Decks: " << decks << std::endl;
-		out << "Direction change: " << dirChange << std::endl;
-		out << "Initial card count: " << initialCardCount << std::endl;
-		out << "Players: " << minPlayers << std::endl;
-		out << "Ultimate: " << ultimate << std::endl;
-
-		char sr[128];
-		std::snprintf(sr, 127, "Total received %.2f kb; total sent %.2f kb",
-					  static_cast<double>
-					  (NetMauMau::Common::AbstractSocket::getTotalReceivedBytes()) / 1024.0,
-					  static_cast<double>
-					  (NetMauMau::Common::AbstractSocket::getTotalSentBytes()) / 1024.0);
-
-		out << "== Network ==" << std::endl;
-		out << "Host: " << (host && *host ? host : "localhost") << std::endl;
-		out << "Port: " << port << std::endl;
-		out << sr << std::endl;
-
-		char outstr[256];
-		// cppcheck-suppress nonreentrantFunctionslocaltime
-		struct tm *tmp = std::localtime(&startTime);
-
-		if(tmp && std::strftime(outstr, sizeof(outstr), "Server start: %c", tmp)) {
-			out << outstr << std::endl;
-		}
-
-		out << "Served games since server start: " << NetMauMau::Server::Game::getServedGames()
-			<< std::endl;
-
-		if(!NetMauMau::DB::SQLite::getInstance()->getDBFilename().empty()) {
-			out << "Total served games on this server: "
-				<< NetMauMau::DB::SQLite::getInstance()->getServedGames() << std::endl;
-		}
-	}
-}
-
-int getGroup(gid_t *gid, const char *group) {
-
-	errno = 0;
-
-	// cppcheck-suppress nonreentrantFunctionsgetgrnam
-	struct group *g = getgrnam(group);
-
-	if(g) {
-		*gid = g->gr_gid;
-		return 0;
-	} else if(errno) {
-		dpErr = std::strerror(errno);
-	} else {
-		dpErr = "unknown group";
-	}
-
-	return -1;
-}
-
-
-int getIPForIF(char *addr = NULL, size_t len = 0, const char *iface = NULL) {
-
-	bool listOnly = !addr && !len && !iface;
-
-	std::set<std::string> ifaces;
-
-	struct ifaddrs *ifas;
-
-	if(!::getifaddrs(&ifas)) {
-
-		for(struct ifaddrs *ifa = ifas; ifa != NULL; ifa = ifa->ifa_next) {
-
-			if(ifa->ifa_addr && (ifa->ifa_addr->sa_family == AF_INET ||
-								 ifa->ifa_addr->sa_family == AF_INET6)) {
-
-				ifaces.insert(ifa->ifa_name);
-
-				if(!listOnly && !::strcmp(ifa->ifa_name, iface)) {
-					::getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in),
-								  addr, len, NULL, 0, NI_NUMERICHOST);
-					::freeifaddrs(ifas);
-					return 0;
-				}
-			}
-		}
-
-		if(listOnly) {
-			for(std::set<std::string>::const_iterator iter(ifaces.begin()); iter != ifaces.end();
-					++iter) {
-				logger(*iter);
-			}
-		}
-
-		::freeifaddrs(ifas);
-	}
-
-	return -1;
-}
-
-int getUser(uid_t *uid, const char *usr) {
-
-	errno = 0;
-
-	// cppcheck-suppress nonreentrantFunctionsgetpwnam
-	struct passwd *u = getpwnam(usr);
-
-	if(u) {
-		*uid = u->pw_uid;
-		return 0;
-	} else if(errno) {
-		dpErr = std::strerror(errno);
-	} else {
-		dpErr = "unknown user";
-	}
-
-	return -1;
-}
-
-int dropPrivileges(const char *usr, const char *group) {
-
-	if(!getuid()) {
-
-		uid_t uid;
-		gid_t gid;
-
-		if(!getUser(&uid, usr) && !getGroup(&gid, group)) {
-
-#if !defined(_WIN32) && defined(PIDFILE) && defined(HAVE_ATEXIT) && defined(HAVE_CHOWN)
-
-			if(chown(PIDFILE, uid, gid)) logWarning("Couldn't change ownership of " << PIDFILE);
-
-			if(chmod(PIDFILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH)) {
-				logWarning("Couldn't change mode of " << PIDFILE);
-			}
-
-#endif
-
-			if(!setegid(gid) && !seteuid(uid)) {
-				return 0;
-			} else {
-				dpErr = std::strerror(errno);
-			}
-		}
-
-	} else {
-		return 0;
-	}
-
-	return -1;
-}
-#endif
-
-#ifdef HAVE_ATEXIT
-void exit_hdlr() {
-#if !defined(_WIN32) && defined(PIDFILE) && defined(HAVE_CHOWN)
-
-	if(unlink(PIDFILE)) logWarning("Couldn't remove " << PIDFILE << ": " << std::strerror(errno));
-
-#endif
-
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Server shut down normally");
-}
-#endif
-
-void conLog(const NetMauMau::Common::IConnection::INFO &info) {
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) <<
-			"Connection from " << info.host << ":" << info.port << " as \""
-			<< info.name << "\" (" << info.maj << "." << info.min << ") "
-			<< NetMauMau::Common::Logger::nonl());
-}
 
 }
 

@@ -17,13 +17,13 @@ MAINTAINERCLEANFILES = $(bin_PROGRAMS).1
 
 DISTCLEANFILES = $(man1_MANS)
 
-noinst_HEADERS = gameconfig.h game.h serverconnection.h servereventhandler.h \
+noinst_HEADERS = gameconfig.h game.h helpers.h serverconnection.h servereventhandler.h \
 	serverplayerexception.h serverplayer.h ttynamecheckdir.h
 
 libnmm_server_private_la_CPPFLAGS = -UDISABLE_ANSI -DDISABLE_ANSI=1
 libnmm_server_private_la_CXXFLAGS = $(NO_EXCEPTIONS) -I$(top_srcdir)/src/include \
-	-I$(top_srcdir)/src/engine
-libnmm_server_private_la_SOURCES = gameconfig.cpp ttynamecheckdir.cpp
+	-I$(top_srcdir)/src/sqlite -I$(top_srcdir)/src/engine -I$(top_srcdir)/src/common
+libnmm_server_private_la_SOURCES = gameconfig.cpp helpers.cpp ttynamecheckdir.cpp
 	
 nmm_server_CPPFLAGS = $(GSL) -UDISABLE_ANSI -DDISABLE_ANSI=1
 

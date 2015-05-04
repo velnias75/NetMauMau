@@ -64,8 +64,8 @@ public:
 		m_alwaysWait = w;
 	}
 
-	inline void setUltimate(bool ultimate) {
-		m_ultimate = ultimate;
+	inline void setUltimate(bool u) {
+		m_ultimate = u;
 	}
 
 	inline void setGameId(long long int gameIndex) {

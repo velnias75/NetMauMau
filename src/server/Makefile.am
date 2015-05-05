@@ -1,7 +1,7 @@
 bin_PROGRAMS = nmm-server
 noinst_LTLIBRARIES = libnmm_server_private.la
 
-man1_MANS = 
+man1_MANS =
 
 if GENMAN
 man1_MANS += $(bin_PROGRAMS).1
@@ -24,7 +24,7 @@ libnmm_server_private_la_CPPFLAGS = -UDISABLE_ANSI -DDISABLE_ANSI=1
 libnmm_server_private_la_CXXFLAGS = $(NO_EXCEPTIONS) -I$(top_srcdir)/src/include \
 	-I$(top_srcdir)/src/sqlite -I$(top_srcdir)/src/engine -I$(top_srcdir)/src/common
 libnmm_server_private_la_SOURCES = gameconfig.cpp helpers.cpp ttynamecheckdir.cpp
-	
+
 nmm_server_CPPFLAGS = $(GSL) -UDISABLE_ANSI -DDISABLE_ANSI=1
 
 if PIDFILE

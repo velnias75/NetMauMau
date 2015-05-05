@@ -301,7 +301,7 @@ bool NetMauMau::Common::parseCardDesc(const std::string &desc, ICard::SUIT *suit
 
 	const std::string::size_type p = desc.find(' ');
 
-	if(p == std::string::npos || !suit || !rank) return false;
+	if(p == std::string::npos) return false;
 
 	const std::string &r(desc.substr(p + 1));
 	const std::string::value_type rc(r[0]);

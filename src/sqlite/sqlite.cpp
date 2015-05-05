@@ -37,7 +37,7 @@ SQLite::SQLitePtr SQLite::getInstance() {
 	return m_instance;
 }
 
-std::string SQLite::getDBFilename() const {
+std::string SQLite::getDBFilename() {
 	return SQLiteImpl::getDBFilename();
 }
 

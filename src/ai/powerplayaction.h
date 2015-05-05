@@ -29,7 +29,7 @@ namespace AI {
 class PowerPlayAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(PowerPlayAction)
 public:
-	PowerPlayAction(bool set = false);
+	explicit PowerPlayAction(bool set = false);
 	virtual ~PowerPlayAction();
 
 	virtual const IConditionPtr &perform(IAIState &state,

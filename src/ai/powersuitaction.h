@@ -30,7 +30,7 @@ class PowerSuitAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(PowerSuitAction)
 public:
 	PowerSuitAction();
-	PowerSuitAction(Common::ICard::SUIT suit);
+	explicit PowerSuitAction(Common::ICard::SUIT suit);
 	virtual ~PowerSuitAction();
 
 	virtual const IConditionPtr &perform(IAIState &state,

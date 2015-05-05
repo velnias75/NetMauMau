@@ -32,6 +32,9 @@
 #include "icondition.h"
 
 #if defined(TRACE_AI) && !defined(NDEBUG)
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
 #include <cstdio>
 #include "cardtools.h"
 #include "logger.h"
@@ -48,7 +51,7 @@ public:
 	DecisionChain(IAIState &state, const IActionPtr &trueAct, const IActionPtr &falseAct) :
 		m_rootCondition(IConditionPtr(new RootCond(trueAct, falseAct))), m_state(state) {}
 
-	DecisionChain(IAIState &state) : m_rootCondition(IConditionPtr(new RootCond())),
+	explicit DecisionChain(IAIState &state) : m_rootCondition(IConditionPtr(new RootCond())),
 		m_state(state) {}
 
 	~DecisionChain() {}

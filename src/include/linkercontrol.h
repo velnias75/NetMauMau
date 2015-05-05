@@ -1,7 +1,7 @@
 /*
  * linkercontrol.h - a common header for controlling visibility of functions and methods
  *
- * $Revision: 3925 $ $Author: heiko $
+ * $Revision: 3997 $ $Author: heiko $
  *
  * (c) 2012-2015 Heiko Schäfer <heiko@hgl.rangun.de>
  *
@@ -35,7 +35,7 @@ namespace Commons {
 #endif
 
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \
-	_INTERNAL TypeName(const TypeName&); \
+	_INTERNAL explicit TypeName(const TypeName&); \
 	_INTERNAL TypeName& operator=(const TypeName&);
 
 #define FINALBASE(P) \
@@ -153,7 +153,7 @@ namespace Commons {
 #endif
 #endif
 
-#if GCC_VERSION >= 40800 || (__x86_64__ && GCC_VERSION >= 40700)
+#if GCC_VERSION >= 40800 || (defined(__x86_64__) && GCC_VERSION >= 40700)
 #define likely(x)   (x)
 #define unlikely(x) (x)
 #else

@@ -29,7 +29,7 @@ namespace AI {
 class NextAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(NextAction)
 public:
-	NextAction(const IConditionPtr &cond);
+	explicit NextAction(const IConditionPtr &cond);
 	virtual ~NextAction();
 
 	virtual const IConditionPtr &perform(IAIState &state,

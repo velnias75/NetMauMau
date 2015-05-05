@@ -54,6 +54,12 @@ const std::string aiBase64
 								  (NetMauMau::Common::DefaultPlayerImage.c_str()),
 								  NetMauMau::Common::DefaultPlayerImage.length()));
 
+#if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
+const char *NOPNG = " or no PNG image";
+#else
+const char *NOPNG = "";
+#endif
+
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
 struct _isPlayer : public std::binary_function < NetMauMau::Common::IConnection::NAMESOCKFD,
@@ -393,12 +399,9 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 											send(cc, 20, cfd);
 											recv(cc, 2, cfd);
+
 											logInfo("Player picture for \"" << info.name
-													<< "\" rejected (too large"
-#if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
-													<< " or no PNG image"
-#endif
-													<< ")");
+													<< "\" rejected (too large" << NOPNG << ")");
 											std::string().swap(playerPic);
 
 										} else {

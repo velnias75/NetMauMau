@@ -42,7 +42,7 @@ netmaumau: $(top_srcdir)/netmaumau.xinetd.in
 	$(AM_V_GEN)$(SED) -e 's|@bindir[@]|$(bindir)|g' < $< > $@
 endif
 
-start-server.sh: $(top_srcdir)/start-server.sh.in 
+start-server.sh: $(top_srcdir)/start-server.sh.in
 	$(AM_V_GEN)$(SED) \
 	-e 's|@SRCDIR[@]|$(abs_top_srcdir)|g' \
 	-e 's|@BUILDDIR[@]|$(abs_top_builddir)|g' < $< > $@

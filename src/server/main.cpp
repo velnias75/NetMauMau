@@ -38,6 +38,10 @@
 #include <iostream>
 #include <algorithm>
 
+#if !defined(_WIN32) && defined(PIDFILE) && defined(HAVE_CHOWN)
+#include <fstream>
+#endif
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif

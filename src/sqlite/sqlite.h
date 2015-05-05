@@ -53,7 +53,7 @@ public:
 
 	static SQLitePtr getInstance();
 
-	std::string getDBFilename() const;
+	static std::string getDBFilename();
 
 	SCORES getScores(SCORE_TYPE type) const;
 	SCORES getScores(SCORE_TYPE type, std::size_t limit) const;

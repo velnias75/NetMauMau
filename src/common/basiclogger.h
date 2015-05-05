@@ -1,7 +1,7 @@
 /**
  * basiclogger.h - template for basic logging functionality
  *
- * $Revision: 3898 $ $Author: heiko $
+ * $Revision: 3997 $ $Author: heiko $
  *
  * (c) 2012-2015 Heiko Schäfer <heiko@rangun.de>
  *
@@ -89,6 +89,7 @@ public:
 	virtual ~BasicLogger();
 
 	typedef struct _PACKED _width {
+		// cppcheck-suppress functionStatic
 		explicit _width(std::streamsize w) : m_width(w) {}
 		std::streamsize m_width;
 	} width;
@@ -96,7 +97,8 @@ public:
 	typedef struct _nonl {} nonl;
 
 	typedef struct _PACKED _abool {
-		_abool(bool ab) : b(ab) {}
+		// cppcheck-suppress functionStatic
+		explicit _abool(bool ab) : b(ab) {}
 		bool b;
 	} abool;
 

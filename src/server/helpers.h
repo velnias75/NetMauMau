@@ -32,6 +32,7 @@ extern char *arRank;
 extern int decks;
 extern int initialCardCount;
 extern double aiDelay;
+extern char bind[];
 extern char *host;
 extern uint16_t port;
 extern char *user;

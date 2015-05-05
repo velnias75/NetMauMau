@@ -46,7 +46,7 @@ endif
 .DELETE_ON_ERROR:
 testimg.h: testimg.png
 	$(SHELL) $(top_srcdir)/src/images/create_ai_icon.sh 'test_client_img' $< > $@
-	
+
 stresstest.sh: $(top_srcdir)/src/test/stresstest.sh.in
 	$(AM_V_GEN)$(SED) \
 		-e 's|@RULES[@]|$(NETMAUMAU_RULES)|g' \

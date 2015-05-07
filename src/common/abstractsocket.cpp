@@ -144,11 +144,13 @@ void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 			_pimpl->m_sfd = INVALID_SOCKET;
 			throw Exception::SocketException(wireError(_pimpl->m_wireError));
 		} else {
+
 			int bufSize = 0;
 			socklen_t slen = sizeof(int);
 
 			if(getsockopt(_pimpl->m_sfd, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char *>(&bufSize),
 						  &slen) != -1) {
+
 				bufSize *= 2;
 
 				if(setsockopt(_pimpl->m_sfd, SOL_SOCKET, SO_SNDBUF,

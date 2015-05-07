@@ -70,26 +70,6 @@ struct _isPlayer : public std::binary_function < NetMauMau::Common::IConnection:
 		return nsd.name == player;
 	}
 };
-
-#if 0
-struct _playerClientversionLess :
-	public std::binary_function < NetMauMau::Common::IConnection::PLAYERINFOS::value_type,
-		NetMauMau::Common::IConnection::PLAYERINFOS::value_type, bool > {
-	bool operator()(const NetMauMau::Common::IConnection::PLAYERINFOS::value_type &x,
-					const NetMauMau::Common::IConnection::PLAYERINFOS::value_type &y) const {
-		return x.clientVersion < y.clientVersion;
-	}
-};
-
-struct _playerClientversionLess2 :
-	public std::binary_function < NetMauMau::Common::IConnection::PLAYERINFOS::value_type,
-		uint32_t, bool > {
-	bool operator()(const NetMauMau::Common::IConnection::PLAYERINFOS::value_type &x,
-					uint32_t y) const {
-		return x.clientVersion < y;
-	}
-};
-#endif
 #pragma GCC diagnostic pop
 
 }

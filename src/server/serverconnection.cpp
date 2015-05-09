@@ -44,6 +44,7 @@
 #include "defaultplayerimage.h"
 #include "errorstring.h"
 #include "pngcheck.h"
+#include "protocol.h"
 #include "base64.h"
 #include "logger.h"
 #include "sqlite.h"
@@ -160,7 +161,7 @@ Connection::~Connection() {
 		NetMauMau::DB::SQLite::getInstance()->logOutPlayer(*i);
 
 		try {
-			send("BYE", 3, i->sockfd);
+			send(NetMauMau::Common::Protocol::V15::BYE.c_str(), 3, i->sockfd);
 		} catch(const NetMauMau::Common::Exception::SocketException &) {}
 
 		shutdown(i->sockfd);
@@ -612,7 +613,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 					std::string msg(j->second);
 
-					const bool wantPic = msg.substr(j->second.length() - 9) == "VM_ADDPIC";
+					const bool wantPic = msg.substr(j->second.length() - 9) ==
+										 NetMauMau::Common::Protocol::V15::VM_ADDPIC;
 
 					const Connection::PLAYERINFOS::const_iterator
 					&pp(wantPic ? std::find_if(getPlayers().begin(), getPlayers().end(),

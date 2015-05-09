@@ -24,6 +24,7 @@
 #include "serverplayerexception.h"
 #include "serverconnection.h"
 #include "cardtools.h"
+#include "protocol.h"
 #include "iruleset.h"
 #include "engine.h"
 
@@ -76,13 +77,13 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	NetMauMau::Player::AbstractPlayer::receiveCardSet(cards);
 
 	try {
-		m_connection.write(m_sockfd, "GETCARDS");
+		m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::GETCARDS);
 
 		for(CARDS::const_iterator i(cards.begin()); i != cards.end(); ++i) {
 			m_connection.write(m_sockfd, (*i)->description());
 		}
 
-		m_connection.write(m_sockfd, "CARDSGOT");
+		m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::CARDSGOT);
 
 	} catch(const NetMauMau::Common::Exception::SocketException &) {
 		throw Exception::ServerPlayerException(__FUNCTION__);
@@ -96,9 +97,9 @@ NetMauMau::Common::ICardPtr Player::requestCard(const NetMauMau::Common::ICardPt
 
 	try {
 
-		m_connection.write(m_sockfd, "OPENCARD");
+		m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::OPENCARD);
 		m_connection.write(m_sockfd, uncoveredCard->description());;
-		m_connection.write(m_sockfd, "PLAYCARD");
+		m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::PLAYCARD);
 
 		const CARDS &posCards(getPossibleCards(uncoveredCard, s));
 
@@ -106,7 +107,7 @@ NetMauMau::Common::ICardPtr Player::requestCard(const NetMauMau::Common::ICardPt
 			m_connection.write(m_sockfd, (*i)->description());
 		}
 
-		m_connection.write(m_sockfd, "PLAYCARDEND");
+		m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::PLAYCARDEND);
 
 		if(getClientVersion() >= 8) {
 
@@ -123,7 +124,7 @@ NetMauMau::Common::ICardPtr Player::requestCard(const NetMauMau::Common::ICardPt
 
 		const std::string offeredCard = m_connection.read(m_sockfd);
 
-		if(offeredCard == "SUSPEND") {
+		if(offeredCard == NetMauMau::Common::Protocol::V15::SUSPEND) {
 			return NetMauMau::Common::ICardPtr();
 		} else if(offeredCard == ILLEGAL_CARD) {
 			return NetMauMau::Common::ICardPtr(const_cast<const NetMauMau::Common::ICard *>
@@ -161,7 +162,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	try {
 
-		m_connection.write(m_sockfd, "CARDACCEPTED");
+		m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::CARDACCEPTED);
 		m_connection.write(m_sockfd, playedCard->description());
 
 		return !getCardCount();
@@ -173,7 +174,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 void Player::talonShuffled() throw(NetMauMau::Common::Exception::SocketException) {
 	NetMauMau::Player::AbstractPlayer::talonShuffled();
-	m_connection.write(m_sockfd, "TALONSHUFFLED");
+	m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::TALONSHUFFLED);
 }
 
 Player::IPlayer::REASON Player::getNoCardReason(const NetMauMau::Common::ICardPtr &uncoveredCard,
@@ -192,7 +193,7 @@ std::size_t Player::getCardCount() const throw(NetMauMau::Common::Exception::Soc
 	std::size_t cc = 0;
 
 	try {
-		m_connection.write(m_sockfd, "CARDCOUNT");
+		m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::CARDCOUNT);
 		cc = std::strtoul(m_connection.read(m_sockfd).c_str(), NULL, 10);
 	} catch(const NetMauMau::Common::Exception::SocketException &) {
 		throw Exception::ServerPlayerException(__FUNCTION__);
@@ -206,7 +207,7 @@ NetMauMau::Common::ICard::SUIT Player::getJackChoice(const NetMauMau::Common::IC
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	try {
-		m_connection.write(m_sockfd, "JACKCHOICE");
+		m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::JACKCHOICE);
 		return NetMauMau::Common::symbolToSuit(m_connection.read(m_sockfd));
 	} catch(const NetMauMau::Common::Exception::SocketException &) {
 		throw Exception::ServerPlayerException(__FUNCTION__);
@@ -217,8 +218,8 @@ bool Player::getAceRoundChoice() const throw(NetMauMau::Common::Exception::Socke
 
 	if(isAceRoundAllowed()) {
 		try {
-			m_connection.write(m_sockfd, "ACEROUND");
-			return m_connection.read(m_sockfd) == "TRUE";
+			m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::ACEROUND);
+			return m_connection.read(m_sockfd) == NetMauMau::Common::Protocol::V15::TRUE;
 		} catch(const NetMauMau::Common::Exception::SocketException &) {
 			throw Exception::ServerPlayerException(__FUNCTION__);
 		}

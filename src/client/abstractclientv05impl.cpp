@@ -22,6 +22,8 @@
 
 #include "abstractclientv05impl.h"
 
+#include "protocol.h"
+
 namespace {
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
@@ -76,7 +78,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	m_connection >> msg;
 
-	while(msg != "PLAYCARDEND") {
+	while(msg != NetMauMau::Common::Protocol::V15::PLAYCARDEND) {
 
 		const AbstractClient::CARDS::const_iterator &f(std::find_if(myCards.begin(),
 				myCards.end(), std::bind2nd(cardEqualsDescription(), msg)));
@@ -95,7 +97,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	if(*lastPlayedCard) {
 		m_connection << (*lastPlayedCard)->description();
 	} else {
-		m_connection << "SUSPEND";
+		m_connection << NetMauMau::Common::Protocol::V15::SUSPEND;
 	}
 }
 

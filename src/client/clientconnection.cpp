@@ -37,6 +37,7 @@
 #include "clientconnection.h"
 #include "clientconnectionimpl.h"
 
+#include "protocol.h"
 #include "errorstring.h"
 #include "base64bridge.h"
 #include "abstractclient.h"
@@ -377,7 +378,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	if(msg.empty()) {
 		throw Exception::InterceptedErrorException("Lost connection to server",
 				getSocketFD());
-	} else if(msg == "ERROR") {
+	} else if(msg == NetMauMau::Common::Protocol::V15::ERROR) {
 
 		std::string errMsg;
 		*this >> errMsg;

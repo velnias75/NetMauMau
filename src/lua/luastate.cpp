@@ -30,6 +30,7 @@ extern "C" {
 #include "stdcardfactory.h"
 #include "random_gen.h"
 #include "cardtools.h"
+#include "protocol.h"
 #include "smartptr.h"
 #include "iplayer.h"
 #include "logger.h"
@@ -187,7 +188,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		try {
 			lua_pushinteger(m_state, static_cast<lua_Integer>(player->getCardCount()));
-			lua_setfield(m_state, -2, "CARDCOUNT");
+			lua_setfield(m_state, -2, NetMauMau::Common::Protocol::V15::CARDCOUNT.c_str());
 		} catch(const NetMauMau::Common::Exception::SocketException &) {
 			lua_pop(m_state, 1);
 			throw;

@@ -4,8 +4,8 @@ noinst_LTLIBRARIES = libnetmaumaucommon_private.la
 BUILT_SOURCES = ai-icon.h
 
 noinst_HEADERS = ai-icon.h abstractconnectionimpl.h abstractsocketimpl.h base64.h basiclogger.h \
-	errorstring.h icardfactory.h iplayer.h logger.h mimemagic.h pngcheck.h random_gen.h \
-	smartptr.h
+	errorstring.h icardfactory.h iplayer.h logger.h mimemagic.h pngcheck.h protocol.h \
+	random_gen.h smartptr.h
 
 MAINTAINERCLEANFILES = ai-icon.h
 
@@ -24,7 +24,7 @@ libnetmaumaucommon_private_la_CPPFLAGS = $(GSL) -DNMM_EXE_PATH=\"$(bindir)\" \
 	-DNMM_EXE_NAME=\"nmm-server$(EXEEXT)\" $(NO_EXCEPTIONS)
 libnetmaumaucommon_private_la_CXXFLAGS = -I$(top_srcdir)/src/include
 libnetmaumaucommon_private_la_SOURCES = cardtools.cpp defaultplayerimage.cpp errorstring.cpp \
-	mimemagic.cpp pngcheck.cpp
+	mimemagic.cpp pngcheck.cpp protocol.cpp
 
 libnetmaumaucommon_la_CPPFLAGS = $(GSL) -DNMM_EXE_PATH=\"$(bindir)\" \
 	-DNMM_EXE_NAME=\"nmm-server$(EXEEXT)\"

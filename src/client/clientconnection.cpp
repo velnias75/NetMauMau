@@ -37,7 +37,6 @@
 #include "clientconnection.h"
 #include "clientconnectionimpl.h"
 
-#include "protocol.h"
 #include "errorstring.h"
 #include "base64bridge.h"
 #include "abstractclient.h"
@@ -52,6 +51,14 @@
 #include "interceptederrorexception.h"
 #include "nonetmaumauserverexception.h"
 #include "connectionrejectedexception.h"
+
+#if defined(_WIN32)
+#undef TRUE
+#undef FALSE
+#undef ERROR
+#endif
+
+#include "protocol.h"
 
 #define MAX_PNAME 1024
 

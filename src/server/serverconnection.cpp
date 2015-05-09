@@ -44,10 +44,17 @@
 #include "defaultplayerimage.h"
 #include "errorstring.h"
 #include "pngcheck.h"
-#include "protocol.h"
 #include "base64.h"
 #include "logger.h"
 #include "sqlite.h"
+
+#if defined(_WIN32)
+#undef TRUE
+#undef FALSE
+#undef ERROR
+#endif
+
+#include "protocol.h"
 
 namespace {
 const std::string aiBase64

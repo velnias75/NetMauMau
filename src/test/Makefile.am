@@ -32,7 +32,7 @@ test_netmaumau_CPPFLAGS = $(GSL)
 test_netmaumau_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/engine -I$(top_srcdir)/src/ai
 test_netmaumau_SOURCES = test_netmaumau.cpp testeventhandler.cpp
-test_netmaumau_LDADD = ../engine/libengine.la
+test_netmaumau_LDADD = ../common/libnetmaumaucommon.la ../engine/libengine.la
 test_netmaumau_LDFLAGS = -no-install
 
 if ENABLE_CLI_CLIENT
@@ -40,7 +40,7 @@ nmm_client_CPPFLAGS = -DCLIENTVERSION=$(CLIENTVERSION)
 nmm_client_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
 	-I$(top_srcdir)/src/client $(POPT_CFLAGS)
 nmm_client_SOURCES = test_client.cpp testclient.cpp
-nmm_client_LDADD = ../client/libnetmaumauclient.la ../common/libnetmaumaucommon.la $(POPT_LIBS)
+nmm_client_LDADD = ../common/libnetmaumaucommon.la ../client/libnetmaumauclient.la $(POPT_LIBS)
 endif
 
 .DELETE_ON_ERROR:

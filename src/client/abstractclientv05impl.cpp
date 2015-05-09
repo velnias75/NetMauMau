@@ -22,6 +22,12 @@
 
 #include "abstractclientv05impl.h"
 
+#if defined(_WIN32)
+#undef TRUE
+#undef FALSE
+#undef ERROR
+#endif
+
 #include "protocol.h"
 
 namespace {

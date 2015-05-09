@@ -29,8 +29,15 @@
 #include "base64bridge.h"
 #include "cardtools.h"
 #include "pngcheck.h"
-#include "protocol.h"
 #include "logger.h"
+
+#if defined(_WIN32)
+#undef TRUE
+#undef FALSE
+#undef ERROR
+#endif
+
+#include "protocol.h"
 
 using namespace NetMauMau::Client;
 

@@ -22,9 +22,16 @@
 #include "servereventhandler.h"
 
 #include "cardtools.h"
-#include "protocol.h"
 #include "iplayer.h"
 #include "logger.h"
+
+#if defined(_WIN32)
+#undef TRUE
+#undef FALSE
+#undef ERROR
+#endif
+
+#include "protocol.h"
 
 using namespace NetMauMau::Server;
 

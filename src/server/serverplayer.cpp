@@ -24,9 +24,16 @@
 #include "serverplayerexception.h"
 #include "serverconnection.h"
 #include "cardtools.h"
-#include "protocol.h"
 #include "iruleset.h"
 #include "engine.h"
+
+#if defined(_WIN32)
+#undef TRUE
+#undef FALSE
+#undef ERROR
+#endif
+
+#include "protocol.h"
 
 namespace {
 const std::string ILLEGAL_CARD(NetMauMau::Common::getIllegalCard()->description());

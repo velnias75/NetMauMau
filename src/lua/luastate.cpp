@@ -30,10 +30,17 @@ extern "C" {
 #include "stdcardfactory.h"
 #include "random_gen.h"
 #include "cardtools.h"
-#include "protocol.h"
 #include "smartptr.h"
 #include "iplayer.h"
 #include "logger.h"
+
+#if defined(_WIN32)
+#undef TRUE
+#undef FALSE
+#undef ERROR
+#endif
+
+#include "protocol.h"
 
 namespace {
 const char *INTERFACE = "INTERFACE";

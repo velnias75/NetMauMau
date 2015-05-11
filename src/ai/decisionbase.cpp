@@ -25,17 +25,12 @@ namespace {
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-struct playedOutRank : std::binary_function<std::string, NetMauMau::Common::ICard::RANK, bool> {
-	bool operator()(const std::string &desc, NetMauMau::Common::ICard::RANK rank) const {
+struct playedOutRank : std::binary_function < NetMauMau::Common::ICardPtr,
+		NetMauMau::Common::ICard::RANK, bool > {
 
-		NetMauMau::Common::ICard::RANK r = NetMauMau::Common::ICard::RANK_ILLEGAL;
-		NetMauMau::Common::ICard::SUIT s = NetMauMau::Common::ICard::SUIT_ILLEGAL;
-
-		if(NetMauMau::Common::parseCardDesc(desc, &s, &r)) {
-			return r == rank;
-		}
-
-		return false;
+	inline bool operator()(const NetMauMau::Common::ICardPtr &desc,
+						   NetMauMau::Common::ICard::RANK rank) const {
+		return desc->getRank() == rank;
 	}
 };
 #pragma GCC diagnostic pop
@@ -61,21 +56,21 @@ DecisionBase::removeJack(const NetMauMau::Player::IPlayer::CARDS &cards) {
 
 NetMauMau::Player::IPlayer::CARDS::difference_type
 DecisionBase::countSuit(const NetMauMau::Player::IPlayer::CARDS &cards,
-						   NetMauMau::Common::ICard::SUIT suit) {
+						NetMauMau::Common::ICard::SUIT suit) {
 	return std::count_if(cards.begin(), cards.end(),
 						 std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit), suit));
 }
 
 NetMauMau::Player::IPlayer::CARDS::difference_type
 DecisionBase::countRank(const NetMauMau::Player::IPlayer::CARDS &cards,
-						   NetMauMau::Common::ICard::RANK rank) {
+						NetMauMau::Common::ICard::RANK rank) {
 	return std::count_if(cards.begin(), cards.end(),
 						 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank), rank));
 }
 
-std::vector<std::string>::difference_type
-DecisionBase::countPlayedOutRank(const std::vector<std::string> &porv,
-									NetMauMau::Common::ICard::RANK rank) {
+IAIState::PLAYEDOUTCARDS::difference_type
+DecisionBase::countPlayedOutRank(const IAIState::PLAYEDOUTCARDS &porv,
+								 NetMauMau::Common::ICard::RANK rank) {
 	return std::count_if(porv.begin(), porv.end(), std::bind2nd(playedOutRank(), rank));
 }
 

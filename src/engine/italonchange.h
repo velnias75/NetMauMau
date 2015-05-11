@@ -33,7 +33,6 @@ class ITalonChange {
 public:
 	virtual ~ITalonChange() {}
 
-	virtual void cardPlayed(Common::ICard *card) const = 0;
 	virtual void uncoveredCard(const NetMauMau::Common::ICard *top) const = 0;
 	virtual void talonEmpty(bool empty) const throw() = 0;
 	virtual void shuffled() const = 0;

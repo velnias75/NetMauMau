@@ -272,10 +272,7 @@ bool Engine::nextTurn() {
 			if(m_turn == 1) {
 
 				DB::SQLite::getInstance()->gamePlayStarted(m_gameIndex);
-
-				Common::ICard *ic = m_talon->uncoverCard();
-				getEventHandler().initialCard(ic);
-				cardPlayed(ic);
+				getEventHandler().initialCard(m_talon->uncoverCard());
 			}
 
 			m_curTurn = m_turn;
@@ -624,12 +621,6 @@ void Engine::talonEmpty(bool empty) const throw() {
 	}
 }
 
-void Engine::cardPlayed(Common::ICard *card) const {
-	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
-		(*i)->cardPlayed(card);
-	}
-}
-
 void Engine::shuffled() const {
 	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
 		(*i)->talonShuffled();
@@ -738,6 +729,10 @@ void Engine::cardCountChanged(const Player::IPlayer *p) const throw() {
 
 RuleSet::IRuleSet *Engine::getRuleSet() const {
 	return m_cfg.getRuleSet(this);
+}
+
+const IPlayedOutCards *Engine::getPlayedOutCards() const {
+	return m_talon;
 }
 
 void Engine::reset() throw() {

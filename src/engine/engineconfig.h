@@ -44,11 +44,13 @@ public:
 	~EngineConfig();
 
 	Event::IEventHandler &getEventHandler() const _PURE;
+
 	bool getDirChange() const _PURE;
 	long getAIDelay() const _PURE;
 	bool getNextMessage() const _PURE;
 	void setNextMessage(bool b);
 	char getAceRound() const _PURE;
+
 	Common::ICard::RANK getAceRoundRank() const _PURE;
 	RuleSet::IRuleSet *getRuleSet(const NetMauMau::IAceRoundListener *arl = 0L) const;
 	std::size_t getTalonFactor() const _PURE;

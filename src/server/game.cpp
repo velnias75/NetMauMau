@@ -66,9 +66,9 @@ Game::Game(GameConfig &cfg) throw(NetMauMau::Common::Exception::SocketException)
 
 					m_aiPlayers.push_back(type == NetMauMau::Player::IPlayer::HARD ?
 										  new NetMauMau::Player::HardPlayer(aiSanName.
-												  substr(0, spos)) :
+												  substr(0, spos), m_engine.getPlayedOutCards()) :
 										  new NetMauMau::Player::EasyPlayer(aiSanName.
-												  substr(0, spos)));
+												  substr(0, spos), m_engine.getPlayedOutCards()));
 
 					logInfo("Adding AI player \"" << m_aiPlayers.back()->getName() << "\" ("
 							<< (m_aiPlayers.back()->getType() ==

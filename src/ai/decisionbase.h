@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_ENGINE_AI_DECISIONBASE_H
 #define NETMAUMAU_ENGINE_AI_DECISIONBASE_H
 
-#include "iplayer.h"
+#include "iaistate.h"
 #include "smartptr.h"
 
 namespace NetMauMau {
@@ -32,8 +32,8 @@ class DecisionBase {
 public:
 	virtual ~DecisionBase();
 
-	static std::vector<std::string>::difference_type
-	countPlayedOutRank(const std::vector<std::string> &porv,
+	static IAIState::PLAYEDOUTCARDS::difference_type
+	countPlayedOutRank(const IAIState::PLAYEDOUTCARDS &porv,
 					   NetMauMau::Common::ICard::RANK rank);
 
 	static Player::IPlayer::CARDS removeJack(const Player::IPlayer::CARDS &cards);

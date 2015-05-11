@@ -29,7 +29,7 @@ namespace Player {
 class EasyPlayer : public HardPlayer {
 	DISALLOW_COPY_AND_ASSIGN(EasyPlayer)
 public:
-	explicit EasyPlayer(const std::string &name);
+	explicit EasyPlayer(const std::string &name, const IPlayedOutCards *poc);
 	virtual ~EasyPlayer();
 
 	virtual TYPE getType() const _CONST;

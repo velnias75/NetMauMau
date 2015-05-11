@@ -80,12 +80,11 @@ const IConditionPtr &AbstractAction::operator()(IAIState &state) const {
 				   state.getPlayerCards());
 }
 
-void AbstractAction::countSuits(SUITCOUNT *suitCount,
-								const NetMauMau::Player::IPlayer::CARDS &cards) {
+void AbstractAction::countSuits(SUITCOUNT *suitCount, const IAIState::PLAYEDOUTCARDS &cards) {
 
 	std::memset(suitCount, 0, sizeof(SUITCOUNT) * 4);
 
-	NetMauMau::Player::IPlayer::CARDS myCards(cards);
+	IAIState::PLAYEDOUTCARDS myCards(cards);
 
 	removeJack(myCards);
 
@@ -107,22 +106,7 @@ NetMauMau::Common::ICard::SUIT AbstractAction::getMaxPlayedOffSuit(const IAIStat
 		NetMauMau::Player::IPlayer::CARDS::difference_type *count) {
 
 	AbstractAction::SUITCOUNT poSuitCount[4];
-	NetMauMau::Player::IPlayer::CARDS pcVec;
-
-	pcVec.reserve(state.getPlayedOutCards().size());
-
-	for(std::vector<std::string>::const_iterator i(state.getPlayedOutCards().begin());
-			i != state.getPlayedOutCards().end(); ++i) {
-
-		NetMauMau::Common::ICard::SUIT s;
-		NetMauMau::Common::ICard::RANK r;
-
-		if(NetMauMau::Common::parseCardDesc(*i, &s, &r)) {
-			pcVec.push_back(NetMauMau::Common::ICardPtr(NetMauMau::StdCardFactory().create(s, r)));
-		}
-	}
-
-	AbstractAction::countSuits(poSuitCount, pcVec);
+	AbstractAction::countSuits(poSuitCount, state.getPlayedOutCards());
 
 	if(count) *count = poSuitCount[0].count;
 

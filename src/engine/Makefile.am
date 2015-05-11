@@ -1,8 +1,8 @@
 noinst_LTLIBRARIES = libengine.la libengine_private.la
 
 noinst_HEADERS = abstractplayer.h aiplayerbase.h defaulteventhandler.h easyplayer.h engineconfig.h \
-	engine.h hardplayer.h iaceroundlistener.h icardcountobserver.h ieventhandler.h iruleset.h \
-	italonchange.h nullconnection.h stdcardfactory.h talon.h
+	engine.h hardplayer.h iaceroundlistener.h icardcountobserver.h ieventhandler.h \
+	iplayedoutcards.h iruleset.h italonchange.h nullconnection.h stdcardfactory.h talon.h
 
 if GSL
 GSL=-DHAVE_GSL

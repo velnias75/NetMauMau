@@ -21,22 +21,20 @@
 #define NETMAUMAU_TALON_H
 
 #include <stack>
-#include <vector>
 
 #include "icard.h"
-#include "smartptr.h"
+#include "iplayedoutcards.h"
 
 namespace NetMauMau {
 
 class ICardFactory;
 class ITalonChange;
 
-class Talon {
+class Talon : public virtual IPlayedOutCards {
 	DISALLOW_COPY_AND_ASSIGN(Talon)
-	typedef std::vector<Common::ICardPtr> CARDS;
 public:
 	explicit Talon(const ITalonChange *tchg, std::size_t factor) throw();
-	~Talon();
+	virtual ~Talon();
 
 	inline bool empty() const {
 		return m_cardStack.empty();
@@ -49,6 +47,8 @@ public:
 	inline void pop() {
 		m_cardStack.pop();
 	}
+
+	virtual const CARDS &getCards() const;
 
 	Common::ICardPtr uncoverCard();
 
@@ -67,6 +67,7 @@ private:
 
 private:
 	const ITalonChange *m_talonChangeListener;
+	mutable CARDS m_playedOutCards;
 	CARDSTACK m_cardStack;
 	CARDSTACK m_uncovered;
 };

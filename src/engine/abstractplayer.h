@@ -22,7 +22,7 @@
 
 #include "iplayer.h"
 
-#include "smartptr.h"
+#include "iplayedoutcards.h"
 
 namespace NetMauMau {
 
@@ -54,12 +54,11 @@ public:
 	virtual bool getAceRoundChoice() const = 0;
 
 	virtual bool cardAccepted(const Common::ICard *playedCard);
-	virtual void cardPlayed(Common::ICard *playedCard);
 	virtual void informAIStat(const IPlayer *player, std::size_t count);
 	virtual void setNeighbourCardCount(std::size_t playerCount, std::size_t leftCount,
 									   std::size_t rightCount);
 	virtual void setDirChangeEnabled(bool dirChangeEnabled);
-	virtual void talonShuffled();
+	virtual void talonShuffled() _CONST;
 	virtual void setNineIsEight(bool b);
 
 	virtual REASON getNoCardReason(const Common::ICardPtr &uncoveredCard,
@@ -73,12 +72,12 @@ public:
 	virtual const CARDS &getPlayerCards() const _CONST;
 
 protected:
-	explicit AbstractPlayer(const std::string &name);
+	explicit AbstractPlayer(const std::string &name, const IPlayedOutCards *poc);
 
 	virtual void shuffleCards();
 
 	const RuleSet::IRuleSet *getRuleSet() const _PURE;
-	const std::vector<std::string> &getPlayedOutCards() const _CONST;
+	const IPlayedOutCards::CARDS &getPlayedOutCards() const;
 	std::size_t getPlayerCount() const _PURE;
 	std::size_t getLeftCount() const _PURE;
 	std::size_t getRightCount() const _PURE;
@@ -107,7 +106,6 @@ private:
 	CARDS m_cards;
 	mutable bool m_cardsTaken;
 	const RuleSet::IRuleSet *m_ruleset;
-	std::vector<std::string> m_playedOutCards;
 	bool m_playerHasFewCards;
 	bool m_nineIsEight;
 	std::size_t m_leftCount;
@@ -116,6 +114,7 @@ private:
 	std::size_t m_playerCount;
 	const EngineConfig *m_engineCfg;
 	const ICardCountObserver *m_cardCountObserver;
+	const IPlayedOutCards *m_poc;
 };
 
 }

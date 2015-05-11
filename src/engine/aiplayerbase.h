@@ -34,7 +34,7 @@ namespace NetMauMau {
 namespace Player {
 
 template<class RootCond, class RootCondJack>
-class AIPlayerBase : public AbstractPlayer, public AI::BaseAIPlayer <RootCond, RootCondJack> {
+class AIPlayerBase : public AbstractPlayer, public AI::BaseAIPlayer<RootCond, RootCondJack> {
 	DISALLOW_COPY_AND_ASSIGN(AIPlayerBase)
 public:
 	virtual ~AIPlayerBase() {}
@@ -60,7 +60,6 @@ public:
 	virtual bool getAceRoundChoice() const;
 
 	virtual bool cardAccepted(const Common::ICard *playedCard);
-	virtual void cardPlayed(Common::ICard *playedCard);
 	virtual void informAIStat(const IPlayer *player, std::size_t count);
 	virtual void setNeighbourCardCount(std::size_t playerCount,
 									   std::size_t leftCount, std::size_t rightCount);
@@ -79,7 +78,7 @@ public:
 	virtual const RuleSet::IRuleSet *getRuleSet() const;
 
 	virtual const CARDS &getPlayerCards() const;
-	virtual const std::vector<std::string> &getPlayedOutCards() const;
+	virtual const IPlayedOutCards::CARDS &getPlayedOutCards() const;
 
 	virtual std::size_t getPlayerCount() const;
 
@@ -98,10 +97,10 @@ public:
 
 protected:
 	explicit AIPlayerBase(const std::string &name, const AI::IActionPtr &trueAct,
-						  const AI::IActionPtr &falseAct) : AbstractPlayer(name),
-		AI::BaseAIPlayer<RootCond, RootCondJack>(trueAct, falseAct),
-		m_powerSuit(Common::ICard::SUIT_ILLEGAL), m_powerPlay(false),
-		m_tryAceRound(false) {}
+						  const AI::IActionPtr &falseAct, const IPlayedOutCards *poc)
+		: AbstractPlayer(name, poc), AI::BaseAIPlayer<RootCond, RootCondJack>(trueAct, falseAct),
+		  m_powerSuit(Common::ICard::SUIT_ILLEGAL), m_powerPlay(false),
+		  m_tryAceRound(false) {}
 
 	virtual void shuffleCards();
 	virtual std::size_t getTalonFactor() const;
@@ -252,11 +251,6 @@ inline bool AIPlayerBase < RootCond, RootCondJack >::cardAccepted(const Common::
 }
 
 template<class RootCond, class RootCondJack>
-inline void AIPlayerBase < RootCond, RootCondJack >::cardPlayed(Common::ICard *playedCard) {
-	AbstractPlayer::cardPlayed(playedCard);
-}
-
-template<class RootCond, class RootCondJack>
 inline void AIPlayerBase<RootCond, RootCondJack>::talonShuffled() {
 	AbstractPlayer::talonShuffled();
 }
@@ -310,7 +304,7 @@ inline const IPlayer::CARDS &AIPlayerBase<RootCond, RootCondJack>::getPlayerCard
 }
 
 template<class RootCond, class RootCondJack>
-inline const std::vector< std::string > &AIPlayerBase < RootCond,
+inline const IPlayedOutCards::CARDS &AIPlayerBase < RootCond,
 RootCondJack >::getPlayedOutCards() const {
 	return AbstractPlayer::getPlayedOutCards();
 }

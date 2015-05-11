@@ -21,6 +21,7 @@
 #define NETMAUMAU_ENGINE_AI_IAISTATE_H
 
 #include "iplayer.h"
+#include "iplayedoutcards.h"
 
 namespace NetMauMau {
 
@@ -29,7 +30,7 @@ namespace AI {
 class IAIState {
 	DISALLOW_COPY_AND_ASSIGN(IAIState)
 public:
-	typedef std::vector<std::string> PLAYEDOUTCARDS;
+	typedef IPlayedOutCards::CARDS PLAYEDOUTCARDS;
 
 	virtual ~IAIState() {}
 
@@ -49,7 +50,7 @@ public:
 
 	virtual const RuleSet::IRuleSet *getRuleSet() const = 0;
 
-	virtual const std::vector<std::string> &getPlayedOutCards() const = 0;
+	virtual const PLAYEDOUTCARDS &getPlayedOutCards() const = 0;
 
 	virtual bool hasPlayerFewCards() const = 0;
 

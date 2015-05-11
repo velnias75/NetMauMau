@@ -28,6 +28,8 @@
 
 namespace {
 
+const NetMauMau::IPlayedOutCards::CARDS PLAYEDOUTCARDS;
+
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
 struct pointSum : std::binary_function<std::size_t, NetMauMau::Common::ICardPtr, std::size_t> {
@@ -76,10 +78,11 @@ private:
 
 using namespace NetMauMau::Player;
 
-AbstractPlayer::AbstractPlayer(const std::string &name) : IPlayer(), m_name(name), m_cards(),
-	m_cardsTaken(false), m_ruleset(0L), m_playedOutCards(), m_playerHasFewCards(false),
-	m_nineIsEight(false), m_leftCount(0), m_rightCount(0), m_dirChgEnabled(false), m_playerCount(0),
-	m_engineCfg(0L), m_cardCountObserver(0L) {
+AbstractPlayer::AbstractPlayer(const std::string &name, const NetMauMau::IPlayedOutCards *poc)
+	: IPlayer(), m_name(name), m_cards(), m_cardsTaken(false), m_ruleset(0L),
+	  m_playerHasFewCards(false), m_nineIsEight(false), m_leftCount(0), m_rightCount(0),
+	  m_dirChgEnabled(false), m_playerCount(0), m_engineCfg(0L), m_cardCountObserver(0L),
+	  m_poc(poc) {
 	m_cards.reserve(32);
 }
 
@@ -99,10 +102,6 @@ void AbstractPlayer::setCardCountObserver(const NetMauMau::ICardCountObserver *c
 
 void AbstractPlayer::setEngineConfig(const NetMauMau::EngineConfig *engineCfg) {
 	m_engineCfg = engineCfg;
-}
-
-void AbstractPlayer::cardPlayed(NetMauMau::Common::ICard *playedCard) {
-	m_playedOutCards.push_back(playedCard->description());
 }
 
 void AbstractPlayer::informAIStat(const IPlayer *, std::size_t count) {
@@ -184,9 +183,7 @@ bool AbstractPlayer::cardAccepted(const NetMauMau::Common::ICard *playedCard) {
 	return m_cards.empty();
 }
 
-void AbstractPlayer::talonShuffled() {
-	m_playedOutCards.clear();
-}
+void AbstractPlayer::talonShuffled() {}
 
 void AbstractPlayer::pushCard(const NetMauMau::Common::ICardPtr &card) {
 	m_cards.push_back(card);
@@ -200,8 +197,8 @@ const NetMauMau::RuleSet::IRuleSet *AbstractPlayer::getRuleSet() const {
 	return m_ruleset;
 }
 
-const std::vector< std::string > &AbstractPlayer::getPlayedOutCards() const {
-	return m_playedOutCards;
+const NetMauMau::IPlayedOutCards::CARDS &AbstractPlayer::getPlayedOutCards() const {
+	return m_poc ? m_poc->getCards() : PLAYEDOUTCARDS;
 }
 
 std::size_t AbstractPlayer::getLeftCount() const {
@@ -247,7 +244,6 @@ void AbstractPlayer::reset() throw() {
 	m_leftCount = m_rightCount = m_playerCount = 0;
 	m_dirChgEnabled = false;
 	m_cards.clear();
-	m_playedOutCards.clear();
 
 	notifyCardCountChange();
 }

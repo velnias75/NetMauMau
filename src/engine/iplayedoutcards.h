@@ -17,33 +17,31 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_PLAYER_HARDPLAYER_H
-#define NETMAUMAU_PLAYER_HARDPLAYER_H
+#ifndef NETMAUMAU_IPLAYEDOUTCARDS_H
+#define NETMAUMAU_IPLAYEDOUTCARDS_H
 
-#include "aiplayerbase.h"
+#include <vector>
+
+#include "linkercontrol.h"
+#include "smartptr.h"
 
 namespace NetMauMau {
 
-namespace AI {
-class JackOnlyCondition;
-class PowerSuitCondition;
-}
-
-namespace Player {
-
-class HardPlayer : public AIPlayerBase<AI::JackOnlyCondition, AI::PowerSuitCondition> {
-	DISALLOW_COPY_AND_ASSIGN(HardPlayer)
+class IPlayedOutCards {
+	DISALLOW_COPY_AND_ASSIGN(IPlayedOutCards)
 public:
-	explicit HardPlayer(const std::string &name, const IPlayedOutCards *poc);
-	virtual ~HardPlayer();
+	typedef std::vector<Common::ICardPtr> CARDS;
 
-	virtual TYPE getType() const _CONST;
+	virtual ~IPlayedOutCards() {}
+
+	virtual const CARDS &getCards() const = 0;
+
+protected:
+	explicit IPlayedOutCards() {}
 };
 
 }
 
-}
-
-#endif /* NETMAUMAU_PLAYER_HARDPLAYER_H */
+#endif /* NETMAUMAU_IPLAYEDOUTCARDS_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

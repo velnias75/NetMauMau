@@ -65,7 +65,6 @@ public:
 	virtual bool getAceRoundChoice() const = 0;
 
 	virtual bool cardAccepted(const Common::ICard *playedCard) = 0;
-	virtual void cardPlayed(Common::ICard *playedCard) = 0;
 	virtual void informAIStat(const IPlayer *player, std::size_t count) = 0;
 	virtual void setNeighbourCardCount(std::size_t playerCount, std::size_t leftCount,
 									   std::size_t rightCount) = 0;

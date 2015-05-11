@@ -30,7 +30,8 @@
 
 using namespace NetMauMau::Player;
 
-EasyPlayer::EasyPlayer(const std::string &name) : HardPlayer(name) {}
+EasyPlayer::EasyPlayer(const std::string &name, const NetMauMau::IPlayedOutCards *poc)
+	: HardPlayer(name, poc) {}
 
 EasyPlayer::~EasyPlayer() {}
 

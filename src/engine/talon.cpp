@@ -137,7 +137,7 @@ const NetMauMau::Common::ICardPtr NULLCARD;
 using namespace NetMauMau;
 
 Talon::Talon(const ITalonChange *tchg, std::size_t factor) throw() : m_talonChangeListener(tchg),
-	m_cardStack(Talon::createCards(factor)), m_uncovered() {
+	m_playedOutCards(), m_cardStack(Talon::createCards(factor)), m_uncovered(m_playedOutCards) {
 	m_talonChangeListener->talonEmpty(false);
 }
 
@@ -157,6 +157,23 @@ Talon::CARDSTACK::container_type Talon::createCards(std::size_t factor) throw() 
 
 Talon::~Talon() {}
 
+const IPlayedOutCards::CARDS &Talon::getCards() const {
+
+	CARDS aux;
+	CARDSTACK tmp(m_uncovered);
+
+	aux.reserve(tmp.size());
+
+	while(!tmp.empty()) {
+		aux.push_back(tmp.top());
+		tmp.pop();
+	}
+
+	m_playedOutCards.swap(aux);
+
+	return m_playedOutCards;
+}
+
 Common::ICardPtr Talon::uncoverCard() {
 	m_uncovered.push(top());
 	pop();
@@ -171,7 +188,6 @@ void Talon::playCard(const Common::ICardPtr &card) {
 
 	m_uncovered.push(card);
 	m_talonChangeListener->talonEmpty(false);
-	m_talonChangeListener->cardPlayed(card);
 }
 
 Common::ICardPtr Talon::takeCard() {

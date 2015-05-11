@@ -41,7 +41,7 @@ const std::string ILLEGAL_CARD(NetMauMau::Common::getIllegalCard()->description(
 
 using namespace NetMauMau::Server;
 
-Player::Player(const std::string &name, int sockfd, Connection &con) : AbstractPlayer(name),
+Player::Player(const std::string &name, int sockfd, Connection &con) : AbstractPlayer(name, 0L),
 	m_connection(con), m_sockfd(sockfd) {}
 
 Player::~Player() {}

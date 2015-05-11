@@ -75,7 +75,7 @@ protected:
 
 	static const Common::ICard::SUIT *getSuits() _CONST;
 
-	static void countSuits(SUITCOUNT *suitCount, const Player::IPlayer::CARDS &myCards);
+	static void countSuits(SUITCOUNT *suitCount, const IAIState::PLAYEDOUTCARDS &myCards);
 
 	static Common::ICard::SUIT getMaxPlayedOffSuit(const IAIState &state,
 			Player::IPlayer::CARDS::difference_type *count = 0L);

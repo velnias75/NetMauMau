@@ -31,11 +31,10 @@ const NetMauMau::AI::IConditionPtr HAVEJACKCOND(new NetMauMau::AI::HaveJackCondi
 
 using namespace NetMauMau::Player;
 
-HardPlayer::HardPlayer(const std::string &name) : AIPlayerBase < NetMauMau::AI::JackOnlyCondition,
-	NetMauMau::AI::PowerSuitCondition > (name, NetMauMau::AI::IActionPtr
-										 (new NetMauMau::AI::NextAction(HAVEJACKCOND)),
-										 NetMauMau::AI::IActionPtr
-										 (new NetMauMau::AI::PowerPlayAction(true))) {}
+HardPlayer::HardPlayer(const std::string &name, const NetMauMau::IPlayedOutCards *poc)
+	: AIPlayerBase<NetMauMau::AI::JackOnlyCondition, NetMauMau::AI::PowerSuitCondition>(name,
+			NetMauMau::AI::IActionPtr(new NetMauMau::AI::NextAction(HAVEJACKCOND)),
+			NetMauMau::AI::IActionPtr(new NetMauMau::AI::PowerPlayAction(true)), poc) {}
 
 HardPlayer::~HardPlayer() {}
 

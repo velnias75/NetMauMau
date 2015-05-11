@@ -29,6 +29,7 @@
 
 namespace NetMauMau {
 
+class IPlayedOutCards;
 class EngineConfig;
 class Talon;
 
@@ -42,11 +43,8 @@ class IRuleSet;
 
 class _EXPORT Engine : private ITalonChange, private IAceRoundListener,
 	private ICardCountObserver {
-
 	DISALLOW_COPY_AND_ASSIGN(Engine)
-
 	typedef enum { ACCEPT_PLAYERS, NOCARDS, PLAYING, FINISHED } STATE;
-
 public:
 	typedef std::vector<Player::IPlayer *> PLAYERS;
 
@@ -93,13 +91,15 @@ public:
 
 	void gameAboutToStart() const;
 	void gameOver() const throw();
+
+	const NetMauMau::IPlayedOutCards *getPlayedOutCards() const _PURE;
+
 	void reset() throw();
 
 protected:
 	virtual void uncoveredCard(const Common::ICard *top) const
 	throw(Common::Exception::SocketException);
 	virtual void talonEmpty(bool empty) const throw();
-	virtual void cardPlayed(Common::ICard *card) const;
 	virtual void shuffled() const;
 
 	virtual Common::ICard::RANK getAceRoundRank() const _PURE;

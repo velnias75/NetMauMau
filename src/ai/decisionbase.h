@@ -21,7 +21,6 @@
 #define NETMAUMAU_ENGINE_AI_DECISIONBASE_H
 
 #include "iaistate.h"
-#include "smartptr.h"
 
 namespace NetMauMau {
 
@@ -45,7 +44,7 @@ public:
 			Common::ICard::RANK rank);
 
 protected:
-	DecisionBase();
+	explicit DecisionBase();
 };
 
 }

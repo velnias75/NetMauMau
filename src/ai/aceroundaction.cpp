@@ -21,7 +21,6 @@
 
 #include "randomjackcondition.h"
 #include "cardtools.h"
-#include "iaistate.h"
 #include "iruleset.h"
 
 namespace {
@@ -45,8 +44,8 @@ const IConditionPtr &AceRoundAction::perform(IAIState &state,
 
 	NetMauMau::Player::IPlayer::CARDS myCards(cards);
 
-	state.setTryAceRound(DecisionBase::countRank(myCards, state.getRuleSet()->getAceRoundRank())
-						 > (state.tryAceRound() ? 0 : 1));
+	state.setTryAceRound(DecisionBase::countRank(myCards, state.getRuleSet()->getAceRoundRank()) >
+						 (state.tryAceRound() ? 0 : 1));
 
 	if(state.tryAceRound()) {
 

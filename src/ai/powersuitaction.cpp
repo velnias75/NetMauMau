@@ -22,7 +22,6 @@
 #include "powersuitcondition.h"
 #include "aceroundcondition.h"
 #include "cardtools.h"
-#include "iaistate.h"
 
 namespace {
 const NetMauMau::AI::IConditionPtr ACEREOUNDCOND(new NetMauMau::AI::AceRoundCondition());

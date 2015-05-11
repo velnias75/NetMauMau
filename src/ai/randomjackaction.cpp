@@ -21,7 +21,6 @@
 
 #include "random_gen.h"
 #include "cardtools.h"
-#include "iaistate.h"
 
 using namespace NetMauMau::AI;
 

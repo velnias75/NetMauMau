@@ -21,7 +21,6 @@
 
 #include "skipplayercondition.h"
 #include "servesevenaction.h"
-#include "iaistate.h"
 
 namespace {
 const NetMauMau::AI::IActionPtr SERVESEVENACTION(new NetMauMau::AI::ServeSevenAction());

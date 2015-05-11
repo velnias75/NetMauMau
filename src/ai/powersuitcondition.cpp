@@ -21,7 +21,6 @@
 
 #include "aceroundcondition.h"
 #include "powerplayaction.h"
-#include "iaistate.h"
 
 namespace {
 const NetMauMau::AI::IConditionPtr ACEROUNDCOND(new NetMauMau::AI::AceRoundCondition());

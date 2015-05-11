@@ -23,7 +23,6 @@
 
 #include "stdcardfactory.h"
 #include "cardtools.h"
-#include "iaistate.h"
 
 #if defined(TRACE_AI) && !defined(NDEBUG)
 #include "logger.h"

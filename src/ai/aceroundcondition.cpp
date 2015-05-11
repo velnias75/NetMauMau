@@ -21,7 +21,6 @@
 
 #include "randomjackcondition.h"
 #include "aceroundaction.h"
-#include "iaistate.h"
 #include "iruleset.h"
 
 namespace {

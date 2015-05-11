@@ -70,6 +70,7 @@ private:
 	mutable CARDS m_playedOutCards;
 	CARDSTACK m_cardStack;
 	CARDSTACK m_uncovered;
+	mutable bool m_uncoveredDirty;
 };
 
 }

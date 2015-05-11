@@ -21,7 +21,6 @@
 
 #include "bestsuitcondition.h"
 #include "skipplayeraction.h"
-#include "iaistate.h"
 
 namespace {
 const NetMauMau::AI::IConditionPtr BESTSUITCOND(new NetMauMau::AI::BestSuitCondition());

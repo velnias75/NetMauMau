@@ -24,8 +24,6 @@
 
 #include "binarycondition.h"
 
-#include "iaistate.h"
-
 namespace NetMauMau {
 
 namespace AI {

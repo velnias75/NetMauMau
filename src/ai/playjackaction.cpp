@@ -20,7 +20,6 @@
 #include "playjackaction.h"
 
 #include "iruleset.h"
-#include "iaistate.h"
 
 using namespace NetMauMau::AI;
 

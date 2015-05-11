@@ -19,7 +19,6 @@
 
 #include "servesevenaction.h"
 
-#include "iaistate.h"
 #include "cardtools.h"
 #include "skipplayercondition.h"
 

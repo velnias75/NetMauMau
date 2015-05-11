@@ -20,7 +20,6 @@
 #include "bestsuitcondition.h"
 
 #include "powersuitaction.h"
-#include "iaistate.h"
 
 using namespace NetMauMau::AI;
 

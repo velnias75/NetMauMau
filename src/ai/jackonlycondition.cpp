@@ -24,7 +24,6 @@
 #include "aceroundaction.h"
 #include "suspendaction.h"
 #include "iruleset.h"
-#include "iaistate.h"
 
 namespace {
 const NetMauMau::AI::IActionPtr ACEROUNDACTION(new NetMauMau::AI::AceRoundAction());

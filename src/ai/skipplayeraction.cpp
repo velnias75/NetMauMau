@@ -22,7 +22,6 @@
 #include "powersuitcondition.h"
 #include "bestsuitcondition.h"
 #include "cardtools.h"
-#include "iaistate.h"
 
 namespace {
 const NetMauMau::AI::IConditionPtr POWERSUITCOND(new NetMauMau::AI::PowerSuitCondition());

@@ -19,7 +19,6 @@
 
 #include "abstractcondition.h"
 
-#include "iaistate.h"
 #include "nextaction.h"
 
 #if defined(TRACE_AI) && !defined(NDEBUG)

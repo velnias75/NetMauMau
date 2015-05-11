@@ -137,7 +137,8 @@ const NetMauMau::Common::ICardPtr NULLCARD;
 using namespace NetMauMau;
 
 Talon::Talon(const ITalonChange *tchg, std::size_t factor) throw() : m_talonChangeListener(tchg),
-	m_playedOutCards(), m_cardStack(Talon::createCards(factor)), m_uncovered(m_playedOutCards) {
+	m_playedOutCards(), m_cardStack(Talon::createCards(factor)), m_uncovered(m_playedOutCards),
+	m_uncoveredDirty(false) {
 	m_talonChangeListener->talonEmpty(false);
 }
 
@@ -159,17 +160,21 @@ Talon::~Talon() {}
 
 const IPlayedOutCards::CARDS &Talon::getCards() const {
 
-	CARDS aux;
-	CARDSTACK tmp(m_uncovered);
+	if(m_uncoveredDirty) {
+		
+		CARDS aux;
+		CARDSTACK tmp(m_uncovered);
 
-	aux.reserve(tmp.size());
+		aux.reserve(tmp.size());
 
-	while(!tmp.empty()) {
-		aux.push_back(tmp.top());
-		tmp.pop();
+		while(!tmp.empty()) {
+			aux.push_back(tmp.top());
+			tmp.pop();
+		}
+
+		m_playedOutCards.swap(aux);
+		m_uncoveredDirty = false;
 	}
-
-	m_playedOutCards.swap(aux);
 
 	return m_playedOutCards;
 }
@@ -177,6 +182,7 @@ const IPlayedOutCards::CARDS &Talon::getCards() const {
 Common::ICardPtr Talon::uncoverCard() {
 	m_uncovered.push(top());
 	pop();
+	m_uncoveredDirty = true;
 	m_talonChangeListener->uncoveredCard(m_uncovered.top());
 	return m_uncovered.top();
 }
@@ -187,6 +193,7 @@ void Talon::playCard(const Common::ICardPtr &card) {
 			 card->getSuit() == Common::ICard::SUIT_ILLEGAL));
 
 	m_uncovered.push(card);
+	m_uncoveredDirty = true;
 	m_talonChangeListener->talonEmpty(false);
 }
 
@@ -206,6 +213,8 @@ Common::ICardPtr Talon::takeCard() {
 			cards.push_back(m_uncovered.top());
 			m_uncovered.pop();
 		}
+
+		m_uncoveredDirty = true;
 
 		std::random_shuffle(cards.begin(), cards.end(), Common::genRandom<CARDS::difference_type>);
 

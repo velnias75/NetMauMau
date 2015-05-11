@@ -27,7 +27,6 @@
 #include "stdcardfactory.h"
 #include "maxsuitaction.h"
 #include "cardtools.h"
-#include "iaistate.h"
 
 namespace {
 const NetMauMau::AI::IConditionPtr

@@ -23,7 +23,6 @@
 
 #include "aceroundcondition.h"
 #include "cardtools.h"
-#include "iaistate.h"
 #include "iruleset.h"
 
 namespace {

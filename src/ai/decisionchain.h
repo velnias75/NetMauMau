@@ -28,7 +28,6 @@
 
 #include "iaction.h"
 #include "iaistate.h"
-#include "smartptr.h"
 #include "icondition.h"
 
 #if defined(TRACE_AI) && !defined(NDEBUG)

@@ -114,7 +114,7 @@ private:
 	std::size_t m_playerCount;
 	const EngineConfig *m_engineCfg;
 	const ICardCountObserver *m_cardCountObserver;
-	const IPlayedOutCards *m_poc;
+	const IPlayedOutCards *const m_poc;
 };
 
 }

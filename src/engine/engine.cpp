@@ -738,9 +738,7 @@ const IPlayedOutCards *Engine::getPlayedOutCards() const {
 void Engine::reset() throw() {
 
 	m_state = ACCEPT_PLAYERS;
-
-	delete m_talon;
-	m_talon = new Talon(this, m_cfg.getTalonFactor());
+	m_talon->reset();
 
 	m_cfg.getEventHandler().reset();
 

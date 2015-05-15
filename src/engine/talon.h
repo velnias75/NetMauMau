@@ -60,6 +60,8 @@ public:
 
 	Common::ICardPtr takeCard();
 
+	void reset() throw();
+
 private:
 	typedef std::stack<CARDS::value_type, CARDS> CARDSTACK;
 
@@ -71,6 +73,7 @@ private:
 	CARDSTACK m_cardStack;
 	CARDSTACK m_uncovered;
 	mutable bool m_uncoveredDirty;
+	std::size_t m_factor;
 };
 
 }

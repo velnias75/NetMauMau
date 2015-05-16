@@ -237,8 +237,13 @@ Common::ICardPtr Talon::takeCard() {
 	}
 
 	m_talonChangeListener->talonEmpty(true);
+	emitUnderFlow();
 
 	return NULLCARD;
+}
+
+void Talon::emitUnderFlow() const {
+	if(m_talonChangeListener && allEmpty()) m_talonChangeListener->underflow();
 }
 
 void Talon::reset() throw() {
@@ -247,10 +252,8 @@ void Talon::reset() throw() {
 	m_playedOutCards.clear();
 	m_uncoveredDirty = false;
 
-	CARDSTACK aux(Talon::createCards(m_factor));
-
 	m_uncovered = CARDSTACK();
-	m_cardStack = aux;
+	m_cardStack = CARDSTACK(Talon::createCards(m_factor));
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

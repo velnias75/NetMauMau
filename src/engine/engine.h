@@ -101,6 +101,7 @@ protected:
 	throw(Common::Exception::SocketException);
 	virtual void talonEmpty(bool empty) const throw();
 	virtual void shuffled() const;
+	virtual void underflow() const;
 
 	virtual Common::ICard::RANK getAceRoundRank() const _PURE;
 	virtual void aceRoundStarted(const Player::IPlayer *player) const

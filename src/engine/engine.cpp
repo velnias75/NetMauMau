@@ -315,19 +315,11 @@ sevenRule:
 				if(!noCardOk && (pc = m_talon->takeCard())) {
 					player->receiveCard(pc);
 					getEventHandler().playerPicksCard(player);
-#ifndef NDEBUG
-				} else if(!pc && !noCardOk) {
-					logDebug(TALONUNDERFLOW);
-#ifdef HAVE_GSL
-					logDebug("GSL: name=" << gsl_rng_default->name << "; seed="
-							 << gsl_rng_default_seed);
-#endif
-#endif
 				}
 
 				const Player::IPlayer::REASON reason = noCardOk ? Player::IPlayer::SUSPEND :
-													   player->getNoCardReason(uc, m_jackMode ?
-															   &js : 0L);
+													   player->getNoCardReason(uc, m_jackMode
+															   ? &js : 0L);
 
 				if(reason == Player::IPlayer::SUSPEND) {
 					suspends(player);
@@ -625,6 +617,16 @@ void Engine::shuffled() const {
 	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
 		(*i)->talonShuffled();
 	}
+}
+
+void Engine::underflow() const {
+// #ifndef NDEBUG
+// 	logDebug(TALONUNDERFLOW);
+// #ifdef HAVE_GSL
+// 	logDebug("GSL: name=" << gsl_rng_default->name << "; seed="
+// 			 << gsl_rng_default_seed);
+// #endif
+// #endif
 }
 
 Common::ICard::RANK Engine::getAceRoundRank() const {

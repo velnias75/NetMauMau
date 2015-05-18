@@ -53,7 +53,7 @@
 
 namespace {
 
-const std::string TALONUNDERFLOW("TALON-UNDERFLOW: More cards taken from the talon, "\
+const std::string TALONUNDERFLOW("TALON-UNDERFLOW: attempt to take more cards from the talon " \
 								 "than available!");
 
 #pragma GCC diagnostic ignored "-Weffc++"
@@ -85,7 +85,8 @@ Engine::Engine(EngineConfig &cfg) throw(Common::Exception::SocketException) : IT
 	m_talon(new Talon(this, cfg.getTalonFactor())), m_players(), m_nxtPlayer(0), m_turn(1),
 	m_curTurn(0), m_jackMode(false), m_initialChecked(false), m_ultimate(false),
 	m_initialJack(false), m_alwaysWait(false), m_alreadyWaited(false),
-	m_initialNextMessage(cfg.getNextMessage()), m_gameIndex(0LL), m_dirChangeEnabled(false) {
+	m_initialNextMessage(cfg.getNextMessage()), m_gameIndex(0LL), m_dirChangeEnabled(false),
+	m_talonUnderflow(false) {
 	m_players.reserve(5);
 	cfg.getEventHandler().acceptingPlayers();
 }
@@ -296,7 +297,8 @@ bool Engine::nextTurn() {
 				((m_jackMode || m_initialJack) && js != Common::ICard::SUIT_ILLEGAL)));
 
 		Common::ICardPtr pc(!csuspend ? player->requestCard(uc, (m_jackMode || m_initialJack)
-							? &js : 0L, getRuleSet()->takeCardCount()) : Common::ICardPtr());
+							? &js : 0L, getRuleSet()->takeCardCount(), m_talonUnderflow) :
+								Common::ICardPtr());
 
 		if(m_initialJack && !pc) m_jackMode = true;
 
@@ -306,7 +308,7 @@ bool Engine::nextTurn() {
 
 			bool suspend = false;
 
-			const bool noCardOk = takeCards(player, pc) || getRuleSet()->isAceRound();
+			const bool noCardOk = takeCards(player, pc);
 
 sevenRule:
 
@@ -324,7 +326,7 @@ sevenRule:
 				if(reason == Player::IPlayer::SUSPEND) {
 					suspends(player);
 					pc = Common::ICardPtr();
-				} else if(!player->isAIPlayer() && reason == Player::IPlayer::NOMATCH) {
+				} else if(reason == Player::IPlayer::NOMATCH) {
 					pc = player->requestCard(uc, m_jackMode ? &js : 0L,
 											 getRuleSet()->takeCardCount());
 				}
@@ -386,6 +388,7 @@ sevenRule:
 
 				won = player->cardAccepted(pc);
 				m_talon->playCard(pc);
+				m_talonUnderflow = m_talon->thresholdReached(1 + (8 * m_cfg.getTalonFactor()));
 
 				getEventHandler().playerPlaysCard(player, pc, uc);
 
@@ -581,17 +584,33 @@ throw(Common::Exception::SocketException) {
 
 	if(cardCount) {
 
+		Player::IPlayer::CARDS tmp;
+		tmp.reserve(cardCount);
+
+		std::size_t j = 0;
+
 		for(std::size_t i = 0; i < cardCount; ++i) {
 
-			Common::ICardPtr c(m_talon->takeCard());
+			const Common::ICardPtr &c(m_talon->takeCard());
 
-// 			if(!c) throw Common::Exception::SocketException(TALONUNDERFLOW);
-			if(!c) break; // TODO better handling of Talon underflow
-
-			player->receiveCard(c);
+			if(c) {
+				tmp.push_back(c);
+				++j;
+			}
 		}
 
-		getEventHandler().playerPicksCards(player, cardCount);
+		if(j == cardCount) {
+
+			for(Player::IPlayer::CARDS::const_iterator ri(tmp.begin()); ri != tmp.end(); ++ri)
+				player->receiveCard(*ri);
+
+			getEventHandler().playerPicksCards(player, j);
+
+		} else if(j) {
+			for(Player::IPlayer::CARDS::const_reverse_iterator ri(tmp.rbegin());
+					ri != tmp.rend(); ++ri) m_talon->pushBackCard(*ri);
+		}
+
 		getRuleSet()->hasTakenCards();
 
 		return true;
@@ -619,7 +638,8 @@ void Engine::shuffled() const {
 	}
 }
 
-void Engine::underflow() const {
+void Engine::underflow() {
+	m_talonUnderflow = true;
 #ifndef NDEBUG
 	logDebug(TALONUNDERFLOW);
 #ifdef HAVE_GSL
@@ -751,16 +771,13 @@ void Engine::reset() throw() {
 
 	removePlayers();
 
-	m_nxtPlayer = 0,
+	m_nxtPlayer = m_curTurn = 0;
 	m_turn = 1;
-	m_curTurn = 0;
 
-	m_jackMode = false;
+	m_jackMode = m_initialChecked = m_initialJack = m_alwaysWait = m_alreadyWaited
+									= m_talonUnderflow = false;
+
 	m_cfg.setNextMessage(m_initialNextMessage);
-	m_initialChecked = false;
-	m_initialJack = false;
-	m_alwaysWait = false;
-	m_alreadyWaited = false;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

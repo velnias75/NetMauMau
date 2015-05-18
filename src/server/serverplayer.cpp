@@ -100,7 +100,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 void Player::shuffleCards() {}
 
 NetMauMau::Common::ICardPtr Player::requestCard(const NetMauMau::Common::ICardPtr &uncoveredCard,
-		const NetMauMau::Common::ICard::SUIT *s, std::size_t takeCount) const {
+		const NetMauMau::Common::ICard::SUIT *s, std::size_t takeCount, bool) const {
 
 	try {
 

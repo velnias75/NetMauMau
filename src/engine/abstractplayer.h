@@ -47,7 +47,7 @@ public:
 
 	virtual Common::ICardPtr requestCard(const Common::ICardPtr &uncoveredCard,
 										 const Common::ICard::SUIT *jackSuit,
-										 std::size_t takeCount) const = 0;
+										 std::size_t takeCount, bool noSuspend) const = 0;
 	virtual Common::ICard::SUIT getJackChoice(const Common::ICardPtr &uncoveredCard,
 			const Common::ICardPtr &playedCard) const = 0;
 

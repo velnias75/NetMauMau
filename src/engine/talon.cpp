@@ -136,7 +136,7 @@ const NetMauMau::Common::ICardPtr NULLCARD;
 
 using namespace NetMauMau;
 
-Talon::Talon(const ITalonChange *tchg, std::size_t factor) throw() : m_talonChangeListener(tchg),
+Talon::Talon(ITalonChange *tchg, std::size_t factor) throw() : m_talonChangeListener(tchg),
 	m_playedOutCards(), m_cardStack(Talon::createCards(factor)), m_uncovered(m_playedOutCards),
 	m_uncoveredDirty(false), m_factor(factor) {
 	m_talonChangeListener->talonEmpty(false);
@@ -243,7 +243,7 @@ Common::ICardPtr Talon::takeCard() {
 }
 
 void Talon::emitUnderFlow() const {
-	if(m_talonChangeListener && allEmpty()) m_talonChangeListener->underflow();
+	if(m_talonChangeListener && thresholdReached()) m_talonChangeListener->underflow();
 }
 
 void Talon::reset() throw() {

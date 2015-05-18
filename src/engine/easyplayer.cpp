@@ -38,7 +38,7 @@ EasyPlayer::~EasyPlayer() {}
 NetMauMau::Common::ICardPtr
 EasyPlayer::requestCard(const NetMauMau::Common::ICardPtr &uncoveredCard,
 						const NetMauMau::Common::ICard::SUIT *jackSuit,
-						std::size_t takeCount) const {
+						std::size_t takeCount, bool noSuspend) const {
 
 	NetMauMau::Common::ICardPtr rrc;
 
@@ -59,6 +59,8 @@ EasyPlayer::requestCard(const NetMauMau::Common::ICardPtr &uncoveredCard,
 		rrc = NetMauMau::Common::ICardPtr
 			  (const_cast<const NetMauMau::Common::ICard *>(NetMauMau::Common::getIllegalCard()));
 	}
+
+	rrc = noSuspend ? noSuspendCard(rrc, uncoveredCard, jackSuit) : rrc;
 
 #if defined(TRACE_AI) && !defined(NDEBUG)
 

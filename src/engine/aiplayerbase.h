@@ -53,7 +53,7 @@ public:
 
 	virtual Common::ICardPtr requestCard(const Common::ICardPtr &uncoveredCard,
 										 const Common::ICard::SUIT *jackSuit,
-										 std::size_t takeCount) const;
+										 std::size_t takeCount, bool noSuspend) const;
 	virtual Common::ICard::SUIT getJackChoice(const Common::ICardPtr &uncoveredCard,
 			const Common::ICardPtr &playedCard) const;
 
@@ -108,6 +108,9 @@ protected:
 	virtual bool isDirChgEnabled() const;
 	virtual bool tryAceRound() const;
 	virtual void setTryAceRound(bool b);
+
+	Common::ICardPtr noSuspendCard(const Common::ICardPtr &c, const Common::ICardPtr &uc,
+								   const Common::ICard::SUIT *js) const;
 
 private:
 	mutable Common::ICard::SUIT m_powerSuit;
@@ -184,7 +187,7 @@ inline void AIPlayerBase<RootCond, RootCondJack>::shuffleCards() {
 template<class RootCond, class RootCondJack>
 inline Common::ICardPtr AIPlayerBase < RootCond,
 	   RootCondJack >::requestCard(const Common::ICardPtr &uc, const Common::ICard::SUIT *js,
-std::size_t) const {
+std::size_t, bool noSuspend) const {
 
 	AI::BaseAIPlayer<RootCond, RootCondJack>::m_card = Common::ICardPtr();
 	AI::BaseAIPlayer<RootCond, RootCondJack>::m_uncoveredCard = uc;
@@ -202,9 +205,42 @@ std::size_t) const {
 		bestCard = AI::BaseAIPlayer<RootCond, RootCondJack>::getDecisionChain()->getCard(true);
 	}
 
-	return getRuleSet() ? (getRuleSet()->checkCard(uc, Common::ICardPtr(bestCard)) ?
-						   Common::ICardPtr(bestCard) : Common::ICardPtr()) :
-			   Common::ICardPtr(bestCard);
+	const Common::ICardPtr &rc(getRuleSet() ? (getRuleSet()->checkCard(uc,
+							   Common::ICardPtr(bestCard)) ? Common::ICardPtr(bestCard) :
+							   Common::ICardPtr()) : Common::ICardPtr(bestCard));
+
+	return noSuspend ? noSuspendCard(rc, uc, js) : rc;
+}
+
+template<class RootCond, class RootCondJack>
+Common::ICardPtr AIPlayerBase<RootCond, RootCondJack>::noSuspendCard(const Common::ICardPtr &c,
+		const Common::ICardPtr &uc, const Common::ICard::SUIT *js) const {
+
+	if(!(c && c->getRank() != Common::ICard::SEVEN)) {
+
+		const CARDS &pc(getPossibleCards(uc, js));
+		CARDS::const_iterator i(pc.begin());
+
+		while(i != pc.end() && ((*i)->getRank() == Common::ICard::SEVEN)) ++i;
+
+		if(i != pc.end()) {
+#if defined(TRACE_AI) && !defined(NDEBUG)
+
+			const bool ansi = isatty(fileno(stderr));
+
+			if(!getenv("NMM_NO_TRACE")) logDebug("-> trace of AI \"" << getName()
+													 << "\" -> TALON-UNDERFLOW-CHOICE: "
+													 << (*i)->description(ansi) << " <-");
+
+#endif
+			return *i;
+
+		} else if(!pc.empty()) {
+			return pc.back();
+		}
+	}
+
+	return c;
 }
 
 template<class RootCond, class RootCondJack>

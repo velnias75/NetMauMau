@@ -49,7 +49,7 @@ public:
 
 	virtual Common::ICardPtr requestCard(const Common::ICardPtr &uncoveredCard,
 										 const Common::ICard::SUIT *jackSuit,
-										 std::size_t takeCount) const;
+										 std::size_t takeCount, bool noSuspend) const;
 	virtual REASON getNoCardReason(const NetMauMau::Common::ICardPtr &uncoveredCard,
 								   const NetMauMau::Common::ICard::SUIT *suit) const;
 	virtual bool cardAccepted(const Common::ICard *playedCard)

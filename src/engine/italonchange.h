@@ -36,7 +36,7 @@ public:
 	virtual void uncoveredCard(const NetMauMau::Common::ICard *top) const = 0;
 	virtual void talonEmpty(bool empty) const throw() = 0;
 	virtual void shuffled() const = 0;
-	virtual void underflow() const = 0;
+	virtual void underflow() = 0;
 
 protected:
 	explicit ITalonChange() {}

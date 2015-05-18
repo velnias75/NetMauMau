@@ -101,7 +101,7 @@ protected:
 	throw(Common::Exception::SocketException);
 	virtual void talonEmpty(bool empty) const throw();
 	virtual void shuffled() const;
-	virtual void underflow() const;
+	virtual void underflow();
 
 	virtual Common::ICard::RANK getAceRoundRank() const _PURE;
 	virtual void aceRoundStarted(const Player::IPlayer *player) const
@@ -165,6 +165,7 @@ private:
 	const bool m_initialNextMessage;
 	long long int m_gameIndex;
 	bool m_dirChangeEnabled;
+	bool m_talonUnderflow;
 };
 
 }

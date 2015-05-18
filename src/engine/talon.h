@@ -33,11 +33,11 @@ class ITalonChange;
 class Talon : public virtual IPlayedOutCards {
 	DISALLOW_COPY_AND_ASSIGN(Talon)
 public:
-	explicit Talon(const ITalonChange *tchg, std::size_t factor) throw();
+	explicit Talon(ITalonChange *tchg, std::size_t factor) throw();
 	virtual ~Talon();
 
-	inline bool allEmpty() const {
-		return empty() && m_uncovered.size() <= 1;
+	inline bool thresholdReached(std::size_t t = 1) const {
+		return empty() && m_uncovered.size() <= t;
 	}
 
 	inline bool empty() const {
@@ -50,7 +50,6 @@ public:
 
 	inline void pop() {
 		m_cardStack.pop();
-		emitUnderFlow();
 	}
 
 	virtual const CARDS &getCards() const;
@@ -65,6 +64,10 @@ public:
 
 	Common::ICardPtr takeCard();
 
+	inline void pushBackCard(const Common::ICardPtr &c) {
+		m_cardStack.push(c);
+	}
+
 	void reset() throw();
 
 private:
@@ -75,7 +78,7 @@ private:
 	void emitUnderFlow() const;
 
 private:
-	const ITalonChange *m_talonChangeListener;
+	ITalonChange *m_talonChangeListener;
 	mutable CARDS m_playedOutCards;
 	CARDSTACK m_cardStack;
 	CARDSTACK m_uncovered;

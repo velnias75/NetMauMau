@@ -620,13 +620,12 @@ void Engine::shuffled() const {
 }
 
 void Engine::underflow() const {
-// #ifndef NDEBUG
-// 	logDebug(TALONUNDERFLOW);
-// #ifdef HAVE_GSL
-// 	logDebug("GSL: name=" << gsl_rng_default->name << "; seed="
-// 			 << gsl_rng_default_seed);
-// #endif
-// #endif
+#ifndef NDEBUG
+	logDebug(TALONUNDERFLOW);
+#ifdef HAVE_GSL
+	logDebug("GSL: name=" << gsl_rng_default->name << "; seed=" << gsl_rng_default_seed);
+#endif
+#endif
 }
 
 Common::ICard::RANK Engine::getAceRoundRank() const {

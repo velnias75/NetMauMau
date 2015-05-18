@@ -24,8 +24,7 @@ Homepage: http://sourceforge.net/projects/netmaumau/
 Package: netmaumau-client
 Architecture: any
 Pre-Depends: dpkg (>= 1.15.6~)
-Depends: libnetmaumauclient4 (>= ${binary:Version}),
-         libnetmaumaucommon5 (>= ${binary:Version}),
+Depends: netmaumau-client-api-15,
          ${misc:Depends},
          ${shlibs:Depends}
 Suggests: nmm-qt-client
@@ -66,7 +65,7 @@ Replaces: libnetmaumaucommon0,
           libnetmaumaucommon1,
           libnetmaumaucommon2,
           libnetmaumaucommon3,
-		  libnetmaumaucommon4
+          libnetmaumaucommon4
 Section: libs
 
 Package: libnetmaumauclient4
@@ -78,8 +77,9 @@ Depends: libnetmaumaucommon5 (>= ${binary:Version}),
          ${shlibs:Depends}
 Replaces: libnetmaumauclient0, 
           libnetmaumauclient1, 
-		  libnetmaumauclient2,
-		  libnetmaumauclient3
+          libnetmaumauclient2,
+          libnetmaumauclient3
+Provides: netmaumau-client-api-15
 Description: Server for the popular card game Mau Mau - client library
  Functions for connecting to a NetMauMau server.
 

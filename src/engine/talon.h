@@ -39,7 +39,7 @@ public:
 	inline bool allEmpty() const {
 		return empty() && m_uncovered.size() <= 1;
 	}
-	
+
 	inline bool empty() const {
 		return m_cardStack.empty();
 	}
@@ -71,7 +71,7 @@ private:
 	typedef std::stack<CARDS::value_type, CARDS> CARDSTACK;
 
 	static CARDSTACK::container_type createCards(std::size_t factor) throw();
-	
+
 	void emitUnderFlow() const;
 
 private:

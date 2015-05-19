@@ -327,8 +327,8 @@ sevenRule:
 					suspends(player);
 					pc = Common::ICardPtr();
 				} else if(reason == Player::IPlayer::NOMATCH) {
-					pc = player->requestCard(uc, m_jackMode ? &js : 0L,
-											 getRuleSet()->takeCardCount());
+					if(!(pc = player->requestCard(uc, m_jackMode ? &js : 0L,
+												  getRuleSet()->takeCardCount()))) suspends(player);
 				}
 
 			} else if(pc->getSuit() == Common::ICard::SUIT_ILLEGAL) {
@@ -633,9 +633,8 @@ void Engine::talonEmpty(bool empty) const throw() {
 }
 
 void Engine::shuffled() const {
-	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
-		(*i)->talonShuffled();
-	}
+	std::for_each(m_players.begin(), m_players.end(),
+				  std::mem_fun(&Player::IPlayer::talonShuffled));
 }
 
 void Engine::underflow() {
@@ -676,9 +675,8 @@ void Engine::setDirChangeIsSuspend(bool b) throw(Common::Exception::SocketExcept
 
 	getRuleSet()->setDirChangeIsSuspend(b);
 
-	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
-		(*i)->setNineIsEight(b);
-	}
+	std::for_each(m_players.begin(), m_players.end(),
+				  std::bind2nd(std::mem_fun(&Player::IPlayer::setNineIsEight), b));
 }
 
 std::size_t Engine::getAICount() const {

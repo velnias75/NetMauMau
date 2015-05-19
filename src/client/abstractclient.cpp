@@ -39,6 +39,17 @@
 
 #include "protocol.h"
 
+namespace {
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+struct nameExtractor : std::unary_function<NetMauMau::Client::Connection::PLAYERINFO, std::string> {
+	inline std::string operator()(const NetMauMau::Client::Connection::PLAYERINFO &pi) const {
+		return pi.name;
+	}
+};
+#pragma GCC diagnostic pop
+}
+
 using namespace NetMauMau::Client;
 
 AbstractClientV13::AbstractClientV13(const std::string &player, const unsigned char *pngData,
@@ -167,9 +178,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	const PLAYERINFOS &pi(playerList(false, timeout));
 	PLAYERLIST pl;
 
-	for(PLAYERINFOS::const_iterator i(pi.begin()); i != pi.end(); ++i) {
-		pl.push_back(i->name);
-	}
+	pl.reserve(pi.size());
+	std::transform(pi.begin(), pi.end(), std::back_inserter(pl), nameExtractor());
 
 	return pl;
 }

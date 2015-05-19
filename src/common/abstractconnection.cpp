@@ -58,6 +58,15 @@ struct _isInfo : public std::binary_function < NetMauMau::Common::AbstractConnec
 	}
 };
 
+struct socketCloser : public std::unary_function<NetMauMau::Common::IConnection::NAMESOCKFD, void> {
+	inline void operator()(const NetMauMau::Common::IConnection::NAMESOCKFD &nsf) const {
+#ifndef _WIN32
+		close(nsf.sockfd);
+#else
+		closesocket(nsf.sockfd);
+#endif
+	}
+};
 #pragma GCC diagnostic pop
 
 }
@@ -169,10 +178,8 @@ const std::vector<std::string> &AbstractConnection::getAIPlayers() const {
 
 void AbstractConnection::reset() throw() {
 
-	for(PLAYERINFOS::const_iterator i(_pimpl->m_registeredPlayers.begin());
-			i != _pimpl-> m_registeredPlayers.end(); ++i) {
-		close(i->sockfd);
-	}
+	std::for_each(_pimpl->m_registeredPlayers.begin(), _pimpl->m_registeredPlayers.end(),
+				  socketCloser());
 
 	_pimpl->m_registeredPlayers.clear();
 	_pimpl->m_aiPlayers.clear();

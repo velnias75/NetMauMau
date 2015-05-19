@@ -28,6 +28,19 @@
 
 namespace {
 
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+struct cardPusher : std::unary_function<NetMauMau::Talon::CARDSTACK, void> {
+	inline explicit cardPusher(NetMauMau::Talon::CARDSTACK &cs) : m_cardStack(cs) {}
+	inline void operator()(const NetMauMau::Common::ICardPtr &c) const {
+		m_cardStack.push(c);
+	}
+
+private:
+	NetMauMau::Talon::CARDSTACK &m_cardStack;
+};
+#pragma GCC diagnostic pop
+
 const NetMauMau::Common::ICardPtr _DECK[32] _INIT_PRIO(501) = {
 	NetMauMau::Common::ICardPtr
 	(NetMauMau::StdCardFactory().create(NetMauMau::Common::ICard::DIAMONDS,
@@ -147,9 +160,7 @@ Talon::CARDSTACK::container_type Talon::createCards(std::size_t factor) throw() 
 	Talon::CARDSTACK::container_type cards;
 	cards.reserve(32 * factor);
 
-	for(std::size_t i = 0; i < factor; ++i) {
-		cards.insert(cards.end(), _DECK, _DECK + 32);
-	}
+	for(std::size_t i = 0; i < factor; ++i) cards.insert(cards.end(), _DECK, _DECK + 32);
 
 	std::random_shuffle(cards.begin(), cards.end(), Common::genRandom<CARDS::difference_type>);
 
@@ -217,10 +228,7 @@ Common::ICardPtr Talon::takeCard() {
 		m_uncoveredDirty = true;
 
 		std::random_shuffle(cards.begin(), cards.end(), Common::genRandom<CARDS::difference_type>);
-
-		for(CARDS::const_iterator i(cards.begin()); i != cards.end(); ++i) {
-			m_cardStack.push(*i);
-		}
+		std::for_each(cards.begin(), cards.end(), cardPusher(m_cardStack));
 
 		m_talonChangeListener->talonEmpty(cards.empty());
 

@@ -33,6 +33,8 @@ class ITalonChange;
 class Talon : public virtual IPlayedOutCards {
 	DISALLOW_COPY_AND_ASSIGN(Talon)
 public:
+	typedef std::stack<CARDS::value_type, CARDS> CARDSTACK;
+
 	explicit Talon(ITalonChange *tchg, std::size_t factor) throw();
 	virtual ~Talon();
 
@@ -71,8 +73,6 @@ public:
 	void reset() throw();
 
 private:
-	typedef std::stack<CARDS::value_type, CARDS> CARDSTACK;
-
 	static CARDSTACK::container_type createCards(std::size_t factor) throw();
 
 	void emitUnderFlow() const;

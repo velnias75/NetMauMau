@@ -48,7 +48,7 @@ private:
 		explicit _hasRankPath(const Player::IPlayer::CARDS &c, Common::ICard::RANK r, bool nie) :
 			mCards(c), rank(r), nineIsEight(nie) {}
 
-		bool operator()(const Common::ICardPtr &c) const;
+		result_type operator()(const argument_type &c) const;
 
 	private:
 		const Player::IPlayer::CARDS &mCards;

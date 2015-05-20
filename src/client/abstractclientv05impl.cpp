@@ -35,7 +35,8 @@ namespace {
 #pragma GCC diagnostic push
 struct cardEqualsDescription : public std::binary_function < NetMauMau::Common::ICard *,
 		std::string, bool > {
-	bool operator()(const NetMauMau::Common::ICard *c, const std::string &d) const {
+	inline result_type operator()(const first_argument_type c,
+								  const second_argument_type &d) const {
 		return c->description() == d;
 	}
 };

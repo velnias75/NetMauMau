@@ -33,7 +33,7 @@ const NetMauMau::IPlayedOutCards::CARDS PLAYEDOUTCARDS;
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
 struct pointSum : std::binary_function<std::size_t, NetMauMau::Common::ICardPtr, std::size_t> {
-	std::size_t operator()(std::size_t i, const NetMauMau::Common::ICardPtr &c) const {
+	inline result_type operator()(first_argument_type i, const second_argument_type &c) const {
 		return i + c->getPoints();
 	}
 };
@@ -47,7 +47,7 @@ struct _pushIfPossible : std::unary_function<NetMauMau::Common::ICardPtr, void> 
 		uncoveredCard(uc), ruleset(rs), suit(s), aceRoundRank(rs->getAceRoundRank()),
 		ucRank(uc->getRank()), isAceRound(rs->isAceRound()) {}
 
-	inline void operator()(const NetMauMau::Common::ICardPtr &card) const {
+	inline result_type operator()(const argument_type &card) const {
 
 		if(suit && card->getSuit() != *suit) return;
 

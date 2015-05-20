@@ -27,7 +27,9 @@
 
 using namespace NetMauMau::AI;
 
-bool CheckJackSuitAction::_hasRankPath::operator()(const NetMauMau::Common::ICardPtr &c) const {
+CheckJackSuitAction::_hasRankPath::result_type
+CheckJackSuitAction::_hasRankPath::operator()
+(const CheckJackSuitAction::_hasRankPath::argument_type &c) const {
 
 	bool hrp = false;
 

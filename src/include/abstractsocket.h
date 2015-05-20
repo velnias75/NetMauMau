@@ -75,6 +75,8 @@ public:
 	static unsigned long getSentBytes() _PURE;
 	static void resetSentBytes();
 
+	static void shutdown(SOCKET sfd);
+
 protected:
 	explicit AbstractSocket(const char *server, uint16_t port);
 
@@ -86,8 +88,6 @@ protected:
 	static void send(const void *buf, std::size_t len, SOCKET fd) throw(Exception::SocketException);
 
 	SOCKET getSocketFD() const _PURE;
-
-	static void shutdown(SOCKET cfd);
 
 private:
 	AbstractSocketImpl *const _pimpl;

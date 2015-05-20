@@ -96,7 +96,7 @@ struct _checkMissing : public std::unary_function<const char *, void> {
 		missing.reserve(sizeof(FUNCTIONS));
 	}
 
-	inline void operator()(const char *fn) {
+	inline result_type operator()(argument_type fn) {
 		if(fn && !exists(fn)) missing.push_back(fn);
 	}
 

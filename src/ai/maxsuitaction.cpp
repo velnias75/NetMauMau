@@ -33,8 +33,8 @@ const NetMauMau::AI::IConditionPtr ACEROUNDCOND(new NetMauMau::AI::AceRoundCondi
 #pragma GCC diagnostic push
 struct cardGreater : std::binary_function < NetMauMau::Common::ICardPtr,
 		NetMauMau::Common::ICardPtr, bool > {
-	bool operator()(const NetMauMau::Common::ICardPtr &x,
-					const NetMauMau::Common::ICardPtr &y) const {
+	inline result_type operator()(const first_argument_type &x,
+								  const second_argument_type &y) const {
 		return !(x->getPoints() < y->getPoints());
 	}
 };

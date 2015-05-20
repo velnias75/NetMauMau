@@ -28,8 +28,8 @@ namespace {
 struct playedOutRank : std::binary_function < NetMauMau::Common::ICardPtr,
 		NetMauMau::Common::ICard::RANK, bool > {
 
-	inline bool operator()(const NetMauMau::Common::ICardPtr &desc,
-						   NetMauMau::Common::ICard::RANK rank) const {
+	inline result_type operator()(const first_argument_type &desc,
+								  second_argument_type rank) const {
 		return desc->getRank() == rank;
 	}
 };

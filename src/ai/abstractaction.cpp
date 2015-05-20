@@ -45,7 +45,7 @@ struct _isSpecialRank : std::binary_function < NetMauMau::Common::ICardPtr,
 
 	explicit _isSpecialRank(bool nineIsEight) : m_nineIsEight(nineIsEight) {}
 
-	bool operator()(const NetMauMau::Common::ICardPtr &c, NetMauMau::Common::ICard::RANK r) const {
+	result_type operator()(const first_argument_type &c, second_argument_type r) const {
 		return m_nineIsEight && r == NetMauMau::Common::ICard::EIGHT ?
 			   (c->getRank() == NetMauMau::Common::ICard::EIGHT ||
 				c->getRank() == NetMauMau::Common::ICard::NINE) : c->getRank() == r;

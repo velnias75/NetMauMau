@@ -60,8 +60,8 @@ const std::string TALONUNDERFLOW("TALON-UNDERFLOW: attempt to take more cards fr
 #pragma GCC diagnostic push
 struct PlayerNameEqual : public std::binary_function < NetMauMau::Player::IPlayer *,
 		NetMauMau::Player::IPlayer *, bool > {
-	bool operator()(const NetMauMau::Player::IPlayer *x,
-					const NetMauMau::Player::IPlayer *y) const {
+	inline result_type operator()(const first_argument_type x,
+								  const second_argument_type y) const {
 		return x->getName() == y->getName();
 	}
 };

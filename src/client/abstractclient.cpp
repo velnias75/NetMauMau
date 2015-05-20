@@ -43,7 +43,7 @@ namespace {
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
 struct nameExtractor : std::unary_function<NetMauMau::Client::Connection::PLAYERINFO, std::string> {
-	inline std::string operator()(const NetMauMau::Client::Connection::PLAYERINFO &pi) const {
+	inline result_type operator()(const argument_type &pi) const {
 		return pi.name;
 	}
 };

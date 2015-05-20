@@ -72,9 +72,8 @@ const char *NOPNG = "";
 #pragma GCC diagnostic push
 struct _isPlayer : public std::binary_function < NetMauMau::Common::IConnection::NAMESOCKFD,
 		std::string, bool > {
-
-	bool operator()(const NetMauMau::Common::IConnection::NAMESOCKFD &nsd,
-					const std::string &player) const {
+	inline result_type operator()(const first_argument_type &nsd,
+								  const second_argument_type &player) const {
 		return nsd.name == player;
 	}
 };

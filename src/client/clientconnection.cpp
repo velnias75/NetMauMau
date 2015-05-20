@@ -361,9 +361,7 @@ bool Connection::wire(SOCKET sockfd, const struct sockaddr *addr, socklen_t addr
 
 	int ret = -1;
 
-	if((ret = ::connect(sockfd, addr, addrlen)) == -1) {
-		shutdown(sockfd);
-	}
+	if((ret = ::connect(sockfd, addr, addrlen)) == -1) shutdown(sockfd);
 
 	return ret != -1;
 }

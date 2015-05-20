@@ -66,9 +66,10 @@ volatile bool refuse = false;
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
 struct _AINameCmp : std::binary_function<std::string, std::string, bool> {
-	bool operator()(const std::string &x, const std::string &y) const {
-		return std::string(x).substr(0, std::string(x).rfind(':')) ==
-			   std::string(y).substr(0, std::string(y).rfind(':'));
+	inline result_type operator()(const first_argument_type &x,
+								  const second_argument_type &y) const {
+		return first_argument_type(x).substr(0, first_argument_type(x).rfind(':')) ==
+			   second_argument_type(y).substr(0, second_argument_type(y).rfind(':'));
 	}
 };
 #pragma GCC diagnostic pop
@@ -77,12 +78,6 @@ struct _AINameCmp : std::binary_function<std::string, std::string, bool> {
 #pragma GCC diagnostic push
 char *aiName = AI_NAME;
 std::string aiNames[4];
-// #ifndef _WIN32
-// char *user  = DP_USER;
-// char *grp = DP_GROUP;
-// char *dpErr = 0L;
-// const char *interface;
-// #endif
 #pragma GCC diagnostic pop
 
 poptOption poptOptions[] = {
@@ -558,12 +553,7 @@ int main(int argc, const char **argv) {
 								game.removePlayer(info.name);
 
 								if(info.sockfd != INVALID_SOCKET) {
-									shutdown(info.sockfd, SHUT_RDWR);
-#ifndef _WIN32
-									close(info.sockfd);
-#else
-									closesocket(info.sockfd);
-#endif
+									NetMauMau::Common::AbstractSocket::shutdown(info.sockfd);
 								}
 							}
 

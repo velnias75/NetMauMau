@@ -19,8 +19,8 @@
 
 #include "powersuitcondition.h"
 
-#include "aceroundcondition.h"
-#include "powerplayaction.h"
+#include "aceroundcondition.h"          // for AceRoundCondition
+#include "powerplayaction.h"            // for PowerPlayAction
 
 namespace {
 const NetMauMau::AI::IConditionPtr ACEROUNDCOND(new NetMauMau::AI::AceRoundCondition());

@@ -18,39 +18,27 @@
  */
 
 #if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
+#include "config.h"                     // for PACKAGE_NAME, etc
 #endif
 
-#include <sstream>
-#include <cstdlib>
-#include <cstring>
-#include <cerrno>
+#include <cstdlib>                      // for NULL, strtoll, strtoul
+#include <cstring>                      // for strncmp, memcpy
+#include <new>                          // for nothrow, operator new[]
+#include <sstream>                      // for operator<<, ostringstream, etc
+#include <utility>                      // for make_pair, pair
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#ifdef HAVE_NETDB_H
-#include <netdb.h>
-#endif
-
-#include "clientconnection.h"
-#include "clientconnectionimpl.h"
-
-#include "errorstring.h"
-#include "base64bridge.h"
-#include "abstractclient.h"
-#include "scoresexception.h"
-#include "timeoutexception.h"
-#include "shutdownexception.h"
-#include "playerlistexception.h"
-#include "gamerunningexception.h"
-#include "capabilitiesexception.h"
-#include "protocolerrorexception.h"
-#include "versionmismatchexception.h"
-#include "interceptederrorexception.h"
-#include "nonetmaumauserverexception.h"
+#include "abstractclient.h"             // for AbstractClient
+#include "base64bridge.h"               // for Base64Bridge
+#include "capabilitiesexception.h"      // for CapabilitiesException
+#include "clientconnectionimpl.h"       // for ConnectionImpl
 #include "connectionrejectedexception.h"
+#include "gamerunningexception.h"       // for GameRunningException
+#include "interceptederrorexception.h"  // for InterceptedErrorException
+#include "nonetmaumauserverexception.h"  // for NoNetMauMauServerException
+#include "playerlistexception.h"        // for PlayerlistException
+#include "protocolerrorexception.h"     // for ProtocolErrorException
+#include "scoresexception.h"            // for ScoresException
+#include "versionmismatchexception.h"   // for VersionMismatchException
 
 #if defined(_WIN32)
 #undef TRUE
@@ -58,7 +46,7 @@
 #undef ERROR
 #endif
 
-#include "protocol.h"
+#include "protocol.h"                   // for ERROR
 
 #define MAX_PNAME 1024
 

@@ -18,16 +18,23 @@
  */
 
 #if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
+#include "config.h"                     // for PACKAGE_NAME
 #endif
-
-#include <cerrno>
 
 #include "clientconnectionimpl.h"
 
-#include "shutdownexception.h"
-#include "timeoutexception.h"
-#include "errorstring.h"
+#include <cstddef>                      // for NULL
+
+#ifndef _WIN32
+#include <sys/select.h>                 // for select, FD_SET, FD_ZERO, etc
+#endif
+
+#include <sys/time.h>                   // for timeval
+#include <cerrno>                       // for errno, EINTR
+
+#include "errorstring.h"                // for errorString
+#include "shutdownexception.h"          // for ShutdownException
+#include "timeoutexception.h"           // for TimeoutException
 
 namespace {
 NetMauMau::Client::Connection::BASE64RAII DEFAULTBASE64;

@@ -21,11 +21,13 @@
 #define NETMAUMAU_LUA_LUASTATE
 
 extern "C" {
-#include <lua.h>
+#include <lua.h>                        // for lua_State
 }
 
-#include "icard.h"
-#include "luaexception.h"
+#include <cstddef>                      // for size_t
+
+#include "icard.h"                      // for ICard (ptr only), ICardPtr
+#include "luaexception.h"               // for LuaException
 
 namespace NetMauMau {
 

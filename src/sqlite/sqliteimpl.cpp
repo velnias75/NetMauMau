@@ -18,21 +18,19 @@
  */
 
 #if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
+#include "config.h"                     // for SERVER_VERSION_MAJOR, etc
 #endif
 
-#include <cstdio>
-#include <cstdlib>
-#include <sstream>
-
-#include <unistd.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 #include "sqliteimpl.h"
 
-#include "iplayer.h"
-#include "logger.h"
+#include "logger.h"                     // for logDebug, logWarning
+#include "iplayer.h"                    // for IPlayer
 
 namespace {
 

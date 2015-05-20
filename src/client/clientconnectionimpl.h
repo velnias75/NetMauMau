@@ -20,9 +20,7 @@
 #ifndef NETMAUMAU_CLIENTCONNECTIONIMPL_H
 #define NETMAUMAU_CLIENTCONNECTIONIMPL_H
 
-#include <sys/time.h>
-
-#include "clientconnection.h"
+#include "clientconnection.h"           // for Connection, etc
 
 namespace NetMauMau {
 

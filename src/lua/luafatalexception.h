@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_LUA_EXCEPTION_LUAFATALEXCEPTION_H
 #define NETMAUMAU_LUA_EXCEPTION_LUAFATALEXCEPTION_H
 
-#include "luaexception.h"
+#include "luaexception.h"               // for LuaException
 
 namespace NetMauMau {
 

@@ -18,20 +18,19 @@
  */
 
 #if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
+#include "config.h"                     // for PACKAGE_NAME
 #endif
 
 #ifdef _WIN32
 #include <windows.h>
 #endif
 
-#include <cstdlib>
-
-#include <sys/stat.h>
-
 #include "engineconfig.h"
 
-#include "luaruleset.h"
+#include <sys/stat.h>                   // for stat
+#include <cstdlib>                      // for getenv
+
+#include "luaruleset.h"                 // for LuaRuleSet
 
 namespace {
 #ifndef _WIN32

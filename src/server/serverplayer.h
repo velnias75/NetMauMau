@@ -20,14 +20,12 @@
 #ifndef NETMAUMAU_SERVERPLAYER_H
 #define NETMAUMAU_SERVERPLAYER_H
 
-#include <stdint.h>
+#include <stdint.h>                     // for uint32_t
 
-#include "abstractplayer.h"
-#include "socketexception.h"
+#include "abstractplayer.h"             // for AbstractPlayer
+#include "socketexception.h"            // for SocketException
 
 namespace NetMauMau {
-
-class Engine;
 
 namespace Server {
 

@@ -17,13 +17,13 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
-
 #include "checkjacksuitaction.h"
 
-#include "stdcardfactory.h"
-#include "random_gen.h"
-#include "cardtools.h"
+#include <algorithm>                    // for find_if
+#include <cassert>                      // for assert
+
+#include "random_gen.h"                 // for genRandom
+#include "stdcardfactory.h"             // for StdCardFactory
 
 using namespace NetMauMau::AI;
 

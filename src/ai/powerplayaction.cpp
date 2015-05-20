@@ -17,16 +17,17 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
-
 #include "powerplayaction.h"
 
-#include "havejackcondition.h"
-#include "aceroundcondition.h"
-#include "staticcondition.h"
-#include "stdcardfactory.h"
-#include "maxsuitaction.h"
-#include "cardtools.h"
+#include <cassert>                      // for assert
+#include <iterator>                     // for distance
+
+#include "aceroundcondition.h"          // for AceRoundCondition
+#include "cardtools.h"                  // for findSuit
+#include "havejackcondition.h"          // for HaveJackCondition
+#include "maxsuitaction.h"              // for MaxSuitAction
+#include "staticcondition.h"            // for StaticCondition
+#include "stdcardfactory.h"             // for StdCardFactory
 
 namespace {
 const NetMauMau::AI::IConditionPtr

@@ -19,9 +19,9 @@
 
 #include "aceroundaction.h"
 
-#include "randomjackcondition.h"
-#include "cardtools.h"
-#include "iruleset.h"
+#include "cardtools.h"                  // for findRank
+#include "iruleset.h"                   // for IRuleSet
+#include "randomjackcondition.h"        // for RandomJackCondition
 
 namespace {
 const NetMauMau::AI::IConditionPtr RANDOMJACKCOND(new NetMauMau::AI::RandomJackCondition());

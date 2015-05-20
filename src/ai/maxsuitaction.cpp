@@ -17,13 +17,13 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
-
 #include "maxsuitaction.h"
-
-#include "aceroundcondition.h"
-#include "cardtools.h"
-#include "iruleset.h"
+#include <cassert>                      // for assert
+#include <cstddef>                      // for size_t
+#include <functional>
+#include "aceroundcondition.h"          // for AceRoundCondition
+#include "cardtools.h"                  // for findRank, findSuit
+#include "iruleset.h"                   // for IRuleSet
 
 namespace {
 

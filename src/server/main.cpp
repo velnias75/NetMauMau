@@ -32,30 +32,27 @@
 #define AUML "\u00e4"
 #endif
 
-#include <cstdio>
-#include <climits>
-#include <cstring>
-#include <iostream>
-#include <algorithm>
+#include <ctype.h>                      // for toupper
+#include <popt.h>                       // for poptFreeContext, etc
+#include <signal.h>                     // for sigaction, sigevent, etc
+#include <sys/time.h>                   // for CLOCK_REALTIME, timeval
+#include <algorithm>                    // for max, min, count_if
+#include <climits>                      // IWYU pragma: keep
+#include <cstdio>                       // for NULL, snprintf
+#include <cstring>                      // for memset
+#include <fstream>                      // IWYU pragma: keep
+#include <iostream>                     // for operator<<, ostringstream, etc
+#include <utility>                      // for make_pair
 
-#if !defined(_WIN32) && defined(PIDFILE) && defined(HAVE_CHOWN)
-#include <fstream>
-#endif
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#include <popt.h>
-
-#include "game.h"
-#include "sqlite.h"
-#include "logger.h"
-#include "helpers.h"
-#include "gameconfig.h"
-#include "luaexception.h"
-#include "serverplayer.h"
-#include "servereventhandler.h"
+#include "logger.h"                     // for BasicLogger, logger, etc
+#include "game.h"                       // for Game, etc
+#include "gameconfig.h"                 // for GameConfig
+#include "helpers.h"                    // for arRank, minPlayers, decks, etc
+#include "luaexception.h"               // for LuaException
+#include "serverconnection.h"           // for Connection, etc
+#include "servereventhandler.h"         // for EventHandler
+#include "serverplayer.h"               // for Player
+#include "sqlite.h"                     // for SQLite
 
 namespace {
 

@@ -17,12 +17,14 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstring>
-
 #include "abstractaction.h"
 
-#include "stdcardfactory.h"
-#include "cardtools.h"
+#include <cstddef>                      // for size_t
+#include <cstring>                      // for memset
+#include <functional>                   // for binder2nd, etc
+#include <iterator>                     // for distance
+
+#include "cardtools.h"                  // for findSuit, isRank, isSuit
 
 #if defined(TRACE_AI) && !defined(NDEBUG)
 #include "logger.h"

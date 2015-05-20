@@ -20,7 +20,9 @@
 #ifndef NETMAUMAU_TESTCLIENT_H
 #define NETMAUMAU_TESTCLIENT_H
 
-#include "abstractclient.h"
+#include <cstddef>                      // for size_t
+
+#include "abstractclient.h"             // for AbstractClientV05::CARDS, etc
 
 class TestClient : public NetMauMau::Client::AbstractClient {
 	DISALLOW_COPY_AND_ASSIGN(TestClient)

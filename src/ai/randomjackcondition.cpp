@@ -19,7 +19,7 @@
 
 #include "randomjackcondition.h"
 
-#include "randomjackaction.h"
+#include "randomjackaction.h"           // for RandomJackAction
 
 using namespace NetMauMau::AI;
 

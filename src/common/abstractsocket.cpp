@@ -18,27 +18,33 @@
  */
 
 #if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
-#endif
-
-#include <vector>
-#include <cerrno>
-#include <cstdio>
-#include <cstring>
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
+#include "config.h"                     // for HAVE_NETDB_H, HAVE_UNISTD_H
 #endif
 
 #ifdef HAVE_NETDB_H
-#include <netdb.h>
+#include <netdb.h>                      // for addrinfo, freeaddrinfo, etc
 #endif
 
-#include "abstractsocket.h"
-#include "abstractsocketimpl.h"
+#ifndef _WIN32
+#include <sys/select.h>                 // for FD_ISSET, FD_SET, select, etc
+#endif
 
-#include "errorstring.h"
-#include "logger.h"
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>                     // for close, socklen_t, ssize_t
+#endif
+
+#include <algorithm>                    // for max
+#include <cerrno>                       // for errno, ENOMEM
+#include <cstddef>                      // for size_t
+#include <cstdio>                       // for NULL, fileno, snprintf, etc
+#include <cstring>                      // for memset
+#include <new>                          // for bad_alloc
+#include <vector>                       // for vector
+
+#include "abstractsocket.h"             // for AbstractSocket
+#include "abstractsocketimpl.h"         // for AbstractSocketImpl
+#include "errorstring.h"                // for errorString
+#include "logger.h"                     // for logWarning
 
 #ifdef _WIN32
 #define MSG_NOSIGNAL 0x0000000

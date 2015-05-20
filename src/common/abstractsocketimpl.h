@@ -20,9 +20,9 @@
 #ifndef NETMAUMAU_ABSTRACTSOCKETIMPL_H
 #define NETMAUMAU_ABSTRACTSOCKETIMPL_H
 
-#include <stdint.h>
+#include <stdint.h>                     // for uint16_t
 
-#include "socketexception.h"
+#include "socketexception.h"            // for SOCKET
 
 namespace NetMauMau {
 

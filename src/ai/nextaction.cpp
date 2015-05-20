@@ -19,8 +19,6 @@
 
 #include "nextaction.h"
 
-#include "logger.h"
-
 using namespace NetMauMau::AI;
 
 NextAction::NextAction(const IConditionPtr &cond) : AbstractAction(), m_condition(cond) {}

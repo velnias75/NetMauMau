@@ -19,8 +19,8 @@
 
 #include "checksevencondition.h"
 
-#include "skipplayercondition.h"
-#include "servesevenaction.h"
+#include "servesevenaction.h"           // for ServeSevenAction
+#include "skipplayercondition.h"        // for SkipPlayerCondition
 
 namespace {
 const NetMauMau::AI::IActionPtr SERVESEVENACTION(new NetMauMau::AI::ServeSevenAction());

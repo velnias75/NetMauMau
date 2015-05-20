@@ -19,9 +19,9 @@
 
 #include "powersuitaction.h"
 
-#include "powersuitcondition.h"
-#include "aceroundcondition.h"
-#include "cardtools.h"
+#include "aceroundcondition.h"          // for AceRoundCondition
+#include "cardtools.h"                  // for findRank
+#include "powersuitcondition.h"         // for PowerSuitCondition
 
 namespace {
 const NetMauMau::AI::IConditionPtr ACEREOUNDCOND(new NetMauMau::AI::AceRoundCondition());

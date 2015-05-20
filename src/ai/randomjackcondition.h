@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_ENGINE_AI_RANDOMJACKCONDITION_H
 #define NETMAUMAU_ENGINE_AI_RANDOMJACKCONDITION_H
 
-#include "abstractcondition.h"
+#include "abstractcondition.h"          // for AbstractCondition
 
 namespace NetMauMau {
 

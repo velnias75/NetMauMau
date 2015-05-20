@@ -17,12 +17,13 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
-#include <iomanip>
-
 #include "testclient.h"
 
-#include "cardtools.h"
+#include <functional>                   // for pointer_to_binary_function, etc
+#include <iomanip>                      // for operator<<, setw
+#include <iostream>                     // for basic_ostream, operator<<, etc
+
+#include "cardtools.h"                  // for ansiSuit, getSuitSymbols, etc
 
 namespace {
 #ifndef DISABLE_ANSI

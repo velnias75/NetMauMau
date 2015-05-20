@@ -19,11 +19,11 @@
 
 #include "hardplayer.h"
 
-#include "nextaction.h"
-#include "powerplayaction.h"
-#include "jackonlycondition.h"
-#include "havejackcondition.h"
-#include "powersuitcondition.h"
+#include "havejackcondition.h"          // for HaveJackCondition
+#include "jackonlycondition.h"          // for JackOnlyCondition
+#include "nextaction.h"                 // for NextAction
+#include "powerplayaction.h"            // for PowerPlayAction
+#include "powersuitcondition.h"         // for PowerSuitCondition
 
 namespace {
 const NetMauMau::AI::IConditionPtr HAVEJACKCOND(new NetMauMau::AI::HaveJackCondition());

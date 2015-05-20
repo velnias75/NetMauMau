@@ -17,22 +17,22 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstring>
-
-extern "C" {
-#include <lualib.h>
-#include <lauxlib.h>
-}
-
 #include "luastate.h"
 
-#include "iaceroundlistener.h"
-#include "stdcardfactory.h"
-#include "random_gen.h"
-#include "cardtools.h"
-#include "smartptr.h"
-#include "iplayer.h"
-#include "logger.h"
+extern "C" {
+#include <lauxlib.h>                    // for luaL_loadfile, etc
+#include <lualib.h>                     // for luaL_openlibs
+}
+
+#include <cstring>                      // for strncmp
+#include <new>                          // for operator new
+
+#include "logger.h"                     // for logInfo
+#include "cardtools.h"                  // for getSuitSymbols, etc
+#include "iaceroundlistener.h"          // for IAceRoundListener
+#include "iplayer.h"                    // for IPlayer
+#include "random_gen.h"                 // for genRandom
+#include "smartptr.h"                   // for SmartPtr
 
 #if defined(_WIN32)
 #undef TRUE
@@ -40,7 +40,7 @@ extern "C" {
 #undef ERROR
 #endif
 
-#include "protocol.h"
+#include "protocol.h"                   // for CARDCOUNT
 
 namespace {
 const char *INTERFACE = "INTERFACE";

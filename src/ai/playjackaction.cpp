@@ -19,7 +19,7 @@
 
 #include "playjackaction.h"
 
-#include "iruleset.h"
+#include "iruleset.h"                   // for IRuleSet
 
 using namespace NetMauMau::AI;
 

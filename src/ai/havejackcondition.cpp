@@ -19,11 +19,12 @@
 
 #include "havejackcondition.h"
 
-#include "havelessthancondition.h"
-#include "bestjackaction.h"
-#include "jacksuitaction.h"
-#include "nextaction.h"
-#include "cardtools.h"
+#include <iterator>
+
+#include "bestjackaction.h"             // for BestJackAction
+#include "cardtools.h"                  // for findRank
+#include "havelessthancondition.h"      // for HaveLessThanCondition
+#include "jacksuitaction.h"             // for JackSuitAction
 
 namespace {
 const NetMauMau::AI::IConditionPtr

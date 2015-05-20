@@ -20,13 +20,8 @@
 #ifndef NETMAUMAU_SERVEREVENTHANDLER_H
 #define NETMAUMAU_SERVEREVENTHANDLER_H
 
-#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
-#endif
-
-#include "defaulteventhandler.h"
-
-#include "serverconnection.h"
+#include "defaulteventhandler.h"        // for DefaultEventHandler
+#include "serverconnection.h"           // for Connection
 
 namespace NetMauMau {
 

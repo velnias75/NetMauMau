@@ -20,9 +20,10 @@
 #ifndef NETMAUMAU_PLAYER_ABSTRACTPLAYER_H
 #define NETMAUMAU_PLAYER_ABSTRACTPLAYER_H
 
-#include "iplayer.h"
+#include <cstddef>                      // for size_t
 
-#include "iplayedoutcards.h"
+#include "iplayedoutcards.h"            // for IPlayedOutCards, etc
+#include "iplayer.h"                    // for IPlayer::CARDS, IPlayer, etc
 
 namespace NetMauMau {
 

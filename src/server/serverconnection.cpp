@@ -18,35 +18,35 @@
  */
 
 #if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
-#endif
-
-#include <algorithm>
-#include <cstring>
-#include <cerrno>
-#include <cstdio>
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#if defined(HAVE_SYS_STAT_H) && defined(HAVE_SYS_TYPES_H)
-#include <sys/stat.h>
-#include <sys/types.h>
-#endif
-
-#ifdef HAVE_NETDB_H
-#include <netdb.h>
+#include "config.h"                     // for MAXPICBYTES, etc
 #endif
 
 #include "serverconnection.h"
 
-#include "defaultplayerimage.h"
-#include "errorstring.h"
-#include "pngcheck.h"
-#include "base64.h"
-#include "logger.h"
-#include "sqlite.h"
+#ifdef HAVE_NETDB_H
+#include <netdb.h>                      // for NI_MAXHOST, NI_MAXSERV, etc
+#endif
+
+#include <cstdlib>                      // for strtoul, free
+
+#ifndef _WIN32
+#include <sys/select.h>                 // for select, FD_SET, FD_ZERO, etc
+#endif
+
+#include <sys/stat.h>                   // for stat
+#include <algorithm>                    // for find_if, min
+#include <cerrno>                       // for errno, ENOENT, ENOMEM
+#include <cstdio>                       // for NULL, fclose, feof, fopen, etc
+#include <cstring>                      // for strerror, strdup, strlen
+#include <new>                          // for nothrow, bad_alloc, etc
+#include <utility>                      // for pair
+
+#include "base64.h"                     // for BYTE, base64_encode, etc
+#include "logger.h"                     // for BasicLogger, logWarning, etc
+#include "defaultplayerimage.h"         // for DefaultPlayerImage
+#include "errorstring.h"                // for errorString
+#include "pngcheck.h"                   // for checkPNG
+#include "sqlite.h"                     // for SQLite, SQLite::SCORES, etc
 
 #if defined(_WIN32)
 #undef TRUE
@@ -54,7 +54,7 @@
 #undef ERROR
 #endif
 
-#include "protocol.h"
+#include "protocol.h"                   // for BYE, VM_ADDPIC
 
 namespace {
 const std::string aiBase64

@@ -17,10 +17,13 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <algorithm>
-#include <cstring>
-
 #include "abstractclientv05impl.h"
+
+#include <algorithm>                    // for find_if
+#include <cstring>                      // for memcpy
+#include <functional>                   // for binder2nd, bind2nd, etc
+#include <iterator>                     // for advance
+#include <new>                          // for nothrow, operator new[]
 
 #if defined(_WIN32)
 #undef TRUE
@@ -28,7 +31,7 @@
 #undef ERROR
 #endif
 
-#include "protocol.h"
+#include "protocol.h"                   // for PLAYCARDEND, SUSPEND
 
 namespace {
 #pragma GCC diagnostic ignored "-Weffc++"

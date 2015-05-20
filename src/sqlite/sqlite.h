@@ -20,10 +20,11 @@
 #ifndef NETMAUMAU_DB_SQLITE_H
 #define NETMAUMAU_DB_SQLITE_H
 
-#include <ctime>
+#include <cstddef>                      // for size_t
+#include <ctime>                        // for time_t
 
-#include "iconnection.h"
-#include "smartptr.h"
+#include "iconnection.h"                // for IConnection, etc
+#include "smartptr.h"                   // for SmartPtr
 
 namespace NetMauMau {
 

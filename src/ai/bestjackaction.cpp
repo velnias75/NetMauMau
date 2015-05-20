@@ -19,10 +19,10 @@
 
 #include "bestjackaction.h"
 
-#include "checkjacksuitaction.h"
-#include "checksevencondition.h"
-#include "staticcondition.h"
-#include "decisionchain.h"
+#include "checkjacksuitaction.h"        // for CheckJackSuitAction
+#include "checksevencondition.h"        // for CheckSevenCondition
+#include "decisionchain.h"              // for DecisionChain
+#include "staticcondition.h"            // for StaticCondition
 
 namespace {
 const NetMauMau::AI::IConditionPtr

@@ -19,9 +19,9 @@
 
 #include "aceroundcondition.h"
 
-#include "randomjackcondition.h"
-#include "aceroundaction.h"
-#include "iruleset.h"
+#include "aceroundaction.h"             // for AceRoundAction
+#include "iruleset.h"                   // for IRuleSet
+#include "randomjackcondition.h"        // for RandomJackCondition
 
 namespace {
 const NetMauMau::AI::IActionPtr ACEROUNDACTION(new NetMauMau::AI::AceRoundAction());

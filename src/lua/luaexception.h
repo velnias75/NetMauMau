@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_LUA_EXCEPTION_LUAEXCEPTION_H
 #define NETMAUMAU_LUA_EXCEPTION_LUAEXCEPTION_H
 
-#include "socketexception.h"
+#include "socketexception.h"            // for SocketException
 
 namespace NetMauMau {
 

@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_PLAYER_HARDPLAYER_H
 #define NETMAUMAU_PLAYER_HARDPLAYER_H
 
-#include "aiplayerbase.h"
+#include "aiplayerbase.h"               // for AIPlayerBase
 
 namespace NetMauMau {
 

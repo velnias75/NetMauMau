@@ -20,7 +20,8 @@
 #ifndef NETMAUMAU_ENGINECONFIG_H
 #define NETMAUMAU_ENGINECONFIG_H
 
-#include "icard.h"
+#include <cstddef>                      // for size_t
+#include "icard.h"                      // for ICard, ICard::RANK
 
 namespace NetMauMau {
 

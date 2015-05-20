@@ -20,7 +20,9 @@
 #ifndef NETMAUMAU_STDCARDFACTORY_H
 #define NETMAUMAU_STDCARDFACTORY_H
 
-#include "icardfactory.h"
+#include <cstddef>                      // for size_t
+
+#include "icardfactory.h"               // for ICardFactory
 
 namespace NetMauMau {
 

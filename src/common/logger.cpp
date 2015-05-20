@@ -17,13 +17,16 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
+#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
+#include "config.h"                     // for HAVE_SYSLOG_H, PACKAGE_NAME
+#endif
 
 #include "logger.h"
+#include <iostream>                     // for ostreambuf_iterator, cerr
 
 #ifdef HAVE_SYSLOG_H
 #undef LOG_DEBUG
-#include <syslog.h>
+#include <syslog.h>                     // for closelog, openlog, syslog, etc
 #endif
 
 namespace {

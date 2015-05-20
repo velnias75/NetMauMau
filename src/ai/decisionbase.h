@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_ENGINE_AI_DECISIONBASE_H
 #define NETMAUMAU_ENGINE_AI_DECISIONBASE_H
 
-#include "iaistate.h"
+#include "iaistate.h"                   // for IAIState, etc
 
 namespace NetMauMau {
 

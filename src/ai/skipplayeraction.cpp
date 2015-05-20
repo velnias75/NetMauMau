@@ -19,9 +19,9 @@
 
 #include "skipplayeraction.h"
 
-#include "powersuitcondition.h"
-#include "bestsuitcondition.h"
-#include "cardtools.h"
+#include "bestsuitcondition.h"          // for BestSuitCondition
+#include "cardtools.h"                  // for findRank
+#include "powersuitcondition.h"         // for PowerSuitCondition
 
 namespace {
 const NetMauMau::AI::IConditionPtr POWERSUITCOND(new NetMauMau::AI::PowerSuitCondition());

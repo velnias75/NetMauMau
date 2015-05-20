@@ -17,11 +17,14 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <fstream>
-#include <cstdio>
-#include <map>
+#include "cardtools.h"                  // IWYU pragma: keep
 
-#include "cardtools.h"
+#include <ctype.h>                      // for isdigit
+#include <cstdlib>                      // for strtoul
+#include <cstdio>                       // for snprintf, NULL
+#include <cstddef>                      // for size_t
+#include <map>                          // for map<>::value_type, map, etc
+#include <utility>                      // for make_pair, pair
 
 namespace {
 

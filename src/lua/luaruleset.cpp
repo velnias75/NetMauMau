@@ -17,17 +17,18 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <limits>
-#include <iterator>
-#include <algorithm>
-
 #include "luaruleset.h"
 
-#include "luafatalexception.h"
-#include "smartptr.h"
-#include "luastate.h"
-#include "iplayer.h"
-#include "logger.h"
+#include <algorithm>                    // for max, copy, for_each
+#include <functional>                   // for unary_function, etc
+#include <iterator>                     // for ostream_iterator
+#include <limits>                       // for numeric_limits
+
+#include "logger.h"                     // for BasicLogger, logWarning
+#include "iplayer.h"                    // for IPlayer
+#include "luafatalexception.h"          // for LuaFatalException
+#include "luastate.h"                   // for LuaState
+#include "smartptr.h"                   // for SmartPtr
 
 namespace {
 

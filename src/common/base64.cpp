@@ -18,13 +18,16 @@
  */
 
 #include "base64.h"
-#include "logger.h"
+
+#include <ctype.h>                      // for isalnum
+#include <new>                          // for bad_alloc
+
+#include "logger.h"                     // for logDebug
 
 static const std::string base64_chars =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	"abcdefghijklmnopqrstuvwxyz"
 	"0123456789+/";
-
 
 static inline bool is_base64(NetMauMau::Common::BYTE c) {
 	return (std::isalnum(c) || (c == '+') || (c == '/'));

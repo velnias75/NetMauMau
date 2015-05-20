@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_CLIENT_BASE64BRIDGE_H
 #define NETMAUMAU_CLIENT_BASE64BRIDGE_H
 
-#include "ibase64.h"
+#include "ibase64.h"                    // for IBase64
 
 namespace NetMauMau {
 

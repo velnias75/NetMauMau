@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_NULLCONNECTION_H
 #define NETMAUMAU_NULLCONNECTION_H
 
-#include "iconnection.h"
+#include "iconnection.h"                // for IConnection, etc
 
 namespace NetMauMau {
 

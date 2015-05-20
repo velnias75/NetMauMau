@@ -17,13 +17,15 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdio>
-
 #include "servereventhandler.h"
 
-#include "cardtools.h"
-#include "iplayer.h"
-#include "logger.h"
+#include <cstdio>                       // for snprintf
+#include <ostream>                      // for ostringstream, etc
+#include <utility>                      // for make_pair
+
+#include "logger.h"                     // for BasicLogger, logError
+#include "cardtools.h"                  // for suitToSymbol
+#include "iplayer.h"                    // for IPlayer
 
 #if defined(_WIN32)
 #undef TRUE
@@ -31,7 +33,7 @@
 #undef ERROR
 #endif
 
-#include "protocol.h"
+#include "protocol.h"                   // for JACKSUIT, MESSAGE, etc
 
 using namespace NetMauMau::Server;
 

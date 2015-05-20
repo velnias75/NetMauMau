@@ -25,7 +25,7 @@
 #define LOGGER_CLASS NetMauMau::Common::Logger
 #endif
 
-#include "basiclogger.h"
+#include "basiclogger.h"                // for BasicLogger, etc
 
 namespace NetMauMau {
 

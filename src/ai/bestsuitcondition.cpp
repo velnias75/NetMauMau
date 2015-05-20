@@ -19,7 +19,7 @@
 
 #include "bestsuitcondition.h"
 
-#include "powersuitaction.h"
+#include "powersuitaction.h"            // for PowerSuitAction
 
 using namespace NetMauMau::AI;
 

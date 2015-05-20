@@ -20,9 +20,15 @@
 #ifndef NETMAUMAU_HELPERS_H
 #define NETMAUMAU_HELPERS_H
 
-#include <csignal>
+#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
+#include "config.h"                     // for HAVE_ATEXIT
+#endif
 
-#include "serverconnection.h"
+#include <csignal>                      // for siginfo_t, uid_t
+#include <cstddef>                      // for size_t, NULL
+
+#include "abstractconnection.h"
+#include "serverconnection.h"           // for Connection
 
 namespace NetMauMau _LOCAL {
 

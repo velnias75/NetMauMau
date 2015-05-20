@@ -17,16 +17,16 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <algorithm>
-#include <iostream>
-#include <sstream>
-#include <cstdlib>
-#include <iomanip>
+#include <popt.h>                       // for POPT_ARG_VAL, poptBadOption, etc
+#include <sys/time.h>                   // for timeval
+#include <cstdlib>                      // for NULL, EXIT_FAILURE, etc
+#include <iomanip>                      // for operator<<, setw
+#include <iostream>                     // for basic_ostream, operator<<, etc
+#include <sstream>                      // IWYU pragma: keep
+#include <utility>                      // for pair
 
-#include <popt.h>
-
-#include "testclient.h"
-#include "testimg.h"
+#include "testclient.h"                 // for TestClient
+#include "testimg.h"                    // for test_client_img
 
 namespace {
 #ifndef DISABLE_ANSI

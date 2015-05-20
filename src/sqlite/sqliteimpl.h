@@ -20,11 +20,11 @@
 #ifndef NETMAUMAU_DB_SQLITEIMPL_H
 #define NETMAUMAU_DB_SQLITEIMPL_H
 
-#include <string>
+#include <sqlite3.h>                    // for sqlite3_stmt, sqlite3
 
-#include <sqlite3.h>
+#include <ctime>                        // for time_t
 
-#include "sqlite.h"
+#include "sqlite.h"                     // for SQLite, SQLite::SCORES, etc
 
 namespace NetMauMau {
 
@@ -69,10 +69,10 @@ private:
 
 private:
 	sqlite3 *m_db;
-	
+
 	sqlite3_stmt *m_turnStmt;
 	sqlite3_stmt *m_winStmt;
-	
+
 	sqlite3_stmt *m_scoreNormStmt;
 	sqlite3_stmt *m_scoreNormLimitStmt;
 	sqlite3_stmt *m_scoreAbsStmt;

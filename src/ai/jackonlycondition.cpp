@@ -19,11 +19,11 @@
 
 #include "jackonlycondition.h"
 
-#include "checksevencondition.h"
-#include "playjackaction.h"
-#include "aceroundaction.h"
-#include "suspendaction.h"
-#include "iruleset.h"
+#include "aceroundaction.h"             // for AceRoundAction
+#include "checksevencondition.h"        // for CheckSevenCondition
+#include "iruleset.h"                   // for IRuleSet
+#include "playjackaction.h"             // for PlayJackAction
+#include "suspendaction.h"              // for SuspendAction
 
 namespace {
 const NetMauMau::AI::IActionPtr ACEROUNDACTION(new NetMauMau::AI::AceRoundAction());

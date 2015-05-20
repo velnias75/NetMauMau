@@ -17,15 +17,14 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdio>
-
 #include "serverplayer.h"
 
-#include "serverplayerexception.h"
-#include "serverconnection.h"
-#include "cardtools.h"
-#include "iruleset.h"
-#include "engine.h"
+#include <cstdlib>                      // for strtoul
+#include <cstdio>                       // for snprintf, NULL
+
+#include "cardtools.h"                  // for getIllegalCard, etc
+#include "serverconnection.h"           // for Connection
+#include "serverplayerexception.h"      // for ServerPlayerException
 
 #if defined(_WIN32)
 #undef TRUE
@@ -33,7 +32,7 @@
 #undef ERROR
 #endif
 
-#include "protocol.h"
+#include "protocol.h"                   // for ACEROUND, CARDACCEPTED, etc
 
 namespace {
 const std::string ILLEGAL_CARD(NetMauMau::Common::getIllegalCard()->description());

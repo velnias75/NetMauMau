@@ -20,14 +20,13 @@
 #ifndef NETMAUMAU_TALON_H
 #define NETMAUMAU_TALON_H
 
-#include <stack>
+#include <cstddef>                      // for size_t
+#include <stack>                        // for stack
 
-#include "icard.h"
-#include "iplayedoutcards.h"
+#include "iplayedoutcards.h"            // for IPlayedOutCards::CARDS, etc
 
 namespace NetMauMau {
 
-class ICardFactory;
 class ITalonChange;
 
 class Talon : public virtual IPlayedOutCards {

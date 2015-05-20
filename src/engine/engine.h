@@ -20,12 +20,13 @@
 #ifndef NETMAUMAU_ENGINE_H
 #define NETMAUMAU_ENGINE_H
 
-#include <vector>
+#include <cstddef>                      // for size_t, NULL
+#include <vector>                       // for vector
 
-#include "icardcountobserver.h"
-#include "iaceroundlistener.h"
-#include "socketexception.h"
-#include "italonchange.h"
+#include "iaceroundlistener.h"          // for IAceRoundListener
+#include "icardcountobserver.h"         // for ICardCountObserver
+#include "italonchange.h"               // for ITalonChange
+#include "socketexception.h"            // for SocketException, SOCKET
 
 namespace NetMauMau {
 

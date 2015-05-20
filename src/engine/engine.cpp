@@ -18,13 +18,7 @@
  */
 
 #if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
-#endif
-
-#include <cassert>
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
+#include "config.h" // for HAVE_SYS_SOCKET_H, etc
 #endif
 
 #ifdef _WIN32
@@ -33,23 +27,33 @@
 #define SHUT_RDWR SD_BOTH
 #endif
 #elif defined(HAVE_SYS_SOCKET_H)
-#include <sys/types.h>
-#include <sys/socket.h>
+#include <sys/socket.h>                 // for shutdown, SHUT_RDWR
 #endif
-
-#include "talon.h"
-#include "sqlite.h"
-#include "logger.h"
-#include "iplayer.h"
-#include "iruleset.h"
-#include "cardtools.h"
-#include "engineconfig.h"
-#include "ieventhandler.h"
-#include "luafatalexception.h"
 
 #if defined(HAVE_GSL)
-#include <random_gen.h>
+#include <random_gen.h>                 // for GSLRNG
 #endif
+
+#include <ctype.h>                      // for tolower
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>                     // for close
+#endif
+
+#include <cassert>                      // for assert
+#include <functional>                   // for binder2nd, mem_fun1_t, etc
+#include <iterator>                     // for advance, distance
+#include <ostream>                      // for size_t, operator<<, etc
+
+#include "logger.h"                     // for logDebug, BasicLogger
+#include "cardtools.h"                  // for getIllegalCard
+#include "engineconfig.h"               // for EngineConfig
+#include "ieventhandler.h"              // for IEventHandler
+#include "iplayer.h"                    // for IPlayer, IPlayer::CARDS, etc
+#include "iruleset.h"                   // for IRuleSet
+#include "luafatalexception.h"          // for LuaException
+#include "sqlite.h"                     // for SQLite
+#include "talon.h"                      // for Talon
 
 namespace {
 

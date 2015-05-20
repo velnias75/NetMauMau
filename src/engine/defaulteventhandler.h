@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_EVENT_DEFAULTEVENTHANDLER_H
 #define NETMAUMAU_EVENT_DEFAULTEVENTHANDLER_H
 
-#include "ieventhandler.h"
+#include "ieventhandler.h"              // for IEventHandler, etc
 
 namespace NetMauMau {
 

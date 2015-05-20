@@ -20,11 +20,11 @@
 #ifndef NETMAUMAU_RULESET_LUARULESET_H
 #define NETMAUMAU_RULESET_LUARULESET_H
 
-#include <vector>
+#include <cstddef>                      // for size_t
+#include <vector>                       // for vector
 
-#include "iruleset.h"
-
-#include "luaexception.h"
+#include "iruleset.h"                   // for IRuleSet
+#include "luaexception.h"               // for LuaException
 
 namespace NetMauMau {
 

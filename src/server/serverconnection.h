@@ -21,10 +21,15 @@
 #define NETMAUMAU_SERVER_SERVERCONNECTION_H
 
 #if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
+#include "config.h"                     // for SERVER_PORT, etc
 #endif
 
-#include "abstractconnection.h"
+#include <cstddef>                      // for NULL
+#include <functional>                   // for greater
+
+#include "abstractconnection.h"         // for AbstractConnection, etc
+
+struct timeval;
 
 #define MIN_MAJOR 0
 #define MIN_MINOR 2

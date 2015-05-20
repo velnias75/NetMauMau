@@ -20,11 +20,7 @@
 #ifndef NETMAUMAU_SERVER_GAME_H
 #define NETMAUMAU_SERVER_GAME_H
 
-#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
-#endif
-
-#include "engine.h"
+#include "engine.h"                     // for Engine
 
 #ifndef _WIN32
 #define TIMEFORMAT "%T - "

@@ -19,7 +19,7 @@
 
 #include "defaulteventhandler.h"
 
-#include "nullconnection.h"
+#include "nullconnection.h"             // for NullConnection
 
 using namespace NetMauMau::Event;
 

@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_ABSTRACTCONNECTIONIMPL_H
 #define NETMAUMAU_ABSTRACTCONNECTIONIMPL_H
 
-#include "abstractconnection.h"
+#include "abstractconnection.h"         // for AbstractConnection
 
 namespace NetMauMau {
 

@@ -54,8 +54,8 @@
  * @author Heiko Schäfer <heiko@rangun.de>
  */
 
-#ifndef _BASE64_H_
-#define _BASE64_H_
+#ifndef NETMAUMAU_COMMON_BASE64_H
+#define NETMAUMAU_COMMON_BASE64_H
 
 #include <vector>
 #include <string>
@@ -105,6 +105,6 @@ _EXPORT std::vector<BYTE> base64_decode(std::string const &base64);
 
 }
 
-#endif
+#endif /* NETMAUMAU_COMMON_BASE64_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

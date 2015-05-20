@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_ENGINE_AI_ACEROUNDACTION_H
 #define NETMAUMAU_ENGINE_AI_ACEROUNDACTION_H
 
-#include "abstractaction.h"
+#include "abstractaction.h"             // for AbstractAction
 
 namespace NetMauMau {
 

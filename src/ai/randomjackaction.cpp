@@ -19,8 +19,10 @@
 
 #include "randomjackaction.h"
 
-#include "random_gen.h"
-#include "cardtools.h"
+#include <iterator>                     // for reverse_iterator
+
+#include "cardtools.h"                  // for findSuit
+#include "random_gen.h"                 // for genRandom
 
 using namespace NetMauMau::AI;
 

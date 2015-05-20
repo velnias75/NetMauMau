@@ -17,14 +17,15 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <numeric>
-
 #include "abstractplayer.h"
 
-#include "iruleset.h"
-#include "cardtools.h"
-#include "random_gen.h"
-#include "icardcountobserver.h"
+#include <functional>                   // for pointer_to_binary_function, etc
+#include <numeric>                      // for accumulate
+
+#include "cardtools.h"                  // for cardEqual, isRank
+#include "icardcountobserver.h"         // for ICardCountObserver
+#include "iruleset.h"                   // for IRuleSet
+#include "random_gen.h"                 // for genRandom
 
 namespace {
 

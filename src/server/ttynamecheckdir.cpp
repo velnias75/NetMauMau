@@ -21,15 +21,14 @@
 
 #ifndef _WIN32
 
-#include <cstdlib>
-#include <cstring>
-#include <cstdio>
-
-#include <sys/stat.h>
-#include <dirent.h>
-#include <unistd.h>
-
 #include "ttynamecheckdir.h"
+
+#include <dirent.h>                     // for closedir, dirent, opendir, etc
+#include <sys/stat.h>                   // for stat, S_ISCHR
+#include <cstddef>                      // for size_t
+#include <cstdio>                       // for NULL, snprintf
+#include <cstdlib>                      // for malloc, realloc
+#include <cstring>                      // for strlen
 
 char *NetMauMau::Server::ttynameCheckDir(dev_t ttyNr, const char *devDir) {
 

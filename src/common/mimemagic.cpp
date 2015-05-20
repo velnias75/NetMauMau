@@ -17,9 +17,9 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstring>
-
 #include "mimemagic.h"
+
+#include <cstring>                      // for NULL, strcmp
 
 using namespace NetMauMau::Common;
 

@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_PLAYER_EASYPLAYER_H
 #define NETMAUMAU_PLAYER_EASYPLAYER_H
 
-#include "hardplayer.h"
+#include "hardplayer.h"                 // for HardPlayer
 
 namespace NetMauMau {
 

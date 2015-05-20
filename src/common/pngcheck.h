@@ -20,9 +20,9 @@
 #ifndef NETMAUMAU_PNGCHECK_H
 #define NETMAUMAU_PNGCHECK_H
 
-#include <cstdlib>
+#include <cstddef>                      // for size_t
 
-#include "linkercontrol.h"
+#include "linkercontrol.h"              // for _EXPORT
 
 namespace NetMauMau {
 

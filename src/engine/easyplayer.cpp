@@ -18,15 +18,15 @@
  */
 
 #if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
+#include "config.h"                     // IWYU pragma: keep
 #endif
-
-#include <ctime>
 
 #include "easyplayer.h"
 
-#include "random_gen.h"
-#include "cardtools.h"
+#include <ctime>                        // for time
+
+#include "cardtools.h"                  // for findCard, getIllegalCard, etc
+#include "random_gen.h"                 // for genRandom
 
 using namespace NetMauMau::Player;
 

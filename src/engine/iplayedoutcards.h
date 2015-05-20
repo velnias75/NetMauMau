@@ -22,7 +22,7 @@
 
 #include <vector>
 
-#include "linkercontrol.h"
+#include "icard.h"
 #include "smartptr.h"
 
 namespace NetMauMau {

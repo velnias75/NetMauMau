@@ -24,6 +24,8 @@
 #include "config.h"
 #endif
 
+#include <cstddef>                      // for size_t
+
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
 #include <magic.h>
 

@@ -17,16 +17,18 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdio>
-
 #include "game.h"
+
+#include <algorithm>                    // for max
+#include <cstdio>                       // for snprintf
+
+#include "abstractsocket.h"             // for AbstractSocket
+#include "easyplayer.h"                 // for EasyPlayer
+#include "gameconfig.h"                 // for GameConfig
+#include "ieventhandler.h"              // for IEventHandler
+#include "luafatalexception.h"          // for LuaFatalException
 #include "logger.h"
-#include "sqlite.h"
-#include "easyplayer.h"
-#include "gameconfig.h"
-#include "ieventhandler.h"
-#include "abstractsocket.h"
-#include "luafatalexception.h"
+#include "sqlite.h"                     // for SQLite
 
 namespace {
 const std::string MISCONFIGURED("Misconfigured or compromised server. Please report: ");

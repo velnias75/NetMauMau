@@ -18,41 +18,41 @@
  */
 
 #if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
-#endif
-
-#include <fstream>
-#include <sstream>
-#include <set>
-
-#include <cstring>
-#include <climits>
-#include <cstdio>
-#include <cerrno>
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#ifdef HAVE_NETDB_H
-#include <netdb.h>
-#endif
-
-#ifndef _WIN32
-#include <ifaddrs.h>
-#include <grp.h>
-#include <pwd.h>
-#else
-#define HOST_NAME_MAX 64
+#include "config.h"                     // for HAVE_ATEXIT, HAVE_CHOWN, etc
 #endif
 
 #include "helpers.h"
 
-#include "servereventhandler.h"
-#include "ttynamecheckdir.h"
-#include "sqlite.h"
-#include "logger.h"
-#include "game.h"
+#ifndef _WIN32
+#include <ifaddrs.h>                    // for ifaddrs, freeifaddrs, etc
+#include <grp.h>                        // for getgrnam, gid_t, group
+#include <pwd.h>                        // for getpwnam, passwd
+#else
+#define HOST_NAME_MAX 64
+#endif
+
+#ifdef HAVE_NETDB_H
+#include <netdb.h>                      // for getnameinfo, NI_NUMERICHOST
+#endif
+
+#include <cstdlib>                      // for free
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>                     // for getuid, setegid, seteuid
+#endif
+
+#include <cerrno>                       // for errno
+#include <climits>                      // for PATH_MAX
+#include <cstdio>                       // for snprintf, NULL, fclose, etc
+#include <cstring>                      // for strerror, strcmp, strlen, etc
+#include <fstream>                      // for operator<<, basic_ostream, etc
+#include <set>                          // for set, etc
+
+#include "game.h"                       // for TIMEFORMAT, Game
+#include "logger.h"                     // for Logger
+#include "servereventhandler.h"         // for EventHandler
+#include "sqlite.h"                     // for SQLite
+#include "ttynamecheckdir.h"            // for ttynameCheckDir
 
 #ifndef DP_USER
 #define DP_USER "nobody"

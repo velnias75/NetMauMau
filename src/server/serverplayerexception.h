@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_SERVERPLAYEREXCEPTION_H
 #define NETMAUMAU_SERVERPLAYEREXCEPTION_H
 
-#include "socketexception.h"
+#include "socketexception.h"            // for INVALID_SOCKET, SOCKET, etc
 
 namespace NetMauMau {
 

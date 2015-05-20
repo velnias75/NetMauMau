@@ -17,7 +17,6 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "sqlite.h"
 #include "sqliteimpl.h"
 
 using namespace NetMauMau::DB;

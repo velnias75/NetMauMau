@@ -17,17 +17,15 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <string>
+#include "errorstring.h"
 
-#include <cstring>
-#include <cerrno>
+#include <cerrno>                       // for errno
+#include <cstring>                      // for strerror
 
 #ifdef _WIN32
 #include <windows.h>
 #include <winsock2.h>
 #endif
-
-#include "errorstring.h"
 
 #ifdef _WIN32
 namespace {

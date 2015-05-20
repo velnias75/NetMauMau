@@ -19,8 +19,8 @@
 
 #include "skipplayercondition.h"
 
-#include "bestsuitcondition.h"
-#include "skipplayeraction.h"
+#include "bestsuitcondition.h"          // for BestSuitCondition
+#include "skipplayeraction.h"           // for SkipPlayerAction
 
 namespace {
 const NetMauMau::AI::IConditionPtr BESTSUITCOND(new NetMauMau::AI::BestSuitCondition());

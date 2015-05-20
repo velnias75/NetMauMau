@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_ENGINE_AI_MAXSUITACTION_H
 #define NETMAUMAU_ENGINE_AI_MAXSUITACTION_H
 
-#include "abstractaction.h"
+#include "abstractaction.h"             // for AbstractAction
 
 namespace NetMauMau {
 
@@ -29,7 +29,7 @@ namespace AI {
 class MaxSuitAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(MaxSuitAction)
 public:
-	MaxSuitAction();
+	explicit MaxSuitAction();
 	virtual ~MaxSuitAction();
 
 	virtual const IConditionPtr &perform(IAIState &state,

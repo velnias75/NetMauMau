@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_ENGINE_AI_POWERSUITCONDITION_H
 #define NETMAUMAU_ENGINE_AI_POWERSUITCONDITION_H
 
-#include "binarycondition.h"
+#include "binarycondition.h"            // for BinaryCondition
 
 namespace NetMauMau {
 

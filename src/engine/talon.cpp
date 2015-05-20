@@ -17,14 +17,15 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <algorithm>
-#include <cassert>
-
 #include "talon.h"
 
-#include "random_gen.h"
-#include "italonchange.h"
-#include "stdcardfactory.h"
+#include <algorithm>                    // for random_shuffle, for_each
+#include <cassert>                      // for assert
+#include <functional>                   // for unary_function, etc
+
+#include "italonchange.h"               // for ITalonChange
+#include "random_gen.h"                 // for genRandom
+#include "stdcardfactory.h"             // for StdCardFactory
 
 namespace {
 

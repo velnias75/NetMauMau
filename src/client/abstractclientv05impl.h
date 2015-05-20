@@ -20,7 +20,9 @@
 #ifndef NETMAUMAU_ABSTRACTCLIENTV05IMPL_H
 #define NETMAUMAU_ABSTRACTCLIENTV05IMPL_H
 
-#include "abstractclient.h"
+#include <cstddef>                      // for size_t
+
+#include "abstractclient.h"             // for AbstractClient
 
 namespace NetMauMau {
 

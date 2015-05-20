@@ -18,21 +18,28 @@
  */
 
 #if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
+#include "config.h"                     // for HAVE_UNISTD_H, PACKAGE_NAME
 #endif
 
-#include <algorithm>
+#include <stdlib.h>                     // for strtoul
+
+#ifndef _WIN32
+#include <sys/select.h>                 // for select, FD_SET, FD_ZERO, etc
+#endif
+
+#include <sys/time.h>                   // for timeval
 
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
+#include <unistd.h>                     // for TEMP_FAILURE_RETRY
 #endif
 
-#include <cstring>
-#include <cerrno>
+#include <algorithm>                    // for find_if, find, for_each
+#include <cerrno>                       // for errno
+#include <cstring>                      // for NULL, strlen
+#include <functional>                   // for binder2nd, bind2nd, etc
 
-#include "abstractconnectionimpl.h"
-
-#include "errorstring.h"
+#include "abstractconnectionimpl.h"     // for AbstractConnectionImpl
+#include "errorstring.h"                // for errorString
 
 #ifndef TEMP_FAILURE_RETRY
 #define TEMP_FAILURE_RETRY

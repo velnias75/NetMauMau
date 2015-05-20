@@ -20,10 +20,10 @@
 #ifndef NETMAUMAU_ENGINE_AI_ABSTRACTACTION_H
 #define NETMAUMAU_ENGINE_AI_ABSTRACTACTION_H
 
-#include "iaction.h"
-#include "decisionbase.h"
+#include "decisionbase.h"               // for DecisionBase
+#include "iaction.h"                    // for IAction
 
-#include "icondition.h"
+#include "icondition.h"                 // for IConditionPtr
 
 namespace NetMauMau {
 

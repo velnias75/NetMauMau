@@ -17,19 +17,20 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdio>
-#include <cassert>
-#include <cstring>
+#include <cassert>                      // for assert
+#include <cstdio>                       // for NULL, snprintf
+#include <functional>                   // for pointer_to_binary_function, etc
+#include <iterator>                     // for back_insert_iterator, etc
 
-#include "interceptederrorexception.h"
-#include "capabilitiesexception.h"
-#include "abstractclientv05impl.h"
-#include "clientcardfactory.h"
-#include "scoresexception.h"
-#include "base64bridge.h"
-#include "cardtools.h"
-#include "pngcheck.h"
-#include "logger.h"
+#include "abstractclientv05impl.h"      // for AbstractClientV05Impl
+#include "logger.h"                     // for BasicLogger, logDebug
+#include "capabilitiesexception.h"      // for CapabilitiesException
+#include "cardtools.h"                  // for symbolToSuit, suitToSymbol, etc
+#include "clientcardfactory.h"          // for CardFactory
+#include "ibase64.h"                    // for IBase64
+#include "interceptederrorexception.h"  // for InterceptedErrorException
+#include "pngcheck.h"                   // for checkPNG
+#include "scoresexception.h"            // for ScoresException
 
 #if defined(_WIN32)
 #undef TRUE
@@ -37,7 +38,7 @@
 #undef ERROR
 #endif
 
-#include "protocol.h"
+#include "protocol.h"                   // for PLAYCARD, ACEROUND, etc
 
 namespace {
 #pragma GCC diagnostic ignored "-Weffc++"

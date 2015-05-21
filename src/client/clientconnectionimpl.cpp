@@ -23,10 +23,12 @@
 
 #include "clientconnectionimpl.h"
 
-#include <cstddef>                      // for NULL
-
 #ifndef _WIN32
 #include <sys/select.h>                 // for select, FD_SET, FD_ZERO, etc
+#endif
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
 #endif
 
 #include <sys/time.h>                   // for timeval

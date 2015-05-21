@@ -35,18 +35,18 @@
 #include <netdb.h>                      // for getnameinfo, NI_NUMERICHOST
 #endif
 
-#include <cstdlib>                      // for free
-
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>                     // for getuid, setegid, seteuid
 #endif
 
 #include <cerrno>                       // for errno
 #include <climits>                      // for PATH_MAX
-#include <cstdio>                       // for snprintf, NULL, fclose, etc
 #include <cstring>                      // for strerror, strcmp, strlen, etc
 #include <fstream>                      // for operator<<, basic_ostream, etc
 #include <set>                          // for set, etc
+#include <stdbool.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "game.h"                       // for TIMEFORMAT, Game
 #include "logger.h"                     // for Logger
@@ -163,7 +163,7 @@ void sh_dump(int, siginfo_t *info, void *) {
 			if(std::fscanf(spf, "%d %ms %c %d %d %d %d", &iDummy, &sDummy, &cDummy, &iDummy,
 						   &iDummy, &iDummy, &tty_nr)) {}
 
-			free(sDummy);
+			std::free(sDummy);
 #else
 			char sDevice[20], sCmd[256];
 

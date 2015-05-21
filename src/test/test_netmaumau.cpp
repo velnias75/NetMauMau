@@ -21,10 +21,8 @@
 #include "config.h"
 #endif
 
-#include <ctime>
-
-#include "logger.h"
 #include "hardplayer.h"
+#include "logger.h"
 #include "testeventhandler.h"
 
 using namespace NetMauMau;

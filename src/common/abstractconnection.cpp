@@ -21,8 +21,6 @@
 #include "config.h"                     // for HAVE_UNISTD_H, PACKAGE_NAME
 #endif
 
-#include <stdlib.h>                     // for strtoul
-
 #ifndef _WIN32
 #include <sys/select.h>                 // for select, FD_SET, FD_ZERO, etc
 #endif
@@ -36,7 +34,6 @@
 #include <algorithm>                    // for find_if, find, for_each
 #include <cerrno>                       // for errno
 #include <cstring>                      // for NULL, strlen
-#include <functional>                   // for binder2nd, bind2nd, etc
 
 #include "abstractconnectionimpl.h"     // for AbstractConnectionImpl
 #include "errorstring.h"                // for errorString

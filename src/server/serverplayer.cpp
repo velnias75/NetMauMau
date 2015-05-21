@@ -19,8 +19,11 @@
 
 #include "serverplayer.h"
 
-#include <cstdlib>                      // for strtoul
 #include <cstdio>                       // for snprintf, NULL
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 #include "cardtools.h"                  // for getIllegalCard, etc
 #include "serverconnection.h"           // for Connection

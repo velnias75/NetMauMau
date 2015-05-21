@@ -19,9 +19,6 @@
 
 #include "base64.h"
 
-#include <ctype.h>                      // for isalnum
-#include <new>                          // for bad_alloc
-
 #include "logger.h"                     // for logDebug
 
 static const std::string base64_chars =

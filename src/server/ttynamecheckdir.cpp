@@ -19,16 +19,26 @@
  * Based upon: http://man7.org/tlpi/code/online/book/tty/ttyname.c.html
  */
 
+#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
+#include "config.h"
+#endif
+
 #ifndef _WIN32
 
 #include "ttynamecheckdir.h"
 
 #include <dirent.h>                     // for closedir, dirent, opendir, etc
-#include <sys/stat.h>                   // for stat, S_ISCHR
 #include <cstddef>                      // for size_t
 #include <cstdio>                       // for NULL, snprintf
 #include <cstdlib>                      // for malloc, realloc
 #include <cstring>                      // for strlen
+#include <stdbool.h>
+#include <sys/stat.h>                   // for stat, S_ISCHR
+#include <sys/types.h>
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 char *NetMauMau::Server::ttynameCheckDir(dev_t ttyNr, const char *devDir) {
 
@@ -39,7 +49,7 @@ char *NetMauMau::Server::ttynameCheckDir(dev_t ttyNr, const char *devDir) {
 
 	if(ttyLen == 0) {
 
-		ttyPath = static_cast<char *>(malloc(50));
+		ttyPath = static_cast<char *>(std::malloc(50));
 
 		if(!ttyPath) return NULL;
 
@@ -59,7 +69,7 @@ char *NetMauMau::Server::ttynameCheckDir(dev_t ttyNr, const char *devDir) {
 
 		if(requiredLen > ttyLen) {
 
-			char *nTtyPath = static_cast<char *>(realloc(ttyPath, requiredLen));
+			char *nTtyPath = static_cast<char *>(std::realloc(ttyPath, requiredLen));
 
 			if(nTtyPath) {
 				ttyPath = nTtyPath;

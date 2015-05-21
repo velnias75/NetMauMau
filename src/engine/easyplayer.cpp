@@ -21,11 +21,11 @@
 #include "config.h"                     // IWYU pragma: keep
 #endif
 
+#include <ctime>
+
 #include "easyplayer.h"
 
-#include <ctime>                        // for time
-
-#include "cardtools.h"                  // for findCard, getIllegalCard, etc
+#include "cardtools.h"
 #include "random_gen.h"                 // for genRandom
 
 using namespace NetMauMau::Player;
@@ -66,9 +66,9 @@ EasyPlayer::requestCard(const NetMauMau::Common::ICardPtr &uncoveredCard,
 
 	const bool ansi = isatty(fileno(stderr));
 
-	if(!getenv("NMM_NO_TRACE")) logDebug("-> trace of AI \"" << getName() << "\" -> "
-											 << (rrc ? rrc->description(ansi) : "NO CARD")
-											 << " <-");
+	if(!std::getenv("NMM_NO_TRACE")) logDebug("-> trace of AI \"" << getName() << "\" -> "
+				<< (rrc ? rrc->description(ansi) : "NO CARD")
+				<< " <-");
 
 #endif
 

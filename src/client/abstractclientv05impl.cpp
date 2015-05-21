@@ -21,9 +21,6 @@
 
 #include <algorithm>                    // for find_if
 #include <cstring>                      // for memcpy
-#include <functional>                   // for binder2nd, bind2nd, etc
-#include <iterator>                     // for advance
-#include <new>                          // for nothrow, operator new[]
 
 #if defined(_WIN32)
 #undef TRUE

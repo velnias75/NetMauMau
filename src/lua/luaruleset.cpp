@@ -20,7 +20,6 @@
 #include "luaruleset.h"
 
 #include <algorithm>                    // for max, copy, for_each
-#include <functional>                   // for unary_function, etc
 #include <iterator>                     // for ostream_iterator
 #include <limits>                       // for numeric_limits
 

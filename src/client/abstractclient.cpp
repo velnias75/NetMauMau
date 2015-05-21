@@ -19,8 +19,11 @@
 
 #include <cassert>                      // for assert
 #include <cstdio>                       // for NULL, snprintf
-#include <functional>                   // for pointer_to_binary_function, etc
-#include <iterator>                     // for back_insert_iterator, etc
+#include <stdbool.h>
+
+#ifdef HAVE_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
 
 #include "abstractclientv05impl.h"      // for AbstractClientV05Impl
 #include "logger.h"                     // for BasicLogger, logDebug

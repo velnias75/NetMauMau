@@ -25,7 +25,6 @@ extern "C" {
 }
 
 #include <cstring>                      // for strncmp
-#include <new>                          // for operator new
 
 #include "logger.h"                     // for logInfo
 #include "cardtools.h"                  // for getSuitSymbols, etc

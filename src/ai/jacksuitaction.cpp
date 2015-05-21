@@ -20,7 +20,6 @@
 #include "jacksuitaction.h"
 
 #include <cassert>                      // for assert
-#include <functional>                   // for pointer_to_binary_function, etc
 
 #include "bestjackaction.h"             // for BestJackAction
 #include "cardtools.h"                  // for isRank

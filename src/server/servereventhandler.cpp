@@ -20,8 +20,11 @@
 #include "servereventhandler.h"
 
 #include <cstdio>                       // for snprintf
-#include <ostream>                      // for ostringstream, etc
-#include <utility>                      // for make_pair
+#include <stdbool.h>
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 #include "logger.h"                     // for BasicLogger, logError
 #include "cardtools.h"                  // for suitToSymbol

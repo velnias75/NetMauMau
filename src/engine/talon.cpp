@@ -21,7 +21,7 @@
 
 #include <algorithm>                    // for random_shuffle, for_each
 #include <cassert>                      // for assert
-#include <functional>                   // for unary_function, etc
+#include <stdbool.h>
 
 #include "italonchange.h"               // for ITalonChange
 #include "random_gen.h"                 // for genRandom

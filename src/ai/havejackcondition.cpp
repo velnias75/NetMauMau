@@ -19,8 +19,6 @@
 
 #include "havejackcondition.h"
 
-#include <iterator>
-
 #include "bestjackaction.h"             // for BestJackAction
 #include "cardtools.h"                  // for findRank
 #include "havelessthancondition.h"      // for HaveLessThanCondition

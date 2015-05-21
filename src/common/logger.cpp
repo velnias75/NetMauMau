@@ -23,6 +23,7 @@
 
 #include "logger.h"
 #include <iostream>                     // for ostreambuf_iterator, cerr
+#include <stdbool.h>
 
 #ifdef HAVE_SYSLOG_H
 #undef LOG_DEBUG

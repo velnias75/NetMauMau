@@ -19,7 +19,6 @@
 
 #include "testclient.h"
 
-#include <functional>                   // for pointer_to_binary_function, etc
 #include <iomanip>                      // for operator<<, setw
 #include <iostream>                     // for basic_ostream, operator<<, etc
 

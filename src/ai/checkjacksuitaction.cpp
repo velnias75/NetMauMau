@@ -21,6 +21,7 @@
 
 #include <algorithm>                    // for find_if
 #include <cassert>                      // for assert
+#include <stdbool.h>
 
 #include "random_gen.h"                 // for genRandom
 #include "stdcardfactory.h"             // for StdCardFactory

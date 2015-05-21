@@ -19,10 +19,7 @@
 
 #include "abstractaction.h"
 
-#include <cstddef>                      // for size_t
 #include <cstring>                      // for memset
-#include <functional>                   // for binder2nd, etc
-#include <iterator>                     // for distance
 
 #include "cardtools.h"                  // for findSuit, isRank, isSuit
 
@@ -69,7 +66,7 @@ AbstractAction::~AbstractAction() {}
 const IConditionPtr &AbstractAction::operator()(IAIState &state) const {
 #if defined(TRACE_AI) && !defined(NDEBUG)
 
-	if(!getenv("NMM_NO_TRACE")) logDebug("-> " << traceLog());
+	if(!std::getenv("NMM_NO_TRACE")) logDebug("-> " << traceLog());
 
 #endif
 

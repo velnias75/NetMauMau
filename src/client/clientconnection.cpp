@@ -23,9 +23,11 @@
 
 #include <cstdlib>                      // for NULL, strtoll, strtoul
 #include <cstring>                      // for strncmp, memcpy
-#include <new>                          // for nothrow, operator new[]
 #include <sstream>                      // for operator<<, ostringstream, etc
-#include <utility>                      // for make_pair, pair
+
+#ifdef HAVE_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
 
 #include "abstractclient.h"             // for AbstractClient
 #include "base64bridge.h"               // for Base64Bridge
@@ -268,9 +270,9 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			char name[4] = { 0 };
 			recv(name, 4, getSocketFD());
 
-			if(!strncmp(name, "NAME", 4)) {
+			if(!std::strncmp(name, "NAME", 4)) {
 				send(_pimpl->m_pName.c_str(), _pimpl->m_pName.length(), getSocketFD());
-			} else if(!strncmp(name, "NAMP", 4)) {
+			} else if(!std::strncmp(name, "NAMP", 4)) {
 
 				if(!(data && len)) {
 					send(_pimpl->m_pName.c_str(), _pimpl->m_pName.length(), getSocketFD());

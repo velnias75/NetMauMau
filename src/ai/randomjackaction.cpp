@@ -19,8 +19,6 @@
 
 #include "randomjackaction.h"
 
-#include <iterator>                     // for reverse_iterator
-
 #include "cardtools.h"                  // for findSuit
 #include "random_gen.h"                 // for genRandom
 

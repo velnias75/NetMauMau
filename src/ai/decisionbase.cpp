@@ -18,7 +18,7 @@
  */
 
 #include "decisionbase.h"
-#include <functional>                   // for pointer_to_binary_function, etc
+
 #include "cardtools.h"                  // for isRank, isSuit
 
 namespace {

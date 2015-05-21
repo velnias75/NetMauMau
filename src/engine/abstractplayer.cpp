@@ -19,8 +19,8 @@
 
 #include "abstractplayer.h"
 
-#include <functional>                   // for pointer_to_binary_function, etc
 #include <numeric>                      // for accumulate
+#include <stdbool.h>
 
 #include "cardtools.h"                  // for cardEqual, isRank
 #include "icardcountobserver.h"         // for ICardCountObserver

@@ -29,17 +29,21 @@
 #include <sys/select.h>                 // for FD_ISSET, FD_SET, select, etc
 #endif
 
+#ifdef HAVE_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
+
+#include <sys/time.h>
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>                     // for close, socklen_t, ssize_t
 #endif
 
-#include <algorithm>                    // for max
 #include <cerrno>                       // for errno, ENOMEM
-#include <cstddef>                      // for size_t
 #include <cstdio>                       // for NULL, fileno, snprintf, etc
 #include <cstring>                      // for memset
-#include <new>                          // for bad_alloc
 #include <vector>                       // for vector
+#include <stdbool.h>
 
 #include "abstractsocket.h"             // for AbstractSocket
 #include "abstractsocketimpl.h"         // for AbstractSocketImpl

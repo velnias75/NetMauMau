@@ -47,7 +47,7 @@ IActionPtr AbstractCondition::operator()(const IAIState &state) const {
 
 #if defined(TRACE_AI) && !defined(NDEBUG)
 
-	if(!getenv("NMM_NO_TRACE")) logDebug(" * " << traceLog());
+	if(!std::getenv("NMM_NO_TRACE")) logDebug(" * " << traceLog());
 
 #endif
 

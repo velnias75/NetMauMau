@@ -17,6 +17,10 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
+#include "config.h"
+#endif
+
 #include "cardtools.h"                  // IWYU pragma: keep
 
 #include <ctype.h>                      // for isdigit

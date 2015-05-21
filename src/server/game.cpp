@@ -19,15 +19,14 @@
 
 #include "game.h"
 
-#include <algorithm>                    // for max
-#include <cstdio>                       // for snprintf
+#include <cstdio>
 
 #include "abstractsocket.h"             // for AbstractSocket
 #include "easyplayer.h"                 // for EasyPlayer
 #include "gameconfig.h"                 // for GameConfig
 #include "ieventhandler.h"              // for IEventHandler
-#include "luafatalexception.h"          // for LuaFatalException
 #include "logger.h"
+#include "luafatalexception.h"          // for LuaFatalException
 #include "sqlite.h"                     // for SQLite
 
 namespace {

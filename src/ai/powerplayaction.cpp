@@ -20,7 +20,6 @@
 #include "powerplayaction.h"
 
 #include <cassert>                      // for assert
-#include <iterator>                     // for distance
 
 #include "aceroundcondition.h"          // for AceRoundCondition
 #include "cardtools.h"                  // for findSuit

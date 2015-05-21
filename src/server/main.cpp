@@ -32,24 +32,40 @@
 #define AUML "\u00e4"
 #endif
 
-#include <ctype.h>                      // for toupper
 #include <popt.h>                       // for poptFreeContext, etc
-#include <signal.h>                     // for sigaction, sigevent, etc
-#include <sys/time.h>                   // for CLOCK_REALTIME, timeval
+#include <csignal>                      // for sigaction, sigevent, etc
 #include <algorithm>                    // for max, min, count_if
 #include <climits>                      // IWYU pragma: keep
-#include <cstdio>                       // for NULL, snprintf
 #include <cstring>                      // for memset
-#include <fstream>                      // IWYU pragma: keep
+#include <cstdio>                       // for snprintf
+#include <cstdlib>
+#include <ctime>
 #include <iostream>                     // for operator<<, ostringstream, etc
-#include <utility>                      // for make_pair
+#include <stdbool.h>
+
+#ifdef PIDFILE
+#include <fstream>
+#endif
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#include <sys/types.h>
+
+#ifdef HAVE_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
+
+#ifdef HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
 
 #include "logger.h"                     // for BasicLogger, logger, etc
 #include "game.h"                       // for Game, etc
 #include "gameconfig.h"                 // for GameConfig
 #include "helpers.h"                    // for arRank, minPlayers, decks, etc
 #include "luaexception.h"               // for LuaException
-#include "serverconnection.h"           // for Connection, etc
 #include "servereventhandler.h"         // for EventHandler
 #include "serverplayer.h"               // for Player
 #include "sqlite.h"                     // for SQLite

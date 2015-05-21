@@ -48,8 +48,8 @@ AC_ARG_ENABLE([ai-image], [AS_HELP_STRING([--enable-ai-image], [path to image of
   [ AM_CONDITIONAL([BRANDING], [ test x$enable_ai_image != xno ]) ],
   [ AM_CONDITIONAL([BRANDING], [ false ]) ])
 
-AC_ARG_ENABLE([ai-tracing], [AS_HELP_STRING([--enable-ai-tracing], 
-  [enables tracing of AI decisions (useful for developers only, needs NDEBUG undefined)])], 
+AC_ARG_ENABLE([ai-tracing], [AS_HELP_STRING([--enable-ai-tracing],
+  [enables tracing of AI decisions (useful for developers only, needs NDEBUG undefined)])],
   [  if test x$enable_ai_tracing = xyes; then
        AC_DEFINE([TRACE_AI], [1], [Define to 1 to enable tracing of AI decisions])
      fi
@@ -92,7 +92,7 @@ fi
 
 if test -z "$ac_cv_prog_CPPCHECK"; then
   AM_CONDITIONAL([CHECKCPP], [ false ])
-else 
+else
   AM_CONDITIONAL([CHECKCPP], [ true ])
 fi
 
@@ -111,7 +111,7 @@ PKG_CHECK_MODULES([POPT], [popt >= 1.10])
 AC_CHECK_LIB([magic], [magic_open])
 AC_CHECK_LIB([rt], [timer_create])
 PKG_CHECK_MODULES([GSL], [gsl >= 1.9],
-  [ AM_CONDITIONAL([GSL], [ true ]) 
+  [ AM_CONDITIONAL([GSL], [ true ])
 	echo "[[ENVIRONMENT]]
 .TP
 \fBGSL_RNG_TYPE\fR
@@ -122,15 +122,16 @@ the desired seed value
 .PP
 See the
 .mso www.tmac
-.URL \"http://www.gnu.org/software/gsl/manual/html_node/Random-number-environment-variables.html\" \"GSL Manual\" \" for more information\"" > gsl.h2m ], 
+.URL \"http://www.gnu.org/software/gsl/manual/html_node/Random-number-environment-variables.html\" \"GSL Manual\" \" for more information\"" > gsl.h2m ],
   [ AM_CONDITIONAL([GSL], [ false ])] )
 PKG_CHECK_MODULES([LIBSQLITE], [sqlite3 >= 3.4.2])
-PKG_CHECK_MODULES([LIBLUA], [lua5.1 >= 5.1.2], [ AC_SUBST([PKGC_LUA], [lua5.1]) ], 
+PKG_CHECK_MODULES([LIBLUA], [lua5.1 >= 5.1.2], [ AC_SUBST([PKGC_LUA], [lua5.1]) ],
   [ PKG_CHECK_MODULES([LIBLUA], [lua51 >= 5.1.2], [ AC_SUBST([PKGC_LUA], [lua51]) ],
   [ PKG_CHECK_MODULES([LIBLUA], [lua >= 5.1.2 lua < 5.2], [AC_SUBST([PKGC_LUA], [lua])] ) ] ) ])
 
 # Checks for header files.
 AC_HEADER_STDBOOL
+AC_CHECK_HEADERS([sys/wait.h])
 AC_CHECK_HEADERS([sys/time.h])
 AC_CHECK_HEADERS([magic.h])
 AC_CHECK_HEADERS([poll.h])
@@ -164,8 +165,8 @@ AC_CHECK_FUNCS([socket])
 AC_CHECK_FUNCS([select])
 AC_CHECK_FUNCS([atexit])
 AC_CHECK_FUNCS([strerror])
-AC_CHECK_FUNC([arc4random_uniform], 
-  [ AC_DEFINE([HAVE_ARC4RANDOM_UNIFORM], [1], [we have arc4random_uniform]) 
+AC_CHECK_FUNC([arc4random_uniform],
+  [ AC_DEFINE([HAVE_ARC4RANDOM_UNIFORM], [1], [we have arc4random_uniform])
 ])
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_CHOWN
@@ -193,7 +194,7 @@ CFLAGS="${CFLAGS} -std=gnu99 -fvisibility-inlines-hidden"
 CXXFLAGS="${CXXFLAGS} -std=gnu++98 -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
 CPPFLAGS="${CPPFLAGS} -DBASICLOGGER_NO_PTHREADS -D_GLIBCXX_VISIBILITY=0"
 NO_EXCEPTIONS="-fno-exceptions" ;
-  
+
 if test x$CLANG = xyes; then CXXFLAGS="-fexceptions -frtti ${CXXFLAGS}" ; fi
 
 AC_SUBST([LDFLAGS])
@@ -209,5 +210,5 @@ AC_CONFIG_FILES([src/server/netmaumau.rc doc/client.dox netmaumau.h2m])
 AC_MSG_RESULT([You may want to install a client too: https://github.com/velnias75/NetMauMau-Qt-Client])
 
 AC_OUTPUT([Makefile doc/Makefile src/Makefile src/ai/Makefile src/client/Makefile
-  src/common/Makefile src/engine/Makefile src/images/Makefile src/include/Makefile 
+  src/common/Makefile src/engine/Makefile src/images/Makefile src/include/Makefile
   src/lua/Makefile src/server/Makefile src/sqlite/Makefile src/test/Makefile])

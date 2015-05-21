@@ -18,7 +18,7 @@
  */
 
 #if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h" // for HAVE_SYS_SOCKET_H, etc
+#include "config.h"                     // for HAVE_SYS_SOCKET_H, etc
 #endif
 
 #ifdef _WIN32
@@ -27,6 +27,8 @@
 #define SHUT_RDWR SD_BOTH
 #endif
 #elif defined(HAVE_SYS_SOCKET_H)
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <sys/socket.h>                 // for shutdown, SHUT_RDWR
 #endif
 
@@ -34,16 +36,16 @@
 #include <random_gen.h>                 // for GSLRNG
 #endif
 
-#include <ctype.h>                      // for tolower
-
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>                     // for close
 #endif
 
 #include <cassert>                      // for assert
-#include <functional>                   // for binder2nd, mem_fun1_t, etc
-#include <iterator>                     // for advance, distance
-#include <ostream>                      // for size_t, operator<<, etc
+#include <stdbool.h>
+
+#ifdef HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
 
 #include "logger.h"                     // for logDebug, BasicLogger
 #include "cardtools.h"                  // for getIllegalCard

@@ -9,7 +9,7 @@ noinst_SCRIPTS = start-server.sh
 
 ACLOCAL_AMFLAGS = -I m4
 
-EXTRA_DIST = COPYING netmaumau.ico netmaumau.xinetd.in netmaumau.pc.in start-server.sh.in
+EXTRA_DIST = COPYING THANKS netmaumau.ico netmaumau.xinetd.in netmaumau.pc.in start-server.sh.in
 
 if XINETD
 CLEANFILES = netmaumau

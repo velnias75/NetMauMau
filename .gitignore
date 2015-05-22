@@ -48,8 +48,11 @@ netmaumau.h2m
 netmaumau.kdev4
 netmaumau.pc
 netmaumau-*.tar.xz
+nmm-ai.flw
 *.o
 release
+src/ai/.deps/
+src/ai/.libs/
 src/client/.deps/
 src/client/.libs
 src/client/Makefile
@@ -103,6 +106,3 @@ start-server.sh
 test-driver
 V*.xml
 win32
-src/ai/.deps/
-src/ai/.libs/
-nmm-ai.flw

@@ -1,9 +1,9 @@
-netmaumau (0.18.2) UNRELEASED; urgency=low
+netmaumau (0.19.0) UNRELEASED; urgency=low
 
   * improved ace/king/queen rounds
   * fixed endless loop of AI under some circumstances
 
- -- Heiko Schäfer <heiko@rangun.de>  Mon, 18 May 2015 20:46:31 +0200
+ -- Heiko Schäfer <heiko@rangun.de>  Fri, 22 May 2015 08:06:37 +0200
 
 netmaumau (0.18.0) UNRELEASED; urgency=low
 

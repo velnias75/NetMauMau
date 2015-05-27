@@ -313,6 +313,41 @@ _EXPORT std::size_t getCardPoints(NetMauMau::Common::ICard::RANK rank) _CONST _P
 
 /**
  * @ingroup util
+ * @brief Structure containing the configuration of initial cards and decks
+ * @since 0.19.1
+ */
+typedef struct _cardConfig {
+	inline _cardConfig(std::size_t icc, std::size_t dks) : initialCards(icc), decks(dks) {}
+	inline _cardConfig() : initialCards(5), decks(5) {}
+	std::size_t initialCards; ///< the amount of initial cards each player gets at game start
+	std::size_t decks; ///< the amount of card decks to play
+} CARDCONFIG;
+
+/**
+ * @ingroup util
+ * @brief Determines reasonable amounts of initial cards and card decks
+ *
+ * This function calculates reasonable values based on the amount of @c players,
+ * @c initialCardCount and @c decks.
+ *
+ * This function can be used by clients to avoid the server adjusting the given
+ * parameters.
+ *
+ * @param players the amount of players
+ * @param initialCardCount the desired amount of initial cards
+ * @param decks the desired amount of card decks
+ *
+ * @see CARDCONFIG
+ *
+ * @return structure containing the reasonable values
+ *
+ * @since 0.19.1
+ */
+_EXPORT CARDCONFIG getCardConfig(std::size_t players, std::size_t initialCardCount = 5,
+								 std::size_t decks = 1) _CONST;
+
+/**
+ * @ingroup util
  * @brief Gets the executable name of the server
  *
  * @note on non-Windows systems it returns the full path to the executable

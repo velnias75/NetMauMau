@@ -19,44 +19,33 @@
 
 #include "gameconfig.h"
 
-namespace {
-
-std::size_t countAI(const std::string *aiNames) {
-
-	std::size_t cnt = 0;
-
-	for(int i = 0; i < 4; ++i) {
-		if(!aiNames[i].empty()) ++cnt;
-	}
-
-	return cnt;
-}
-
-}
-
 using namespace NetMauMau::Server;
 
 GameConfig::GameConfig(NetMauMau::Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange,
-					   bool aiPlayer, const std::string *aiName, char aceRound, std::size_t factor,
-					   std::size_t initialCardCount) : m_aiPlayer(aiPlayer), m_aiName(aiName),
-	m_engineCfg(evtHdlr, dirChange, aiDelay, !aiPlayer || countAI(aiName) > 1, aceRound, factor,
-				initialCardCount) {}
+					   NetMauMau::Common::CARDCONFIG &cc, bool aiPlayer,
+					   const std::vector<std::string> &aiName, char aceRound)
+	: m_aiPlayer(aiPlayer), m_aiName(aiName), m_engineCfg(evtHdlr, dirChange, aiDelay,
+			!aiPlayer || !getAINames().empty(), aceRound, cc), m_cardConfig(cc) {}
 
 GameConfig::GameConfig(const GameConfig &o) : m_aiPlayer(o.m_aiPlayer), m_aiName(o.m_aiName),
-	m_engineCfg(o.m_engineCfg) {}
+	m_engineCfg(o.m_engineCfg), m_cardConfig(o.m_cardConfig) {}
 
 GameConfig::~GameConfig() {}
 
-const std::string *GameConfig::getAIName() const {
+const std::vector<std::string> &GameConfig::getAINames() const {
 	return m_aiName;
 }
 
-bool GameConfig::getAIPlayer() const {
+bool GameConfig::hasAIPlayer() const {
 	return m_aiPlayer;
 }
 
 NetMauMau::EngineConfig &GameConfig::getEngineConfig() {
 	return m_engineCfg;
+}
+
+NetMauMau::Common::CARDCONFIG &GameConfig::getCardConfig() const {
+	return m_cardConfig;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

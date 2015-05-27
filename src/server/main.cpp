@@ -69,6 +69,7 @@
 #include "servereventhandler.h"         // for EventHandler
 #include "serverplayer.h"               // for Player
 #include "sqlite.h"                     // for SQLite
+#include "iruleset.h"
 
 namespace {
 
@@ -90,32 +91,32 @@ struct _AINameCmp : std::binary_function<std::string, std::string, bool> {
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 #pragma GCC diagnostic push
 char *aiName = AI_NAME;
-std::string aiNames[4];
+std::vector<std::string> aiNames;
 #pragma GCC diagnostic pop
 
 poptOption poptOptions[] = {
 	{
 		"players", 'p', POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &NetMauMau::minPlayers,
-		'p', "Set amount of players", "AMOUNT"
+		0, "Set amount of players", "AMOUNT"
 	},
 	{ "ultimate", 'u', POPT_ARG_NONE, NULL, 'u', "Play until last player wins", NULL },
 	{ "direction-change", 'd', POPT_ARG_NONE, NULL, 'd', "Allow direction changes", NULL },
 	{
 		"ace-round", 'a', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT | POPT_ARGFLAG_OPTIONAL,
-		&NetMauMau::arRank, 'a', "Enable ace rounds (requires all clients to be at least of version 0.7)",
-		"ACE|QUEEN|KING"
+		&NetMauMau::arRank, 'a', "Enable ace rounds (requires all clients to be at " \
+		"least of version 0.7)", "ACE|QUEEN|KING"
 	},
 	{
 		"decks", 0, POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &NetMauMau::decks,
 		0, "Amount of card decks to use", "AMOUNT"
 	},
 	{
-		"initial-card-count", 'c', POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &NetMauMau::initialCardCount,
-		0, "Amount of cards each player gets at game start", "AMOUNT"
+		"initial-card-count", 'c', POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT,
+		&NetMauMau::initialCardCount, 0, "Amount of cards each player gets at game start", "AMOUNT"
 	},
 	{
 		"ai-name", 'A', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &aiName, 'A',
-		"Set the name of one AI player. Can be given up to 4 times. " \
+		"Set the name of one AI player. Can be given multiple times. " \
 		"Optionally append :E[asy] or :H[ard] to the name to set the strength. " \
 		"Whitespaces can get substituted by \'%\', \'%\' itself by \"%%\"", "NAME[:E|H]"
 	},
@@ -158,7 +159,6 @@ using namespace NetMauMau;
 
 int main(int argc, const char **argv) {
 
-	std::size_t numAI = 0;
 	poptContext pctx = poptGetContext(NULL, argc, argv, poptOptions, 0);
 	int c;
 
@@ -169,14 +169,11 @@ int main(int argc, const char **argv) {
 			const std::string typeStripped(std::string(inetdParsedString(aiName)).substr(0,
 										   std::string(aiName).rfind(':')));
 
-			if(std::count_if(aiNames, aiNames + numAI, std::bind2nd(_AINameCmp(),
+			if(std::count_if(aiNames.begin(), aiNames.end(), std::bind2nd(_AINameCmp(),
 							 inetdParsedString(aiName)))) {
 				logWarning("Duplicate AI player name: \"" << typeStripped << "\"");
-			} else if(numAI < 4) {
-				aiNames[numAI++] = aiName;
 			} else {
-				logWarning("At maximum 4 AI players are allowed; ignoring: \""
-						   << typeStripped << "\"");
+				aiNames.push_back(aiName);
 			}
 		}
 		break;
@@ -248,10 +245,6 @@ int main(int argc, const char **argv) {
 
 		poptFreeContext(pctx);
 		return EXIT_SUCCESS;
-
-		case 'p':
-			minPlayers = std::min<std::size_t>(minPlayers, 5);
-			break;
 
 		case 'u':
 			ultimate = true;
@@ -392,17 +385,17 @@ int main(int argc, const char **argv) {
 
 		const bool aiOpponent = minPlayers <= 1;
 
-		if(aiOpponent && !numAI) {
-			aiNames[numAI++] = aiName;
-		} else {
-			minPlayers = std::min<std::size_t>(5, numAI + minPlayers);
+		if(aiOpponent && aiNames.empty()) {
+			aiNames.push_back(aiName);
+		} else if(aiOpponent) {
+			minPlayers = std::max<std::size_t>(2, aiNames.size() + minPlayers);
 		}
 
 		Server::Connection con(aceRound ? std::max(7u, MAKE_VERSION(MIN_MAJOR, MIN_MINOR)) :
 							   MAKE_VERSION(MIN_MAJOR, MIN_MINOR), false, port,
 							   *host ? host : NULL);
 
-		ultimate = (!aiOpponent && minPlayers > 2) ? ultimate : numAI > 1;
+		ultimate = (!aiOpponent && minPlayers > 2) ? ultimate : !aiNames.empty();
 
 		if(ultimate) logInfo("Running in ultimate mode");
 
@@ -414,16 +407,35 @@ int main(int argc, const char **argv) {
 
 			con.connect(inetd);
 
-			decks = std::max(1, std::abs(decks));
-			initialCardCount = std::max(2, std::abs(initialCardCount));
+			Common::CARDCONFIG cconf(NetMauMau::Common::getCardConfig(minPlayers,
+									 static_cast<std::size_t>(initialCardCount),
+									 static_cast<std::size_t>(decks)));
 
 			Server::EventHandler evtHdlr(con);
 			Server::GameConfig cfg(evtHdlr, static_cast<long>(::fabs(aiDelay * 1e06)),
-								   dirChange, aiOpponent, aiNames,
+								   dirChange, cconf, aiOpponent, aiNames,
 								   static_cast<char>(aceRound ? ::toupper(arRank ?
-										   arRank[0] : 'A') : 0), static_cast<std::size_t>(decks),
-								   static_cast<std::size_t>(initialCardCount));
+										   arRank[0] : 'A') : 0));
 			Server::Game game(cfg);
+
+			if(cconf.decks != static_cast<std::size_t>(decks)) {
+				logWarning("Adjusted amount of card decks from " << decks << " to " << cconf.decks);
+				decks = static_cast<int>(cconf.decks);
+			}
+
+			if(cconf.initialCards != static_cast<std::size_t>(initialCardCount)) {
+				logWarning("Adjusted amount of initial cards from " << initialCardCount << " to "
+						   << cconf.initialCards);
+				initialCardCount = static_cast<int>(cconf.initialCards);
+			}
+
+			if(aiOpponent && game.getPlayerCount() < aiNames.size()) {
+				minPlayers = game.getPlayerCount() + 1;
+			} else if(cfg.getEngineConfig().getRuleSet()->getMaxPlayers() < minPlayers) {
+				minPlayers = cfg.getEngineConfig().getRuleSet()->getMaxPlayers();
+				logWarning("Limiting amount of human players to " << minPlayers <<
+						   " (due to configuration limit).");
+			}
 
 			Server::Connection::CAPABILITIES caps;
 
@@ -461,7 +473,7 @@ int main(int argc, const char **argv) {
 			caps.insert(std::make_pair("MIN_VERSION", mvos.str()));
 
 			std::ostringstream mpos;
-			mpos << (aiOpponent ? numAI + 1 : minPlayers);
+			mpos << (aiOpponent ? aiNames.size() + 1 : minPlayers);
 			caps.insert(std::make_pair("MAX_PLAYERS", mpos.str()));
 
 			std::ostringstream cpos;

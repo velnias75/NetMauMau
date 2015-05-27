@@ -510,15 +510,7 @@ std::size_t LuaRuleSet::getMaxPlayers() const throw(NetMauMau::Lua::Exception::L
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 
-	const std::size_t r = checkReturnType<std::size_t>(l, fname);
-
-	if(r <= 5) {
-		return r;
-	} else {
-		logWarning("[Lua " << fname << "] " << r << ">5; fixing to 5...");
-	}
-
-	return 5;
+	return checkReturnType<std::size_t>(l, fname);
 }
 
 void LuaRuleSet::setCurPlayers(std::size_t players) throw(NetMauMau::Lua::Exception::LuaException) {

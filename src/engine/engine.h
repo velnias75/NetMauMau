@@ -42,7 +42,7 @@ namespace RuleSet {
 class IRuleSet;
 }
 
-class _EXPORT Engine : private ITalonChange, private IAceRoundListener,
+class _EXPORT Engine : private ITalonChange, public IAceRoundListener,
 	private ICardCountObserver {
 	DISALLOW_COPY_AND_ASSIGN(Engine)
 	typedef enum { ACCEPT_PLAYERS, NOCARDS, PLAYING, FINISHED } STATE;

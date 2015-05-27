@@ -154,7 +154,6 @@ function getJackSuit()
 end
 
 --- The maximum amount of players able to join the game.
--- There is a hard limit of 5 players. Any higher number will truncated to 5.
 -- @return the maximum amount of players able to join the game (integer)
 function getMaxPlayers()
   return 5

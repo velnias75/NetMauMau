@@ -21,8 +21,9 @@
 #include "config.h"
 #endif
 
-#include "hardplayer.h"
 #include "logger.h"
+#include "cardtools.h"
+#include "hardplayer.h"
 #include "testeventhandler.h"
 
 using namespace NetMauMau;
@@ -36,7 +37,7 @@ int main(int, const char **) {
 	try {
 
 		TestEventHandler evHdlr;
-		EngineConfig cfg(evHdlr, true, 0L, false, 'A');
+		EngineConfig cfg(evHdlr, true, 0L, false, 'A', Common::getCardConfig(4));
 		Engine engine(cfg);
 
 		Common::SmartPtr<Player::IPlayer> p1(new Player::HardPlayer("Cathy",

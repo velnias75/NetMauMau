@@ -24,6 +24,7 @@
 #include "cardtools.h"                  // IWYU pragma: keep
 
 #include <ctype.h>                      // for isdigit
+#include <cmath>
 #include <cstdlib>                      // for strtoul
 #include <cstdio>                       // for snprintf, NULL
 #include <cstddef>                      // for size_t
@@ -207,6 +208,29 @@ std::size_t NetMauMau::Common::getCardPoints(ICard::RANK v) {
 #ifndef __clang__
 	return 0;
 #endif
+}
+
+NetMauMau::Common::CARDCONFIG NetMauMau::Common::getCardConfig(std::size_t players,
+		std::size_t iic, std::size_t idk) {
+
+	const std::size_t pls = std::max<std::size_t>(2, players),
+					  ic = std::max<std::size_t>(3, iic);
+
+	std::size_t icc, dck = std::max<std::size_t>(std::max<std::size_t>(1, idk) - 1, pls >> 3);
+
+	do {
+
+		const std::size_t tcc = (++dck) << 5;
+		std::size_t icp;
+
+		icc = ic;
+
+		while(((icp = icc * pls) > tcc) ||
+				(std::floor(static_cast<float>(pls) * 1.4f) > (tcc - icp))) --icc;
+
+	} while(icc < 3);
+
+	return NetMauMau::Common::CARDCONFIG(icc, dck);
 }
 
 unsigned int NetMauMau::Common::suitOrderPosition(NetMauMau::Common::ICard::SUIT s) {

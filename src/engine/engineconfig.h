@@ -21,7 +21,9 @@
 #define NETMAUMAU_ENGINECONFIG_H
 
 #include <cstddef>                      // for size_t
-#include "icard.h"                      // for ICard, ICard::RANK
+
+#include "cardtools.h"
+#include "luaexception.h"
 
 namespace NetMauMau {
 
@@ -40,8 +42,8 @@ class EngineConfig {
 public:
 	explicit EngineConfig(const EngineConfig &);
 	explicit EngineConfig(Event::IEventHandler &eventHandler, bool dirChange, long aiDelay = 1000L,
-						  bool nextMessage = true, char aceRound = 0, std::size_t factor = 1,
-						  std::size_t initialCardCount = 5);
+						  bool nextMessage = true, char aceRound = 0,
+						  const Common::CARDCONFIG &cc = Common::CARDCONFIG());
 	~EngineConfig();
 
 	Event::IEventHandler &getEventHandler() const _PURE;
@@ -53,7 +55,8 @@ public:
 	char getAceRound() const _PURE;
 
 	Common::ICard::RANK getAceRoundRank() const _PURE;
-	RuleSet::IRuleSet *getRuleSet(const NetMauMau::IAceRoundListener *arl = 0L) const;
+	RuleSet::IRuleSet *getRuleSet(const NetMauMau::IAceRoundListener *arl = 0L) const
+	throw(Lua::Exception::LuaException);
 	std::size_t getTalonFactor() const _PURE;
 
 private:

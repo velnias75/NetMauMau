@@ -503,11 +503,12 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 						if(cver >= 4) {
 
+							if(j >= 4) j = 0;
+
 							piz.reserve(piz.length() + (m_aiPlayerImages[j] &&
 														!m_aiPlayerImages[j]->empty() ?
 														m_aiPlayerImages[j]->length() :
-														aiBase64.length())
-										+ 1);
+														aiBase64.length()) + 1);
 
 							piz.append(m_aiPlayerImages[j] && !m_aiPlayerImages[j]->empty() ?
 									   (*m_aiPlayerImages[j]) : aiBase64).append(1, 0);

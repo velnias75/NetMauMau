@@ -24,7 +24,9 @@ Homepage: http://sourceforge.net/projects/netmaumau/
 Package: netmaumau-client
 Architecture: any
 Pre-Depends: dpkg (>= 1.15.6~)
-Depends: ${misc:Depends},
+Depends: libnetmaumaucommon5 (>= 0.17.3~),
+         libnetmaumauclient4 (>= 0.17.3~),
+         ${misc:Depends},
          ${shlibs:Depends}
 Suggests: nmm-qt-client
 Description: Server for the popular card game Mau Mau - console client

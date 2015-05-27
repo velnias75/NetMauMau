@@ -20,6 +20,8 @@
 #ifndef NETMAUMAU_SERVER_GAMECONFIG_H
 #define NETMAUMAU_SERVER_GAMECONFIG_H
 
+#include <vector>
+
 #include "engineconfig.h"               // for EngineConfig
 
 namespace NetMauMau {
@@ -35,18 +37,21 @@ class GameConfig {
 public:
 	explicit GameConfig(const GameConfig &);
 	explicit GameConfig(Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange,
-						bool aiPlayer = false, const std::string *aiName = 0L, char aceRound = 0,
-						std::size_t factor = 1, std::size_t initialCardCount = 5);
+						Common::CARDCONFIG &cc, bool aiPlayer = false,
+						const std::vector<std::string> &aiName = std::vector<std::string>(),
+						char aceRound = 0);
 	~GameConfig();
 
-	bool getAIPlayer() const _PURE;
-	const std::string *getAIName() const _PURE;
+	bool hasAIPlayer() const _PURE;
+	const std::vector<std::string> &getAINames() const _CONST;
 	EngineConfig &getEngineConfig() _CONST;
+	Common::CARDCONFIG &getCardConfig() const _PURE;
 
 private:
 	const bool m_aiPlayer;
-	const std::string *m_aiName;
+	const std::vector<std::string> m_aiName;
 	EngineConfig m_engineCfg;
+	Common::CARDCONFIG &m_cardConfig;
 };
 
 }

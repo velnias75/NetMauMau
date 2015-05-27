@@ -43,13 +43,13 @@ const char *STDRULESLUA = "stdrules";
 using namespace NetMauMau;
 
 EngineConfig::EngineConfig(Event::IEventHandler &eventHandler, bool dirChange, long aiDelay,
-						   bool nextMessage, char aceRound, std::size_t factor,
-						   std::size_t initialCardCount) : m_eventHandler(eventHandler),
-	m_dirChange(dirChange), m_aiDelay(aiDelay), m_nextMessage(nextMessage),
-	m_aceRoundRank(aceRound == 'A' ? Common::ICard::ACE : (aceRound == 'Q' ? Common::ICard::QUEEN :
-				   (aceRound == 'K' ? Common::ICard::KING : Common::ICard::RANK_ILLEGAL))),
-	m_ruleset(0L), m_aceRound(aceRound), m_talonFactor(factor),
-	m_initialCardCount(initialCardCount) {}
+						   bool nextMessage, char aceRound, const Common::CARDCONFIG &cc) :
+	m_eventHandler(eventHandler), m_dirChange(dirChange), m_aiDelay(aiDelay),
+	m_nextMessage(nextMessage), m_aceRoundRank(aceRound == 'A' ? Common::ICard::ACE :
+			(aceRound == 'Q' ? Common::ICard::QUEEN : (aceRound == 'K' ?
+					Common::ICard::KING : Common::ICard::RANK_ILLEGAL))), m_ruleset(0L),
+	m_aceRound(aceRound), m_talonFactor(cc.decks),
+	m_initialCardCount(cc.initialCards) {}
 
 EngineConfig::EngineConfig(const EngineConfig &o) : m_eventHandler(o.m_eventHandler),
 	m_dirChange(o.m_dirChange), m_aiDelay(o.m_aiDelay), m_nextMessage(o.m_nextMessage),
@@ -80,7 +80,8 @@ void EngineConfig::setNextMessage(bool b) {
 	m_nextMessage = b;
 }
 
-RuleSet::IRuleSet *EngineConfig::getRuleSet(const NetMauMau::IAceRoundListener *arl) const {
+RuleSet::IRuleSet *EngineConfig::getRuleSet(const NetMauMau::IAceRoundListener *arl) const
+throw(Lua::Exception::LuaException) {
 	return m_ruleset ? m_ruleset : (m_ruleset = new RuleSet::LuaRuleSet(getLuaScriptPath(),
 			m_dirChange, m_initialCardCount, m_aceRound ? arl : 0L));
 }

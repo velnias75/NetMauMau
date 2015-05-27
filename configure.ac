@@ -28,8 +28,9 @@ AC_ARG_ENABLE([client], [AS_HELP_STRING([--disable-client], [disables build of c
   [ AM_CONDITIONAL([ENABLE_CLIENT], [ test x$enable_client = xyes ]) ],
   [ AM_CONDITIONAL([ENABLE_CLIENT], [ true ]) ])
 
-AC_ARG_ENABLE([cli-client], [AS_HELP_STRING([--enable-cli-client], [enables build of CLI client])],
-  [ AM_CONDITIONAL([ENABLE_CLI_CLIENT], [ test x$enable_cli_client = xyes ]) ],
+AC_ARG_ENABLE([console-client], [AS_HELP_STRING([--enable-console-client], 
+  [enables build of console client])],
+  [ AM_CONDITIONAL([ENABLE_CLI_CLIENT], [ test x$enable_console_client = xyes ]) ],
   [ AM_CONDITIONAL([ENABLE_CLI_CLIENT], [ false ]) ])
 
 AC_ARG_ENABLE([apidoc], [AS_HELP_STRING([--disable-apidoc], [disables generation of API docs])],
@@ -102,7 +103,7 @@ else
   AM_CONDITIONAL([RC], [ true ])
 fi
 
-if test x$enable_cli_client = xyes; then
+if test x$enable_console_client = xyes; then
   AM_CONDITIONAL([ENABLE_CLIENT], [ true ])
 fi
 

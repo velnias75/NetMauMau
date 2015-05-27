@@ -34,6 +34,8 @@ struct timeval;
 #define MIN_MAJOR 0
 #define MIN_MINOR 2
 
+#define WAIT_ERROR -2
+
 namespace NetMauMau {
 
 namespace Server {

@@ -588,7 +588,7 @@ int main(int argc, const char **argv) {
 						}
 					}
 
-				} else if(r == -2) {
+				} else if(r == WAIT_ERROR) {
 					game.reset(true);
 				}
 
@@ -597,7 +597,7 @@ int main(int argc, const char **argv) {
 				updatePlayerCap(caps, game.getPlayerCount(), con, aiOpponent);
 			}
 
-			NetMauMau::DB::SQLite::getInstance()->gameEnded(-1LL);
+			NetMauMau::DB::SQLite::getInstance()->gameEnded(NOGAME_IDX);
 
 		} catch(const Common::Exception::SocketException &e) {
 			logError(e.what());

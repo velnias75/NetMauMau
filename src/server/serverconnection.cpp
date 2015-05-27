@@ -216,6 +216,7 @@ void Connection::connect(bool inetd) throw(NetMauMau::Common::Exception::SocketE
 int Connection::wait(timeval *tv) {
 
 	if(tv) {
+
 		for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 				i != getRegisteredPlayers().end(); ++i) {
 
@@ -229,14 +230,14 @@ int Connection::wait(timeval *tv) {
 			timeval tv = { 0, 0 };
 
 			if((nRet = select(0, &rfds, NULL, NULL, &tv)) == SOCKET_ERROR) {
-				err = -2;
+				err = WAIT_ERROR;
 			}
 
 			if(nRet > 0 && FD_ISSET(i->sockfd, &rfds)) {
-				err = -2;
+				err = WAIT_ERROR;
 			}
 
-			if(err == -2) {
+			if(err == WAIT_ERROR) {
 				logDebug("Lost connection to player \"" << i->name << "\"");
 				removePlayer(i->sockfd);
 				return err;
@@ -249,7 +250,7 @@ int Connection::wait(timeval *tv) {
 			if(!::recv(i->sockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT)) {
 				logDebug("Lost connection to player \"" << i->name << "\"");
 				removePlayer(i->sockfd);
-				return -2;
+				return WAIT_ERROR;
 			}
 
 #endif

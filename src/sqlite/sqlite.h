@@ -26,6 +26,8 @@
 #include "iconnection.h"                // for IConnection, etc
 #include "smartptr.h"                   // for SmartPtr
 
+#define NOGAME_IDX -1LL
+
 namespace NetMauMau {
 
 namespace Player {

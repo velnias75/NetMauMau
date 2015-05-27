@@ -156,7 +156,7 @@ end
 --- The maximum amount of players able to join the game.
 -- @return the maximum amount of players able to join the game (integer)
 function getMaxPlayers()
-  return 5
+  return 12
 end
 
 --- Set the current amount of players.

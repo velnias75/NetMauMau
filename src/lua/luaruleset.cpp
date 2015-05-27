@@ -41,7 +41,6 @@ const char *FUNCTIONS[] = {
 	"getAceRoundRank",
 	"getDirChangeIsSuspend",
 	"getJackSuit",
-	"getMaxPlayers",
 	"hasDirChange",
 	"hasSuspended",
 	"hasTakenCards",
@@ -58,7 +57,8 @@ const char *FUNCTIONS[] = {
 	"suspendIfNoMatchingCard",
 	"takeCardCount",
 	"takeCards",
-	"takeIfLost"
+	"takeIfLost",
+	"getMaxPlayers",
 };
 
 enum FUNCTIONNAMES {
@@ -67,7 +67,6 @@ enum FUNCTIONNAMES {
 	GETACEROUNDRANK,
 	GETDIRCHANGEISSUSPEND,
 	GETJACKSUIT,
-	GETMAXPLAYERS,
 	HASDIRCHANGE,
 	HASSUSPENDED,
 	HASTAKENCARDS,
@@ -85,7 +84,8 @@ enum FUNCTIONNAMES {
 	TAKECARDCOUNT,
 	TAKECARDS,
 	TAKEIFLOST,
-	ENDFUNCTIONS
+	ENDFUNCTIONS,
+	GETMAXPLAYERS = ENDFUNCTIONS
 };
 
 #pragma GCC diagnostic ignored "-Weffc++"
@@ -273,11 +273,16 @@ T checkReturnType(lua_State *ls,
 
 using namespace NetMauMau::RuleSet;
 
-LuaRuleSet::LuaRuleSet(const std::string &luafile, bool dirChangePossible, std::size_t icc,
-					   const NetMauMau::IAceRoundListener *arl)
+LuaRuleSet::LuaRuleSet(const std::vector<std::string> &luafiles, bool dirChangePossible,
+					   std::size_t icc, const NetMauMau::IAceRoundListener *arl)
 throw(NetMauMau::Lua::Exception::LuaException) : IRuleSet() {
 
-	l.load(luafile, dirChangePossible, icc, arl);
+	if(luafiles.empty()) throw NetMauMau::Lua::Exception::LuaException("no Lua rule files given");
+
+	for(std::vector<std::string>::const_iterator i(luafiles.begin()); i != luafiles.end(); ++i) {
+		logInfo("Loading Lua rules file \"" << *i << "\" …");
+		l.load(*i, dirChangePossible, icc, arl);
+	}
 
 	const std::vector<const char *> &missing(checkInterface());
 
@@ -508,9 +513,15 @@ std::size_t LuaRuleSet::getMaxPlayers() const throw(NetMauMau::Lua::Exception::L
 	const char *fname = FUNCTIONS[GETMAXPLAYERS];
 
 	lua_getglobal(l, fname);
+
+	if(lua_isnil(l, -1)) {
+		lua_pop(l, 1);
+		return std::numeric_limits<std::size_t>::max();
+	}
+
 	l.call(fname, 0);
 
-	return checkReturnType<std::size_t>(l, fname);
+	return std::max<std::size_t>(2, checkReturnType<std::size_t>(l, fname));
 }
 
 void LuaRuleSet::setCurPlayers(std::size_t players) throw(NetMauMau::Lua::Exception::LuaException) {

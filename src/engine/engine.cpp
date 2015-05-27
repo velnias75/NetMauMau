@@ -591,7 +591,8 @@ throw(Common::Exception::SocketException) {
 	if(cardCount) {
 
 		Player::IPlayer::CARDS tmp;
-		tmp.reserve(cardCount);
+
+		if(cardCount <= tmp.max_size()) tmp.reserve(cardCount);
 
 		std::size_t j = 0;
 

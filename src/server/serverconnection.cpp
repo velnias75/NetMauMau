@@ -324,9 +324,11 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 						std::string namePic;
 
-						try {
-							namePic.reserve(MAXPICBYTES);
-						} catch(const std::bad_alloc &) {}
+						if(MAXPICBYTES <= namePic.max_size()) {
+							try {
+								namePic.reserve(MAXPICBYTES);
+							} catch(const std::bad_alloc &) {}
+						}
 
 						try {
 							namePic = read(cfd, cver >= 4 ? MAXPICBYTES : 1024);
@@ -376,7 +378,14 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 										playerPic = namePic.substr(namePic.rfind('\0') + 1);
 
 										while(v) {
-											playerPic.reserve(playerPic.size() + v);
+
+											const std::string::size_type resPp =
+												playerPic.size() + v;
+
+											if(resPp <= playerPic.max_size()) {
+												playerPic.reserve(resPp);
+											}
+
 											playerPic.append(read(cfd, v));
 											v = pl - playerPic.length();
 										}
@@ -487,7 +496,12 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						piz.append(1, 0);
 
 						if(cver >= 4) {
-							piz.reserve(piz.length() + i->playerPic.length() + 1);
+
+							const std::string::size_type resPiz = piz.length() +
+																  i->playerPic.length() + 1;
+
+							if(resPiz <= piz.max_size()) piz.reserve(resPiz);
+
 							piz.append(i->playerPic.empty() ? "-" : i->playerPic).append(1, 0);
 						}
 
@@ -506,10 +520,13 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 							if(j >= 4) j = 0;
 
-							piz.reserve(piz.length() + (m_aiPlayerImages[j] &&
-														!m_aiPlayerImages[j]->empty() ?
-														m_aiPlayerImages[j]->length() :
-														aiBase64.length()) + 1);
+							const std::string::size_type resPiz = piz.length() +
+																  (m_aiPlayerImages[j] &&
+																   !m_aiPlayerImages[j]->empty() ?
+																   m_aiPlayerImages[j]->length() :
+																   aiBase64.length()) + 1;
+
+							if(resPiz <= piz.max_size()) piz.reserve(resPiz);
 
 							piz.append(m_aiPlayerImages[j] && !m_aiPlayerImages[j]->empty() ?
 									   (*m_aiPlayerImages[j]) : aiBase64).append(1, 0);

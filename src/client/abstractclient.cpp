@@ -182,7 +182,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	const PLAYERINFOS &pi(playerList(false, timeout));
 	PLAYERLIST pl;
 
-	pl.reserve(pi.size());
+	if(pi.size() <= pl.max_size()) pl.reserve(pi.size());
+
 	std::transform(pi.begin(), pi.end(), std::back_inserter(pl), nameExtractor());
 
 	return pl;

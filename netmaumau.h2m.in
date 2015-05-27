@@ -1,17 +1,41 @@
 [DESCRIPTION]
-@PACKAGE_NAME@ is a server for the popular card game Mau Mau
+@PACKAGE_NAME@ is a server for the popular card game Mau Mau.
+
+[FILES]
+The Lua rules script \fBstdrules.lua\fR will get searched and - if existing - loaded in order from 
+.IP 1.
+@pkgdatadir@
+.IP 2.
+@sysconfdir@/@PACKAGE@
+.IP 3.
+~/.@PACKAGE_NAME@
+
+[SEE ALSO]
+Visit the
+.mso www.tmac
+.URL "https://sourceforge.net/projects/netmaumau/" "homepage" " for more information."
 
 [AUTHOR]
 Written by Heiko Schaefer <heiko@rangun.de>
 
 [REPORTING BUGS]
-Report bugs to @PACKAGE_BUGREPORT@
+Report bugs to @PACKAGE_BUGREPORT@ or into the 
+.mso www.tmac
+.URL "https://github.com/velnias75/NetMauMau/issues" "issue tracker" "."
+
+[THANKS]
+Very special thanks are going to \fBCatherine Maria Touhami\fR.
 
 [COPYRIGHT]
 Copyright (c) @BUILD_YEAR@, Heiko Schaefer <heiko@rangun.de>
-
-@PACKAGE_NAME@ is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-@PACKAGE_NAME@ is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along with @PACKAGE_NAME@.  If not, see <http://www.gnu.org/licenses/>.
+.PP
+@PACKAGE_NAME@ is free software: you can redistribute it and/or modify it under the terms of the 
+GNU Lesser General Public License as published by the Free Software Foundation, either version 3 
+of the License, or (at your option) any later version.
+.PP
+@PACKAGE_NAME@ is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+See the GNU Lesser General Public License for more details.
+.PP
+You should have received a copy of the GNU Lesser General Public License along with @PACKAGE_NAME@.  
+If not, see <http://www.gnu.org/licenses/>.

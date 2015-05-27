@@ -20,6 +20,7 @@
 #ifndef NETMAUMAU_ENGINECONFIG_H
 #define NETMAUMAU_ENGINECONFIG_H
 
+#include <vector>
 #include <cstddef>                      // for size_t
 
 #include "cardtools.h"
@@ -60,7 +61,7 @@ public:
 	std::size_t getTalonFactor() const _PURE;
 
 private:
-	static std::string getLuaScriptPath();
+	static std::vector<std::string> getLuaScriptPaths();
 
 private:
 	Event::IEventHandler &m_eventHandler;

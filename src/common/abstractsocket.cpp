@@ -244,10 +244,14 @@ std::string AbstractSocket::read(SOCKET fd, std::size_t len) throw(Exception::So
 		std::vector<char> rbuf = std::vector<char>(len);
 		const std::size_t rlen = recv(rbuf.data(), len, fd);
 
-		try {
-			ret.reserve(rlen);
-		} catch(const std::bad_alloc &) {
-			throw Exception::SocketException(NetMauMau::Common::errorString(ENOMEM), fd, ENOMEM);
+		if(rlen <= ret.max_size()) {
+
+			try {
+				ret.reserve(rlen);
+			} catch(const std::bad_alloc &) {
+				throw Exception::SocketException(NetMauMau::Common::errorString(ENOMEM), fd,
+												 ENOMEM);
+			}
 		}
 
 		ret.append(rbuf.data(), rlen);
@@ -309,7 +313,8 @@ void AbstractSocket::write(SOCKET *fds, std::size_t numfd,
 
 				const std::string::size_type start = p * partLen;
 
-				v.reserve(partLen);
+				if(partLen <= v.max_size()) v.reserve(partLen);
+
 				v = msg.substr(start, start + partLen);
 
 				for(std::size_t f = 0; f < numfd; ++f) {
@@ -319,7 +324,8 @@ void AbstractSocket::write(SOCKET *fds, std::size_t numfd,
 
 			const std::string::size_type start = p * partLen;
 
-			v.reserve(partRem);
+			if(partRem <= v.max_size()) v.reserve(partRem);
+
 			v = msg.substr(start, start + partRem).append(1, 0);
 
 			for(std::size_t f = 0; f < numfd; ++f) {

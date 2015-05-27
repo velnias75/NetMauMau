@@ -17,7 +17,7 @@ libengine_private_la_SOURCES = abstractplayer.cpp easyplayer.cpp engine.cpp hard
 	nullconnection.cpp
 libengine_private_la_LIBADD = ../ai/libai.la
 
-libengine_la_CPPFLAGS = $(GSL) -DLUADIR=\"$(pkgdatadir)\"
+libengine_la_CPPFLAGS = $(GSL) -DLUADIR=\"$(pkgdatadir)\" -DSYSCONFDIR=\"$(sysconfdir)\"
 libengine_la_CXXFLAGS = -I$(top_srcdir)/src/common -I$(top_srcdir)/src/include \
 	-I$(top_srcdir)/src/lua $(GSL_CFLAGS) $(NO_EXCEPTIONS)
 libengine_la_SOURCES = defaulteventhandler.cpp engineconfig.cpp stdcardfactory.cpp talon.cpp

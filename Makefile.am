@@ -9,7 +9,8 @@ noinst_SCRIPTS = start-server.sh
 
 ACLOCAL_AMFLAGS = -I m4
 
-EXTRA_DIST = COPYING THANKS netmaumau.ico netmaumau.xinetd.in netmaumau.pc.in start-server.sh.in
+EXTRA_DIST = COPYING THANKS netmaumau.ico netmaumau.xinetd.in netmaumau.pc.in start-server.sh.in \
+	netmaumau.h2m.in
 
 if XINETD
 CLEANFILES = netmaumau
@@ -35,7 +36,7 @@ netmaumau.pc: $(top_srcdir)/netmaumau.pc.in
 	-e 's|@CLIENTVERSION[@]|$(CLIENTVERSION)|g' < $< > $@
 endif
 
-AM_DISTCHECK_CONFIGURE_FLAGS = --disable-client --enable-cli-client --enable-pidfile
+AM_DISTCHECK_CONFIGURE_FLAGS = --disable-client --enable-console-client --enable-pidfile
 
 if XINETD
 netmaumau: $(top_srcdir)/netmaumau.xinetd.in

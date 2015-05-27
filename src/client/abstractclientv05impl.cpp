@@ -75,13 +75,13 @@ AbstractClientV05Impl::~AbstractClientV05Impl() {
 	delete [] m_pngData;
 }
 
-AbstractClient::CARDS AbstractClientV05Impl::recvPossibleCards(std::string &msg)
+NetMauMau::Client::AbstractClient::CARDS AbstractClientV05Impl::recvPossibleCards(std::string &msg)
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	const AbstractClient::CARDS &myCards(getCards(m_cards));
-	AbstractClient::CARDS possCards;
+	const NetMauMau::Client::AbstractClient::CARDS &myCards(getCards(m_cards));
+	NetMauMau::Client::AbstractClient::CARDS possCards;
 
-	possCards.reserve(myCards.size());
+	if(myCards.size() < possCards.max_size()) possCards.reserve(myCards.size());
 
 	m_connection >> msg;
 
@@ -116,7 +116,7 @@ AbstractClientV05Impl::getCards(const AbstractClient::CARDS &mCards,
 
 	if(!mCards.empty()) {
 
-		cards.reserve(mCards.size());
+		if(mCards.size() <= cards.max_size()) cards.reserve(mCards.size());
 
 		AbstractClient::CARDS::const_iterator i(mCards.begin());
 		std::advance(i, cnt);

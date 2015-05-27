@@ -40,11 +40,16 @@ std::string NetMauMau::Common::base64_encode(BYTE const *buf, unsigned int bufLe
 	BYTE char_array_3[3];
 	BYTE char_array_4[4];
 
-	try {
-		ret.reserve(((bufLen + 2) / 3) * 4);
-	} catch(const std::bad_alloc &) {
-		logDebug(__PRETTY_FUNCTION__ << ": out of memory while encoding");
-		return ret;
+	const std::string::size_type resBuf = ((bufLen + 2) / 3) * 4;
+
+	if(resBuf <= ret.max_size()) {
+
+		try {
+			ret.reserve(resBuf);
+		} catch(const std::bad_alloc &) {
+			logDebug(__PRETTY_FUNCTION__ << ": BASE64: out of memory while encoding");
+			return ret;
+		}
 	}
 
 	while(bufLen--) {
@@ -93,11 +98,14 @@ NetMauMau::Common::base64_decode(std::string const &encoded_string) {
 
 	std::vector<BYTE> ret;
 
-	try {
-		ret.reserve(in_len);
-	} catch(const std::bad_alloc &) {
-		logDebug(__PRETTY_FUNCTION__ << ": out of memory while decoding");
-		return std::vector<NetMauMau::Common::BYTE>();
+	if(static_cast<std::string::size_type>(in_len) <= ret.max_size()) {
+
+		try {
+			ret.reserve(in_len);
+		} catch(const std::bad_alloc &) {
+			logDebug(__PRETTY_FUNCTION__ << ": BASE64: out of memory while decoding");
+			return std::vector<NetMauMau::Common::BYTE>();
+		}
 	}
 
 	while(in_len-- && (encoded_string[in_] != '=') && is_base64(encoded_string[in_])) {

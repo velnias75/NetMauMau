@@ -368,10 +368,12 @@ bool SQLiteImpl::gameEnded(long long int gameIndex) const {
 
 	std::ostringstream sql;
 
-	if(gameIndex >= 0) {
-		sql << "UPDATE games SET end = " << std::time(0L) << " WHERE id = " << gameIndex << ";";
+	sql << "UPDATE games SET end = " << std::time(0L) << " WHERE ";
+
+	if(gameIndex != NOGAME_IDX) {
+		sql << "id = " << gameIndex << ";";
 	} else {
-		sql << "UPDATE games SET end = " << std::time(0L) << " WHERE end IS NULL;";
+		sql << "end IS NULL;";
 	}
 
 	return exec(sql.str());

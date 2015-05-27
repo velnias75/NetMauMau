@@ -15,7 +15,7 @@ endif
 
 MAINTAINERCLEANFILES = $(bin_PROGRAMS).1
 
-DISTCLEANFILES = $(man1_MANS)
+DISTCLEANFILES = $(man1_MANS) netmaumau.h2m
 
 noinst_HEADERS = gameconfig.h game.h helpers.h serverconnection.h servereventhandler.h \
 	serverplayerexception.h serverplayer.h ttynamecheckdir.h
@@ -54,10 +54,20 @@ endif
 	$(LIBTOOL) --tag=RC --mode=compile $(RC) $< -o $@
 
 if GENMAN
+netmaumau.h2m: $(top_srcdir)/netmaumau.h2m.in
+	$(AM_V_GEN)$(SED) \
+	-e 's|@PACKAGE_BUGREPORT[@]|$(PACKAGE_BUGREPORT)|g' \
+	-e 's|@BUILD_YEAR[@]|$(BUILD_YEAR)|g' \
+	-e 's|@pkgdatadir[@]|$(pkgdatadir)|g' \
+	-e 's|@sysconfdir[@]|$(sysconfdir)|g' \
+	-e 's|@PACKAGE_NAME[@]|$(PACKAGE_NAME)|g' \
+	-e 's|@PACKAGE[@]|$(PACKAGE)|g' < $< > $@
+	@chmod +x $@
+
 export HELP2MAN_OUTPUT := 1
-$(bin_PROGRAMS).1: $(bin_PROGRAMS) $(top_builddir)/netmaumau.h2m
+$(bin_PROGRAMS).1: $(bin_PROGRAMS) $(builddir)/netmaumau.h2m
 	$(HELP2MAN) -l --no-discard-stderr -N -n"Server for the popular card game Mau Mau" \
-		-i $(top_builddir)/netmaumau.h2m -I $(top_builddir)/gsl.h2m -S "$(PACKAGE_STRING)" \
+		-i $(builddir)/netmaumau.h2m -I $(top_builddir)/gsl.h2m -S "$(PACKAGE_STRING)" \
 		$(builddir)/$(bin_PROGRAMS) > $@
 endif
 

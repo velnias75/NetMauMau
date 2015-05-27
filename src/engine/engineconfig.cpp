@@ -28,8 +28,10 @@
 #include "engineconfig.h"
 
 #include <sys/stat.h>                   // for stat
+#include <cstring>
 #include <cstdlib>                      // for getenv
 
+#include "logger.h"
 #include "luaruleset.h"                 // for LuaRuleSet
 
 namespace {
@@ -82,7 +84,7 @@ void EngineConfig::setNextMessage(bool b) {
 
 RuleSet::IRuleSet *EngineConfig::getRuleSet(const NetMauMau::IAceRoundListener *arl) const
 throw(Lua::Exception::LuaException) {
-	return m_ruleset ? m_ruleset : (m_ruleset = new RuleSet::LuaRuleSet(getLuaScriptPath(),
+	return m_ruleset ? m_ruleset : (m_ruleset = new RuleSet::LuaRuleSet(getLuaScriptPaths(),
 			m_dirChange, m_initialCardCount, m_aceRound ? arl : 0L));
 }
 
@@ -98,26 +100,39 @@ std::size_t EngineConfig::getTalonFactor() const {
 	return m_talonFactor;
 }
 
-std::string EngineConfig::getLuaScriptPath() {
+std::vector<std::string> EngineConfig::getLuaScriptPaths() {
 
 	char *luaDir = std::getenv("NETMAUMAU_RULES");
 
 	struct stat ls;
 
-	if(luaDir) return std::string(luaDir);
+	if(luaDir) return std::vector<std::string>(1, std::string(luaDir));
+
+	std::vector<std::string> addPaths;
+
+	addPaths.reserve(3);
 
 #ifndef _WIN32
-	luaDir = std::getenv("HOME");
+	luaDir = strdup(SYSCONFDIR);
 #else
 	luaDir = std::getenv("APPDATA");
 #endif
 
 #ifndef _WIN32
 
-	if(!(luaDir && !stat((std::string(luaDir) + "/." +
-						  PACKAGE_NAME + STDRULESLUA).c_str(), &ls))) {
+	logDebug("Searching \"" << LUADIR << "\" for main Lua rules file…");
 
-		return std::string(LUADIR) + STDRULESLUA;
+	if(!stat((std::string(LUADIR) + STDRULESLUA).c_str(), &ls)) {
+		logDebug(" found \"" << (std::string(LUADIR) + STDRULESLUA) << "\"");
+		addPaths.push_back(std::string(LUADIR) + STDRULESLUA);
+	}
+
+	logDebug("Searching \"" << SYSCONFDIR << "/" << PACKAGE
+			 << "\" for additional Lua rules file…");
+
+	if(!stat((std::string(SYSCONFDIR) + "/" + PACKAGE + STDRULESLUA).c_str(), &ls)) {
+		logDebug(" found \"" << (std::string(SYSCONFDIR) + "/" + PACKAGE + STDRULESLUA) << "\"");
+		addPaths.push_back(std::string(SYSCONFDIR) +  "/" + PACKAGE + STDRULESLUA);
 #else
 
 	if(!(luaDir && !stat((std::string(luaDir) + "\\" + STDRULESLUA + ".lua").c_str(), &ls))) {
@@ -133,14 +148,27 @@ std::string EngineConfig::getLuaScriptPath() {
 		_splitpath(buffer, drive, dir, fname, ext);
 		_makepath(buffer, drive, dir, STDRULESLUA, "lua");
 
-		return std::string(buffer);
+		return std::vector<std::string>(1, std::string(buffer));
 #endif
 	}
 
 #ifndef _WIN32
-	return std::string(luaDir) + STDRULESLUA;
+
+	free(luaDir);
+
+	luaDir = getenv("HOME");
+
+	logDebug("Searching \"" << luaDir << "/." << PACKAGE_NAME << "\" for user Lua rules file…");
+
+	if(luaDir && !stat((std::string(luaDir) + "/." + PACKAGE_NAME + STDRULESLUA).c_str(), &ls)) {
+		logDebug(" found \"" << (std::string(luaDir) + "/." + PACKAGE_NAME + STDRULESLUA) << "\"");
+		addPaths.push_back(std::string(luaDir) + "/." + PACKAGE_NAME + STDRULESLUA);
+	}
+
+	return addPaths;
+
 #else
-	return std::string(luaDir) + "\\" + STDRULESLUA + ".lua";
+	return std::vector<std::string>(1, std::string(luaDir) + "\\" + STDRULESLUA + ".lua");
 #endif
 }
 

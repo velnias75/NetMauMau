@@ -1,6 +1,6 @@
 netmaumau (0.19.1) UNRELEASED; urgency=low
 
-  * unlimited amount of players (limited to max 5 players in stdrules.lua)
+  * unlimited amount of players
 
  -- Heiko Schäfer <heiko@rangun.de>  Tue, 26 May 2015 16:19:24 +0200
 

@@ -136,7 +136,8 @@ IPlayer::CARDS AbstractPlayer::getPossibleCards(const NetMauMau::Common::ICardPt
 		const NetMauMau::Common::ICard::SUIT *suit) const {
 
 	CARDS posCards;
-	posCards.reserve(m_cards.size());
+
+	if(m_cards.size() <= posCards.max_size()) posCards.reserve(m_cards.size());
 
 	return std::for_each(m_cards.begin(), m_cards.end(), _pushIfPossible(posCards, uncoveredCard,
 						 m_ruleset, suit)).cards;

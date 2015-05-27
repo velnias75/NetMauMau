@@ -153,11 +153,14 @@ function getJackSuit()
   end
 end
 
---- The maximum amount of players able to join the game.
+--- The maximum amount of players able to join the game (optional)
+-- Uncomment this function if you want to enforce a hard limit on players
 -- @return the maximum amount of players able to join the game (integer)
+--[[
 function getMaxPlayers()
   return 12
 end
+]]--
 
 --- Set the current amount of players.
 -- @param num the current amount of players

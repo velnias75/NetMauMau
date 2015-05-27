@@ -206,7 +206,7 @@ AC_SUBST([NO_EXCEPTIONS])
 
 AC_CONFIG_MACRO_DIR([m4])
 
-AC_CONFIG_FILES([src/server/netmaumau.rc doc/client.dox netmaumau.h2m])
+AC_CONFIG_FILES([src/server/netmaumau.rc doc/client.dox])
 
 AC_MSG_RESULT([You may want to install a client too: https://github.com/velnias75/NetMauMau-Qt-Client])
 

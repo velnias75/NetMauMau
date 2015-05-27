@@ -35,7 +35,7 @@ namespace RuleSet {
 class LuaRuleSet : public IRuleSet {
 	DISALLOW_COPY_AND_ASSIGN(LuaRuleSet)
 public:
-	explicit LuaRuleSet(const std::string &luafile, bool dirChangePossible,
+	explicit LuaRuleSet(const std::vector<std::string> &luafiles, bool dirChangePossible,
 						std::size_t initialCardCount = 5,
 						const IAceRoundListener *l = 0L) throw(Lua::Exception::LuaException);
 	virtual ~LuaRuleSet();

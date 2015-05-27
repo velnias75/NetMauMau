@@ -129,7 +129,9 @@ Talon::Talon(ITalonChange *tchg, std::size_t factor) throw() : m_talonChangeList
 Talon::CARDSTACK::container_type Talon::createCards(std::size_t factor) throw() {
 
 	Talon::CARDSTACK::container_type cards;
-	cards.reserve(32 * factor);
+	const Talon::CARDSTACK::size_type resCards = 32 * factor;
+
+	if(resCards <= cards.max_size()) cards.reserve(resCards);
 
 	for(std::size_t i = 0; i < factor; ++i) cards.insert(cards.end(), _DECK, _DECK + 32);
 
@@ -147,7 +149,7 @@ const IPlayedOutCards::CARDS &Talon::getCards() const {
 		CARDS aux;
 		CARDSTACK tmp(m_uncovered);
 
-		aux.reserve(tmp.size());
+		if(tmp.size() <= aux.max_size()) aux.reserve(tmp.size());
 
 		while(!tmp.empty()) {
 			aux.push_back(tmp.top());
@@ -189,7 +191,8 @@ Common::ICardPtr Talon::takeCard() {
 		m_uncovered.pop();
 
 		CARDS cards;
-		cards.reserve(m_uncovered.size());
+
+		if(m_uncovered.size() <= cards.max_size()) cards.reserve(m_uncovered.size());
 
 		while(!m_uncovered.empty()) {
 			cards.push_back(m_uncovered.top());

@@ -44,9 +44,9 @@ Game::Game(GameConfig &cfg) throw(NetMauMau::Common::Exception::SocketException)
 	const std::size_t maxPl = cfg.getEngineConfig().getRuleSet(&m_engine)->getMaxPlayers();
 	const std::size_t cntAi = std::min(orgAI, maxPl - 1);
 
-	if(cfg.hasAIPlayer()) m_aiPlayers.reserve(cntAi);
+	if(cfg.hasAIPlayer() && cntAi <= m_aiPlayers.max_size()) m_aiPlayers.reserve(cntAi);
 
-	m_players.reserve(maxPl);
+	if(maxPl <= m_players.max_size()) m_players.reserve(maxPl);
 
 	if(cfg.hasAIPlayer()) {
 

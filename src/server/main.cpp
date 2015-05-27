@@ -33,6 +33,7 @@
 #endif
 
 #include <popt.h>                       // for poptFreeContext, etc
+#include <limits>
 #include <csignal>                      // for sigaction, sigevent, etc
 #include <algorithm>                    // for max, min, count_if
 #include <climits>                      // IWYU pragma: keep
@@ -409,7 +410,8 @@ int main(int argc, const char **argv) {
 
 			Common::CARDCONFIG cconf(NetMauMau::Common::getCardConfig(minPlayers,
 									 static_cast<std::size_t>(initialCardCount),
-									 static_cast<std::size_t>(decks)));
+									 std::min(std::numeric_limits<std::size_t>::max() >> 5,
+											  static_cast<std::size_t>(decks))));
 
 			Server::EventHandler evtHdlr(con);
 			Server::GameConfig cfg(evtHdlr, static_cast<long>(::fabs(aiDelay * 1e06)),

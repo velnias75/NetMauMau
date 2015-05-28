@@ -213,22 +213,14 @@ std::size_t NetMauMau::Common::getCardPoints(ICard::RANK v) {
 NetMauMau::Common::CARDCONFIG NetMauMau::Common::getCardConfig(std::size_t players,
 		std::size_t iic, std::size_t idk) {
 
-	const std::size_t pls = std::max<std::size_t>(2, players),
-					  ic = std::max<std::size_t>(3, iic);
+	const std::size_t pls = std::max<std::size_t>(2u, players),
+					  dic = std::max<std::size_t>(3u, iic),
+					  mic = static_cast<std::size_t>(std::floor(static_cast<float>(pls) * 1.4f));
 
-	std::size_t icc, dck = std::max<std::size_t>(std::max<std::size_t>(1, idk) - 1, pls >> 3);
+	std::size_t icc, dck = std::max<std::size_t>(std::max<std::size_t>(1u, idk) - 1u, pls >> 3u);
 
-	do {
-
-		const std::size_t tcc = (++dck) << 5;
-		std::size_t icp;
-
-		icc = ic;
-
-		while(((icp = icc * pls) > tcc) ||
-				(std::floor(static_cast<float>(pls) * 1.4f) > (tcc - icp))) --icc;
-
-	} while(icc < 3);
+	// See http://stackoverflow.com/questions/30509751/
+	while((icc = std::min(dic, (((++dck) << 5u) - mic) / pls)) < 3u);
 
 	return NetMauMau::Common::CARDCONFIG(icc, dck);
 }

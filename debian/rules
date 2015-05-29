@@ -13,7 +13,7 @@ DPKG_EXPORT_BUILDFLAGS = 1
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 
 GRAPHITE = -floop-interchange -ftree-loop-distribution -floop-strip-mine -floop-block -ftree-vectorize
-LTO = -flto -fuse-linker-plugin -flto-compression-level=9 -flto-partition=1to1 -fuse-ld=gold
+LTO = -flto -fuse-linker-plugin -flto-compression-level=9 -flto-partition=none -fno-fat-lto-objects -fuse-ld=gold
 
 DEB_CPPFLAGS_MAINT_APPEND := -DNDEBUG
 DEB_CFLAGS_MAINT_APPEND := -fomit-frame-pointer $(GRAPHITE) $(LTO)

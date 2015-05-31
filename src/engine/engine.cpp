@@ -296,13 +296,13 @@ bool Engine::nextTurn() {
 			m_initialChecked = true;
 		}
 
-		const bool csuspend = getRuleSet()->hasToSuspend();
+		const bool suspend = getRuleSet()->hasToSuspend() && !m_talonUnderflow;
 		const Common::ICard::SUIT js = getRuleSet()->getJackSuit();
 
 		assert(uc->getRank() != Common::ICard::JACK || (uc->getRank() == Common::ICard::JACK &&
 				((m_jackMode || m_initialJack) && js != Common::ICard::SUIT_ILLEGAL)));
 
-		Common::ICardPtr pc(!csuspend ? player->requestCard(uc, (m_jackMode || m_initialJack)
+		Common::ICardPtr pc(!suspend ? player->requestCard(uc, (m_jackMode || m_initialJack)
 							? &js : 0L, getRuleSet()->takeCardCount(), m_talonUnderflow) :
 								Common::ICardPtr());
 
@@ -310,9 +310,7 @@ bool Engine::nextTurn() {
 
 		bool won = false;
 
-		if(!csuspend) {
-
-			bool suspend = false;
+		if(!suspend) {
 
 			const bool noCardOk = takeCards(player, pc);
 
@@ -320,21 +318,21 @@ sevenRule:
 
 			if(!pc) {
 
+				const Player::IPlayer::REASON reason = noCardOk ? Player::IPlayer::SUSPEND :
+													   player->getNoCardReason(uc, m_jackMode ? &js :
+															   0L);
+
 				if(!noCardOk && (pc = m_talon->takeCard())) {
 					player->receiveCard(pc);
 					getEventHandler().playerPicksCard(player);
 				}
 
-				const Player::IPlayer::REASON reason = noCardOk ? Player::IPlayer::SUSPEND :
-													   player->getNoCardReason(uc, m_jackMode
-															   ? &js : 0L);
-
 				if(reason == Player::IPlayer::SUSPEND) {
 					suspends(player);
 					pc = Common::ICardPtr();
 				} else if(reason == Player::IPlayer::NOMATCH) {
-					if(!(pc = player->requestCard(uc, m_jackMode ? &js : 0L,
-												  getRuleSet()->takeCardCount()))) suspends(player);
+					pc = Common::ICardPtr(const_cast<const Common::ICard *>
+										  (Common::getIllegalCard()));
 				}
 
 			} else if(pc->getSuit() == Common::ICard::SUIT_ILLEGAL) {
@@ -342,53 +340,31 @@ sevenRule:
 				goto sevenRule;
 			}
 
-			bool cc = false;
+			bool noMatch, cardAccepted = false;
 
-			while(pc && !(cc = getRuleSet()->checkCard(player, uc, pc, !m_cfg.getNextMessage()))) {
+			while(pc && ((noMatch = (pc->getSuit() == Common::ICard::SUIT_ILLEGAL)) ||
+						 !(cardAccepted = getRuleSet()->checkCard(player, uc, pc,
+										  !m_cfg.getNextMessage())))) {
 
-				const bool aiSusp = !cc && player->isAIPlayer();
-
-				if(suspend || aiSusp) {
-					suspends(player);
-					break;
-				}
-
-				getEventHandler().cardRejected(player, uc, pc);
+				if(!noMatch) getEventHandler().cardRejected(player, uc, pc);
 
 				const Common::ICard::SUIT js2 = getRuleSet()->getJackSuit();
 
-				if((!(pc = player->requestCard(uc, m_jackMode ? &js2 : 0L,
-											   getRuleSet()->takeCardCount())))) {
+				if(!(pc = player->requestCard(uc, m_jackMode ? &js2 : 0L,
+											  getRuleSet()->takeCardCount()))) {
 
-					bool decidedSuspend = false;
+					if(!noMatch) {
+						Common::ICardPtr rc(m_talon->takeCard());
 
-					switch(player->getNoCardReason(uc, m_jackMode ? &js2 : 0L)) {
-					case Player::IPlayer::SUSPEND:
-						decidedSuspend = true;
-
-					case Player::IPlayer::NOMATCH:
-
-						if((pc = m_talon->takeCard())) {
-							player->receiveCard(pc);
-							getEventHandler().playerPicksCard(player, pc);
-
-							suspend = true;
-							pc = getRuleSet()->suspendIfNoMatchingCard() ||
-								 decidedSuspend ? Common::ICardPtr() : pc;
-						} else {
-							throw Common::Exception::SocketException(TALONUNDERFLOW);
-						}
-
-						break;
-
-					default:
-						pc = Common::ICardPtr();
-						break;
+						if(rc) player->receiveCard(rc);
 					}
+
+					suspends(player);
+					break;
 				}
 			}
 
-			if(pc && cc) {
+			if(pc && cardAccepted) {
 
 				if(m_jackMode || m_initialJack) jackModeOff();
 
@@ -651,6 +627,7 @@ void Engine::underflow() {
 #ifdef HAVE_GSL
 	logDebug("GSL: name=" << gsl_rng_default->name << "; seed=" << gsl_rng_default_seed);
 #endif
+	message(TALONUNDERFLOW);
 #endif
 }
 
@@ -786,3 +763,9 @@ void Engine::reset() throw() {
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
+
+
+
+
+
+

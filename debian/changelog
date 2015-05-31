@@ -2,8 +2,9 @@ netmaumau (0.20.0) UNRELEASED; urgency=low
 
   * unlimited amount of players
   * added bash completion for nmm-server
+  * fixed suspend/no match bug
 
- -- Heiko Schäfer <heiko@rangun.de>  Fri, 29 May 2015 16:53:16 +0200
+ -- Heiko Schäfer <heiko@rangun.de>  Sun, 31 May 2015 20:08:24 +0200
 
 netmaumau (0.19.0) UNRELEASED; urgency=low
 

@@ -46,12 +46,11 @@ public:
 
 	virtual bool hasToSuspend() const = 0;
 	virtual void hasSuspended() = 0;
+	virtual void hasTakenCards() = 0;
 	virtual std::size_t takeCardCount() const = 0;
 	virtual std::size_t takeCards(const Common::ICard *playedCard) const = 0;
-	virtual void hasTakenCards() = 0;
 
 	virtual std::size_t initialCardCount() const = 0;
-	virtual bool suspendIfNoMatchingCard() const = 0;
 	virtual bool takeIfLost() const = 0;
 
 	virtual bool isAceRoundPossible() const = 0;

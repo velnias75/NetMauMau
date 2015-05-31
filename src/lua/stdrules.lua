@@ -70,15 +70,10 @@ function hasTakenCards()
 end
 
 --- The amount of cards a player gets at game start.
+-- return any other value than 'nmm_initialCardCount' to FORCE a certain count
 -- @return the amount of cards a player gets at game start (integer)
 function initialCardCount()
   return nmm_initialCardCount
-end
-
---- Decide if a player has to suspend if no matching card can get played out.
--- @return true id the player has to suspend, false otherwise (bool)
-function suspendIfNoMatchingCard()
-  return false
 end
 
 --- Decide if a player has to take cards if losing.

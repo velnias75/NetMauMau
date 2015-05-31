@@ -54,7 +54,6 @@ const char *FUNCTIONS[] = {
 	"setCurPlayers",
 	"setDirChangeIsSuspend",
 	"setJackModeOff",
-	"suspendIfNoMatchingCard",
 	"takeCardCount",
 	"takeCards",
 	"takeIfLost",
@@ -80,7 +79,6 @@ enum FUNCTIONNAMES {
 	SETCURPLAYERS,
 	SETDIRCHANGEISSUSPEND,
 	SETJACKMODEOFF,
-	SUSPENDIFNOMATCHINGCARD,
 	TAKECARDCOUNT,
 	TAKECARDS,
 	TAKEIFLOST,
@@ -409,14 +407,6 @@ std::size_t LuaRuleSet::initialCardCount() const throw(NetMauMau::Lua::Exception
 	l.call(fname, 0);
 
 	return std::max<std::size_t>(1, checkReturnType<std::size_t>(l, fname));
-}
-
-bool LuaRuleSet::suspendIfNoMatchingCard() const throw(NetMauMau::Lua::Exception::LuaException) {
-	const char *fname = FUNCTIONS[SUSPENDIFNOMATCHINGCARD];
-	lua_getglobal(l, fname);
-	l.call(fname, 0);
-
-	return checkReturnType<bool>(l, fname);
 }
 
 bool LuaRuleSet::takeIfLost() const throw(NetMauMau::Lua::Exception::LuaException) {

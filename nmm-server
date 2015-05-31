@@ -1,0 +1,53 @@
+_nmm-server() {
+
+    local cur prev opts
+
+    COMPREPLY=( )
+
+    cur=$(_get_cword)
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    
+    # COMPREPLY considers '=' as a word. For $prev we prefer the word before the actual "="
+    if [[ "$prev" == "=" ]]
+    then
+        prev="${COMP_WORDS[COMP_CWORD - 2]}"
+    elif [[ "$cur" == "=" ]]
+    then
+        cur=""
+    fi
+    
+    opts=`nmm-server --usage | _parse_usage -`
+
+    case "${prev}" in
+    --bind)
+            _ip_addresses
+            _known_hosts_real "$cur"
+            COMPREPLY+=" "
+            return 0
+            ;;
+    --iface)
+            _available_interfaces
+            COMPREPLY+=" "
+            return 0
+            ;;
+    --group)
+            _allowed_groups
+            COMPREPLY+=" "
+            return 0
+            ;;
+    --user)
+            _allowed_users
+            COMPREPLY+=" "
+            return 0
+            ;;
+    --ace-round)
+           COMPREPLY=( $(compgen -W "ACE QUEEN KING" -- ${cur}) )
+           COMPREPLY+=" "
+           return 0
+           ;;
+    esac
+
+    COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+}
+
+complete -o nospace -F _nmm-server nmm-server

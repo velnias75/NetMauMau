@@ -172,6 +172,30 @@ AC_CHECK_FUNC([arc4random_uniform],
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_CHOWN
 
+# backwards compat with older pkg-config
+# - pull in AC_DEFUN from pkg.m4
+m4_ifndef([PKG_CHECK_VAR], [
+# PKG_CHECK_VAR(VARIABLE, MODULE, CONFIG-VARIABLE,
+# [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
+# -------------------------------------------
+# Retrieves the value of the pkg-config variable for the given module.
+AC_DEFUN([PKG_CHECK_VAR],
+[AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
+AC_ARG_VAR([$1], [value of $3 for $2, overriding pkg-config])dnl
+
+_PKG_CONFIG([$1], [variable="][$3]["], [$2])
+AS_VAR_COPY([$1], [pkg_cv_][$1])
+
+AS_VAR_IF([$1], [""], [$5], [$4])dnl
+])# PKG_CHECK_VAR
+])
+
+AC_ARG_WITH([bashcompletiondir], [AS_HELP_STRING([--with-bashcompletiondir=DIR],
+  [directory to install bash completion files into])], [ bashcompdir="$with_bashcompletiondir" ],
+  [ PKG_CHECK_VAR(bashcompdir, [bash-completion], [completionsdir], ,
+      bashcompdir="${sysconfdir}/bash_completion.d")])
+AC_SUBST(bashcompdir)
+
 SERVER_VERSION_MAJOR="`echo ${PACKAGE_VERSION} | tr -s '~.' '\t' | cut -f1`"
 SERVER_VERSION_MINOR="`echo ${PACKAGE_VERSION} | tr -s '~.' '\t' | cut -f2`"
 SERVER_VERSION_RELEASE="`echo ${PACKAGE_VERSION} | tr -s '~.' '\t' | cut -f3`"

@@ -1,6 +1,7 @@
 netmaumau (0.20.0) UNRELEASED; urgency=low
 
   * unlimited amount of players
+  * added bash completion for nmm-server
 
  -- Heiko Schäfer <heiko@rangun.de>  Fri, 29 May 2015 16:53:16 +0200
 

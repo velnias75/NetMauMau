@@ -29,12 +29,12 @@ include /usr/share/cdbs/1/class/autotools.mk
 include /usr/share/cdbs/1/rules/autoreconf.mk
 -include /usr/share/dpkg/buildflags.mk
 
-# Add here any variable or target overrides you need.
+# Add here any variable or target overrides you need.nikki1
 
 DEB_CONFIGURE_EXTRA_FLAGS = --bindir=\$${prefix}/games --enable-console-client \
 	--enable-ai-image=/usr/share/pixmaps/debian-logo.png \
-	--enable-ai-name="`lsb_release -sc | sed 's/.*/\u&/'`" \
-	--localstatedir=/var/games
+	--enable-ai-name="`lsb_release -sc | sed 's/.*/\u&/'`" --localstatedir=/var/games \
+	--with-bashcompletiondir="`pkg-config --variable=completionsdir bash-completion`"
 DEB_MAKE_CHECK_TARGET = check
 INT_INSTALL_TARGET = install-strip
 DEB_DH_BUILDDEB_ARGS_DEFAULT := -- -z9 -Zxz
@@ -44,3 +44,7 @@ DH_ALWAYS_EXCLUDE=.svn
 DEB_DH_INSTALL_ARGS_DEFAULT = --list-missing -Xclient-api-doc -X.la -Xnmm-server.1 -Xai_img
 DEB_DH_MAKESHLIBS_ARGS_netmaumau-server = -n
 DEB_DH_STRIP_ARGS_DEFAULT = --dbg-package=netmaumau-dbg -n
+
+# enable if https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=668254 is fixed
+#install/netmaumau-server-common::
+#	dh_bash-completion -pnetmaumau-server-common

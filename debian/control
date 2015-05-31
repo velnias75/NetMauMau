@@ -2,7 +2,8 @@ Source: netmaumau
 Section: games
 Priority: extra
 Maintainer: Heiko Schäfer <heiko@rangun.de>
-Build-Depends: binutils-gold,
+Build-Depends: bash-completion,
+               binutils-gold,
                cdbs,
                debhelper (>= 9),
                dh-autoreconf,

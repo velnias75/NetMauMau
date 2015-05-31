@@ -5,12 +5,15 @@ xinetddir = $(sysconfdir)/xinetd.d
 xinetd_DATA = netmaumau
 endif
 
+bashcompdir = @bashcompdir@
+dist_bashcomp_DATA = nmm-server
+     
 noinst_SCRIPTS = start-server.sh
 
 ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = COPYING THANKS netmaumau.ico netmaumau.xinetd.in netmaumau.pc.in start-server.sh.in \
-	netmaumau.h2m.in
+	netmaumau.h2m.in nmm-server
 
 if XINETD
 CLEANFILES = netmaumau

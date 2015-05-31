@@ -190,11 +190,20 @@ AS_VAR_IF([$1], [""], [$5], [$4])dnl
 ])# PKG_CHECK_VAR
 ])
 
+AM_CONDITIONAL([INSTALL_BASHCOMP], [ false ])
+
 AC_ARG_WITH([bashcompletiondir], [AS_HELP_STRING([--with-bashcompletiondir=DIR],
-  [directory to install bash completion files into])], [ bashcompdir="$with_bashcompletiondir" ],
-  [ PKG_CHECK_VAR(bashcompdir, [bash-completion], [completionsdir], ,
-      bashcompdir="${sysconfdir}/bash_completion.d")])
-AC_SUBST(bashcompdir)
+  [directory to install bash completion files into])], 
+  [ if test "x$with_bashcompletiondir" != "xno"; then
+      AM_CONDITIONAL([INSTALL_BASHCOMP], [ true ])
+      bashcompdir="$with_bashcompletiondir"
+	fi ],
+  [  AM_CONDITIONAL([INSTALL_BASHCOMP], [ true ])
+     PKG_CHECK_VAR(bashcompdir, [bash-completion], [completionsdir], ,
+      bashcompdir="${sysconfdir}/bash_completion.d")
+  ])
+
+AC_SUBST([bashcompdir])
 
 SERVER_VERSION_MAJOR="`echo ${PACKAGE_VERSION} | tr -s '~.' '\t' | cut -f1`"
 SERVER_VERSION_MINOR="`echo ${PACKAGE_VERSION} | tr -s '~.' '\t' | cut -f2`"

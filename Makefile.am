@@ -4,9 +4,6 @@ if XINETD
 xinetddir = $(sysconfdir)/xinetd.d
 xinetd_DATA = netmaumau
 endif
-
-bashcompdir = @bashcompdir@
-dist_bashcomp_DATA = nmm-server
      
 noinst_SCRIPTS = start-server.sh
 
@@ -39,7 +36,8 @@ netmaumau.pc: $(top_srcdir)/netmaumau.pc.in
 	-e 's|@CLIENTVERSION[@]|$(CLIENTVERSION)|g' < $< > $@
 endif
 
-AM_DISTCHECK_CONFIGURE_FLAGS = --disable-client --enable-console-client --enable-pidfile
+AM_DISTCHECK_CONFIGURE_FLAGS = --disable-client --enable-console-client --enable-pidfile \
+	--with-bashcompletiondir=no
 
 if XINETD
 netmaumau: $(top_srcdir)/netmaumau.xinetd.in
@@ -61,4 +59,10 @@ cppcheck:
 		-I$(srcdir)/src/sqlite -I$(srcdir)/src/lua -I$(srcdir)/src/ai \
 		-I$(srcdir)/src/engine -I$(srcdir)/src/server -I$(srcdir)/src/client \
 		-I$(srcdir)/src/test -i$(srcdir)/src/test
+endif
+
+bashcompdir = @bashcompdir@
+
+if INSTALL_BASHCOMP
+dist_bashcomp_DATA = nmm-server
 endif

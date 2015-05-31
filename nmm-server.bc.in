@@ -16,7 +16,7 @@ _nmm-server() {
         cur=""
     fi
     
-    opts=`nmm-server --usage | _parse_usage -`
+    opts=`@bindir@/nmm-server --usage | _parse_usage -`
 
     case "${prev}" in
     --bind)

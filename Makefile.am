@@ -10,13 +10,13 @@ noinst_SCRIPTS = start-server.sh
 ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = COPYING THANKS netmaumau.ico netmaumau.xinetd.in netmaumau.pc.in start-server.sh.in \
-	netmaumau.h2m.in nmm-server
+	netmaumau.h2m.in nmm-server.bc.in
 
 if XINETD
 CLEANFILES = netmaumau
 endif
 
-DISTCLEANFILES = $(PACKAGE_NAME)-dbg.db start-server.sh
+DISTCLEANFILES = $(PACKAGE_NAME)-dbg.db start-server.sh nmm-server
 
 if ENABLE_CLIENT
 DISTCLEANFILES += netmaumau.pc
@@ -65,4 +65,7 @@ bashcompdir = @bashcompdir@
 
 if INSTALL_BASHCOMP
 dist_bashcomp_DATA = nmm-server
+
+nmm-server: nmm-server.bc.in
+	$(AM_V_GEN)$(SED) -e 's|@bindir[@]|$(bindir)|g' < $< > $@
 endif

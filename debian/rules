@@ -12,14 +12,22 @@ DPKG_EXPORT_BUILDFLAGS = 1
 
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 
-GRAPHITE = -floop-interchange -ftree-loop-distribution -floop-strip-mine -floop-block -ftree-vectorize -frename-registers
-LTO = -flto -fwhole-program -fuse-linker-plugin -flto-compression-level=9 -flto-partition=1to1 -Wl,--strip-lto-sections
+GRAPHITE = -floop-interchange -ftree-loop-distribution -floop-strip-mine -floop-block \
+	-ftree-vectorize -frename-registers
+LTO = -flto -fwhole-program -fuse-linker-plugin -flto-compression-level=9 -flto-partition=1to1 \
+	-Wl,--strip-lto-sections
+
+# uncomment following line for non-Precise/non-Wheezy builds
+# LTO = $(LTO) -ffat-lto-objects -Wl,-fuse-ld=gold
 
 DEB_CPPFLAGS_MAINT_APPEND := -DNDEBUG
 DEB_CFLAGS_MAINT_APPEND := -fomit-frame-pointer $(GRAPHITE) $(LTO)
 DEB_CXXFLAGS_MAINT_APPEND := -fomit-frame-pointer $(GRAPHITE) $(LTO)
 DEB_LDFLAGS_MAINT_APPEND := $(CXXFLAGS) $(GRAPHITE) $(LTO)
 
+# comment next 5 lines for Precise/Wheezy builds
+export ARFLAGS = ru
+export AR_FLAGS = ru
 export NM=gcc-nm
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -28,8 +36,6 @@ include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 include /usr/share/cdbs/1/rules/autoreconf.mk
 -include /usr/share/dpkg/buildflags.mk
-
-# Add here any variable or target overrides you need.nikki1
 
 DEB_CONFIGURE_EXTRA_FLAGS = --bindir=\$${prefix}/games --enable-console-client \
 	--enable-ai-image=/usr/share/pixmaps/debian-logo.png \

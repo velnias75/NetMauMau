@@ -34,7 +34,7 @@ namespace Client {
 namespace Exception {
 
 /**
- * @brief An error in the protocol transmission occured
+ * @brief An error in the protocol transmission occurred
  * @since 0.4
  */
 class _EXPORT ProtocolErrorException : public Common::Exception::SocketException {

@@ -387,7 +387,7 @@ protected:
 	 *
 	 * @param player the player's name
 	 * @param turn the number of the turn the player has lost
-	 * @param points the points the loosing player had in hand
+	 * @param points the points the losing player had in hand
 	 */
 	virtual void playerLost(const std::string &player, std::size_t turn,
 							std::size_t points) const = 0;
@@ -520,7 +520,7 @@ protected:
 	virtual void endReceivePlayerPicture(const std::string &player) const throw() _CONST;
 
 	/**
-	 * @brief The upload of the player image has succeded
+	 * @brief The upload of the player image has succeeded
 	 *
 	 * @param player the player the image is uploaded for
 	 *

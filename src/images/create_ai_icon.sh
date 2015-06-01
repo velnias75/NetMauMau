@@ -19,12 +19,12 @@
 #
 
 command -v xxd >/dev/null 2>&1 || \
- { echo >&2 "I require xxd but it's not installed.  Aborting."; exit 1; }
+    { echo >&2 "I require xxd but it's not installed.  Aborting."; exit 1; }
 
 if [ -z "$2" -o "$2" == "-" ]; then
-	PNGDATA="`xxd -i`"
+    PNGDATA="`xxd -i`"
 else
-	PNGDATA="`cat $2 | xxd -i`"
+    PNGDATA="`cat $2 | xxd -i`"
 fi
 
 HGUARD="CREATE_AI_ICON_`echo -n $1 | tr '[:lower:]' '[:upper:]'`_H"

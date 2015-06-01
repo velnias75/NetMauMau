@@ -92,7 +92,7 @@ function isAceRoundPossible()
 end
 
 --- Gets the rank for ace rounds.
--- Ace rounds mustn't neccessarily played wit ACEs, but with any other rank
+-- Ace rounds mustn't necessarily played with ACEs, but with any other rank
 -- @return the ace round rank (RANK)
 function getAceRoundRank()
   return (nmm_aceRound.ENABLED and nmm_aceRound.RANK or RANK.RANK_ILLEGAL)

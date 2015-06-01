@@ -25,8 +25,8 @@ Homepage: http://sourceforge.net/projects/netmaumau/
 Package: netmaumau-client
 Architecture: any
 Pre-Depends: dpkg (>= 1.15.6~)
-Depends: libnetmaumaucommon5 (>= 0.17.3~),
-         libnetmaumauclient4 (>= 0.17.3~),
+Depends: libnetmaumaucommon5 (>= 0.19.1~),
+         libnetmaumauclient4 (>= 0.19.1~),
          ${misc:Depends},
          ${shlibs:Depends}
 Suggests: nmm-qt-client

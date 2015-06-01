@@ -340,29 +340,7 @@ sevenRule:
 				goto sevenRule;
 			}
 
-			bool noMatch, cardAccepted = false;
-
-			while(pc && ((noMatch = (pc->getSuit() == Common::ICard::SUIT_ILLEGAL)) ||
-						 !(cardAccepted = getRuleSet()->checkCard(player, uc, pc,
-										  !m_cfg.getNextMessage())))) {
-
-				if(!noMatch) getEventHandler().cardRejected(player, uc, pc);
-
-				const Common::ICard::SUIT js2 = getRuleSet()->getJackSuit();
-
-				if(!(pc = player->requestCard(uc, m_jackMode ? &js2 : 0L,
-											  getRuleSet()->takeCardCount()))) {
-
-					if(!noMatch) {
-						Common::ICardPtr rc(m_talon->takeCard());
-
-						if(rc) player->receiveCard(rc);
-					}
-
-					suspends(player);
-					break;
-				}
-			}
+			const bool cardAccepted = checkCard(player, pc, uc);
 
 			if(pc && cardAccepted) {
 
@@ -379,50 +357,7 @@ sevenRule:
 				}
 
 				if(won) {
-
-					PLAYERS::iterator f(m_players.begin());
-					std::advance(f, m_nxtPlayer);
-
-					if(f != m_players.end()) m_players.erase(f);
-
-					m_nxtPlayer = m_nxtPlayer < m_players.size() ? m_nxtPlayer + 1 : 0;
-
-					getRuleSet()->setCurPlayers(m_players.size());
-
-					if(!hasPlayers()) {
-
-						if(getRuleSet()->takeIfLost() && m_talon->getUncoveredCard()->getRank() ==
-								Common::ICard::SEVEN) {
-							takeCards(m_players[m_nxtPlayer], Common::getIllegalCard());
-						}
-
-						const Common::IConnection::NAMESOCKFD nsf =
-							(m_players[m_nxtPlayer]->isAIPlayer()) ?
-							Common::IConnection::NAMESOCKFD(m_players[m_nxtPlayer]->getName(), "",
-															m_players[m_nxtPlayer]->getSerial(),
-															0) :
-							getEventHandler().getConnection().
-							getPlayerInfo(m_players[m_nxtPlayer]->getSerial());
-
-						DB::SQLite::getInstance()->
-						playerLost(m_gameIndex, nsf, std::time(0L),
-								   getEventHandler().playerLost(m_players[m_nxtPlayer], m_turn,
-																getRuleSet()->
-																lostPointFactor(m_talon->
-																		getUncoveredCard())));
-						m_state = FINISHED;
-					}
-
-					getEventHandler().playerWins(player, m_turn, m_ultimate);
-
-					const Common::IConnection::NAMESOCKFD nsf = (player->isAIPlayer()) ?
-							Common::IConnection::NAMESOCKFD(player->getName(), "",
-															player->getSerial(), 0) :
-							getEventHandler().getConnection().
-							getPlayerInfo(player->getSerial());
-
-					DB::SQLite::getInstance()->playerWins(m_gameIndex, nsf);
-
+					handleWinner(player);
 				} else if(wait(player, true) && (pc->getRank() == Common::ICard::EIGHT ||
 												 (pc->getRank() == Common::ICard::NINE &&
 												  getRuleSet()->getDirChangeIsSuspend()))) {
@@ -522,6 +457,82 @@ sevenRule:
 	}
 
 	return true;
+}
+
+void Engine::handleWinner(const Player::IPlayer *player) throw(Common::Exception::SocketException) {
+
+	PLAYERS::iterator f(m_players.begin());
+	std::advance(f, m_nxtPlayer);
+
+	if(f != m_players.end()) m_players.erase(f);
+
+	m_nxtPlayer = m_nxtPlayer < m_players.size() ? m_nxtPlayer + 1 : 0;
+
+	getRuleSet()->setCurPlayers(m_players.size());
+
+	if(!hasPlayers()) {
+
+		if(getRuleSet()->takeIfLost() && m_talon->getUncoveredCard()->getRank() ==
+				Common::ICard::SEVEN) {
+			takeCards(m_players[m_nxtPlayer], Common::getIllegalCard());
+		}
+
+		const Common::IConnection::NAMESOCKFD nsf =
+			(m_players[m_nxtPlayer]->isAIPlayer()) ?
+			Common::IConnection::NAMESOCKFD(m_players[m_nxtPlayer]->getName(), "",
+											m_players[m_nxtPlayer]->getSerial(),
+											0) :
+			getEventHandler().getConnection().
+			getPlayerInfo(m_players[m_nxtPlayer]->getSerial());
+
+		DB::SQLite::getInstance()->
+		playerLost(m_gameIndex, nsf, std::time(0L),
+				   getEventHandler().playerLost(m_players[m_nxtPlayer], m_turn,
+												getRuleSet()->
+												lostPointFactor(m_talon->
+														getUncoveredCard())));
+		m_state = FINISHED;
+	}
+
+	getEventHandler().playerWins(player, m_turn, m_ultimate);
+
+	const Common::IConnection::NAMESOCKFD nsf = (player->isAIPlayer()) ?
+			Common::IConnection::NAMESOCKFD(player->getName(), "",
+											player->getSerial(), 0) :
+			getEventHandler().getConnection().
+			getPlayerInfo(player->getSerial());
+
+	DB::SQLite::getInstance()->playerWins(m_gameIndex, nsf);
+}
+
+bool Engine::checkCard(Player::IPlayer *player, Common::ICardPtr &playedCard,
+					   const Common::ICardPtr &uc) const throw(Common::Exception::SocketException) {
+
+	bool noMatch, cardAccepted = false;
+
+	while(playedCard && ((noMatch = (playedCard->getSuit() == Common::ICard::SUIT_ILLEGAL)) ||
+						 !(cardAccepted = getRuleSet()->checkCard(player, uc, playedCard,
+										  !m_cfg.getNextMessage())))) {
+
+		if(!noMatch) getEventHandler().cardRejected(player, uc, playedCard);
+
+		const Common::ICard::SUIT js = getRuleSet()->getJackSuit();
+
+		if(!(playedCard = player->requestCard(uc, m_jackMode ? &js : 0L,
+											  getRuleSet()->takeCardCount()))) {
+
+			if(!noMatch) {
+				Common::ICardPtr rc(m_talon->takeCard());
+
+				if(rc) player->receiveCard(rc);
+			}
+
+			suspends(player);
+			break;
+		}
+	}
+
+	return cardAccepted;
 }
 
 void Engine::disconnectError(SOCKET fd) const {
@@ -763,9 +774,3 @@ void Engine::reset() throw() {
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
-
-
-
-
-
-

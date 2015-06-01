@@ -111,7 +111,11 @@ protected:
 	throw(Common::Exception::SocketException);
 
 private:
-	void calcScore(Player::IPlayer *p) const;
+	void calcScore(Player::IPlayer *player) const;
+
+	bool checkCard(Player::IPlayer *player, Common::ICardPtr &playedCard,
+				   const Common::ICardPtr &uncoveredCard) const
+	throw(Common::Exception::SocketException);
 
 	void informAIStat() const;
 	std::size_t getAICount() const;
@@ -121,10 +125,11 @@ private:
 	void checkAndPerformDirChange(const Player::IPlayer *player, bool won)
 	throw(Common::Exception::SocketException);
 
-	void suspends(Player::IPlayer *p, const Common::ICard *uc = NULL) const
+	void suspends(Player::IPlayer *player, const Common::ICard *uncoveredCard = NULL) const
 	throw(Common::Exception::SocketException);
 	bool takeCards(Player::IPlayer *player, const Common::ICard *card) const
 	throw(Common::Exception::SocketException);
+	void handleWinner(const Player::IPlayer *player) throw(Common::Exception::SocketException);
 
 	RuleSet::IRuleSet *getRuleSet() const;
 
@@ -144,7 +149,7 @@ private:
 
 	long getAIDelay() const;
 
-	bool wait(const Player::IPlayer *p, bool suspend) const;
+	bool wait(const Player::IPlayer *player, bool suspend) const;
 
 private:
 	EngineConfig &m_cfg;

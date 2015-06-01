@@ -6,7 +6,7 @@ _nmm-server() {
 
     cur=$(_get_cword)
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    
+
     # COMPREPLY considers '=' as a word. For $prev we prefer the word before the actual "="
     if [[ "$prev" == "=" ]]
     then
@@ -15,7 +15,7 @@ _nmm-server() {
     then
         cur=""
     fi
-    
+
     opts=`@bindir@/nmm-server --usage | _parse_usage -`
 
     case "${prev}" in

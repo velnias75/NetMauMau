@@ -18,19 +18,19 @@ LTO = -flto -fwhole-program -fuse-linker-plugin -flto-compression-level=9 -flto-
 	-Wl,--strip-lto-sections
 
 # uncomment following line for non-Precise/non-Wheezy builds
-# LTO = $(LTO) -ffat-lto-objects -Wl,-fuse-ld=gold
+# LTO += -ffat-lto-objects -Wl,-fuse-ld=gold
 
 DEB_CPPFLAGS_MAINT_APPEND := -DNDEBUG
 DEB_CFLAGS_MAINT_APPEND := -fomit-frame-pointer $(GRAPHITE) $(LTO)
 DEB_CXXFLAGS_MAINT_APPEND := -fomit-frame-pointer $(GRAPHITE) $(LTO)
 DEB_LDFLAGS_MAINT_APPEND := $(CXXFLAGS) $(GRAPHITE) $(LTO)
 
-# comment next 5 lines for Precise/Wheezy builds
-export ARFLAGS = ru
-export AR_FLAGS = ru
-export NM=gcc-nm
-export AR=gcc-ar
-export RANLIB=gcc-ranlib
+# uncomment next 5 lines for Precise/Wheezy builds
+#export ARFLAGS = ru
+#export AR_FLAGS = ru
+#export NM=gcc-nm
+#export AR=gcc-ar
+#export RANLIB=gcc-ranlib
 
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk

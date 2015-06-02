@@ -1,3 +1,9 @@
+netmaumau (0.20.2) UNRELEASED; urgency=low
+
+  * 
+
+ -- Heiko Schäfer <heiko@rangun.de>  Tue, 02 Jun 2015 19:02:57 +0200
+
 netmaumau (0.20.1) UNRELEASED; urgency=low
 
   * Fixed issue https://github.com/velnias75/NetMauMau/issues/33

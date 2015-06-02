@@ -386,9 +386,10 @@ int main(int argc, const char **argv) {
 
 		const bool aiOpponent = minPlayers <= 1;
 
-		if(aiOpponent && aiNames.empty()) {
-			aiNames.push_back(aiName);
-		} else if(aiOpponent) {
+		if(aiOpponent) {
+
+			if(aiNames.empty()) aiNames.push_back(aiName);
+
 			minPlayers = std::max<std::size_t>(2, aiNames.size() + minPlayers);
 		}
 

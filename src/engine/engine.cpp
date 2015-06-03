@@ -607,7 +607,7 @@ throw(Common::Exception::SocketException) {
 
 		getRuleSet()->hasTakenCards();
 
-		return true;
+		return !getRuleSet()->takeAfterSevenIfNoMatch();
 	}
 
 	return false;

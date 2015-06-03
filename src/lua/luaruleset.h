@@ -60,6 +60,7 @@ public:
 	virtual void hasTakenCards() throw(Lua::Exception::LuaException);
 
 	virtual std::size_t initialCardCount() const throw(Lua::Exception::LuaException);
+	virtual bool takeAfterSevenIfNoMatch() const throw(Lua::Exception::LuaException);
 	virtual bool takeIfLost() const throw(Lua::Exception::LuaException);
 
 	virtual bool isAceRoundPossible() const throw(Lua::Exception::LuaException);

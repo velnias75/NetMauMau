@@ -51,6 +51,7 @@ public:
 	virtual std::size_t takeCards(const Common::ICard *playedCard) const = 0;
 
 	virtual std::size_t initialCardCount() const = 0;
+	virtual bool takeAfterSevenIfNoMatch() const = 0;
 	virtual bool takeIfLost() const = 0;
 
 	virtual bool isAceRoundPossible() const = 0;

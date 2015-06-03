@@ -57,6 +57,7 @@ const char *FUNCTIONS[] = {
 	"takeCardCount",
 	"takeCards",
 	"takeIfLost",
+	"takeAfterSevenIfNoMatch",
 	"getMaxPlayers",
 };
 
@@ -82,6 +83,7 @@ enum FUNCTIONNAMES {
 	TAKECARDCOUNT,
 	TAKECARDS,
 	TAKEIFLOST,
+	TAKEAFTERSEVENIFNOMATCH,
 	ENDFUNCTIONS,
 	GETMAXPLAYERS = ENDFUNCTIONS
 };
@@ -411,6 +413,14 @@ std::size_t LuaRuleSet::initialCardCount() const throw(NetMauMau::Lua::Exception
 
 bool LuaRuleSet::takeIfLost() const throw(NetMauMau::Lua::Exception::LuaException) {
 	const char *fname = FUNCTIONS[TAKEIFLOST];
+	lua_getglobal(l, fname);
+	l.call(fname, 0);
+
+	return checkReturnType<bool>(l, fname);
+}
+
+bool LuaRuleSet::takeAfterSevenIfNoMatch() const throw(Lua::Exception::LuaException) {
+	const char *fname = FUNCTIONS[TAKEAFTERSEVENIFNOMATCH];
 	lua_getglobal(l, fname);
 	l.call(fname, 0);
 

@@ -85,6 +85,12 @@ function takeIfLost()
   return true
 end
 
+--- Decide if a player has to take an extra cards if - after seven rule - has no matching cards
+-- @return true, if the player has to take an extra card, false otherwise (bool)
+function takeAfterSevenIfNoMatch()
+  return true
+end
+
 --- Determines if an ace round is possible.
 -- @return true if an ace round is possible, false otherwise (bool)
 function isAceRoundPossible()

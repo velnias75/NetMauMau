@@ -11,7 +11,7 @@ MAINTAINERCLEANFILES = ai-icon.h
 
 .DELETE_ON_ERROR:
 ai-icon.h: $(AI_IMAGE)
-	cat $(AI_IMAGE) | $(SHELL) $(top_srcdir)/src/images/create_ai_icon.sh 'ai_icon_data' \
+	$(AM_V_GEN) cat $(AI_IMAGE) | $(SHELL) $(top_srcdir)/src/images/create_ai_icon.sh 'ai_icon_data' \
 		> $(builddir)/$(@F)
 
 if GSL

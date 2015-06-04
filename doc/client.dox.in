@@ -1978,7 +1978,7 @@ INCLUDE_FILE_PATTERNS  =
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
 PREDEFINED             = "_EXPORT=" "_CONST=" "_PURE=" "_NOUNUSED=" "_NONNULL()=" \
-                         "_WCONST=" "_WPURE=" "_NWCONST=" "_NWPURE="
+                         "_WCONST=" "_WPURE=" "_NWCONST=" "_NWPURE=" "_DEPRECATED="
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The

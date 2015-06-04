@@ -30,6 +30,7 @@
 #include <cstddef>                      // for size_t
 #include <map>                          // for map<>::value_type, map, etc
 #include <utility>                      // for make_pair, pair
+#include <smartptr.h>
 
 namespace {
 
@@ -280,33 +281,27 @@ unsigned int NetMauMau::Common::rankOrderPosition(NetMauMau::Common::ICard::RANK
 
 bool NetMauMau::Common::cardEqual(const NetMauMau::Common::ICard *x,
 								  const NetMauMau::Common::ICard *y) {
-	return x->getSuit() == y->getSuit() && x->getRank() == y->getRank();
+	return *x == *y;
 }
 
 bool NetMauMau::Common::cardLess(const NetMauMau::Common::ICard *x,
 								 const NetMauMau::Common::ICard *y) {
-
-	return x->getSuit() == y->getSuit() ?
-		   rankOrderPosition(x->getRank()) < rankOrderPosition(y->getRank()) :
-		   suitOrderPosition(x->getSuit()) < suitOrderPosition(y->getSuit());
+	return *x < *y;
 }
 
 bool NetMauMau::Common::cardGreater(const NetMauMau::Common::ICard *x,
 									const NetMauMau::Common::ICard *y) {
-
-	return x->getRank() == y->getRank() ?
-		   suitOrderPosition(x->getSuit()) < suitOrderPosition(y->getSuit()) :
-		   rankOrderPosition(x->getRank()) < rankOrderPosition(y->getRank());
+	return *x > *y;
 }
 
 bool NetMauMau::Common::isSuit(const NetMauMau::Common::ICard *card,
 							   NetMauMau::Common::ICard::SUIT suit) {
-	return card->getSuit() == suit;
+	return card == suit;
 }
 
 bool NetMauMau::Common::isRank(const NetMauMau::Common::ICard *card,
 							   NetMauMau::Common::ICard::RANK rank) {
-	return card->getRank() == rank;
+	return card == rank;
 }
 
 NetMauMau::Common::ICard *NetMauMau::Common::getIllegalCard() {
@@ -407,6 +402,48 @@ std::string NetMauMau::Common::ansiSuit(const std::string &suit) {
 
 const char *NetMauMau::Common::getServerExe() {
 	return SERVER_EXE.c_str();
+}
+
+bool operator<(const NetMauMau::Common::ICard &lhs, const NetMauMau::Common::ICard &rhs) {
+
+	return lhs == rhs ?
+		   NetMauMau::Common::rankOrderPosition(lhs.getRank()) <
+		   NetMauMau::Common::rankOrderPosition(rhs.getRank()) :
+		   NetMauMau::Common::suitOrderPosition(lhs.getSuit()) <
+		   NetMauMau::Common::suitOrderPosition(rhs.getSuit());
+}
+
+bool operator>(const NetMauMau::Common::ICard &lhs, const NetMauMau::Common::ICard &rhs) {
+
+	return lhs == rhs ?
+		   NetMauMau::Common::suitOrderPosition(lhs.getSuit()) <
+		   NetMauMau::Common::suitOrderPosition(rhs.getSuit()) :
+		   NetMauMau::Common::rankOrderPosition(lhs.getRank()) <
+		   NetMauMau::Common::rankOrderPosition(rhs.getRank());
+}
+
+bool operator==(const NetMauMau::Common::ICardPtr &x, const NetMauMau::Common::ICardPtr &y) {
+	return !(x->getRank() != y->getRank() || x->getSuit() != y->getSuit());
+}
+
+bool operator!=(const NetMauMau::Common::ICardPtr &x, const NetMauMau::Common::ICardPtr &y) {
+	return !(x == y);
+}
+
+bool operator==(const NetMauMau::Common::ICardPtr &x, NetMauMau::Common::ICard::RANK y) {
+	return x->getRank() == y;
+}
+
+bool operator!=(const NetMauMau::Common::ICardPtr &x, NetMauMau::Common::ICard::RANK y) {
+	return x->getRank() != y;
+}
+
+bool operator==(const NetMauMau::Common::ICardPtr &x, NetMauMau::Common::ICard::SUIT y) {
+	return x->getSuit() == y;
+}
+
+bool operator!=(const NetMauMau::Common::ICardPtr &x, NetMauMau::Common::ICard::SUIT y) {
+	return x->getSuit() != y;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

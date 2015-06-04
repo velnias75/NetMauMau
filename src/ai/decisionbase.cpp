@@ -30,7 +30,7 @@ struct playedOutRank : std::binary_function < NetMauMau::Common::ICardPtr,
 
 	inline result_type operator()(const first_argument_type &desc,
 								  second_argument_type rank) const {
-		return desc->getRank() == rank;
+		return desc == rank;
 	}
 };
 #pragma GCC diagnostic pop
@@ -49,7 +49,8 @@ DecisionBase::removeJack(const NetMauMau::Player::IPlayer::CARDS &cards) {
 	NetMauMau::Player::IPlayer::CARDS myCards(cards);
 
 	myCards.erase(std::remove_if(myCards.begin(), myCards.end(),
-								 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+								 std::bind2nd(NetMauMau::Common::rankEqualTo
+										 <NetMauMau::Player::IPlayer::CARDS::value_type>(),
 										 NetMauMau::Common::ICard::JACK)), myCards.end());
 	return myCards;
 }
@@ -58,14 +59,16 @@ NetMauMau::Player::IPlayer::CARDS::difference_type
 DecisionBase::countSuit(const NetMauMau::Player::IPlayer::CARDS &cards,
 						NetMauMau::Common::ICard::SUIT suit) {
 	return std::count_if(cards.begin(), cards.end(),
-						 std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit), suit));
+						 std::bind2nd(NetMauMau::Common::suitEqualTo
+									  <NetMauMau::Player::IPlayer::CARDS::value_type>(), suit));
 }
 
 NetMauMau::Player::IPlayer::CARDS::difference_type
 DecisionBase::countRank(const NetMauMau::Player::IPlayer::CARDS &cards,
 						NetMauMau::Common::ICard::RANK rank) {
 	return std::count_if(cards.begin(), cards.end(),
-						 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank), rank));
+						 std::bind2nd(NetMauMau::Common::rankEqualTo
+									  <NetMauMau::Player::IPlayer::CARDS::value_type>(), rank));
 }
 
 IAIState::PLAYEDOUTCARDS::difference_type

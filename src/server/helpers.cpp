@@ -51,7 +51,7 @@
 #include "game.h"                       // for TIMEFORMAT, Game
 #include "logger.h"                     // for Logger
 #include "servereventhandler.h"         // for EventHandler
-#include "sqlite.h"                     // for SQLite
+// #include "sqlite.h"                     // for SQLite
 #include "ttynamecheckdir.h"            // for ttynameCheckDir
 
 #ifndef DP_USER

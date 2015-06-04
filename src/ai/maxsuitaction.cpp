@@ -88,8 +88,8 @@ const IConditionPtr &MaxSuitAction::perform(IAIState &state,
 				NetMauMau::Common::findRank(state.getUncoveredCard()->getRank(), myCards.begin(),
 											e);
 
-			if(f && (f->getRank() != NetMauMau::Common::ICard::SEVEN ||
-					 state.getPlayedOutCards().size() > (4 * state.getTalonFactor()))) {
+			if(f && (f != NetMauMau::Common::ICard::SEVEN || state.getPlayedOutCards().size() >
+					 (4 * state.getTalonFactor()))) {
 				bestCard = f;
 				break;
 			}
@@ -110,7 +110,7 @@ const IConditionPtr &MaxSuitAction::perform(IAIState &state,
 										state.getUncoveredCard()->getSuit(), myCards.begin(),
 										myCards.end());
 
-		if(f && f->getRank() != NetMauMau::Common::ICard::JACK) bestCard = f;
+		if(f && f != NetMauMau::Common::ICard::JACK) bestCard = f;
 	}
 
 	state.setCard(bestCard);

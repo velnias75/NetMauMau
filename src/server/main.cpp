@@ -33,6 +33,7 @@
 #endif
 
 #include <popt.h>                       // for poptFreeContext, etc
+
 #include <limits>
 #include <csignal>                      // for sigaction, sigevent, etc
 #include <algorithm>                    // for max, min, count_if
@@ -64,13 +65,14 @@
 
 #include "logger.h"                     // for BasicLogger, logger, etc
 #include "game.h"                       // for Game, etc
-#include "gameconfig.h"                 // for GameConfig
+#include "gamecontext.h"                // for GameConfig
 #include "helpers.h"                    // for arRank, minPlayers, decks, etc
 #include "luaexception.h"               // for LuaException
 #include "servereventhandler.h"         // for EventHandler
 #include "serverplayer.h"               // for Player
-#include "sqlite.h"                     // for SQLite
+// #include "sqlite.h"                     // for SQLite
 #include "iruleset.h"
+#include "ci_char_traits.h"
 
 namespace {
 
@@ -83,8 +85,9 @@ volatile bool refuse = false;
 struct _AINameCmp : std::binary_function<std::string, std::string, bool> {
 	inline result_type operator()(const first_argument_type &x,
 								  const second_argument_type &y) const {
-		return first_argument_type(x).substr(0, first_argument_type(x).rfind(':')) ==
-			   second_argument_type(y).substr(0, second_argument_type(y).rfind(':'));
+		return std::equal_to<NetMauMau::Common::ci_string>()(first_argument_type(x).substr(0,
+				first_argument_type(x).rfind(':')).c_str(), second_argument_type(y).substr(0,
+						second_argument_type(y).rfind(':')).c_str());
 	}
 };
 #pragma GCC diagnostic pop
@@ -262,8 +265,10 @@ int main(int argc, const char **argv) {
 		case 'a':
 			aceRound = true;
 
-			if(arRank && !(::toupper(arRank[0]) == 'A' || ::toupper(arRank[0]) == 'Q' ||
-						   ::toupper(arRank[0]) == 'K')) {
+			if(arRank && !(Common::ci_char_traits::eq(arRank[0], 'A') ||
+						   Common::ci_char_traits::eq(arRank[0], 'Q') ||
+						   Common::ci_char_traits::eq(arRank[0], 'K'))) {
+
 				logError("\'" << arRank << "\' is not a valid ace round rank. " \
 						 "Valid ranks are ACE, KING, or QUEEN.");
 				poptFreeContext(pctx);
@@ -415,11 +420,11 @@ int main(int argc, const char **argv) {
 											  static_cast<std::size_t>(decks))));
 
 			Server::EventHandler evtHdlr(con);
-			Server::GameConfig cfg(evtHdlr, static_cast<long>(::fabs(aiDelay * 1e06)),
-								   dirChange, cconf, aiOpponent, aiNames,
-								   static_cast<char>(aceRound ? ::toupper(arRank ?
-										   arRank[0] : 'A') : 0));
-			Server::Game game(cfg);
+			Server::GameContext ctx(evtHdlr, static_cast<long>(::fabs(aiDelay * 1e06)),
+									dirChange, cconf, aiOpponent, aiNames,
+									static_cast<char>(aceRound ? ::toupper(arRank ?
+											arRank[0] : 'A') : 0));
+			Server::Game game(ctx);
 
 			if(cconf.decks != static_cast<std::size_t>(decks)) {
 				logWarning("Adjusted amount of card decks from " << decks << " to " << cconf.decks);
@@ -434,8 +439,8 @@ int main(int argc, const char **argv) {
 
 			if(aiOpponent && game.getPlayerCount() < aiNames.size()) {
 				minPlayers = game.getPlayerCount() + 1;
-			} else if(cfg.getEngineConfig().getRuleSet()->getMaxPlayers() < minPlayers) {
-				minPlayers = cfg.getEngineConfig().getRuleSet()->getMaxPlayers();
+			} else if(ctx.getEngineContext().getRuleSet()->getMaxPlayers() < minPlayers) {
+				minPlayers = ctx.getEngineContext().getRuleSet()->getMaxPlayers();
 				logWarning("Limiting amount of human players to " << minPlayers <<
 						   " (due to configuration limit).");
 			}

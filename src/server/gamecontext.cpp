@@ -17,34 +17,34 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "gameconfig.h"
+#include "gamecontext.h"
 
 using namespace NetMauMau::Server;
 
-GameConfig::GameConfig(NetMauMau::Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange,
-					   NetMauMau::Common::CARDCONFIG &cc, bool aiPlayer,
-					   const std::vector<std::string> &aiName, char aceRound)
-	: m_aiPlayer(aiPlayer), m_aiName(aiName), m_engineCfg(evtHdlr, dirChange, aiDelay,
+GameContext::GameContext(NetMauMau::Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange,
+						 NetMauMau::Common::CARDCONFIG &cc, bool aiPlayer,
+						 const std::vector<std::string> &aiName, char aceRound)
+	: m_aiPlayer(aiPlayer), m_aiName(aiName), m_engineCtx(evtHdlr, dirChange, aiDelay,
 			!aiPlayer || !getAINames().empty(), aceRound, cc), m_cardConfig(cc) {}
 
-GameConfig::GameConfig(const GameConfig &o) : m_aiPlayer(o.m_aiPlayer), m_aiName(o.m_aiName),
-	m_engineCfg(o.m_engineCfg), m_cardConfig(o.m_cardConfig) {}
+GameContext::GameContext(const GameContext &o) : m_aiPlayer(o.m_aiPlayer), m_aiName(o.m_aiName),
+	m_engineCtx(o.m_engineCtx), m_cardConfig(o.m_cardConfig) {}
 
-GameConfig::~GameConfig() {}
+GameContext::~GameContext() {}
 
-const std::vector<std::string> &GameConfig::getAINames() const {
+const std::vector<std::string> &GameContext::getAINames() const {
 	return m_aiName;
 }
 
-bool GameConfig::hasAIPlayer() const {
+bool GameContext::hasAIPlayer() const {
 	return m_aiPlayer;
 }
 
-NetMauMau::EngineConfig &GameConfig::getEngineConfig() {
-	return m_engineCfg;
+NetMauMau::EngineContext &GameContext::getEngineContext() {
+	return m_engineCtx;
 }
 
-NetMauMau::Common::CARDCONFIG &GameConfig::getCardConfig() const {
+NetMauMau::Common::CARDCONFIG &GameContext::getCardConfig() const {
 	return m_cardConfig;
 }
 

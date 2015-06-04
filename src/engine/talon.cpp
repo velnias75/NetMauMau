@@ -173,8 +173,7 @@ Common::ICardPtr Talon::uncoverCard() {
 
 void Talon::playCard(const Common::ICardPtr &card) {
 
-	assert(!(card->getRank() == Common::ICard::RANK_ILLEGAL ||
-			 card->getSuit() == Common::ICard::SUIT_ILLEGAL));
+	assert(!(card == Common::ICard::RANK_ILLEGAL || card == Common::ICard::SUIT_ILLEGAL));
 
 	m_uncovered.push(card);
 	m_uncoveredDirty = true;

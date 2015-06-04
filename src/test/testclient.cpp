@@ -23,6 +23,7 @@
 #include <iostream>                     // for basic_ostream, operator<<, etc
 
 #include "cardtools.h"                  // for ansiSuit, getSuitSymbols, etc
+#include "ci_char_traits.h"
 
 namespace {
 #ifndef DISABLE_ANSI
@@ -92,8 +93,8 @@ NetMauMau::Common::ICard *TestClient::playCard(const CARDS &cards, std::size_t t
 	std::size_t pos;
 
 	CARDS possibleCards(cards);
-	std::sort(possibleCards.begin(), possibleCards.end(),
-			  std::ptr_fun(NetMauMau::Common::cardGreater));
+
+	std::sort(possibleCards.begin(), possibleCards.end(), NetMauMau::Common::cardGreaterThan());
 
 	do {
 
@@ -161,7 +162,7 @@ bool TestClient::getAceRoundChoice() const {
 	std::string acr;
 	std::cin >> acr;
 
-	return acr[0] == 'Y' || acr[0] == 'y';
+	return NetMauMau::Common::ci_char_traits::eq(acr[0], 'Y');
 }
 
 void TestClient::playerJoined(const std::string &player, const unsigned char *,
@@ -192,7 +193,8 @@ void TestClient::playerLost(const std::string &, std::size_t, std::size_t) const
 void TestClient::cardSet(const CARDS &cards) const {
 
 	CARDS newCards(cards);
-	std::sort(newCards.begin(), newCards.end(), std::ptr_fun(NetMauMau::Common::cardGreater));
+
+	std::sort(newCards.begin(), newCards.end(), NetMauMau::Common::cardGreaterThan());
 
 	for(CARDS::const_iterator i(newCards.begin()); i != newCards.end(); ++i) {
 		std::cout << BOLD_P_ON << getPlayerName() << BOLD_OFF << " gets card: "
@@ -200,7 +202,8 @@ void TestClient::cardSet(const CARDS &cards) const {
 	}
 
 	m_myCards.insert(m_myCards.end(), newCards.begin(), newCards.end());
-	std::sort(m_myCards.begin(), m_myCards.end(), std::ptr_fun(NetMauMau::Common::cardGreater));
+
+	std::sort(m_myCards.begin(), m_myCards.end(), NetMauMau::Common::cardGreaterThan());
 }
 
 void TestClient::enableSuspend(bool) const {}
@@ -230,7 +233,7 @@ void TestClient::cardRejected(const std::string &player,
 
 void TestClient::cardAccepted(const NetMauMau::Common::ICard *card) const {
 	m_myCards.erase(std::find_if(m_myCards.begin(), m_myCards.end(),
-								 std::bind2nd(std::ptr_fun(NetMauMau::Common::cardEqual), card)));
+								 std::bind2nd(std::equal_to<CARDS::value_type>(), card)));
 }
 
 void TestClient::jackSuit(NetMauMau::Common::ICard::SUIT suit) const {

@@ -17,12 +17,12 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_SERVER_GAMECONFIG_H
-#define NETMAUMAU_SERVER_GAMECONFIG_H
+#ifndef NETMAUMAU_SERVER_GAMECONTEXT_H
+#define NETMAUMAU_SERVER_GAMECONTEXT_H
 
 #include <vector>
 
-#include "engineconfig.h"               // for EngineConfig
+#include "enginecontext.h"
 
 namespace NetMauMau {
 
@@ -32,25 +32,25 @@ class IEventHandler;
 
 namespace Server {
 
-class GameConfig {
-	GameConfig &operator=(const GameConfig &);
+class GameContext {
+	GameContext &operator=(const GameContext &);
 public:
-	explicit GameConfig(const GameConfig &);
-	explicit GameConfig(Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange,
-						Common::CARDCONFIG &cc, bool aiPlayer = false,
-						const std::vector<std::string> &aiName = std::vector<std::string>(),
-						char aceRound = 0);
-	~GameConfig();
+	explicit GameContext(const GameContext &);
+	explicit GameContext(Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange,
+						 Common::CARDCONFIG &cc, bool aiPlayer = false,
+						 const std::vector<std::string> &aiName = std::vector<std::string>(),
+						 char aceRound = 0);
+	~GameContext();
 
 	bool hasAIPlayer() const _PURE;
 	const std::vector<std::string> &getAINames() const _CONST;
-	EngineConfig &getEngineConfig() _CONST;
+	EngineContext &getEngineContext() _CONST;
 	Common::CARDCONFIG &getCardConfig() const _PURE;
 
 private:
 	const bool m_aiPlayer;
 	const std::vector<std::string> m_aiName;
-	EngineConfig m_engineCfg;
+	EngineContext m_engineCtx;
 	Common::CARDCONFIG &m_cardConfig;
 };
 
@@ -58,6 +58,6 @@ private:
 
 }
 
-#endif /* NETMAUMAU_SERVER_GAMECONFIG_H */
+#endif /* NETMAUMAU_SERVER_GAMECONTEXT_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

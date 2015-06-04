@@ -157,7 +157,7 @@ NetMauMau::Common::ICardPtr Player::findCard(const std::string &offeredCard) con
 		const CARDS &pc(getPlayerCards());
 
 		for(CARDS::const_iterator i(pc.begin()); i != pc.end(); ++i) {
-			if((*i)->getSuit() == s && (*i)->getRank() == r) return NetMauMau::Common::ICardPtr(*i);
+			if((*i) == s && (*i) == r) return NetMauMau::Common::ICardPtr(*i);
 		}
 	}
 

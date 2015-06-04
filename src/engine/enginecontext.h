@@ -17,8 +17,8 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_ENGINECONFIG_H
-#define NETMAUMAU_ENGINECONFIG_H
+#ifndef NETMAUMAU_ENGINECONTEXT_H
+#define NETMAUMAU_ENGINECONTEXT_H
 
 #include <vector>
 #include <cstddef>                      // for size_t
@@ -38,14 +38,14 @@ namespace RuleSet {
 class IRuleSet;
 }
 
-class EngineConfig {
-	EngineConfig &operator=(const EngineConfig &);
+class EngineContext {
+	EngineContext &operator=(const EngineContext &);
 public:
-	explicit EngineConfig(const EngineConfig &);
-	explicit EngineConfig(Event::IEventHandler &eventHandler, bool dirChange, long aiDelay = 1000L,
-						  bool nextMessage = true, char aceRound = 0,
-						  const Common::CARDCONFIG &cc = Common::CARDCONFIG());
-	~EngineConfig();
+	explicit EngineContext(const EngineContext &);
+	explicit EngineContext(Event::IEventHandler &eventHandler, bool dirChange, long aiDelay = 1000L,
+						   bool nextMessage = true, char aceRound = 0,
+						   const Common::CARDCONFIG &cc = Common::CARDCONFIG());
+	~EngineContext();
 
 	Event::IEventHandler &getEventHandler() const _PURE;
 
@@ -77,6 +77,6 @@ private:
 
 }
 
-#endif /* NETMAUMAU_ENGINECONFIG_H */
+#endif /* NETMAUMAU_ENGINECONTEXT_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

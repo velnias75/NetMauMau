@@ -36,7 +36,7 @@ class AbstractPlayer;
 
 namespace Server {
 
-class GameConfig;
+class GameContext;
 
 class Game {
 	DISALLOW_COPY_AND_ASSIGN(Game)
@@ -44,7 +44,7 @@ public:
 
 	typedef enum { ACCEPTED, REFUSED, ACCEPTED_READY, REFUSED_FULL } COLLECT_STATE;
 
-	explicit Game(GameConfig &gameConfig) throw(Common::Exception::SocketException);
+	explicit Game(GameContext &gameCtx) throw(Common::Exception::SocketException);
 	~Game();
 
 	COLLECT_STATE collectPlayers(std::size_t minPlayers, Player::IPlayer *player);
@@ -70,11 +70,11 @@ private:
 private:
 	static long m_gameServed;
 
-	const GameConfig &m_cfg;
+	const GameContext &m_ctx;
 	Engine m_engine;
 	std::vector<Player::AbstractPlayer *> m_aiPlayers;
 	std::vector<Player::IPlayer *> m_players;
-	long long int m_gameIndex;
+	DB::GAMEIDX m_gameIndex;
 };
 
 }

@@ -50,7 +50,7 @@ struct _pushIfPossible : std::unary_function<NetMauMau::Common::ICardPtr, void> 
 
 	inline result_type operator()(const argument_type &card) const {
 
-		if(suit && card->getSuit() != *suit) return;
+		if(suit && card != *suit) return;
 
 		const NetMauMau::Common::ICard::RANK rank = card->getRank();
 
@@ -82,7 +82,7 @@ using namespace NetMauMau::Player;
 AbstractPlayer::AbstractPlayer(const std::string &name, const NetMauMau::IPlayedOutCards *poc)
 	: IPlayer(), m_name(name), m_cards(), m_cardsTaken(false), m_ruleset(0L),
 	  m_playerHasFewCards(false), m_nineIsEight(false), m_leftCount(0), m_rightCount(0),
-	  m_dirChgEnabled(false), m_playerCount(0), m_engineCfg(0L), m_cardCountObserver(0L),
+	  m_dirChgEnabled(false), m_playerCount(0), m_engineCtx(0L), m_cardCountObserver(0L),
 	  m_poc(poc) {
 	m_cards.reserve(32);
 }
@@ -101,8 +101,8 @@ void AbstractPlayer::setCardCountObserver(const NetMauMau::ICardCountObserver *c
 	m_cardCountObserver = cco;
 }
 
-void AbstractPlayer::setEngineConfig(const NetMauMau::EngineConfig *engineCfg) {
-	m_engineCfg = engineCfg;
+void AbstractPlayer::setEngineContext(const NetMauMau::EngineContext *engineCtx) {
+	m_engineCtx = engineCtx;
 }
 
 void AbstractPlayer::informAIStat(const IPlayer *, std::size_t count) {
@@ -145,7 +145,7 @@ IPlayer::CARDS AbstractPlayer::getPossibleCards(const NetMauMau::Common::ICardPt
 
 bool AbstractPlayer::isAceRoundAllowed() const {
 	return std::count_if(getPlayerCards().begin(), getPlayerCards().end(),
-						 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
+						 std::bind2nd(NetMauMau::Common::rankEqualTo<CARDS::value_type>(),
 									  m_ruleset->getAceRoundRank())) > 1;
 }
 
@@ -170,7 +170,7 @@ void AbstractPlayer::notifyCardCountChange() const throw() {
 bool AbstractPlayer::cardAccepted(const NetMauMau::Common::ICard *playedCard) {
 
 	const CARDS::iterator &i(std::find_if(m_cards.begin(), m_cards.end(),
-										  std::bind2nd(std::ptr_fun(NetMauMau::Common::cardEqual),
+										  std::bind2nd(std::equal_to<CARDS::value_type>(),
 												  playedCard)));
 
 	if(i != m_cards.end()) {
@@ -191,8 +191,8 @@ void AbstractPlayer::pushCard(const NetMauMau::Common::ICardPtr &card) {
 	m_cards.push_back(card);
 }
 
-const NetMauMau::EngineConfig *AbstractPlayer::getEngineConfig() const {
-	return m_engineCfg;
+const NetMauMau::EngineContext *AbstractPlayer::getEngineContext() const {
+	return m_engineCtx;
 }
 
 const NetMauMau::RuleSet::IRuleSet *AbstractPlayer::getRuleSet() const {

@@ -74,16 +74,9 @@ public:
 		return  m_refCounter ? m_refCounter->m_ptr : m_constRawPtr;
 	}
 
-	operator bool() const throw() {
-		return !!(this->operator const T * ());
-	}
-
 	operator T *() const throw() {
-		return m_refCounter ? m_refCounter->m_ptr : 0L;
-	}
-
-	operator const T *() const throw() {
-		return m_refCounter ? m_refCounter->m_ptr : (m_constRawPtr ? m_constRawPtr : 0L);
+		return m_refCounter ? m_refCounter->m_ptr : (m_constRawPtr ?
+				const_cast<T *>(m_constRawPtr) : 0L);
 	}
 
 	bool unique() const throw() {

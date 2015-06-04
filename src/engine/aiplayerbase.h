@@ -26,7 +26,7 @@
 #include "abstractplayer.h"
 
 #include "iruleset.h"
-#include "engineconfig.h"
+#include "enginecontext.h"
 #include "socketexception.h"
 
 namespace NetMauMau {
@@ -46,7 +46,7 @@ public:
 
 	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset);
 	virtual void setCardCountObserver(const ICardCountObserver *cco);
-	virtual void setEngineConfig(const EngineConfig *engineCfg);
+	virtual void setEngineContext(const EngineContext *engineCtx);
 
 	virtual void receiveCard(const Common::ICardPtr &card);
 	virtual void receiveCardSet(const CARDS &cards);
@@ -155,8 +155,8 @@ inline void AIPlayerBase < RootCond, RootCondJack >::setRuleSet(const RuleSet::I
 
 template<class RootCond, class RootCondJack>
 inline void AIPlayerBase < RootCond,
-RootCondJack >::setEngineConfig(const EngineConfig *engineCfg) {
-	AbstractPlayer::setEngineConfig(engineCfg);
+RootCondJack >::setEngineContext(const EngineContext *engineCtx) {
+	AbstractPlayer::setEngineContext(engineCtx);
 }
 
 template<class RootCond, class RootCondJack>
@@ -200,8 +200,7 @@ std::size_t, bool noSuspend) const {
 	AI::BaseAIPlayer<RootCond, RootCondJack>::m_playedCard =
 		AI::BaseAIPlayer<RootCond, RootCondJack>::m_card = Common::ICardPtr();
 
-	if(bestCard && bestCard->getRank() == Common::ICard::JACK &&
-	uc->getRank() == Common::ICard::JACK) {
+	if(bestCard && bestCard == Common::ICard::JACK && uc == Common::ICard::JACK) {
 		bestCard = AI::BaseAIPlayer<RootCond, RootCondJack>::getDecisionChain()->getCard(true);
 	}
 
@@ -216,12 +215,12 @@ template<class RootCond, class RootCondJack>
 Common::ICardPtr AIPlayerBase<RootCond, RootCondJack>::noSuspendCard(const Common::ICardPtr &c,
 		const Common::ICardPtr &uc, const Common::ICard::SUIT *js) const {
 
-	if(!(c && c->getRank() != Common::ICard::SEVEN)) {
+	if(!(c && c != Common::ICard::SEVEN)) {
 
 		const CARDS &pc(getPossibleCards(uc, js));
 		CARDS::const_iterator i(pc.begin());
 
-		while(i != pc.end() && ((*i)->getRank() == Common::ICard::SEVEN)) ++i;
+		while(i != pc.end() && ((*i) == Common::ICard::SEVEN)) ++i;
 
 		if(i != pc.end()) {
 #if defined(TRACE_AI) && !defined(NDEBUG)
@@ -326,7 +325,7 @@ inline void AIPlayerBase<RootCond, RootCondJack>::setDirChangeEnabled(bool dirCh
 
 template<class RootCond, class RootCondJack>
 inline std::size_t AIPlayerBase<RootCond, RootCondJack>::getTalonFactor() const {
-	return getEngineConfig() ? getEngineConfig()->getTalonFactor() : 1;
+	return getEngineContext() ? getEngineContext()->getTalonFactor() : 1;
 }
 
 template<class RootCond, class RootCondJack>

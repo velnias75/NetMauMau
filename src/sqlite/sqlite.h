@@ -26,7 +26,7 @@
 #include "iconnection.h"                // for IConnection, etc
 #include "smartptr.h"                   // for SmartPtr
 
-#define NOGAME_IDX -1LL
+#define NOGAME_IDX static_cast<NetMauMau::DB::GAMEIDX>(-1LL)
 
 namespace NetMauMau {
 
@@ -36,6 +36,8 @@ class IPlayer;
 
 namespace DB {
 
+typedef long long int GAMEIDX;
+
 class SQLiteImpl;
 
 class SQLite {
@@ -44,7 +46,7 @@ public:
 	typedef Common::SmartPtr<SQLite> SQLitePtr;
 
 	typedef struct {
-		long long int id;
+		GAMEIDX id;
 		std::string name;
 		long long int score;
 	} SCORE;
@@ -66,16 +68,14 @@ public:
 	bool addAIPlayer(const NetMauMau::Player::IPlayer *ai) const;
 	bool addPlayer(const Common::IConnection::INFO &info) const;
 	bool logOutPlayer(const Common::IConnection::NAMESOCKFD &nsf) const;
-	long long int newGame() const;
-	bool gameEnded(long long int gameIndex) const;
-	bool addPlayerToGame(long long int gid,
-						 const Common::IConnection::NAMESOCKFD &nsf) const;
-	bool turn(long long int gameIndex, std::size_t turn) const;
-	bool gamePlayStarted(long long int gameIndex) const;
-	bool playerLost(long long int gameIndex, const Common::IConnection::NAMESOCKFD &nsf,
-					std::time_t time, std::size_t points) const;
-	bool playerWins(long long int gameIndex, const Common::IConnection::NAMESOCKFD &nsf)
-	const;
+	GAMEIDX newGame() const;
+	bool gameEnded(GAMEIDX gameIndex) const;
+	bool addPlayerToGame(GAMEIDX gid, const Common::IConnection::NAMESOCKFD &nsf) const;
+	bool turn(GAMEIDX gameIndex, std::size_t turn) const;
+	bool gamePlayStarted(GAMEIDX gameIndex) const;
+	bool playerLost(GAMEIDX gameIndex, const Common::IConnection::NAMESOCKFD &nsf, std::time_t time,
+					std::size_t points) const;
+	bool playerWins(GAMEIDX gameIndex, const Common::IConnection::NAMESOCKFD &nsf) const;
 
 private:
 	explicit SQLite();

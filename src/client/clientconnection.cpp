@@ -319,19 +319,24 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			char status[2];
 			recv(status, 2, getSocketFD());
 
-			if((status[0] == 'N' && status[1] == 'O')) {
+			if(std::char_traits<char>::eq(status[0], 'N') &&
+					std::char_traits<char>::eq(status[1], 'O')) {
 				throw Exception::ConnectionRejectedException("Remote server rejected " \
 						"the connection", getSocketFD());
-			} else if((status[0] == 'V' && status[1] == 'M')) {
+			} else if(std::char_traits<char>::eq(status[0], 'V') &&
+					  std::char_traits<char>::eq(status[1], 'M')) {
 				throw Exception::VersionMismatchException(
 					MAKE_VERSION(SERVER_VERSION_MAJOR, SERVER_VERSION_MINOR),
 					MAKE_VERSION(maj, min), getSocketFD());
-			} else if((status[0] == 'I' && status[1] == 'N')) {
+			} else if(std::char_traits<char>::eq(status[0], 'I') &&
+					  std::char_traits<char>::eq(status[1], 'N')) {
 				throw Exception::PlayerlistException(_pimpl->m_pName, getSocketFD());
-			} else if((status[0] == 'G' && status[1] == 'R')) {
+			} else if(std::char_traits<char>::eq(status[0], 'G') &&
+					  std::char_traits<char>::eq(status[1], 'R')) {
 				throw Exception::GameRunningException("There is already a game running " \
 													  "on this server", getSocketFD());
-			} else if(!(status[0] == 'O' && status[1] == 'K')) {
+			} else if(std::char_traits<char>::eq(status[0], 'O') &&
+					  std::char_traits<char>::eq(status[1], 'K')) {
 				throw NetMauMau::Common::Exception::SocketException("Connection rejected due " \
 						"to unknown reason", getSocketFD());
 			}

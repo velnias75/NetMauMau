@@ -17,27 +17,33 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "checksevencondition.h"
+#ifndef NETMAUMAU_COMMON_CI_CHAR_TRAITS_H
+#define NETMAUMAU_COMMON_CI_CHAR_TRAITS_H
 
-#include "servesevenaction.h"           // for ServeSevenAction
-#include "skipplayercondition.h"        // for SkipPlayerCondition
+#include <string>
 
-namespace {
-const NetMauMau::AI::IActionPtr SERVESEVENACTION(new NetMauMau::AI::ServeSevenAction());
-const NetMauMau::AI::IConditionPtr SKIPPLAYERACTION(new NetMauMau::AI::SkipPlayerCondition());
+#include "linkercontrol.h"
+
+namespace NetMauMau {
+
+namespace Common {
+
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+struct _EXPORT ci_char_traits : public std::char_traits<char> {
+	static bool eq(char_type c1, char_type c2) _PURE;
+	static bool lt(char_type c1, char_type c2) _PURE;
+	static int compare(const char_type *s1, const char_type *s2, size_t n) _PURE;
+	static const char_type *find(const char_type *s, size_t n, char_type a) _PURE;
+};
+#pragma GCC diagnostic pop
+
+typedef std::basic_string<char, ci_char_traits> ci_string;
+
 }
 
-using namespace NetMauMau::AI;
-
-CheckSevenCondition::CheckSevenCondition() : AbstractCondition() {}
-
-CheckSevenCondition::~CheckSevenCondition() {}
-
-IActionPtr CheckSevenCondition::perform(const IAIState &state,
-										const NetMauMau::Player::IPlayer::CARDS &) const {
-	return state.getPlayedOutCards().size() > (4 * state.getTalonFactor()) &&
-		   state.getUncoveredCard() == NetMauMau::Common::ICard::SEVEN ?
-		   SERVESEVENACTION : createNextAction(SKIPPLAYERACTION);
 }
+
+#endif /* NETMAUMAU_COMMON_CI_CHAR_TRAITS_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

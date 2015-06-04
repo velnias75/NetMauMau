@@ -27,11 +27,12 @@
 #include "icardcountobserver.h"         // for ICardCountObserver
 #include "italonchange.h"               // for ITalonChange
 #include "socketexception.h"            // for SocketException, SOCKET
+#include "sqlite.h"
 
 namespace NetMauMau {
 
 class IPlayedOutCards;
-class EngineConfig;
+class EngineContext;
 class Talon;
 
 namespace Event {
@@ -49,12 +50,12 @@ class _EXPORT Engine : private ITalonChange, public IAceRoundListener,
 public:
 	typedef std::vector<Player::IPlayer *> PLAYERS;
 
-	explicit Engine(EngineConfig &config) throw(Common::Exception::SocketException);
+	explicit Engine(EngineContext &ctx) throw(Common::Exception::SocketException);
 
 	virtual ~Engine();
 
-	inline const EngineConfig &getConfig() const {
-		return m_cfg;
+	inline const EngineContext &getContext() const {
+		return m_ctx;
 	}
 
 	const Event::IEventHandler &getEventHandler() const _PURE;
@@ -67,7 +68,7 @@ public:
 		m_ultimate = u;
 	}
 
-	inline void setGameId(long long int gameIndex) {
+	inline void setGameId(DB::GAMEIDX gameIndex) {
 		m_gameIndex = gameIndex;
 	}
 
@@ -152,7 +153,7 @@ private:
 	bool wait(const Player::IPlayer *player, bool suspend) const;
 
 private:
-	EngineConfig &m_cfg;
+	EngineContext &m_ctx;
 
 	STATE m_state;
 	Talon *m_talon;
@@ -169,7 +170,7 @@ private:
 	bool m_alreadyWaited;
 
 	const bool m_initialNextMessage;
-	long long int m_gameIndex;
+	DB::GAMEIDX m_gameIndex;
 	bool m_dirChangeEnabled;
 	bool m_talonUnderflow;
 };

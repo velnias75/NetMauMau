@@ -26,6 +26,10 @@
 #ifndef NETMAUMAU_CARDTOOLS_H
 #define NETMAUMAU_CARDTOOLS_H
 
+#ifndef _DEPRECATED
+#define _DEPRECATED __attribute__((deprecated))
+#endif
+
 #include <algorithm>
 
 #include "icard.h"
@@ -149,12 +153,15 @@ _EXPORT unsigned int rankOrderPosition(NetMauMau::Common::ICard::RANK rank) _CON
  * @ingroup util
  * @brief Checks if two cards are equal
  *
- * @param x a card
- * @param y a card
+ * @param lhs a card
+ * @param rhs a card
+ *
+ * @deprecated use the compare operators
  *
  * @return @c true if the cards are equal, @c false otherwise
  */
-_EXPORT bool cardEqual(const NetMauMau::Common::ICard *x, const NetMauMau::Common::ICard *y);
+_EXPORT bool cardEqual(const NetMauMau::Common::ICard *lhs,
+					   const NetMauMau::Common::ICard *rhs) _DEPRECATED;
 
 /**
  * @ingroup util
@@ -162,12 +169,35 @@ _EXPORT bool cardEqual(const NetMauMau::Common::ICard *x, const NetMauMau::Commo
  *
  * Useful for sorting with suit first than rank
  *
- * @param x a card
- * @param y a card
+ * @deprecated use the compare operators
  *
- * @return @c true if @c x comes before @c y, @c false otherwise
+ * @param lhs a card
+ * @param rhs a card
+ *
+ * @return @c true if @c lhs comes before @c rhs, @c false otherwise
  */
-_EXPORT bool cardLess(const NetMauMau::Common::ICard *x, const NetMauMau::Common::ICard *y);
+_EXPORT bool cardLess(const NetMauMau::Common::ICard *lhs,
+					  const NetMauMau::Common::ICard *rhs) _DEPRECATED;
+
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+/**
+ * @ingroup util
+ *
+ * @brief Functor to compare cards
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @since 0.20.2
+ */
+struct cardLessThan : std::binary_function < NetMauMau::Common::ICard, NetMauMau::Common::ICard,
+		bool > {
+	inline result_type operator()(const first_argument_type *lhs,
+								  const second_argument_type *rhs) const {
+		return *lhs < *rhs;
+	}
+};
+#pragma GCC diagnostic pop
 
 /**
  * @ingroup util
@@ -175,14 +205,37 @@ _EXPORT bool cardLess(const NetMauMau::Common::ICard *x, const NetMauMau::Common
  *
  * Useful for sorting with rank first than suit
  *
- * @param x a card
- * @param y a card
+ * @deprecated use the compare operators
  *
- * @return @c true if @c x comes before @c y, @c false otherwise
+ * @param lhs a card
+ * @param rhs a card
+ *
+ * @return @c true if @c lhs comes before @c rhs, @c false otherwise
  *
  * @since 0.3
  */
-_EXPORT bool cardGreater(const NetMauMau::Common::ICard *x, const NetMauMau::Common::ICard *y);
+_EXPORT bool cardGreater(const NetMauMau::Common::ICard *lhs,
+						 const NetMauMau::Common::ICard *rhs) _DEPRECATED;
+
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+/**
+ * @ingroup util
+ *
+ * @brief Functor to compare cards
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @since 0.20.2
+ */
+struct cardGreaterThan : std::binary_function < NetMauMau::Common::ICard, NetMauMau::Common::ICard,
+		bool > {
+	inline result_type operator()(const first_argument_type *lhs,
+								  const second_argument_type *rhs) const {
+		return *lhs > *rhs;
+	}
+};
+#pragma GCC diagnostic pop
 
 /// @}
 
@@ -198,9 +251,37 @@ _EXPORT bool cardGreater(const NetMauMau::Common::ICard *x, const NetMauMau::Com
  * @param card the card to check
  * @param suit the @c SUIT to check for
  *
+ * @deprecated use the compare operators or NetMauMau::Common::suitEqualTo
+ *
  * @return @c true if the card is of @c SUIT
  */
-_EXPORT bool isSuit(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::SUIT suit);
+_EXPORT bool isSuit(const NetMauMau::Common::ICard *card,
+					NetMauMau::Common::ICard::SUIT suit) _DEPRECATED;
+
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+/**
+ * @ingroup util
+ *
+ * @brief Functor to compare a card against a suit
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @tparam T card class type
+ *
+ * @since 0.20.2
+ */
+template<class T>
+struct suitEqualTo : std::binary_function<T, NetMauMau::Common::ICard::SUIT, bool> {
+private:
+	typedef typename std::binary_function<T, NetMauMau::Common::ICard::SUIT, bool> bf;
+public:
+	inline typename bf::result_type operator()(const typename bf::first_argument_type &card,
+			typename bf::second_argument_type suit) const {
+		return card == suit;
+	}
+};
+#pragma GCC diagnostic pop
 
 /**
  * @ingroup util
@@ -209,9 +290,37 @@ _EXPORT bool isSuit(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICa
  * @param card the card to check
  * @param rank the @c RANK to check for
  *
+ * @deprecated use the compare operators or NetMauMau::Common::rankEqualTo
+ *
  * @return @c true if the card is of @c RANK
  */
-_EXPORT bool isRank(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::RANK rank);
+_EXPORT bool isRank(const NetMauMau::Common::ICard *card,
+					NetMauMau::Common::ICard::RANK rank) _DEPRECATED;
+
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+/**
+ * @ingroup util
+ *
+ * @brief Functor to compare a card againat a rank
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @tparam T card class type
+ *
+ * @since 0.20.2
+ */
+template<class T>
+struct rankEqualTo : std::binary_function<T, NetMauMau::Common::ICard::RANK, bool> {
+private:
+	typedef typename std::binary_function<T, NetMauMau::Common::ICard::RANK, bool> bf;
+public:
+	inline typename bf::result_type operator()(const typename bf::first_argument_type &card,
+			typename bf::second_argument_type suit) const {
+		return card == suit;
+	}
+};
+#pragma GCC diagnostic pop
 
 /**
  * @ingroup util
@@ -228,7 +337,9 @@ template<typename Iterator>
 typename Iterator::value_type findSuit(NetMauMau::Common::ICard::SUIT suit, Iterator first,
 									   Iterator last) {
 
-	const Iterator &f(std::find_if(first, last, std::bind2nd(std::ptr_fun(isSuit), suit)));
+	const Iterator &f(std::find_if(first, last,
+								   std::bind2nd(suitEqualTo<typename Iterator::value_type>(),
+										   suit)));
 
 	return f != last ? *f : typename Iterator::value_type();
 }
@@ -248,7 +359,9 @@ template<typename Iterator>
 typename Iterator::value_type findRank(NetMauMau::Common::ICard::RANK rank, Iterator first,
 									   Iterator last) {
 
-	const Iterator &f(std::find_if(first, last, std::bind2nd(std::ptr_fun(isRank), rank)));
+	const Iterator &f(std::find_if(first, last,
+								   std::bind2nd(rankEqualTo<typename Iterator::value_type>(),
+										   rank)));
 
 	return f != last ? *f : typename Iterator::value_type();
 }
@@ -268,7 +381,9 @@ template<typename Iterator>
 typename Iterator::value_type findCard(typename Iterator::value_type card, Iterator first,
 									   Iterator last) {
 
-	const Iterator &f(std::find_if(first, last, std::bind2nd(std::ptr_fun(cardEqual), card)));
+	const Iterator &f(std::find_if(first, last,
+								   std::bind2nd(std::equal_to<typename Iterator::value_type>(),
+										   card)));
 
 	return f != last ? *f : typename Iterator::value_type();
 }

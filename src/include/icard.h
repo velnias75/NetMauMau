@@ -108,6 +108,225 @@ typedef SmartPtr<ICard> ICardPtr;
 
 }
 
+/**
+ * @ingroup util
+ *
+ * @brief Compares a card against a rank
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @param card card to compare to
+ * @param rank rank to compare to
+ *
+ * @return @c true if equal, @c false otherwise
+ *
+ * @since 0.20.2
+ */
+inline bool operator==(const NetMauMau::Common::ICard &card, NetMauMau::Common::ICard::RANK rank) {
+	return card.getRank() == rank;
+}
+
+/**
+ * @ingroup util
+ *
+ * @brief Compares a card against a rank
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @param card card to compare to
+ * @param rank rank to compare to
+ *
+ * @return @c false if equal, @c true otherwise
+ *
+ * @since 0.20.2
+ */
+inline bool operator!=(const NetMauMau::Common::ICard &card, NetMauMau::Common::ICard::RANK rank) {
+	return card.getRank() != rank;
+}
+
+/**
+ * @ingroup util
+ *
+ * @brief Compares a card against a suit
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @param card card to compare to
+ * @param suit suit to compare to
+ *
+ * @return @c true if equal, @c false otherwise
+ *
+ * @since 0.20.2
+ */
+inline bool operator==(const NetMauMau::Common::ICard &card, NetMauMau::Common::ICard::SUIT suit) {
+	return card.getSuit() == suit;
+}
+
+/**
+ * @ingroup util
+ *
+ * @brief Compares a card against a suit
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @param card card to compare to
+ * @param suit suit to compare to
+ *
+ * @return @c false if equal, @c true otherwise
+ *
+ * @since 0.20.2
+ */
+inline bool operator!=(const NetMauMau::Common::ICard &card, NetMauMau::Common::ICard::SUIT suit) {
+	return card.getSuit() != suit;
+}
+
+/**
+ * @ingroup util
+ *
+ * @brief Compares cards
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @param lhs left card
+ * @param rhs right card
+ *
+ * @return @c true if equal, @c false otherwise
+ *
+ * @since 0.20.2
+ */
+inline bool operator==(const NetMauMau::Common::ICard &lhs, const NetMauMau::Common::ICard &rhs) {
+	return !(lhs != rhs.getRank() || lhs != rhs.getSuit());
+}
+
+/**
+ * @ingroup util
+ *
+ * @brief Compares cards
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @param lhs left card
+ * @param rhs right card
+ *
+ * @return @c false if equal, @c true otherwise
+ *
+ * @since 0.20.2
+ */
+inline bool operator!=(const NetMauMau::Common::ICard &lhs, const NetMauMau::Common::ICard &rhs) {
+	return !(lhs == rhs);
+}
+
+/**
+ * @ingroup util
+ *
+ * @brief Compares cards
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @param lhs left card
+ * @param rhs right card
+ *
+ * @return @c true if lesser, @c false otherwise
+ *
+ * @since 0.20.2
+ */
+_EXPORT bool operator<(const NetMauMau::Common::ICard &lhs, const NetMauMau::Common::ICard &rhs);
+
+/**
+ * @ingroup util
+ *
+ * @brief Compares cards
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @param lhs left card
+ * @param rhs right card
+ *
+ * @return @c true if greater, @c false otherwise
+ *
+ * @since 0.20.2
+ */
+_EXPORT bool operator>(const NetMauMau::Common::ICard &lhs, const NetMauMau::Common::ICard &rhs);
+
+/**
+ * @ingroup util
+ *
+ * @brief Compares a card against a rank
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @param card card to compare to
+ * @param rank rank to compare to
+ *
+ * @return @c true if equal, @c false otherwise
+ *
+ * @since 0.20.2
+ */
+inline bool operator==(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::RANK rank) {
+	return *card == rank;
+}
+
+/**
+ * @ingroup util
+ *
+ * @brief Compares a card against a rank
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @param card card to compare to
+ * @param rank rank to compare to
+ *
+ * @return @c false if equal, @c true otherwise
+ *
+ * @since 0.20.2
+ */
+inline bool operator!=(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::RANK rank) {
+	return *card != rank;
+}
+
+/**
+ * @ingroup util
+ *
+ * @brief Compares a card against a suit
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @param card card to compare to
+ * @param suit suit to compare to
+ *
+ * @return @c true if equal, @c false otherwise
+ *
+ * @since 0.20.2
+ */
+inline bool operator==(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::SUIT suit) {
+	return *card == suit;
+}
+
+/**
+ * @ingroup util
+ *
+ * @brief Compares a card against a suit
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @param card card to compare to
+ * @param suit suit to compare to
+ *
+ * @return @c false if equal, @c true otherwise
+ *
+ * @since 0.20.2
+ */
+inline bool operator!=(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::SUIT suit) {
+	return *card != suit;
+}
+
+_EXPORT bool operator==(const NetMauMau::Common::ICardPtr &x, const NetMauMau::Common::ICardPtr &y);
+_EXPORT bool operator!=(const NetMauMau::Common::ICardPtr &x, const NetMauMau::Common::ICardPtr &y);
+_EXPORT bool operator==(const NetMauMau::Common::ICardPtr &x, NetMauMau::Common::ICard::RANK y);
+_EXPORT bool operator!=(const NetMauMau::Common::ICardPtr &x, NetMauMau::Common::ICard::RANK y);
+_EXPORT bool operator==(const NetMauMau::Common::ICardPtr &x, NetMauMau::Common::ICard::SUIT y);
+_EXPORT bool operator!=(const NetMauMau::Common::ICardPtr &x, NetMauMau::Common::ICard::SUIT y);
+
 #endif /* NETMAUMAU_ICARD_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

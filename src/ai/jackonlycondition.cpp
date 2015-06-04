@@ -44,10 +44,9 @@ IActionPtr JackOnlyCondition::perform(const IAIState &state,
 	const NetMauMau::Player::IPlayer::CARDS::size_type s(cards.size());
 
 	return state.getRuleSet() ? (state.getRuleSet()->isAceRound() ? ACEROUNDACTION :
-								 ((s == 1 && !(state.getUncoveredCard()->getRank() ==
-										 NetMauMau::Common::ICard::JACK &&
-										 (*cards.begin())->getRank() ==
-										 NetMauMau::Common::ICard::JACK)) ?
+								 ((s == 1 &&
+								   !(state.getUncoveredCard() == NetMauMau::Common::ICard::JACK &&
+									 (*cards.begin()) == NetMauMau::Common::ICard::JACK)) ?
 								  PLAYJACKACTION : (s == 1 ? SUSPENDACTION :
 										  createNextAction(CHECKSEVENCOND)))) :
 			   createNextAction(CHECKSEVENCOND);

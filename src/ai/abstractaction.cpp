@@ -46,8 +46,8 @@ struct _isSpecialRank : std::binary_function < NetMauMau::Common::ICardPtr,
 
 	result_type operator()(const first_argument_type &c, second_argument_type r) const {
 		return m_nineIsEight && r == NetMauMau::Common::ICard::EIGHT ?
-			   (c->getRank() == NetMauMau::Common::ICard::EIGHT ||
-				c->getRank() == NetMauMau::Common::ICard::NINE) : c->getRank() == r;
+			   (c == NetMauMau::Common::ICard::EIGHT || c == NetMauMau::Common::ICard::NINE) :
+			   c == r;
 	}
 
 private:
@@ -123,22 +123,23 @@ NetMauMau::Player::IPlayer::CARDS::iterator
 AbstractAction::pullSuit(NetMauMau::Player::IPlayer::CARDS &cards,
 						 NetMauMau::Common::ICard::SUIT suit) {
 	return std::partition(cards.begin(), cards.end(),
-						  std::bind2nd(std::ptr_fun(NetMauMau::Common::isSuit), suit));
+						  std::bind2nd(NetMauMau::Common::suitEqualTo<NetMauMau::Player::IPlayer::CARDS::value_type>(), suit));
 }
 
 NetMauMau::Player::IPlayer::CARDS::iterator
 AbstractAction::pullRank(NetMauMau::Player::IPlayer::CARDS &cards,
 						 NetMauMau::Common::ICard::RANK rank) {
 	return std::stable_partition(cards.begin(), cards.end(),
-								 std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank), rank));
+								 std::bind2nd(NetMauMau::Common::rankEqualTo
+										 <NetMauMau::Player::IPlayer::CARDS::value_type>(), rank));
 }
 
 NetMauMau::Player::IPlayer::CARDS::iterator
 AbstractAction::pullRank(const NetMauMau::Player::IPlayer::CARDS::iterator &first,
 						 const NetMauMau::Player::IPlayer::CARDS::iterator &last,
 						 NetMauMau::Common::ICard::RANK rank) {
-	return std::stable_partition(first, last, std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-								 rank));
+	return std::stable_partition(first, last, std::bind2nd(NetMauMau::Common::rankEqualTo
+								 <NetMauMau::Player::IPlayer::CARDS::value_type>(), rank));
 }
 
 NetMauMau::Player::IPlayer::CARDS::iterator
@@ -146,7 +147,8 @@ AbstractAction::pushRank(const NetMauMau::Player::IPlayer::CARDS::iterator &firs
 						 const NetMauMau::Player::IPlayer::CARDS::iterator &last,
 						 NetMauMau::Common::ICard::RANK rank) {
 	return std::partition(first, last,
-						  std::not1(std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank), rank)));
+						  std::not1(std::bind2nd(NetMauMau::Common::rankEqualTo
+									<NetMauMau::Player::IPlayer::CARDS::value_type>(), rank)));
 }
 
 NetMauMau::Player::IPlayer::CARDS::iterator

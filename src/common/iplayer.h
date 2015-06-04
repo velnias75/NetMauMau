@@ -26,7 +26,7 @@
 
 namespace NetMauMau {
 
-class EngineConfig;
+class EngineContext;
 class ICardCountObserver;
 
 namespace RuleSet {
@@ -51,7 +51,7 @@ public:
 	virtual TYPE getType() const = 0;
 
 	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset) = 0;
-	virtual void setEngineConfig(const EngineConfig *engineCfg) = 0;
+	virtual void setEngineContext(const EngineContext *engineCtx) = 0;
 	virtual void setCardCountObserver(const ICardCountObserver *cco) = 0;
 
 	virtual void receiveCard(const Common::ICardPtr &card) = 0;

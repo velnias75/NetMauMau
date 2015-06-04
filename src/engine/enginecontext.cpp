@@ -25,7 +25,7 @@
 #include <windows.h>
 #endif
 
-#include "engineconfig.h"
+#include "enginecontext.h"
 
 #include <sys/stat.h>                   // for stat
 #include <cstring>
@@ -44,8 +44,8 @@ const char *STDRULESLUA = "stdrules";
 
 using namespace NetMauMau;
 
-EngineConfig::EngineConfig(Event::IEventHandler &eventHandler, bool dirChange, long aiDelay,
-						   bool nextMessage, char aceRound, const Common::CARDCONFIG &cc) :
+EngineContext::EngineContext(Event::IEventHandler &eventHandler, bool dirChange, long aiDelay,
+							 bool nextMessage, char aceRound, const Common::CARDCONFIG &cc) :
 	m_eventHandler(eventHandler), m_dirChange(dirChange), m_aiDelay(aiDelay),
 	m_nextMessage(nextMessage), m_aceRoundRank(aceRound == 'A' ? Common::ICard::ACE :
 			(aceRound == 'Q' ? Common::ICard::QUEEN : (aceRound == 'K' ?
@@ -53,54 +53,54 @@ EngineConfig::EngineConfig(Event::IEventHandler &eventHandler, bool dirChange, l
 	m_aceRound(aceRound), m_talonFactor(cc.decks),
 	m_initialCardCount(cc.initialCards) {}
 
-EngineConfig::EngineConfig(const EngineConfig &o) : m_eventHandler(o.m_eventHandler),
+EngineContext::EngineContext(const EngineContext &o) : m_eventHandler(o.m_eventHandler),
 	m_dirChange(o.m_dirChange), m_aiDelay(o.m_aiDelay), m_nextMessage(o.m_nextMessage),
 	m_aceRoundRank(o.m_aceRoundRank), m_ruleset(o.m_ruleset), m_aceRound(o.m_aceRound),
 	m_talonFactor(o.m_talonFactor), m_initialCardCount(o.m_initialCardCount) {}
 
-EngineConfig::~EngineConfig() {
+EngineContext::~EngineContext() {
 	delete m_ruleset;
 }
 
-long EngineConfig::getAIDelay() const {
+long EngineContext::getAIDelay() const {
 	return m_aiDelay;
 }
 
-bool EngineConfig::getDirChange() const {
+bool EngineContext::getDirChange() const {
 	return m_dirChange;
 }
 
-Event::IEventHandler &EngineConfig::getEventHandler() const {
+Event::IEventHandler &EngineContext::getEventHandler() const {
 	return m_eventHandler;
 }
 
-bool EngineConfig::getNextMessage() const {
+bool EngineContext::getNextMessage() const {
 	return m_nextMessage;
 }
 
-void EngineConfig::setNextMessage(bool b) {
+void EngineContext::setNextMessage(bool b) {
 	m_nextMessage = b;
 }
 
-RuleSet::IRuleSet *EngineConfig::getRuleSet(const NetMauMau::IAceRoundListener *arl) const
+RuleSet::IRuleSet *EngineContext::getRuleSet(const NetMauMau::IAceRoundListener *arl) const
 throw(Lua::Exception::LuaException) {
 	return m_ruleset ? m_ruleset : (m_ruleset = new RuleSet::LuaRuleSet(getLuaScriptPaths(),
 			m_dirChange, m_initialCardCount, m_aceRound ? arl : 0L));
 }
 
-char EngineConfig::getAceRound() const {
+char EngineContext::getAceRound() const {
 	return m_aceRound;
 }
 
-Common::ICard::RANK EngineConfig::getAceRoundRank() const {
+Common::ICard::RANK EngineContext::getAceRoundRank() const {
 	return m_aceRoundRank;
 }
 
-std::size_t EngineConfig::getTalonFactor() const {
+std::size_t EngineContext::getTalonFactor() const {
 	return m_talonFactor;
 }
 
-std::vector<std::string> EngineConfig::getLuaScriptPaths() {
+std::vector<std::string> EngineContext::getLuaScriptPaths() {
 
 	char *luaDir = std::getenv("NETMAUMAU_RULES");
 

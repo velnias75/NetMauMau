@@ -42,12 +42,13 @@ const IConditionPtr &JackSuitAction::perform(IAIState &state,
 		const NetMauMau::Player::IPlayer::CARDS &) const {
 
 	const NetMauMau::Player::IPlayer::CARDS::const_iterator
-	&f(std::find_if(state.getPlayerCards().begin(), state.getPlayerCards().end(), std::not1
-					(std::bind2nd(std::ptr_fun(NetMauMau::Common::isRank),
-								  NetMauMau::Common::ICard::JACK))));
+	&f(std::find_if(state.getPlayerCards().begin(), state.getPlayerCards().end(),
+					std::not1(std::bind2nd(NetMauMau::Common::rankEqualTo
+										   <NetMauMau::Player::IPlayer::CARDS::value_type>(),
+										   NetMauMau::Common::ICard::JACK))));
 
 	if(f != state.getPlayerCards().end()) {
-		assert((*f)->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL);
+		assert(*f != NetMauMau::Common::ICard::SUIT_ILLEGAL);
 		state.setCard(*f);
 		return AbstractAction::getNullCondition();
 	}

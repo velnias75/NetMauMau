@@ -37,8 +37,8 @@ int main(int, const char **) {
 	try {
 
 		TestEventHandler evHdlr;
-		EngineConfig cfg(evHdlr, true, 0L, false, 'A', Common::getCardConfig(4));
-		Engine engine(cfg);
+		EngineContext ctx(evHdlr, true, 0L, false, 'A', Common::getCardConfig(4));
+		Engine engine(ctx);
 
 		Common::SmartPtr<Player::IPlayer> p1(new Player::HardPlayer("Cathy",
 											 engine.getPlayedOutCards()));

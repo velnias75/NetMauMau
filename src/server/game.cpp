@@ -23,11 +23,11 @@
 
 #include "abstractsocket.h"             // for AbstractSocket
 #include "easyplayer.h"                 // for EasyPlayer
-#include "gameconfig.h"                 // for GameConfig
+#include "gamecontext.h"                // for GameConfig
 #include "ieventhandler.h"              // for IEventHandler
 #include "logger.h"
 #include "luafatalexception.h"          // for LuaFatalException
-#include "sqlite.h"                     // for SQLite
+// #include "sqlite.h"                     // for SQLite
 
 namespace {
 const std::string MISCONFIGURED("Misconfigured or compromised server. Please report: ");
@@ -37,18 +37,18 @@ using namespace NetMauMau::Server;
 
 long Game::m_gameServed = 0L;
 
-Game::Game(GameConfig &cfg) throw(NetMauMau::Common::Exception::SocketException)
-	: m_cfg(cfg), m_engine(cfg.getEngineConfig()), m_aiPlayers(), m_players(), m_gameIndex(0LL) {
+Game::Game(GameContext &ctx) throw(NetMauMau::Common::Exception::SocketException) :
+	m_ctx(ctx), m_engine(ctx.getEngineContext()), m_aiPlayers(), m_players(), m_gameIndex(0LL) {
 
-	const std::size_t orgAI = cfg.getAINames().size();
-	const std::size_t maxPl = cfg.getEngineConfig().getRuleSet(&m_engine)->getMaxPlayers();
+	const std::size_t orgAI = ctx.getAINames().size();
+	const std::size_t maxPl = ctx.getEngineContext().getRuleSet(&m_engine)->getMaxPlayers();
 	const std::size_t cntAi = std::min(orgAI, maxPl - 1);
 
-	if(cfg.hasAIPlayer() && cntAi <= m_aiPlayers.max_size()) m_aiPlayers.reserve(cntAi);
+	if(ctx.hasAIPlayer() && cntAi <= m_aiPlayers.max_size()) m_aiPlayers.reserve(cntAi);
 
 	if(maxPl <= m_players.max_size()) m_players.reserve(maxPl);
 
-	if(cfg.hasAIPlayer()) {
+	if(ctx.hasAIPlayer()) {
 
 		std::size_t aiAdded = 0;
 
@@ -57,10 +57,10 @@ Game::Game(GameConfig &cfg) throw(NetMauMau::Common::Exception::SocketException)
 
 		for(std::size_t i = 0; i < cntAi; ++i) {
 
-			if(!cfg.getAINames()[i].empty()) {
+			if(!ctx.getAINames()[i].empty()) {
 
-				const std::string &aiSanName(cfg.getAINames()[i][0] == '+' ?
-											 & (cfg.getAINames()[i][1]) : cfg.getAINames()[i]);
+				const std::string &aiSanName(ctx.getAINames()[i][0] == '+' ?
+											 & (ctx.getAINames()[i][1]) : ctx.getAINames()[i]);
 
 				if(!aiSanName.empty()) {
 
@@ -89,7 +89,7 @@ Game::Game(GameConfig &cfg) throw(NetMauMau::Common::Exception::SocketException)
 			}
 		}
 
-		if(cntAi != orgAI) cfg.getCardConfig() = NetMauMau::Common::getCardConfig(maxPl);
+		if(cntAi != orgAI) ctx.getCardConfig() = NetMauMau::Common::getCardConfig(maxPl);
 
 		m_engine.setAlwaysWait(aiAdded > 1);
 	}
@@ -166,7 +166,7 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 
 	const std::size_t minPlayers = m_engine.getPlayerCount();
 
-	if(m_cfg.hasAIPlayer()) m_engine.setFirstPlayer(m_players.back());
+	if(m_ctx.hasAIPlayer()) m_engine.setFirstPlayer(m_players.back());
 
 	m_engine.distributeCards();
 	m_engine.setUltimate(ultimate);
@@ -177,7 +177,7 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 			if(!m_engine.nextTurn()) break;
 		}
 
-		if(ultimate || m_cfg.hasAIPlayer()) m_engine.gameOver();
+		if(ultimate || m_ctx.hasAIPlayer()) m_engine.gameOver();
 
 	} catch(NetMauMau::Lua::Exception::LuaFatalException &e) {
 		logFatal(e);
@@ -200,12 +200,12 @@ void Game::reset(bool playerLost) throw() {
 
 	m_engine.reset();
 
-	if(m_cfg.hasAIPlayer()) {
+	if(m_ctx.hasAIPlayer()) {
 
 		try {
 
-			for(std::vector<NetMauMau::Player::AbstractPlayer *>::const_iterator i(m_aiPlayers.begin());
-					i != m_aiPlayers.end(); ++i) {
+			for(std::vector<NetMauMau::Player::AbstractPlayer *>::const_iterator
+					i(m_aiPlayers.begin()); i != m_aiPlayers.end(); ++i) {
 
 				(*i)->reset();
 

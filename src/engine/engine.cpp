@@ -47,25 +47,35 @@
 #include <sys/wait.h>
 #endif
 
+#include "abstractsocket.h"
 #include "logger.h"                     // for logDebug, BasicLogger
 #include "cardtools.h"                  // for getIllegalCard
-#include "engineconfig.h"               // for EngineConfig
+#include "enginecontext.h"              // for EngineConfig
 #include "ieventhandler.h"              // for IEventHandler
 #include "iplayer.h"                    // for IPlayer, IPlayer::CARDS, etc
 #include "iruleset.h"                   // for IRuleSet
 #include "luafatalexception.h"          // for LuaException
-#include "sqlite.h"                     // for SQLite
 #include "talon.h"                      // for Talon
+#include "ci_char_traits.h"
 
 namespace {
-
 const std::string TALONUNDERFLOW("TALON-UNDERFLOW: attempt to take more cards from the talon " \
 								 "than available!");
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
+struct PlayerNameEqualCI : public std::binary_function < NetMauMau::Player::IPlayer *,
+		std::string, bool > {
+
+	inline result_type operator()(const first_argument_type x,
+								  const second_argument_type y) const {
+		return std::equal_to<NetMauMau::Common::ci_string>()(x->getName().c_str(), y.c_str());
+	}
+};
+
 struct PlayerNameEqual : public std::binary_function < NetMauMau::Player::IPlayer *,
 		NetMauMau::Player::IPlayer *, bool > {
+
 	inline result_type operator()(const first_argument_type x,
 								  const second_argument_type y) const {
 		return x->getName() == y->getName();
@@ -86,15 +96,15 @@ const GSLRNG<std::ptrdiff_t> RNG;
 
 using namespace NetMauMau;
 
-Engine::Engine(EngineConfig &cfg) throw(Common::Exception::SocketException) : ITalonChange(),
-	IAceRoundListener(), ICardCountObserver(), m_cfg(cfg), m_state(ACCEPT_PLAYERS),
-	m_talon(new Talon(this, cfg.getTalonFactor())), m_players(), m_nxtPlayer(0), m_turn(1),
+Engine::Engine(EngineContext &ctx) throw(Common::Exception::SocketException) : ITalonChange(),
+	IAceRoundListener(), ICardCountObserver(), m_ctx(ctx), m_state(ACCEPT_PLAYERS),
+	m_talon(new Talon(this, ctx.getTalonFactor())), m_players(), m_nxtPlayer(0), m_turn(1),
 	m_curTurn(0), m_jackMode(false), m_initialChecked(false), m_ultimate(false),
 	m_initialJack(false), m_alwaysWait(false), m_alreadyWaited(false),
-	m_initialNextMessage(cfg.getNextMessage()), m_gameIndex(0LL), m_dirChangeEnabled(false),
+	m_initialNextMessage(ctx.getNextMessage()), m_gameIndex(0LL), m_dirChangeEnabled(false),
 	m_talonUnderflow(false) {
 	m_players.reserve(5);
-	cfg.getEventHandler().acceptingPlayers();
+	ctx.getEventHandler().acceptingPlayers();
 }
 
 Engine::~Engine() {
@@ -102,24 +112,12 @@ Engine::~Engine() {
 }
 
 const Event::IEventHandler &Engine::getEventHandler() const {
-	return m_cfg.getEventHandler();
+	return m_ctx.getEventHandler();
 }
 
-Engine::PLAYERS::const_iterator Engine::find(const std::string &name) const {
-
-	std::string nameB(name);
-
-	for(PLAYERS::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
-
-		std::string nameA((*i)->getName());
-
-		std::transform(nameA.begin(), nameA.end(), nameA.begin(), ::tolower);
-		std::transform(nameB.begin(), nameB.end(), nameB.begin(), ::tolower);
-
-		if(nameA == nameB) return i;
-	}
-
-	return m_players.end();
+Engine::PLAYERS::const_iterator Engine::find(const std::string &player) const {
+	return std::find_if(m_players.begin(), m_players.end(),
+						std::bind2nd(PlayerNameEqualCI(), player));
 }
 
 bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketException) {
@@ -140,7 +138,7 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 			}
 
 			player->setRuleSet(getRuleSet());
-			player->setEngineConfig(&m_cfg);
+			player->setEngineContext(&m_ctx);
 
 			getEventHandler().playerAdded(player);
 
@@ -233,7 +231,8 @@ bool Engine::distributeCards() throw(Common::Exception::SocketException) {
 }
 
 void Engine::setFirstPlayer(Player::IPlayer *p) {
-	std::stable_partition(m_players.begin(), m_players.end(), std::bind2nd(PlayerNameEqual(), p));
+	std::stable_partition(m_players.begin(), m_players.end(),
+						  std::bind2nd(PlayerNameEqual(), p));
 }
 
 void Engine::message(const std::string &msg) const throw(Common::Exception::SocketException) {
@@ -259,7 +258,7 @@ bool Engine::nextTurn() {
 
 	if(getAICount() == 1) {
 		m_alwaysWait = false;
-		m_cfg.setNextMessage(false);
+		m_ctx.setNextMessage(false);
 	}
 
 	try {
@@ -285,7 +284,7 @@ bool Engine::nextTurn() {
 			m_curTurn = m_turn;
 		}
 
-		if(m_cfg.getNextMessage()) getEventHandler().nextPlayer(player);
+		if(m_ctx.getNextMessage()) getEventHandler().nextPlayer(player);
 
 		const Common::ICardPtr uc(m_talon->getUncoveredCard());
 
@@ -299,8 +298,9 @@ bool Engine::nextTurn() {
 		const bool suspend = getRuleSet()->hasToSuspend() && !m_talonUnderflow;
 		const Common::ICard::SUIT js = getRuleSet()->getJackSuit();
 
-		assert(uc->getRank() != Common::ICard::JACK || (uc->getRank() == Common::ICard::JACK &&
-				((m_jackMode || m_initialJack) && js != Common::ICard::SUIT_ILLEGAL)));
+		assert(uc != Common::ICard::JACK || (uc == Common::ICard::JACK &&
+											 ((m_jackMode || m_initialJack) &&
+											  js != Common::ICard::SUIT_ILLEGAL)));
 
 		Common::ICardPtr pc(!suspend ? player->requestCard(uc, (m_jackMode || m_initialJack)
 							? &js : 0L, getRuleSet()->takeCardCount(), m_talonUnderflow) :
@@ -335,7 +335,7 @@ sevenRule:
 										  (Common::getIllegalCard()));
 				}
 
-			} else if(pc->getSuit() == Common::ICard::SUIT_ILLEGAL) {
+			} else if(pc == Common::ICard::SUIT_ILLEGAL) {
 				pc = player->requestCard(uc, m_jackMode ? &js : 0L, getRuleSet()->takeCardCount());
 				goto sevenRule;
 			}
@@ -348,7 +348,7 @@ sevenRule:
 
 				won = player->cardAccepted(pc);
 				m_talon->playCard(pc);
-				m_talonUnderflow = m_talon->thresholdReached(1 + (8 * m_cfg.getTalonFactor()));
+				m_talonUnderflow = m_talon->thresholdReached(1 + (8 * m_ctx.getTalonFactor()));
 
 				getEventHandler().playerPlaysCard(player, pc, uc);
 
@@ -358,8 +358,8 @@ sevenRule:
 
 				if(won) {
 					handleWinner(player);
-				} else if(wait(player, true) && (pc->getRank() == Common::ICard::EIGHT ||
-												 (pc->getRank() == Common::ICard::NINE &&
+				} else if(wait(player, true) && (pc == Common::ICard::EIGHT ||
+												 (pc == Common::ICard::NINE &&
 												  getRuleSet()->getDirChangeIsSuspend()))) {
 					getEventHandler().getConnection().wait(getAIDelay());
 					m_alreadyWaited = true;
@@ -472,8 +472,7 @@ void Engine::handleWinner(const Player::IPlayer *player) throw(Common::Exception
 
 	if(!hasPlayers()) {
 
-		if(getRuleSet()->takeIfLost() && m_talon->getUncoveredCard()->getRank() ==
-				Common::ICard::SEVEN) {
+		if(getRuleSet()->takeIfLost() && m_talon->getUncoveredCard() == Common::ICard::SEVEN) {
 			takeCards(m_players[m_nxtPlayer], Common::getIllegalCard());
 		}
 
@@ -510,9 +509,9 @@ bool Engine::checkCard(Player::IPlayer *player, Common::ICardPtr &playedCard,
 
 	bool noMatch, cardAccepted = false;
 
-	while(playedCard && ((noMatch = (playedCard->getSuit() == Common::ICard::SUIT_ILLEGAL)) ||
+	while(playedCard && ((noMatch = (playedCard == Common::ICard::SUIT_ILLEGAL)) ||
 						 !(cardAccepted = getRuleSet()->checkCard(player, uc, playedCard,
-										  !m_cfg.getNextMessage())))) {
+										  !m_ctx.getNextMessage())))) {
 
 		if(!noMatch) getEventHandler().cardRejected(player, uc, playedCard);
 
@@ -536,14 +535,7 @@ bool Engine::checkCard(Player::IPlayer *player, Common::ICardPtr &playedCard,
 }
 
 void Engine::disconnectError(SOCKET fd) const {
-	if(fd != INVALID_SOCKET) {
-		shutdown(fd, SHUT_RDWR);
-#ifndef _WIN32
-		close(fd);
-#else
-		closesocket(fd);
-#endif
-	}
+	if(fd != INVALID_SOCKET) Common::AbstractSocket::shutdown(fd);
 }
 
 void Engine::checkAndPerformDirChange(const Player::IPlayer *player, bool won)
@@ -643,17 +635,17 @@ void Engine::underflow() {
 }
 
 Common::ICard::RANK Engine::getAceRoundRank() const {
-	return m_cfg.getAceRoundRank();
+	return m_ctx.getAceRoundRank();
 }
 
 void Engine::aceRoundStarted(const Player::IPlayer *player) const
 throw(Common::Exception::SocketException) {
-	m_cfg.getEventHandler().aceRoundStarted(player);
+	m_ctx.getEventHandler().aceRoundStarted(player);
 }
 
 void Engine::aceRoundEnded(const Player::IPlayer *player) const
 throw(Common::Exception::SocketException) {
-	m_cfg.getEventHandler().aceRoundEnded(player);
+	m_ctx.getEventHandler().aceRoundEnded(player);
 }
 
 void Engine::informAIStat() const {
@@ -718,7 +710,7 @@ void Engine::checkPlayersAlive() const throw(Common::Exception::SocketException)
 }
 
 long Engine::getAIDelay() const {
-	return (!getEventHandler().getConnection().hasHumanPlayers()) ? 0L : m_cfg.getAIDelay();
+	return (!getEventHandler().getConnection().hasHumanPlayers()) ? 0L : m_ctx.getAIDelay();
 }
 
 bool Engine::wait(const Player::IPlayer *p, bool suspend) const {
@@ -742,7 +734,7 @@ void Engine::cardCountChanged(const Player::IPlayer *p) const throw() {
 }
 
 RuleSet::IRuleSet *Engine::getRuleSet() const {
-	return m_cfg.getRuleSet(this);
+	return m_ctx.getRuleSet(this);
 }
 
 const IPlayedOutCards *Engine::getPlayedOutCards() const {
@@ -754,7 +746,7 @@ void Engine::reset() throw() {
 	m_state = ACCEPT_PLAYERS;
 	m_talon->reset();
 
-	m_cfg.getEventHandler().reset();
+	m_ctx.getEventHandler().reset();
 
 	try {
 		getRuleSet()->reset();
@@ -767,10 +759,10 @@ void Engine::reset() throw() {
 	m_nxtPlayer = m_curTurn = 0;
 	m_turn = 1;
 
-	m_jackMode = m_initialChecked = m_initialJack = m_alwaysWait = m_alreadyWaited
-									= m_talonUnderflow = false;
+	m_jackMode = m_initialChecked =
+					 m_initialJack = m_alwaysWait = m_alreadyWaited = m_talonUnderflow = false;
 
-	m_cfg.setNextMessage(m_initialNextMessage);
+	m_ctx.setNextMessage(m_initialNextMessage);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

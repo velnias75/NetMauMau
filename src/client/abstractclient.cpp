@@ -404,11 +404,10 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	} else if(!_pimpl->m_disconnectNow && msg == NetMauMau::Common::Protocol::V15::INITIALCARD) {
 
 		_pimpl->m_connection >> msg;
-		const NetMauMau::Common::ICard *ic = (NetMauMau::Client::CardFactory(msg))
-											 .create();
 
-		if(ic->getRank() == NetMauMau::Common::ICard::JACK ||
-				ic->getRank() == NetMauMau::Common::ICard::EIGHT) {
+		const NetMauMau::Common::ICard *ic = (NetMauMau::Client::CardFactory(msg)).create();
+
+		if(ic == NetMauMau::Common::ICard::JACK || ic == NetMauMau::Common::ICard::EIGHT) {
 			initialCard(ic);
 			*initCardShown = true;
 		}
@@ -450,7 +449,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		if(*lastPlayedCard) {
 			const CARDS::iterator
 			&f(std::find_if(_pimpl->m_cards.begin(), _pimpl->m_cards.end(),
-							std::bind2nd(std::ptr_fun(NetMauMau::Common::cardEqual),
+							std::bind2nd(std::equal_to<CARDS::iterator::value_type>(),
 										 *lastPlayedCard)));
 
 			if(f != _pimpl->m_cards.end()) {
@@ -465,8 +464,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		std::string player;
 		_pimpl->m_connection >> player >> msg;
 
-		const NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(msg))
-											.create();
+		const NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(msg)).create();
 		cardRejected(player, c);
 		delete c;
 
@@ -486,8 +484,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		std::string player;
 		_pimpl->m_connection >> player >> msg;
 
-		const NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(msg))
-											.create();
+		const NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(msg)).create();
 		playedCard(player, c);
 		delete c;
 

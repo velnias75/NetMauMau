@@ -34,7 +34,7 @@ CheckJackSuitAction::_hasRankPath::operator()
 
 	bool hrp = false;
 
-	if(c->getRank() != rank) {
+	if(c != rank) {
 		for(NetMauMau::Player::IPlayer::CARDS::const_iterator i(mCards.begin());
 				i != mCards.end(); ++i) {
 			if((hrp = AbstractAction::hasRankPath(c, (*i)->getSuit(), rank, mCards,
@@ -55,8 +55,9 @@ const IConditionPtr &CheckJackSuitAction::perform(IAIState &state,
 	NetMauMau::Common::ICard::SUIT s = CheckJackSuitAction::findJackChoice(state);
 
 	if(s == NetMauMau::Common::ICard::SUIT_ILLEGAL) {
-		while(((s = AbstractAction::getSuits()[NetMauMau::Common::genRandom<std::ptrdiff_t>(4)]) ==
-				state.getUncoveredCard()->getSuit() || s == state.getPlayedCard()->getSuit()));
+		while((state.getUncoveredCard() ==
+				(s = AbstractAction::getSuits()[NetMauMau::Common::genRandom<std::ptrdiff_t>(4)]))
+				|| state.getPlayedCard() == s);
 	}
 
 	assert(s != NetMauMau::Common::ICard::SUIT_ILLEGAL);
@@ -70,7 +71,7 @@ const IConditionPtr &CheckJackSuitAction::perform(IAIState &state,
 NetMauMau::Common::ICard::SUIT CheckJackSuitAction::findJackChoice(const IAIState &state) {
 
 	if(state.getCard()) {
-		assert(state.getCard()->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL);
+		assert(state.getCard() != NetMauMau::Common::ICard::SUIT_ILLEGAL);
 		return state.getCard()->getSuit();
 	}
 

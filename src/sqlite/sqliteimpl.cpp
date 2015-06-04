@@ -38,7 +38,7 @@ int gamesCountCallback(void *arg, int cols, char **col_text, char **) {
 
 	if(arg && cols == 1) {
 
-		long long int *res = static_cast<long long int *>(arg);
+		NetMauMau::DB::GAMEIDX *res = static_cast<NetMauMau::DB::GAMEIDX *>(arg);
 
 		*res = std::strtoll(col_text[0], NULL, 10);
 
@@ -355,7 +355,7 @@ bool SQLiteImpl::logOutPlayer(const NetMauMau::Common::IConnection::NAMESOCKFD &
 	return exec(sql.str());
 }
 
-long long int SQLiteImpl::newGame() {
+GAMEIDX SQLiteImpl::newGame() {
 
 	std::ostringstream sql;
 
@@ -364,7 +364,7 @@ long long int SQLiteImpl::newGame() {
 	return exec(sql.str()) ? (m_db ? sqlite3_last_insert_rowid(m_db) : 0LL) : 0LL;
 }
 
-bool SQLiteImpl::gameEnded(long long int gameIndex) const {
+bool SQLiteImpl::gameEnded(GAMEIDX gameIndex) const {
 
 	std::ostringstream sql;
 
@@ -379,7 +379,7 @@ bool SQLiteImpl::gameEnded(long long int gameIndex) const {
 	return exec(sql.str());
 }
 
-bool SQLiteImpl::addPlayerToGame(long long int gid,
+bool SQLiteImpl::addPlayerToGame(GAMEIDX gid,
 								 const NetMauMau::Common::IConnection::NAMESOCKFD &nsf) const {
 
 	std::ostringstream sql;
@@ -391,7 +391,7 @@ bool SQLiteImpl::addPlayerToGame(long long int gid,
 	return exec(sql.str());
 }
 
-bool SQLiteImpl::turn(long long int gameIndex, std::size_t t) const {
+bool SQLiteImpl::turn(GAMEIDX gameIndex, std::size_t t) const {
 
 	const bool succ = m_db && sqlite3_bind_int64(m_turnStmt, 1, t) == SQLITE_OK &&
 					  sqlite3_bind_int64(m_turnStmt, 2, gameIndex) == SQLITE_OK &&
@@ -404,7 +404,7 @@ bool SQLiteImpl::turn(long long int gameIndex, std::size_t t) const {
 	return succ;
 }
 
-bool SQLiteImpl::gamePlayStarted(long long int gameIndex) const {
+bool SQLiteImpl::gamePlayStarted(GAMEIDX gameIndex) const {
 
 	std::ostringstream sql;
 
@@ -413,7 +413,7 @@ bool SQLiteImpl::gamePlayStarted(long long int gameIndex) const {
 	return exec(sql.str());
 }
 
-bool SQLiteImpl::playerLost(long long int gameIndex,
+bool SQLiteImpl::playerLost(GAMEIDX gameIndex,
 							const NetMauMau::Common::IConnection::NAMESOCKFD &nsf,
 							time_t time, std::size_t points) const {
 	std::ostringstream sql;
@@ -427,7 +427,7 @@ bool SQLiteImpl::playerLost(long long int gameIndex,
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
-bool SQLiteImpl::playerWins(long long int gameIndex,
+bool SQLiteImpl::playerWins(GAMEIDX gameIndex,
 							const NetMauMau::Common::IConnection::NAMESOCKFD &nsf) const {
 
 	const bool succ = m_db && sqlite3_bind_text(m_winStmt, 1, nsf.name.c_str(),

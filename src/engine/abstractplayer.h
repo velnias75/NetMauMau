@@ -41,7 +41,7 @@ public:
 
 	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset);
 	virtual void setCardCountObserver(const ICardCountObserver *cco);
-	virtual void setEngineConfig(const EngineConfig *engineCfg);
+	virtual void setEngineContext(const EngineContext *engineCtx);
 
 	virtual void receiveCard(const Common::ICardPtr &card) = 0;
 	virtual void receiveCardSet(const CARDS &cards);
@@ -91,7 +91,7 @@ protected:
 	bool nineIsEight() const _PURE;
 	bool isDirChgEnabled() const _PURE;
 
-	const EngineConfig *getEngineConfig() const _PURE;
+	const EngineContext *getEngineContext() const _PURE;
 
 	// cppcheck-suppress functionConst
 	CARDS getPossibleCards(const Common::ICardPtr &uncoveredCard,
@@ -113,7 +113,7 @@ private:
 	std::size_t m_rightCount;
 	bool m_dirChgEnabled;
 	std::size_t m_playerCount;
-	const EngineConfig *m_engineCfg;
+	const EngineContext *m_engineCtx;
 	const ICardCountObserver *m_cardCountObserver;
 	const IPlayedOutCards *const m_poc;
 };

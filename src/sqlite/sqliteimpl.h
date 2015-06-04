@@ -50,15 +50,15 @@ public:
 	bool addPlayer(const Common::IConnection::INFO &info) const;
 	bool logOutPlayer(const Common::IConnection::NAMESOCKFD &nsf) const;
 
-	long long int newGame();
+	GAMEIDX newGame();
 
-	bool gameEnded(long long int gameIndex) const;
-	bool addPlayerToGame(long long int gid, const Common::IConnection::NAMESOCKFD &nsf) const;
-	bool turn(long long int gameIndex, std::size_t turn) const;
-	bool gamePlayStarted(long long int gameIndex) const;
-	bool playerLost(long long int gameIndex, const Common::IConnection::NAMESOCKFD &nsf,
-					time_t time, std::size_t points) const;
-	bool playerWins(long long int gameIndex, const Common::IConnection::NAMESOCKFD &nsf) const;
+	bool gameEnded(GAMEIDX gameIndex) const;
+	bool addPlayerToGame(GAMEIDX gid, const Common::IConnection::NAMESOCKFD &nsf) const;
+	bool turn(GAMEIDX gameIndex, std::size_t turn) const;
+	bool gamePlayStarted(GAMEIDX gameIndex) const;
+	bool playerLost(GAMEIDX gameIndex, const Common::IConnection::NAMESOCKFD &nsf, time_t time,
+					std::size_t points) const;
+	bool playerWins(GAMEIDX gameIndex, const Common::IConnection::NAMESOCKFD &nsf) const;
 
 private:
 	bool exec(const char *sql) const;

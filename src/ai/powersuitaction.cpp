@@ -60,8 +60,8 @@ const IConditionPtr &PowerSuitAction::perform(IAIState &state,
 
 				if(f) {
 					state.setPowerSuit(f->getSuit());
-					return f->getSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL ? ACEREOUNDCOND :
-						   POWERSUITCOND;
+					return f != NetMauMau::Common::ICard::SUIT_ILLEGAL ?
+						   ACEREOUNDCOND : POWERSUITCOND;
 				}
 			}
 

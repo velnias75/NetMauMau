@@ -447,10 +447,10 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		_pimpl->m_connection >> msg;
 
 		if(*lastPlayedCard) {
-			const CARDS::iterator
-			&f(std::find_if(_pimpl->m_cards.begin(), _pimpl->m_cards.end(),
-							std::bind2nd(std::equal_to<CARDS::iterator::value_type>(),
-										 *lastPlayedCard)));
+			const CARDS::iterator &f(std::find_if(_pimpl->m_cards.begin(), _pimpl->m_cards.end(),
+												  std::bind2nd(NetMauMau::Common::cardEqualTo
+														  <CARDS::iterator::value_type>(),
+														  *lastPlayedCard)));
 
 			if(f != _pimpl->m_cards.end()) {
 				cardAccepted(*f);

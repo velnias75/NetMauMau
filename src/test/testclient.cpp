@@ -94,7 +94,8 @@ NetMauMau::Common::ICard *TestClient::playCard(const CARDS &cards, std::size_t t
 
 	CARDS possibleCards(cards);
 
-	std::sort(possibleCards.begin(), possibleCards.end(), NetMauMau::Common::cardGreaterThan());
+	std::sort(possibleCards.begin(), possibleCards.end(),
+			  NetMauMau::Common::cardGreaterThan<CARDS::value_type>());
 
 	do {
 
@@ -194,7 +195,8 @@ void TestClient::cardSet(const CARDS &cards) const {
 
 	CARDS newCards(cards);
 
-	std::sort(newCards.begin(), newCards.end(), NetMauMau::Common::cardGreaterThan());
+	std::sort(newCards.begin(), newCards.end(),
+			  NetMauMau::Common::cardGreaterThan<CARDS::value_type>());
 
 	for(CARDS::const_iterator i(newCards.begin()); i != newCards.end(); ++i) {
 		std::cout << BOLD_P_ON << getPlayerName() << BOLD_OFF << " gets card: "
@@ -203,7 +205,8 @@ void TestClient::cardSet(const CARDS &cards) const {
 
 	m_myCards.insert(m_myCards.end(), newCards.begin(), newCards.end());
 
-	std::sort(m_myCards.begin(), m_myCards.end(), NetMauMau::Common::cardGreaterThan());
+	std::sort(m_myCards.begin(), m_myCards.end(),
+			  NetMauMau::Common::cardGreaterThan<CARDS::value_type>());
 }
 
 void TestClient::enableSuspend(bool) const {}
@@ -233,7 +236,8 @@ void TestClient::cardRejected(const std::string &player,
 
 void TestClient::cardAccepted(const NetMauMau::Common::ICard *card) const {
 	m_myCards.erase(std::find_if(m_myCards.begin(), m_myCards.end(),
-								 std::bind2nd(std::equal_to<CARDS::value_type>(), card)));
+								 std::bind2nd(NetMauMau::Common::cardEqualTo
+										 <CARDS::value_type>(), card)));
 }
 
 void TestClient::jackSuit(NetMauMau::Common::ICard::SUIT suit) const {

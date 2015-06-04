@@ -573,7 +573,7 @@ int main(int argc, const char **argv) {
 #endif
 										refuse = false;
 
-									} catch(const Lua::Exception::LuaException &e) {
+									} catch(const Common::Exception::SocketException &e) {
 										game.shutdown(e.what());
 										game.reset(false);
 									}

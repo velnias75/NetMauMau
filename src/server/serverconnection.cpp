@@ -356,7 +356,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 							std::string playerPic, picLength;
 
-							if(cver >= 4 &&  std::string::traits_type::eq(info.name[0], '+')) {
+							if(cver >= 4 && info.name[0] == '+') {
 
 								try {
 
@@ -411,8 +411,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 											send(cc, 20, cfd);
 											recv(cc, 2, cfd);
 
-											if(std::char_traits<char>::eq(cc[0], 'O') &&
-													std::char_traits<char>::eq(cc[1], 'K')) {
+											if(!(cc[0] == 'O' && cc[1] == 'K')) {
 												logWarning("Player picture transmission for \""
 														   << info.name << "\" failed: got "
 														   << playerPic.length()

@@ -163,6 +163,31 @@ _EXPORT unsigned int rankOrderPosition(NetMauMau::Common::ICard::RANK rank) _CON
 _EXPORT bool cardEqual(const NetMauMau::Common::ICard *lhs,
 					   const NetMauMau::Common::ICard *rhs) _DEPRECATED;
 
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+/**
+ * @ingroup util
+ *
+ * @brief Functor to compare cards
+ *
+ * @tparam T pointer to card class type
+ *
+ * @relates NetMauMau::Common::ICard
+ *
+ * @since 0.20.2
+ */
+template<class T>
+struct cardEqualTo : std::binary_function<T, T, bool> {
+private:
+	typedef std::binary_function<T, T, bool> bf;
+public:
+	inline typename bf::result_type operator()(const typename bf::first_argument_type &lhs,
+			const typename bf::second_argument_type &rhs) const {
+		return *lhs == *rhs;
+	}
+};
+#pragma GCC diagnostic pop
+
 /**
  * @ingroup util
  * @brief Checks if a card comes before another
@@ -186,14 +211,19 @@ _EXPORT bool cardLess(const NetMauMau::Common::ICard *lhs,
  *
  * @brief Functor to compare cards
  *
+ * @tparam T pointer to card class type
+ *
  * @relates NetMauMau::Common::ICard
  *
  * @since 0.20.2
  */
-struct cardLessThan : std::binary_function < NetMauMau::Common::ICard, NetMauMau::Common::ICard,
-		bool > {
-	inline result_type operator()(const first_argument_type *lhs,
-								  const second_argument_type *rhs) const {
+template<class T>
+struct cardLessThan : std::binary_function<T, T, bool> {
+private:
+	typedef std::binary_function<T, T, bool> bf;
+public:
+	inline typename bf::result_type operator()(const typename bf::first_argument_type &lhs,
+			const typename bf::second_argument_type &rhs) const {
 		return *lhs < *rhs;
 	}
 };
@@ -224,14 +254,19 @@ _EXPORT bool cardGreater(const NetMauMau::Common::ICard *lhs,
  *
  * @brief Functor to compare cards
  *
+ * @tparam T pointer to card class type
+ *
  * @relates NetMauMau::Common::ICard
  *
  * @since 0.20.2
  */
-struct cardGreaterThan : std::binary_function < NetMauMau::Common::ICard, NetMauMau::Common::ICard,
-		bool > {
-	inline result_type operator()(const first_argument_type *lhs,
-								  const second_argument_type *rhs) const {
+template<class T>
+struct cardGreaterThan : std::binary_function<T, T, bool> {
+private:
+	typedef std::binary_function<T, T, bool> bf;
+public:
+	inline typename bf::result_type operator()(const typename bf::first_argument_type &lhs,
+			const typename bf::second_argument_type &rhs) const {
 		return *lhs > *rhs;
 	}
 };
@@ -274,7 +309,7 @@ _EXPORT bool isSuit(const NetMauMau::Common::ICard *card,
 template<class T>
 struct suitEqualTo : std::binary_function<T, NetMauMau::Common::ICard::SUIT, bool> {
 private:
-	typedef typename std::binary_function<T, NetMauMau::Common::ICard::SUIT, bool> bf;
+	typedef std::binary_function<T, NetMauMau::Common::ICard::SUIT, bool> bf;
 public:
 	inline typename bf::result_type operator()(const typename bf::first_argument_type &card,
 			typename bf::second_argument_type suit) const {
@@ -313,7 +348,7 @@ _EXPORT bool isRank(const NetMauMau::Common::ICard *card,
 template<class T>
 struct rankEqualTo : std::binary_function<T, NetMauMau::Common::ICard::RANK, bool> {
 private:
-	typedef typename std::binary_function<T, NetMauMau::Common::ICard::RANK, bool> bf;
+	typedef std::binary_function<T, NetMauMau::Common::ICard::RANK, bool> bf;
 public:
 	inline typename bf::result_type operator()(const typename bf::first_argument_type &card,
 			typename bf::second_argument_type suit) const {
@@ -382,7 +417,7 @@ typename Iterator::value_type findCard(typename Iterator::value_type card, Itera
 									   Iterator last) {
 
 	const Iterator &f(std::find_if(first, last,
-								   std::bind2nd(std::equal_to<typename Iterator::value_type>(),
+								   std::bind2nd(cardEqualTo<typename Iterator::value_type>(),
 										   card)));
 
 	return f != last ? *f : typename Iterator::value_type();

@@ -76,6 +76,7 @@ Game::Game(GameContext &ctx) throw(NetMauMau::Common::Exception::SocketException
 
 					m_aiPlayers.push_back(type == NetMauMau::Player::IPlayer::HARD ?
 										  new NetMauMau::Player::HardPlayer(aiSanName.
+												  // cppcheck-suppress duplicateExpressionTernary
 												  substr(0, spos), m_engine.getPlayedOutCards()) :
 										  new NetMauMau::Player::EasyPlayer(aiSanName.
 												  substr(0, spos), m_engine.getPlayedOutCards()));

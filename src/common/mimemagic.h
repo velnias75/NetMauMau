@@ -46,15 +46,27 @@ class MimeMagic {
 public:
 	typedef SmartPtr<MimeMagic> MimeMagicPtr;
 
-	~MimeMagic() _WCONST;
+	~MimeMagic()
+#if !(defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC))
+	_CONST
+#endif
+	;
 
 	static MimeMagicPtr getInstance();
 
 	// cppcheck-suppress functionStatic
-	bool checkMime(const unsigned char *data, std::size_t dataLen, const char *mime) const _WCONST;
+	bool checkMime(const unsigned char *data, std::size_t dataLen, const char *mime) const
+#if !(defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC))
+	_CONST
+#endif
+	;
 
 private:
-	explicit MimeMagic() _WCONST;
+	explicit MimeMagic()
+#if !(defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC))
+	_CONST
+#endif
+	;
 
 private:
 	static MimeMagicPtr m_instance;

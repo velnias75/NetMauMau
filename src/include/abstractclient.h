@@ -981,10 +981,6 @@ private:
  * A client can be obtained via git:
  * `git clone https://github.com/velnias75/NetMauMau-Qt-Client.git`
  *
- * @note All data is transferred as UTF-8 encoded byte strings
- * @note Starting with version 0.6 and with *libmagic* enabled, the server checks if the player
- * images are really in the PNG format
- *
  * @see AbstractClientV13
  *
  */
@@ -1006,6 +1002,14 @@ typedef AbstractClientV13 AbstractClient;
  *
  * See @ref util for helper functions and macros.\n
  * For error handling refer to @ref exceptions.
+ *
+ * @note All data is transferred as UTF-8 encoded byte strings
+ * @if libmagic @note This installation of the server enforces the player images to be in
+ * the PNG format @endif
+ * @if gsl @note This installation of the server uses the @b GNU @b Scientific @b Library
+ * for generating random numbers.\n
+ * See http://www.gnu.org/software/gsl/manual/html_node/Random-number-environment-variables.html
+ * or @em @c nmm-server(1) for more information.@endif
  */
 
 #endif /* NETMAUMAU_ABSTRACTCLIENT_H */

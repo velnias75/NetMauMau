@@ -109,10 +109,13 @@ fi
 
 # Checks for libraries.
 PKG_CHECK_MODULES([POPT], [popt >= 1.10])
-AC_CHECK_LIB([magic], [magic_open])
+AC_CHECK_LIB([magic], [magic_open], 
+  [ AC_SUBST(LIBMAGIC, "libmagic") ], 
+  [ AC_SUBST(LIBMAGIC, "") ])
 AC_CHECK_LIB([rt], [timer_create])
 PKG_CHECK_MODULES([GSL], [gsl >= 1.9],
   [ AM_CONDITIONAL([GSL], [ true ])
+    AC_SUBST(DOCGSL, "gsl")
 	echo "[[ENVIRONMENT]]
 .TP
 \fBGSL_RNG_TYPE\fR

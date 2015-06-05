@@ -156,7 +156,7 @@ _EXPORT unsigned int rankOrderPosition(NetMauMau::Common::ICard::RANK rank) _CON
  * @param lhs a card
  * @param rhs a card
  *
- * @deprecated use the compare operators
+ * @depop
  *
  * @return @c true if the cards are equal, @c false otherwise
  */
@@ -169,7 +169,7 @@ _EXPORT bool cardEqual(const NetMauMau::Common::ICard *lhs,
  *
  * Useful for sorting with suit first than rank
  *
- * @deprecated use the compare operators
+ * @depop
  *
  * @param lhs a card
  * @param rhs a card
@@ -185,7 +185,7 @@ _EXPORT bool cardLess(const NetMauMau::Common::ICard *lhs,
  *
  * Useful for sorting with rank first than suit
  *
- * @deprecated use the compare operators
+ * @depop
  *
  * @param lhs a card
  * @param rhs a card
@@ -287,7 +287,7 @@ public:
  * @param card the card to check
  * @param suit the @c SUIT to check for
  *
- * @deprecated use the compare operators or NetMauMau::Common::suitEqualTo
+ * @depop or NetMauMau::Common::suitEqualTo
  *
  * @return @c true if the card is of @c SUIT
  */
@@ -326,7 +326,7 @@ public:
  * @param card the card to check
  * @param rank the @c RANK to check for
  *
- * @deprecated use the compare operators or NetMauMau::Common::rankEqualTo
+ * @depop or NetMauMau::Common::rankEqualTo
  *
  * @return @c true if the card is of @c RANK
  */

@@ -275,10 +275,16 @@ bool Engine::nextTurn() {
 
 			getEventHandler().turn(m_turn);
 
-			if(m_turn == 1) {
+			if(m_turn == 1u) {
 
 				DB::SQLite::getInstance()->gamePlayStarted(m_gameIndex);
 				getEventHandler().initialCard(m_talon->uncoverCard());
+
+				if(getAICount() && m_talon->uncoverCard() == Common::ICard::EIGHT) {
+					getEventHandler().getConnection().
+					wait(static_cast<long int>(std::floor(static_cast
+														  <float>(getAIDelay()) * 1.5f)));
+				}
 			}
 
 			m_curTurn = m_turn;

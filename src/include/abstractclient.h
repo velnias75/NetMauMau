@@ -28,7 +28,8 @@
  * It handles the connection to a server and provides callbacks via pure virtual functions.
  *
  * To use the @b %NetMauMau @b Client @b API please read at first how to implement
- * NetMauMau::Client::AbstractClient. @n Useful functions you'll find in NetMauMau::Common.
+ * NetMauMau::Client::AbstractClient and @ref main.
+ * @n Useful functions you'll find in NetMauMau::Common.
  *
  * Link your client against @c -lnetmaumauclient and @c -lnetmaumaucommon
  *
@@ -53,6 +54,8 @@ class AbstractClientV05Impl;
 class IBase64;
 
 /**
+ * @ingroup main
+ *
  * @brief %Client interface to communicate with the server
  */
 class _EXPORT AbstractClientV05 : protected IPlayerPicListener {
@@ -559,6 +562,8 @@ private:
 };
 
 /**
+ * @ingroup main
+ *
  * @brief %Client interface to communicate with the server
  *
  * @since 0.7
@@ -643,6 +648,8 @@ private:
 };
 
 /**
+ * @ingroup main
+ *
  * @brief %Client interface to communicate with the server
  *
  * @since 0.8
@@ -711,6 +718,8 @@ private:
 };
 
 /**
+ * @ingroup main
+ *
  * @brief %Client interface to communicate with the server
  *
  * @since 0.9
@@ -802,6 +811,8 @@ protected:
 };
 
 /**
+ * @ingroup main
+ *
  * @brief %Client interface to communicate with the server
  *
  * @since 0.11
@@ -878,6 +889,8 @@ protected:
 };
 
 /**
+ * @ingroup main
+ *
  * @brief %Client interface to communicate with the server
  *
  * @since 0.13
@@ -954,6 +967,8 @@ private:
 };
 
 /**
+ * @ingroup main
+ *
  * @brief Alias to the current client interface to communicate with the server
  *
  * In your client subclass @c AbstractClient and implement all pure virtual methods. In the
@@ -978,6 +993,20 @@ typedef AbstractClientV13 AbstractClient;
 }
 
 }
+
+/**
+ * @defgroup main Main Classes
+ * @brief The main classes of %NetMauMau
+ *
+ * The @c AbstractClientVx classes implement each the subset of the protocol up to the given
+ * version. They are each subclasses of the previous version. To get access to the @b latest
+ * version refer to the @em typedef NetMauMau::Client::AbstractClient. An important interface
+ * is NetMauMau::Common::ICard which describes a card and provides access to the @c ranks and
+ * @c suits.
+ *
+ * See @ref util for helper functions and macros.\n
+ * For error handling refer to @ref exceptions.
+ */
 
 #endif /* NETMAUMAU_ABSTRACTCLIENT_H */
 

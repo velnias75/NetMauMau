@@ -37,6 +37,7 @@ namespace Client {
 namespace Exception {
 
 /**
+ * @ingroup exceptions
  * @brief A connection timed out
  */
 class _EXPORT TimeoutException : public Common::Exception::SocketException {

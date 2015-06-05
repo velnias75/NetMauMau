@@ -36,6 +36,7 @@ namespace Client {
 namespace Exception {
 
 /**
+ * @ingroup exceptions
  * @brief The server version is not supported by the client
  * @since 0.4
  */

@@ -47,6 +47,7 @@ namespace Common {
 namespace Exception {
 
 /**
+ * @ingroup exceptions
  * @brief There have been an error in the communication between server and client
  */
 class _EXPORT SocketException : public std::exception {
@@ -84,6 +85,12 @@ private:
 }
 
 }
+
+/**
+ * @defgroup exceptions Exceptions
+ *
+ * @brief Exceptions can be used to provide contextual and localized error messages.
+ */
 
 #endif /* NETMAUMAU_SOCKETEXCEPTION_H */
 

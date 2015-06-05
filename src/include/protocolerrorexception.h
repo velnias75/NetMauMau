@@ -34,6 +34,7 @@ namespace Client {
 namespace Exception {
 
 /**
+ * @ingroup exceptions
  * @brief An error in the protocol transmission occurred
  * @since 0.4
  */

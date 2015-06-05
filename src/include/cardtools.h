@@ -163,6 +163,47 @@ _EXPORT unsigned int rankOrderPosition(NetMauMau::Common::ICard::RANK rank) _CON
 _EXPORT bool cardEqual(const NetMauMau::Common::ICard *lhs,
 					   const NetMauMau::Common::ICard *rhs) _DEPRECATED;
 
+/**
+ * @ingroup util
+ * @brief Checks if a card comes before another
+ *
+ * Useful for sorting with suit first than rank
+ *
+ * @deprecated use the compare operators
+ *
+ * @param lhs a card
+ * @param rhs a card
+ *
+ * @return @c true if @c lhs comes before @c rhs, @c false otherwise
+ */
+_EXPORT bool cardLess(const NetMauMau::Common::ICard *lhs,
+					  const NetMauMau::Common::ICard *rhs) _DEPRECATED;
+
+/**
+ * @ingroup util
+ * @brief Checks if a card comes before another
+ *
+ * Useful for sorting with rank first than suit
+ *
+ * @deprecated use the compare operators
+ *
+ * @param lhs a card
+ * @param rhs a card
+ *
+ * @return @c true if @c lhs comes before @c rhs, @c false otherwise
+ *
+ * @since 0.3
+ */
+_EXPORT bool cardGreater(const NetMauMau::Common::ICard *lhs,
+						 const NetMauMau::Common::ICard *rhs) _DEPRECATED;
+
+/// @}
+
+/**
+ * @name Functors (for use in STL-like algorithms)
+ * @{
+ */
+
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
 /**
@@ -186,26 +227,7 @@ public:
 		return *lhs == *rhs;
 	}
 };
-#pragma GCC diagnostic pop
 
-/**
- * @ingroup util
- * @brief Checks if a card comes before another
- *
- * Useful for sorting with suit first than rank
- *
- * @deprecated use the compare operators
- *
- * @param lhs a card
- * @param rhs a card
- *
- * @return @c true if @c lhs comes before @c rhs, @c false otherwise
- */
-_EXPORT bool cardLess(const NetMauMau::Common::ICard *lhs,
-					  const NetMauMau::Common::ICard *rhs) _DEPRECATED;
-
-#pragma GCC diagnostic ignored "-Weffc++"
-#pragma GCC diagnostic push
 /**
  * @ingroup util
  *
@@ -227,28 +249,7 @@ public:
 		return *lhs < *rhs;
 	}
 };
-#pragma GCC diagnostic pop
 
-/**
- * @ingroup util
- * @brief Checks if a card comes before another
- *
- * Useful for sorting with rank first than suit
- *
- * @deprecated use the compare operators
- *
- * @param lhs a card
- * @param rhs a card
- *
- * @return @c true if @c lhs comes before @c rhs, @c false otherwise
- *
- * @since 0.3
- */
-_EXPORT bool cardGreater(const NetMauMau::Common::ICard *lhs,
-						 const NetMauMau::Common::ICard *rhs) _DEPRECATED;
-
-#pragma GCC diagnostic ignored "-Weffc++"
-#pragma GCC diagnostic push
 /**
  * @ingroup util
  *
@@ -511,6 +512,15 @@ _EXPORT const char *getServerExe() _PURE;
 }
 
 }
+
+/**
+ * @defgroup util Utilities
+ * @brief Utilities and helper functions and macros
+ *
+ * This are several utilities and helper functions and macros to ease the use of
+ * the @em %NetMauMau @em %client @em API
+ *
+ */
 
 #endif /* NETMAUMAU_CARDTOOLS_H */
 

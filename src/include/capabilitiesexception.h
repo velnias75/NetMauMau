@@ -34,6 +34,7 @@ namespace Client {
 namespace Exception {
 
 /**
+ * @ingroup exceptions
  * @brief Failure while retrieving capabilities
  * @since 0.4
  */

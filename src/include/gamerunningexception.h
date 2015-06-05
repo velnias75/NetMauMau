@@ -34,6 +34,7 @@ namespace Client {
 namespace Exception {
 
 /**
+ * @ingroup exceptions
  * @brief There is already a game running on the server
  * @since 0.15
  */

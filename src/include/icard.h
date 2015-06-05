@@ -35,8 +35,11 @@ namespace NetMauMau {
 namespace Common {
 
 /**
+ * @ingroup main
  * @interface ICard
  * @brief Describes a playing card
+ *
+ * @ref Utilities describes various functions to handle with @c %ICard instances.
  */
 class _EXPORT ICard {
 	DISALLOW_COPY_AND_ASSIGN(ICard)
@@ -107,6 +110,12 @@ typedef SmartPtr<ICard> ICardPtr;
 }
 
 }
+
+/**
+ * @name Global compare and relational operators
+ *
+ * @{
+ */
 
 /**
  * @ingroup util
@@ -319,6 +328,8 @@ inline bool operator==(const NetMauMau::Common::ICard *card, NetMauMau::Common::
 inline bool operator!=(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::SUIT suit) {
 	return *card != suit;
 }
+
+/// @}
 
 _EXPORT bool operator==(const NetMauMau::Common::ICardPtr &x, const NetMauMau::Common::ICardPtr &y);
 _EXPORT bool operator!=(const NetMauMau::Common::ICardPtr &x, const NetMauMau::Common::ICardPtr &y);

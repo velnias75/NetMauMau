@@ -34,6 +34,7 @@ namespace Client {
 namespace Exception {
 
 /**
+ * @ingroup exceptions
  * @brief The remote host is not a %NetMauMau server
  * @since 0.4
  */

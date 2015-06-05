@@ -27,7 +27,6 @@
 #include "ieventhandler.h"              // for IEventHandler
 #include "logger.h"
 #include "luafatalexception.h"          // for LuaFatalException
-// #include "sqlite.h"                     // for SQLite
 
 namespace {
 const std::string MISCONFIGURED("Misconfigured or compromised server. Please report: ");
@@ -227,8 +226,8 @@ void Game::reset(bool playerLost) throw() {
 
 	char sr[128];
 
-	std::snprintf(sr, 127, "Received %.2f kb; sent %.2f kb", static_cast<double>(NetMauMau::Common::
-				  AbstractSocket::getReceivedBytes()) / 1024.0,
+	std::snprintf(sr, 127, "Received %.2f kb; sent %.2f kb", static_cast<double>
+				  (NetMauMau::Common::AbstractSocket::getReceivedBytes()) / 1024.0,
 				  static_cast<double>(NetMauMau::Common::AbstractSocket::getSentBytes()) / 1024.0);
 
 	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << sr);

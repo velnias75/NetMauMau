@@ -70,7 +70,6 @@
 #include "luaexception.h"               // for LuaException
 #include "servereventhandler.h"         // for EventHandler
 #include "serverplayer.h"               // for Player
-// #include "sqlite.h"                     // for SQLite
 #include "iruleset.h"
 #include "ci_char_traits.h"
 

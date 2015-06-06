@@ -35,57 +35,33 @@ public:
 	virtual ~IAIState() {}
 
 	virtual std::string getName() const = 0;
-
 	virtual void setCard(const Common::ICardPtr &card) = 0;
-
 	virtual Common::ICardPtr getCard() const = 0;
-
 	virtual std::size_t getCardCount() const = 0;
-
 	virtual Common::ICardPtr getPlayedCard() const = 0;
-
 	virtual const Player::IPlayer::CARDS &getPlayerCards() const = 0;
-
 	virtual Common::ICardPtr getUncoveredCard() const = 0;
-
 	virtual const RuleSet::IRuleSet *getRuleSet() const = 0;
-
 	virtual const PLAYEDOUTCARDS &getPlayedOutCards() const = 0;
-
 	virtual bool hasPlayerFewCards() const = 0;
-
 	virtual Common::ICard::SUIT *getJackSuit() const = 0;
-
 	virtual bool isNoJack() const = 0;
-
 	virtual void setNoJack(bool b) = 0;
-
 	virtual bool hasTakenCards() const = 0;
-
 	virtual void setCardsTaken(bool b) = 0;
-
 	virtual std::size_t getTalonFactor() const = 0;
-
 	virtual std::size_t getPlayerCount() const = 0;
-
 	virtual std::size_t getLeftCount() const = 0;
-
 	virtual std::size_t getRightCount() const = 0;
-
 	virtual bool nineIsEight() const = 0;
-
 	virtual bool isDirChgEnabled() const = 0;
-
 	virtual bool tryAceRound() const = 0;
-
 	virtual void setTryAceRound(bool b) = 0;
-
+	virtual Common::ICard::RANK getAvoidRank() const = 0;
+	virtual Common::ICard::SUIT getAvoidSuit() const = 0;
 	virtual Common::ICard::SUIT getPowerSuit() const = 0;
-
 	virtual void setPowerSuit(Common::ICard::SUIT suit) = 0;
-
 	virtual bool isPowerPlay() const = 0;
-
 	virtual void setPowerPlay(bool b) = 0;
 
 protected:

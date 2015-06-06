@@ -1,8 +1,9 @@
 netmaumau (0.20.2) UNRELEASED; urgency=low
 
   * improved seven rule
+  * improved AI player 
 
- -- Heiko Schäfer <heiko@rangun.de>  Wed, 03 Jun 2015 10:06:29 +0200
+ -- Heiko Schäfer <heiko@rangun.de>  Sat, 06 Jun 2015 12:44:02 +0200
 
 netmaumau (0.20.1) UNRELEASED; urgency=low
 

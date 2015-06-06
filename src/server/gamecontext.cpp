@@ -24,28 +24,12 @@ using namespace NetMauMau::Server;
 GameContext::GameContext(NetMauMau::Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange,
 						 NetMauMau::Common::CARDCONFIG &cc, bool aiPlayer,
 						 const std::vector<std::string> &aiName, char aceRound)
-	: m_aiPlayer(aiPlayer), m_aiName(aiName), m_engineCtx(evtHdlr, dirChange, aiDelay,
+	: m_aiPlayer(aiPlayer), m_aiNames(aiName), m_engineCtx(evtHdlr, dirChange, aiDelay,
 			!aiPlayer || !getAINames().empty(), aceRound, cc), m_cardConfig(cc) {}
 
-GameContext::GameContext(const GameContext &o) : m_aiPlayer(o.m_aiPlayer), m_aiName(o.m_aiName),
+GameContext::GameContext(const GameContext &o) : m_aiPlayer(o.m_aiPlayer), m_aiNames(o.m_aiNames),
 	m_engineCtx(o.m_engineCtx), m_cardConfig(o.m_cardConfig) {}
 
 GameContext::~GameContext() {}
-
-const std::vector<std::string> &GameContext::getAINames() const {
-	return m_aiName;
-}
-
-bool GameContext::hasAIPlayer() const {
-	return m_aiPlayer;
-}
-
-NetMauMau::EngineContext &GameContext::getEngineContext() {
-	return m_engineCtx;
-}
-
-NetMauMau::Common::CARDCONFIG &GameContext::getCardConfig() const {
-	return m_cardConfig;
-}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

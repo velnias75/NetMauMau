@@ -62,10 +62,16 @@ public:
 										 std::size_t takeCount, bool noSuspend = false) const = 0;
 	virtual Common::ICard::SUIT getJackChoice(const Common::ICardPtr &uncoveredCard,
 			const Common::ICardPtr &playedCard) const = 0;
+
 	virtual bool getAceRoundChoice() const = 0;
 
+	virtual void informAIStat(const IPlayer *player, std::size_t count, Common::ICard::SUIT lpSuit,
+							  Common::ICard::RANK lpRank) = 0;
+
+	virtual Common::ICard::SUIT getLastPlayedSuit() const = 0;
+	virtual Common::ICard::RANK getLastPlayedRank() const = 0;
+
 	virtual bool cardAccepted(const Common::ICard *playedCard) = 0;
-	virtual void informAIStat(const IPlayer *player, std::size_t count) = 0;
 	virtual void setNeighbourCardCount(std::size_t playerCount, std::size_t leftCount,
 									   std::size_t rightCount) = 0;
 	virtual void setDirChangeEnabled(bool dirChangeEnabled) = 0;

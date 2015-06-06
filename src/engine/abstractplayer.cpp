@@ -83,7 +83,10 @@ AbstractPlayer::AbstractPlayer(const std::string &name, const NetMauMau::IPlayed
 	: IPlayer(), m_name(name), m_cards(), m_cardsTaken(false), m_ruleset(0L),
 	  m_playerHasFewCards(false), m_nineIsEight(false), m_leftCount(0), m_rightCount(0),
 	  m_dirChgEnabled(false), m_playerCount(0), m_engineCtx(0L), m_cardCountObserver(0L),
-	  m_poc(poc) {
+	  m_poc(poc), m_lastPlayedSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL),
+	  m_lastPlayedRank(NetMauMau::Common::ICard::RANK_ILLEGAL),
+	  m_avoidSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL),
+	  m_avoidRank(NetMauMau::Common::ICard::RANK_ILLEGAL) {
 	m_cards.reserve(32);
 }
 
@@ -105,8 +108,20 @@ void AbstractPlayer::setEngineContext(const NetMauMau::EngineContext *engineCtx)
 	m_engineCtx = engineCtx;
 }
 
-void AbstractPlayer::informAIStat(const IPlayer *, std::size_t count) {
-	m_playerHasFewCards = count < 3;
+void AbstractPlayer::informAIStat(const IPlayer *, std::size_t count, Common::ICard::SUIT lpSuit,
+								  NetMauMau::Common::ICard::RANK lpRank) {
+
+	m_playerHasFewCards = count < 3u;
+	m_avoidSuit = lpSuit;
+	m_avoidRank = lpRank;
+}
+
+NetMauMau::Common::ICard::SUIT AbstractPlayer::getLastPlayedSuit() const {
+	return m_lastPlayedSuit;
+}
+
+NetMauMau::Common::ICard::RANK AbstractPlayer::getLastPlayedRank() const {
+	return m_lastPlayedRank;
 }
 
 void AbstractPlayer::setNeighbourCardCount(std::size_t playerCount, std::size_t leftCount,
@@ -172,6 +187,8 @@ bool AbstractPlayer::cardAccepted(const NetMauMau::Common::ICard *playedCard) {
 	const CARDS::iterator &i(std::find_if(m_cards.begin(), m_cards.end(),
 										  std::bind2nd(std::equal_to<CARDS::value_type>(),
 												  playedCard)));
+	m_lastPlayedSuit = playedCard->getSuit();
+	m_lastPlayedRank = playedCard->getRank();
 
 	if(i != m_cards.end()) {
 		m_cards.erase(i);
@@ -243,7 +260,9 @@ void AbstractPlayer::shuffleCards() {
 void AbstractPlayer::reset() throw() {
 
 	m_playerHasFewCards = m_cardsTaken = m_nineIsEight = false;
-	m_leftCount = m_rightCount = m_playerCount = 0;
+	m_leftCount = m_rightCount = m_playerCount = 0u;
+	m_avoidSuit = m_lastPlayedSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
+	m_avoidRank = m_lastPlayedRank = NetMauMau::Common::ICard::RANK_ILLEGAL;
 	m_dirChgEnabled = false;
 	m_cards.clear();
 

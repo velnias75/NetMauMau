@@ -59,7 +59,7 @@ const IConditionPtr &MaxSuitAction::perform(IAIState &state,
 
 	NetMauMau::Common::ICardPtr bestCard;
 
-	for(std::size_t i = 0; i < 4; ++i) {
+	for(std::size_t i = suitCount[0].suit != state.getAvoidSuit() ? 0u : 1u; i < 4u; ++i) {
 
 		const NetMauMau::Player::IPlayer::CARDS::iterator &e(AbstractAction::pullSuit(myCards,
 				suitCount[i].suit));

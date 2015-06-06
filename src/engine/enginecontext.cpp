@@ -62,42 +62,10 @@ EngineContext::~EngineContext() {
 	delete m_ruleset;
 }
 
-long EngineContext::getAIDelay() const {
-	return m_aiDelay;
-}
-
-bool EngineContext::getDirChange() const {
-	return m_dirChange;
-}
-
-Event::IEventHandler &EngineContext::getEventHandler() const {
-	return m_eventHandler;
-}
-
-bool EngineContext::getNextMessage() const {
-	return m_nextMessage;
-}
-
-void EngineContext::setNextMessage(bool b) {
-	m_nextMessage = b;
-}
-
 RuleSet::IRuleSet *EngineContext::getRuleSet(const NetMauMau::IAceRoundListener *arl) const
 throw(Lua::Exception::LuaException) {
 	return m_ruleset ? m_ruleset : (m_ruleset = new RuleSet::LuaRuleSet(getLuaScriptPaths(),
 			m_dirChange, m_initialCardCount, m_aceRound ? arl : 0L));
-}
-
-char EngineContext::getAceRound() const {
-	return m_aceRound;
-}
-
-Common::ICard::RANK EngineContext::getAceRoundRank() const {
-	return m_aceRoundRank;
-}
-
-std::size_t EngineContext::getTalonFactor() const {
-	return m_talonFactor;
 }
 
 std::vector<std::string> EngineContext::getLuaScriptPaths() {

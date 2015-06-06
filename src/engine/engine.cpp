@@ -64,6 +64,27 @@ const std::string TALONUNDERFLOW("TALON-UNDERFLOW: attempt to take more cards fr
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
+struct _informCardCount : public std::unary_function<NetMauMau::Player::IPlayer *, void> {
+	explicit inline _informCardCount(NetMauMau::Player::IPlayer *player) : m_player(player) {}
+	inline result_type operator()(const argument_type player) const {
+		if(m_player != player) m_player->informAIStat(player, player->getCardCount(),
+					player->getLastPlayedSuit(), player->getLastPlayedRank());
+	}
+
+private:
+	NetMauMau::Player::IPlayer *m_player;
+};
+
+struct _informAIStat : public std::unary_function<NetMauMau::Player::IPlayer *, void> {
+	explicit inline _informAIStat(const NetMauMau::Engine::PLAYERS &players) : m_players(players) {}
+	inline result_type operator()(const argument_type p) const {
+		if(p->isAIPlayer()) std::for_each(m_players.begin(), m_players.end(), _informCardCount(p));
+	}
+
+private:
+	const NetMauMau::Engine::PLAYERS &m_players;
+};
+
 struct PlayerNameEqualCI : public std::binary_function < NetMauMau::Player::IPlayer *,
 		std::string, bool > {
 
@@ -177,7 +198,7 @@ throw(Common::Exception::SocketException) {
 
 	try {
 		getRuleSet()->setCurPlayers(m_players.size());
-	} catch(Common::Exception::SocketException &e) {
+	} catch(const Common::Exception::SocketException &e) {
 		logDebug(e);
 	}
 
@@ -655,13 +676,7 @@ throw(Common::Exception::SocketException) {
 }
 
 void Engine::informAIStat() const {
-	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
-		if((*i)->isAIPlayer()) {
-			for(PLAYERS ::const_iterator j(m_players.begin()); j != m_players.end(); ++j) {
-				if(*i != *j)(*i)->informAIStat(*j, (*j)->getCardCount());
-			}
-		}
-	}
+	std::for_each(m_players.begin(), m_players.end(), _informAIStat(m_players));
 }
 
 void Engine::setDirChangeIsSuspend(bool b) throw(Common::Exception::SocketException) {
@@ -673,14 +688,8 @@ void Engine::setDirChangeIsSuspend(bool b) throw(Common::Exception::SocketExcept
 }
 
 std::size_t Engine::getAICount() const {
-
-	std::size_t cnt = 0;
-
-	for(PLAYERS ::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
-		if((*i)->isAIPlayer()) ++cnt;
-	}
-
-	return cnt;
+	return static_cast<std::size_t>(std::count_if(m_players.begin(), m_players.end(),
+									std::mem_fun(&Player::IPlayer::isAIPlayer)));
 }
 
 void Engine::gameAboutToStart() const {
@@ -731,7 +740,6 @@ bool Engine::wait(const Player::IPlayer *p, bool suspend) const {
 }
 
 void Engine::cardCountChanged(const Player::IPlayer *p) const throw() {
-
 	try {
 		getEventHandler().stats(PLAYERS(1, const_cast<Player::IPlayer *>(p)));
 	} catch(const Common::Exception::SocketException &e) {
@@ -756,14 +764,14 @@ void Engine::reset() throw() {
 
 	try {
 		getRuleSet()->reset();
-	} catch(Lua::Exception::LuaException &e) {
+	} catch(const Lua::Exception::LuaException &e) {
 		logDebug(e);
 	}
 
 	removePlayers();
 
-	m_nxtPlayer = m_curTurn = 0;
-	m_turn = 1;
+	m_nxtPlayer = m_curTurn = 0u;
+	m_turn = 1u;
 
 	m_jackMode = m_initialChecked =
 					 m_initialJack = m_alwaysWait = m_alreadyWaited = m_talonUnderflow = false;

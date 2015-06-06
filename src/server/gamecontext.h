@@ -42,14 +42,25 @@ public:
 						 char aceRound = 0);
 	~GameContext();
 
-	bool hasAIPlayer() const _PURE;
-	const std::vector<std::string> &getAINames() const _CONST;
-	EngineContext &getEngineContext() _CONST;
-	Common::CARDCONFIG &getCardConfig() const _PURE;
+	inline bool hasAIPlayer() const {
+		return m_aiPlayer;
+	}
+
+	inline const std::vector<std::string> &getAINames() const {
+		return m_aiNames;
+	}
+
+	inline EngineContext &getEngineContext() {
+		return m_engineCtx;
+	}
+
+	inline Common::CARDCONFIG &getCardConfig() const {
+		return m_cardConfig;
+	}
 
 private:
 	const bool m_aiPlayer;
-	const std::vector<std::string> m_aiName;
+	const std::vector<std::string> m_aiNames;
 	EngineContext m_engineCtx;
 	Common::CARDCONFIG &m_cardConfig;
 };

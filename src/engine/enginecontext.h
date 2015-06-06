@@ -47,18 +47,40 @@ public:
 						   const Common::CARDCONFIG &cc = Common::CARDCONFIG());
 	~EngineContext();
 
-	Event::IEventHandler &getEventHandler() const _PURE;
+	inline Event::IEventHandler &getEventHandler() const {
+		return m_eventHandler;
+	}
 
-	bool getDirChange() const _PURE;
-	long getAIDelay() const _PURE;
-	bool getNextMessage() const _PURE;
-	void setNextMessage(bool b);
-	char getAceRound() const _PURE;
+	inline bool getDirChange() const {
+		return m_dirChange;
+	}
 
-	Common::ICard::RANK getAceRoundRank() const _PURE;
+	inline long getAIDelay() const {
+		return m_aiDelay;
+	}
+
+	inline bool getNextMessage() const {
+		return m_nextMessage;
+	}
+
+	inline void setNextMessage(bool b) {
+		m_nextMessage = b;
+	}
+
+	inline char getAceRound() const {
+		return m_aceRound;
+	}
+
+	inline Common::ICard::RANK getAceRoundRank() const {
+		return m_aceRoundRank;
+	}
+
 	RuleSet::IRuleSet *getRuleSet(const NetMauMau::IAceRoundListener *arl = 0L) const
 	throw(Lua::Exception::LuaException);
-	std::size_t getTalonFactor() const _PURE;
+
+	inline std::size_t getTalonFactor() const {
+		return m_talonFactor;
+	}
 
 private:
 	static std::vector<std::string> getLuaScriptPaths();

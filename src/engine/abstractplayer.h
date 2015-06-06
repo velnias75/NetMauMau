@@ -54,8 +54,13 @@ public:
 
 	virtual bool getAceRoundChoice() const = 0;
 
+	virtual void informAIStat(const IPlayer *player, std::size_t count, Common::ICard::SUIT lpSuit,
+							  Common::ICard::RANK lpRank);
+
+	virtual Common::ICard::SUIT getLastPlayedSuit() const _PURE;
+	virtual Common::ICard::RANK getLastPlayedRank() const _PURE;
+
 	virtual bool cardAccepted(const Common::ICard *playedCard);
-	virtual void informAIStat(const IPlayer *player, std::size_t count);
 	virtual void setNeighbourCardCount(std::size_t playerCount, std::size_t leftCount,
 									   std::size_t rightCount);
 	virtual void setDirChangeEnabled(bool dirChangeEnabled);
@@ -100,6 +105,14 @@ protected:
 	void notifyCardCountChange() const throw();
 	bool isAceRoundAllowed() const;
 
+	inline Common::ICard::SUIT getAvoidSuit() const {
+		return m_avoidSuit;
+	}
+
+	inline Common::ICard::RANK getAvoidRank() const {
+		return m_avoidRank;
+	}
+
 	void pushCard(const Common::ICardPtr &card);
 
 private:
@@ -116,6 +129,10 @@ private:
 	const EngineContext *m_engineCtx;
 	const ICardCountObserver *m_cardCountObserver;
 	const IPlayedOutCards *const m_poc;
+	Common::ICard::SUIT m_lastPlayedSuit;
+	Common::ICard::RANK m_lastPlayedRank;
+	Common::ICard::SUIT m_avoidSuit;
+	Common::ICard::RANK m_avoidRank;
 };
 
 }

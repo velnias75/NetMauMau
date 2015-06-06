@@ -173,13 +173,14 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 	m_engine.gameAboutToStart();
 
 	try {
+
 		while(ultimate ? m_engine.getPlayerCount() >= 2 : m_engine.getPlayerCount() == minPlayers) {
 			if(!m_engine.nextTurn()) break;
 		}
 
 		if(ultimate || m_ctx.hasAIPlayer()) m_engine.gameOver();
 
-	} catch(NetMauMau::Lua::Exception::LuaFatalException &e) {
+	} catch(const NetMauMau::Lua::Exception::LuaFatalException &e) {
 		logFatal(e);
 		m_engine.error(MISCONFIGURED + e.what());
 		m_engine.gameOver();

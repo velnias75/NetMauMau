@@ -59,8 +59,13 @@ public:
 
 	virtual bool getAceRoundChoice() const;
 
+	virtual void informAIStat(const IPlayer *player, std::size_t count, Common::ICard::SUIT lpSuit,
+							  Common::ICard::RANK lpRank);
+
+	virtual Common::ICard::SUIT getAvoidSuit() const;
+	virtual Common::ICard::RANK getAvoidRank() const;
+
 	virtual bool cardAccepted(const Common::ICard *playedCard);
-	virtual void informAIStat(const IPlayer *player, std::size_t count);
 	virtual void setNeighbourCardCount(std::size_t playerCount,
 									   std::size_t leftCount, std::size_t rightCount);
 	virtual void setDirChangeEnabled(bool dirChangeEnabled);
@@ -254,8 +259,8 @@ const Common::ICardPtr &playedCard) const {
 		AI::BaseAIPlayer<RootCond, RootCondJack>::m_playedCard = playedCard;
 	AI::BaseAIPlayer<RootCond, RootCondJack>::m_uncoveredCard = uncoveredCard;
 
-	const Common::ICardPtr
-	&rc(AI::BaseAIPlayer<RootCond, RootCondJack>::getJackDecisionChain()->getCard(true));
+	const Common::ICardPtr &rc(AI::BaseAIPlayer < RootCond,
+							   RootCondJack >::getJackDecisionChain()->getCard(true));
 	assert(rc);
 	const Common::ICard::SUIT s = rc->getSuit();
 
@@ -308,8 +313,19 @@ inline std::size_t AIPlayerBase<RootCond, RootCondJack>::getPoints() const {
 
 template<class RootCond, class RootCondJack>
 inline void AIPlayerBase < RootCond,
-RootCondJack >::informAIStat(const IPlayer *p, std::size_t count) {
-	AbstractPlayer::informAIStat(p, count);
+	   RootCondJack >::informAIStat(const IPlayer *p, std::size_t count, Common::ICard::SUIT lpSuit,
+Common::ICard::RANK lpRank) {
+	AbstractPlayer::informAIStat(p, count, lpSuit, lpRank);
+}
+
+template<class RootCond, class RootCondJack>
+inline Common::ICard::SUIT AIPlayerBase<RootCond, RootCondJack>::getAvoidSuit() const {
+	return AbstractPlayer::getAvoidSuit();
+}
+
+template<class RootCond, class RootCondJack>
+inline Common::ICard::RANK AIPlayerBase<RootCond, RootCondJack>::getAvoidRank() const {
+	return AbstractPlayer::getAvoidRank();
 }
 
 template<class RootCond, class RootCondJack>

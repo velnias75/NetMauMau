@@ -27,7 +27,7 @@ using namespace NetMauMau::AI;
 RandomJackAction::RandomJackAction() : AbstractAction() {}
 
 RandomJackAction::~RandomJackAction() {}
-
+#include "logger.h"
 const IConditionPtr &RandomJackAction::perform(IAIState &state,
 		const NetMauMau::Player::IPlayer::CARDS &cards) const {
 
@@ -50,7 +50,7 @@ const IConditionPtr &RandomJackAction::perform(IAIState &state,
 		std::sort(std::reverse_iterator<SUITCOUNT *>(suitCount + 4),
 				  std::reverse_iterator<SUITCOUNT *>(suitCount));
 
-		unsigned int i = 0u;
+		unsigned int i = suitCount[0].suit != state.getAvoidSuit() ? 0u : 1u;
 		NetMauMau::Common::ICardPtr jack;
 
 		do {

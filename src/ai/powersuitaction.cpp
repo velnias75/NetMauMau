@@ -50,7 +50,7 @@ const IConditionPtr &PowerSuitAction::perform(IAIState &state,
 
 		if(DecisionBase::countRank(myCards, NetMauMau::Common::ICard::SEVEN)) {
 
-			for(int p = 0; p < 4; ++p) {
+			for(unsigned int p = suitCount[0].suit != state.getAvoidSuit() ? 0u : 1u; p < 4u; ++p) {
 
 				AbstractAction::pullSuit(myCards, suitCount[p].suit);
 

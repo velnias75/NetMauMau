@@ -80,6 +80,9 @@ protected:
 	static Common::ICard::SUIT getMaxPlayedOffSuit(const IAIState &state,
 			Player::IPlayer::CARDS::difference_type *count = 0L);
 
+	static Common::ICardPtr findRankTryAvoidSuit(NetMauMau::Common::ICard::RANK rank,
+			const NetMauMau::Player::IPlayer::CARDS &cards, Common::ICard::SUIT avoidSuit);
+
 	static const IConditionPtr &getNullCondition() _CONST;
 
 private:

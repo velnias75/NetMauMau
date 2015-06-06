@@ -55,8 +55,8 @@ const IConditionPtr &PowerSuitAction::perform(IAIState &state,
 				AbstractAction::pullSuit(myCards, suitCount[p].suit);
 
 				const NetMauMau::Player::IPlayer::CARDS::value_type f =
-					NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN, myCards.begin(),
-												myCards.end());
+					AbstractAction::findRankTryAvoidSuit(NetMauMau::Common::ICard::SEVEN, myCards,
+							state.getAvoidSuit());
 
 				if(f) {
 					state.setPowerSuit(f->getSuit());

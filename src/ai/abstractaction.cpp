@@ -22,6 +22,7 @@
 #include <cstring>                      // for memset
 
 #include "cardtools.h"                  // for findSuit, isRank, isSuit
+#include "random_gen.h"
 
 #if defined(TRACE_AI) && !defined(NDEBUG)
 #include "logger.h"
@@ -186,6 +187,23 @@ AbstractAction::hasRankPath(const NetMauMau::Common::ICardPtr &uc,
 	}
 
 	return NetMauMau::Common::ICardPtr();
+}
+
+NetMauMau::Common::ICardPtr AbstractAction::findRankTryAvoidSuit(NetMauMau::Common::ICard::RANK r,
+		const NetMauMau::Player::IPlayer::CARDS &c, NetMauMau::Common::ICard::SUIT avoidSuit) {
+
+	NetMauMau::Common::ICardPtr ret;
+	NetMauMau::Common::ICard::SUIT rndSuits[4];
+
+	std::copy(getSuits(), getSuits() + 4, rndSuits);
+	std::random_shuffle(rndSuits, rndSuits + 4, NetMauMau::Common::genRandom<std::ptrdiff_t>);
+
+	for(unsigned int i = 0u; i < 4u; ++i) {
+		if(rndSuits[i] != avoidSuit && ((ret = NetMauMau::Common::findRank(r, c.begin(), c.end()))
+										&& ret == rndSuits[i])) break;
+	}
+
+	return ret ? ret : NetMauMau::Common::findRank(r, c.begin(), c.end());
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

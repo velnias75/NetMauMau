@@ -37,8 +37,8 @@ const IConditionPtr &AceRoundAction::perform(IAIState &state,
 		const NetMauMau::Player::IPlayer::CARDS &cards) const {
 
 	if(state.getRuleSet()->isAceRound()) {
-		state.setCard(NetMauMau::Common::findRank(NetMauMau::Common::ICard::ACE, cards.begin(),
-					  cards.end()));
+		state.setCard(AbstractAction::findRankTryAvoidSuit(NetMauMau::Common::ICard::ACE, cards,
+					  state.getAvoidSuit()));
 		return AbstractAction::getNullCondition();
 	}
 

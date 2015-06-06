@@ -36,7 +36,8 @@ const IConditionPtr &ServeSevenAction::perform(IAIState &state,
 		const NetMauMau::Player::IPlayer::CARDS &cards) const {
 
 	const NetMauMau::Player::IPlayer::CARDS::value_type f =
-		NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN, cards.begin(), cards.end());
+		AbstractAction::findRankTryAvoidSuit(NetMauMau::Common::ICard::SEVEN, cards,
+				state.getAvoidSuit());
 
 	if(f) {
 		state.setCard(f);

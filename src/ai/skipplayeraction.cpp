@@ -37,19 +37,19 @@ SkipPlayerAction::~SkipPlayerAction() {}
 const IConditionPtr &SkipPlayerAction::perform(IAIState &state,
 		const NetMauMau::Player::IPlayer::CARDS &) const {
 
+	const NetMauMau::Player::IPlayer::CARDS &myCards(state.getPlayerCards());
+	const NetMauMau::Common::ICard::SUIT avoid = state.getAvoidSuit();
+
 	const NetMauMau::Player::IPlayer::CARDS::value_type nine = state.isDirChgEnabled() ?
-			NetMauMau::Common::findRank(NetMauMau::Common::ICard::NINE,
-										state.getPlayerCards().begin(),
-										state.getPlayerCards().end()) :
+			AbstractAction::findRankTryAvoidSuit(NetMauMau::Common::ICard::NINE, myCards, avoid) :
 			NetMauMau::Common::ICardPtr();
 
 	const NetMauMau::Player::IPlayer::CARDS::value_type seven =
-		NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN,
-									state.getPlayerCards().begin(), state.getPlayerCards().end());
+		AbstractAction::findRankTryAvoidSuit(NetMauMau::Common::ICard::SEVEN, myCards, avoid);
 
 	state.setCard(nine ? nine : seven ? seven :
-				  NetMauMau::Common::findRank(NetMauMau::Common::ICard::EIGHT,
-						  state.getPlayerCards().begin(), state.getPlayerCards().end()));
+				  AbstractAction::findRankTryAvoidSuit(NetMauMau::Common::ICard::EIGHT, myCards,
+						  avoid));
 
 	return (state.getCard() || state.hasPlayerFewCards()) ? BESTSUITCOND : POWERSUITCOND;
 }

@@ -81,7 +81,7 @@ using namespace NetMauMau::Player;
 
 AbstractPlayer::AbstractPlayer(const std::string &name, const NetMauMau::IPlayedOutCards *poc)
 	: IPlayer(), m_name(name), m_cards(), m_cardsTaken(false), m_ruleset(0L),
-	  m_playerHasFewCards(false), m_nineIsEight(false), m_leftCount(0), m_rightCount(0),
+	  m_playerHasFewCards(false), m_nineIsSuspend(false), m_leftCount(0), m_rightCount(0),
 	  m_dirChgEnabled(false), m_playerCount(0), m_engineCtx(0L), m_cardCountObserver(0L),
 	  m_poc(poc), m_lastPlayedSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL),
 	  m_lastPlayedRank(NetMauMau::Common::ICard::RANK_ILLEGAL),
@@ -135,8 +135,8 @@ void AbstractPlayer::setDirChangeEnabled(bool dirChangeEnabled) {
 	m_dirChgEnabled = dirChangeEnabled;
 }
 
-void AbstractPlayer::setNineIsEight(bool b) {
-	m_nineIsEight = b;
+void AbstractPlayer::setnineIsSuspend(bool b) {
+	m_nineIsSuspend = b;
 }
 
 std::size_t AbstractPlayer::getPoints() const {
@@ -244,8 +244,8 @@ bool AbstractPlayer::hasPlayerFewCards() const {
 	return m_playerHasFewCards;
 }
 
-bool AbstractPlayer::nineIsEight() const {
-	return m_nineIsEight;
+bool AbstractPlayer::nineIsSuspend() const {
+	return m_nineIsSuspend;
 }
 
 bool AbstractPlayer::isDirChgEnabled() const {
@@ -259,7 +259,7 @@ void AbstractPlayer::shuffleCards() {
 
 void AbstractPlayer::reset() throw() {
 
-	m_playerHasFewCards = m_cardsTaken = m_nineIsEight = false;
+	m_playerHasFewCards = m_cardsTaken = m_nineIsSuspend = false;
 	m_leftCount = m_rightCount = m_playerCount = 0u;
 	m_avoidSuit = m_lastPlayedSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
 	m_avoidRank = m_lastPlayedRank = NetMauMau::Common::ICard::RANK_ILLEGAL;

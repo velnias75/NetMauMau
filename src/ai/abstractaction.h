@@ -68,7 +68,7 @@ protected:
 
 	static Common::ICardPtr hasRankPath(const Common::ICardPtr &uc, Common::ICard::SUIT s,
 										Common::ICard::RANK r, const Player::IPlayer::CARDS &mCards,
-										bool nineIsEight);
+										bool nineIsSuspend);
 
 	static Player::IPlayer::CARDS::iterator pushRank(const Player::IPlayer::CARDS::iterator &first,
 			const Player::IPlayer::CARDS::iterator &last, Common::ICard::RANK rank);
@@ -87,7 +87,7 @@ protected:
 
 private:
 	static Player::IPlayer::CARDS::iterator pullSpecialRank(Player::IPlayer::CARDS &cards,
-			Common::ICard::RANK rank, bool nineIsEight);
+			Common::ICard::RANK rank, bool nineIsSuspend);
 };
 
 }

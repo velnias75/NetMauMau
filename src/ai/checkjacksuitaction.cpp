@@ -38,7 +38,7 @@ CheckJackSuitAction::_hasRankPath::operator()
 		for(NetMauMau::Player::IPlayer::CARDS::const_iterator i(mCards.begin());
 				i != mCards.end(); ++i) {
 			if((hrp = AbstractAction::hasRankPath(c, (*i)->getSuit(), rank, mCards,
-												  nineIsEight))) break;
+												  nineIsSuspend))) break;
 		}
 	}
 
@@ -78,7 +78,7 @@ NetMauMau::Common::ICard::SUIT CheckJackSuitAction::findJackChoice(const IAIStat
 	const NetMauMau::Player::IPlayer::CARDS::const_iterator
 	&f(std::find_if(state.getPlayerCards().begin(), state.getPlayerCards().end(),
 					_hasRankPath(state.getPlayerCards(), NetMauMau::Common::ICard::EIGHT,
-								 state.nineIsEight())));
+								 state.nineIsSuspend())));
 
 	if(f != state.getPlayerCards().end()) {
 		return (*f)->getSuit();

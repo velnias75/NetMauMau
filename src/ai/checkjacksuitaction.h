@@ -48,14 +48,14 @@ private:
 	struct _hasRankPath : std::unary_function<Common::ICardPtr, bool> {
 
 		explicit _hasRankPath(const Player::IPlayer::CARDS &c, Common::ICard::RANK r, bool nie) :
-			mCards(c), rank(r), nineIsEight(nie) {}
+			mCards(c), rank(r), nineIsSuspend(nie) {}
 
 		result_type operator()(const argument_type &c) const;
 
 	private:
 		const Player::IPlayer::CARDS &mCards;
 		const Common::ICard::RANK rank;
-		bool nineIsEight;
+		bool nineIsSuspend;
 	};
 #pragma GCC diagnostic pop
 

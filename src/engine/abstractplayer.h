@@ -65,7 +65,7 @@ public:
 									   std::size_t rightCount);
 	virtual void setDirChangeEnabled(bool dirChangeEnabled);
 	virtual void talonShuffled() _CONST;
-	virtual void setNineIsEight(bool b);
+	virtual void setnineIsSuspend(bool b);
 
 	virtual REASON getNoCardReason(const Common::ICardPtr &uncoveredCard,
 								   const Common::ICard::SUIT *suit) const _PURE;
@@ -93,7 +93,7 @@ protected:
 	void setCardsTaken(bool b);
 
 	bool hasPlayerFewCards() const _PURE;
-	bool nineIsEight() const _PURE;
+	bool nineIsSuspend() const _PURE;
 	bool isDirChgEnabled() const _PURE;
 
 	const EngineContext *getEngineContext() const _PURE;
@@ -121,7 +121,7 @@ private:
 	mutable bool m_cardsTaken;
 	const RuleSet::IRuleSet *m_ruleset;
 	bool m_playerHasFewCards;
-	bool m_nineIsEight;
+	bool m_nineIsSuspend;
 	std::size_t m_leftCount;
 	std::size_t m_rightCount;
 	bool m_dirChgEnabled;

@@ -53,7 +53,7 @@ public:
 	virtual std::size_t getPlayerCount() const = 0;
 	virtual std::size_t getLeftCount() const = 0;
 	virtual std::size_t getRightCount() const = 0;
-	virtual bool nineIsEight() const = 0;
+	virtual bool nineIsSuspend() const = 0;
 	virtual bool isDirChgEnabled() const = 0;
 	virtual bool tryAceRound() const = 0;
 	virtual void setTryAceRound(bool b) = 0;

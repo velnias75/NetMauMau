@@ -76,7 +76,7 @@ public:
 									   std::size_t rightCount) = 0;
 	virtual void setDirChangeEnabled(bool dirChangeEnabled) = 0;
 	virtual void talonShuffled() = 0;
-	virtual void setNineIsEight(bool b) = 0;
+	virtual void setnineIsSuspend(bool b) = 0;
 
 	virtual REASON getNoCardReason(const NetMauMau::Common::ICardPtr &uncoveredCard,
 								   const NetMauMau::Common::ICard::SUIT *suit) const = 0;

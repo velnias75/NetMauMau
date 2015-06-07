@@ -90,6 +90,7 @@ LuaState::LuaState() throw(Exception::LuaException) : m_state(luaL_newstate()) {
 		lua_setfield(m_state, LUA_GLOBALSINDEX, "RANK");
 
 		lua_register(m_state, "print", print);
+		lua_register(m_state, "write", print);
 		lua_register(m_state, "getRandomSuit", getRandomSuit);
 		lua_register(m_state, "getJackChoice", playerGetJackChoice);
 		lua_register(m_state, "getAceRoundChoice", playerGetAceRoundChoice);

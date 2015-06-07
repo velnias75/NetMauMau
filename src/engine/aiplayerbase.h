@@ -70,7 +70,7 @@ public:
 									   std::size_t leftCount, std::size_t rightCount);
 	virtual void setDirChangeEnabled(bool dirChangeEnabled);
 	virtual void talonShuffled();
-	virtual void setNineIsEight(bool b);
+	virtual void setnineIsSuspend(bool b);
 
 	virtual REASON getNoCardReason(const Common::ICardPtr &uncoveredCard,
 								   const Common::ICard::SUIT *suit) const;
@@ -109,7 +109,7 @@ protected:
 
 	virtual void shuffleCards();
 	virtual std::size_t getTalonFactor() const;
-	virtual bool nineIsEight() const;
+	virtual bool nineIsSuspend() const;
 	virtual bool isDirChgEnabled() const;
 	virtual bool tryAceRound() const;
 	virtual void setTryAceRound(bool b);
@@ -296,8 +296,8 @@ inline void AIPlayerBase<RootCond, RootCondJack>::talonShuffled() {
 }
 
 template<class RootCond, class RootCondJack>
-inline void AIPlayerBase<RootCond, RootCondJack>::setNineIsEight(bool b) {
-	AbstractPlayer::setNineIsEight(b);
+inline void AIPlayerBase<RootCond, RootCondJack>::setnineIsSuspend(bool b) {
+	AbstractPlayer::setnineIsSuspend(b);
 }
 
 template<class RootCond, class RootCondJack>
@@ -401,8 +401,8 @@ inline void AIPlayerBase<RootCond, RootCondJack>::setPowerSuit(Common::ICard::SU
 }
 
 template<class RootCond, class RootCondJack>
-inline bool AIPlayerBase<RootCond, RootCondJack>::nineIsEight() const {
-	return AbstractPlayer::nineIsEight();
+inline bool AIPlayerBase<RootCond, RootCondJack>::nineIsSuspend() const {
+	return AbstractPlayer::nineIsSuspend();
 }
 
 template<class RootCond, class RootCondJack>

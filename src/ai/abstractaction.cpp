@@ -43,16 +43,16 @@ const NetMauMau::Common::ICard::SUIT SUIT[4] = {
 struct _isSpecialRank : std::binary_function < NetMauMau::Common::ICardPtr,
 		NetMauMau::Common::ICard::RANK, bool > {
 
-	explicit _isSpecialRank(bool nineIsEight) : m_nineIsEight(nineIsEight) {}
+	explicit _isSpecialRank(bool nineIsSuspend) : m_nineIsSuspend(nineIsSuspend) {}
 
 	result_type operator()(const first_argument_type &c, second_argument_type r) const {
-		return m_nineIsEight && r == NetMauMau::Common::ICard::EIGHT ?
+		return m_nineIsSuspend && r == NetMauMau::Common::ICard::EIGHT ?
 			   (c == NetMauMau::Common::ICard::EIGHT || c == NetMauMau::Common::ICard::NINE) :
 			   c == r;
 	}
 
 private:
-	bool m_nineIsEight;
+	bool m_nineIsSuspend;
 };
 #pragma GCC diagnostic pop
 
@@ -124,7 +124,8 @@ NetMauMau::Player::IPlayer::CARDS::iterator
 AbstractAction::pullSuit(NetMauMau::Player::IPlayer::CARDS &cards,
 						 NetMauMau::Common::ICard::SUIT suit) {
 	return std::partition(cards.begin(), cards.end(),
-						  std::bind2nd(NetMauMau::Common::suitEqualTo<NetMauMau::Player::IPlayer::CARDS::value_type>(), suit));
+						  std::bind2nd(NetMauMau::Common::suitEqualTo
+									   <NetMauMau::Player::IPlayer::CARDS::value_type>(), suit));
 }
 
 NetMauMau::Player::IPlayer::CARDS::iterator
@@ -154,22 +155,22 @@ AbstractAction::pushRank(const NetMauMau::Player::IPlayer::CARDS::iterator &firs
 
 NetMauMau::Player::IPlayer::CARDS::iterator
 AbstractAction::pullSpecialRank(NetMauMau::Player::IPlayer::CARDS &cards,
-								NetMauMau::Common::ICard::RANK rank, bool nineIsEight) {
-	return std::partition(cards.begin(), cards.end(), std::bind2nd(_isSpecialRank(nineIsEight),
+								NetMauMau::Common::ICard::RANK rank, bool nineIsSuspend) {
+	return std::partition(cards.begin(), cards.end(), std::bind2nd(_isSpecialRank(nineIsSuspend),
 						  rank));
 }
 
 NetMauMau::Common::ICardPtr
 AbstractAction::hasRankPath(const NetMauMau::Common::ICardPtr &uc,
 							NetMauMau::Common::ICard::SUIT s, NetMauMau::Common::ICard::RANK r,
-							const NetMauMau::Player::IPlayer::CARDS &c, bool nineIsEight) {
+							const NetMauMau::Player::IPlayer::CARDS &c, bool nineIsSuspend) {
 
 	NetMauMau::Player::IPlayer::CARDS mCards(c);
 
 	if(mCards.size() > 1) {
 
 		const NetMauMau::Player::IPlayer::CARDS::iterator &e(pullSpecialRank(mCards, r,
-				nineIsEight));
+				nineIsSuspend));
 
 		if(std::distance(mCards.begin(), e)) {
 

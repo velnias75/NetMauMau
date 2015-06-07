@@ -224,7 +224,7 @@ private:
 public:
 	inline typename bf::result_type operator()(const typename bf::first_argument_type &lhs,
 			const typename bf::second_argument_type &rhs) const {
-		return (lhs && rhs) && *lhs == *rhs;
+		return !(lhs || rhs) || ((lhs && rhs) && *lhs == *rhs);
 	}
 };
 

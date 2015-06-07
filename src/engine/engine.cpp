@@ -346,8 +346,8 @@ sevenRule:
 			if(!pc) {
 
 				const Player::IPlayer::REASON reason = noCardOk ? Player::IPlayer::SUSPEND :
-													   player->getNoCardReason(uc, m_jackMode ? &js :
-															   0L);
+													   player->getNoCardReason(uc, m_jackMode ?
+															   &js : 0L);
 
 				if(!noCardOk && (pc = m_talon->takeCard())) {
 					player->receiveCard(pc);
@@ -570,7 +570,7 @@ throw(Common::Exception::SocketException) {
 
 	if(getRuleSet()->hasDirChange()) {
 
-		if(m_dirChangeEnabled && m_players.size() > 2) {
+		if(m_dirChangeEnabled && m_players.size() > 2u) {
 
 			std::reverse(m_players.begin(), m_players.end());
 
@@ -581,7 +581,7 @@ throw(Common::Exception::SocketException) {
 
 			getEventHandler().directionChange();
 
-		} else if(m_dirChangeEnabled) {
+		} else if(m_players.size() <= 2u) {
 			setDirChangeIsSuspend(true);
 		}
 
@@ -684,7 +684,7 @@ void Engine::setDirChangeIsSuspend(bool b) throw(Common::Exception::SocketExcept
 	getRuleSet()->setDirChangeIsSuspend(b);
 
 	std::for_each(m_players.begin(), m_players.end(),
-				  std::bind2nd(std::mem_fun(&Player::IPlayer::setNineIsEight), b));
+				  std::bind2nd(std::mem_fun(&Player::IPlayer::setnineIsSuspend), b));
 }
 
 std::size_t Engine::getAICount() const {

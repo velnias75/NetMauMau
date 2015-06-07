@@ -272,7 +272,7 @@ _EXPORT bool operator>(const NetMauMau::Common::ICard &lhs, const NetMauMau::Com
  * @since 0.20.2
  */
 inline bool operator==(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::RANK rank) {
-	return *card == rank;
+	return card && (*card == rank);
 }
 
 /**
@@ -290,7 +290,7 @@ inline bool operator==(const NetMauMau::Common::ICard *card, NetMauMau::Common::
  * @since 0.20.2
  */
 inline bool operator!=(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::RANK rank) {
-	return *card != rank;
+	return card && (*card != rank);
 }
 
 /**
@@ -308,7 +308,7 @@ inline bool operator!=(const NetMauMau::Common::ICard *card, NetMauMau::Common::
  * @since 0.20.2
  */
 inline bool operator==(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::SUIT suit) {
-	return *card == suit;
+	return card && (*card == suit);
 }
 
 /**
@@ -326,7 +326,7 @@ inline bool operator==(const NetMauMau::Common::ICard *card, NetMauMau::Common::
  * @since 0.20.2
  */
 inline bool operator!=(const NetMauMau::Common::ICard *card, NetMauMau::Common::ICard::SUIT suit) {
-	return *card != suit;
+	return card && (*card != suit);
 }
 
 /// @}

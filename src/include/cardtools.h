@@ -224,7 +224,7 @@ private:
 public:
 	inline typename bf::result_type operator()(const typename bf::first_argument_type &lhs,
 			const typename bf::second_argument_type &rhs) const {
-		return *lhs == *rhs;
+		return (lhs && rhs) && *lhs == *rhs;
 	}
 };
 
@@ -246,7 +246,7 @@ private:
 public:
 	inline typename bf::result_type operator()(const typename bf::first_argument_type &lhs,
 			const typename bf::second_argument_type &rhs) const {
-		return *lhs < *rhs;
+		return (lhs && rhs) && *lhs < *rhs;
 	}
 };
 
@@ -268,7 +268,7 @@ private:
 public:
 	inline typename bf::result_type operator()(const typename bf::first_argument_type &lhs,
 			const typename bf::second_argument_type &rhs) const {
-		return *lhs > *rhs;
+		return (lhs && rhs) && *lhs > *rhs;
 	}
 };
 #pragma GCC diagnostic pop

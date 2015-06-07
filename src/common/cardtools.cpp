@@ -423,7 +423,8 @@ bool operator>(const NetMauMau::Common::ICard &lhs, const NetMauMau::Common::ICa
 }
 
 bool operator==(const NetMauMau::Common::ICardPtr &x, const NetMauMau::Common::ICardPtr &y) {
-	return !(x->getRank() != y->getRank() || x->getSuit() != y->getSuit());
+	return !(x || y) ||
+		   ((x && y) && (!(x->getRank() != y->getRank() || x->getSuit() != y->getSuit())));
 }
 
 bool operator!=(const NetMauMau::Common::ICardPtr &x, const NetMauMau::Common::ICardPtr &y) {
@@ -431,19 +432,19 @@ bool operator!=(const NetMauMau::Common::ICardPtr &x, const NetMauMau::Common::I
 }
 
 bool operator==(const NetMauMau::Common::ICardPtr &x, NetMauMau::Common::ICard::RANK y) {
-	return x->getRank() == y;
+	return x && (x->getRank() == y);
 }
 
 bool operator!=(const NetMauMau::Common::ICardPtr &x, NetMauMau::Common::ICard::RANK y) {
-	return x->getRank() != y;
+	return x && (x->getRank() != y);
 }
 
 bool operator==(const NetMauMau::Common::ICardPtr &x, NetMauMau::Common::ICard::SUIT y) {
-	return x->getSuit() == y;
+	return x && (x->getSuit() == y);
 }
 
 bool operator!=(const NetMauMau::Common::ICardPtr &x, NetMauMau::Common::ICard::SUIT y) {
-	return x->getSuit() != y;
+	return x && (x->getSuit() != y);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

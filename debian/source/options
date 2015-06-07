@@ -9,4 +9,4 @@ tar-ignore = "DIE\ OFFIZIELLEN\ MAUMAU\ SPIELREGELN.pdf"
 tar-ignore = *.patch
 tar-ignore = config.log
 tar-ignore = nmm-ai.flw
-
+tar-ignore = *.rc.in

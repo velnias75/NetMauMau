@@ -135,7 +135,7 @@ void AbstractPlayer::setDirChangeEnabled(bool dirChangeEnabled) {
 	m_dirChgEnabled = dirChangeEnabled;
 }
 
-void AbstractPlayer::setnineIsSuspend(bool b) {
+void AbstractPlayer::setNineIsSuspend(bool b) {
 	m_nineIsSuspend = b;
 }
 

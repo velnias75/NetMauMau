@@ -65,7 +65,7 @@ public:
 									   std::size_t rightCount);
 	virtual void setDirChangeEnabled(bool dirChangeEnabled);
 	virtual void talonShuffled() _CONST;
-	virtual void setnineIsSuspend(bool b);
+	virtual void setNineIsSuspend(bool b);
 
 	virtual REASON getNoCardReason(const Common::ICardPtr &uncoveredCard,
 								   const Common::ICard::SUIT *suit) const _PURE;

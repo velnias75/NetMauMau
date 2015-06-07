@@ -69,8 +69,8 @@ public:
 	virtual void setNeighbourCardCount(std::size_t playerCount,
 									   std::size_t leftCount, std::size_t rightCount);
 	virtual void setDirChangeEnabled(bool dirChangeEnabled);
+	virtual void setNineIsSuspend(bool b);
 	virtual void talonShuffled();
-	virtual void setnineIsSuspend(bool b);
 
 	virtual REASON getNoCardReason(const Common::ICardPtr &uncoveredCard,
 								   const Common::ICard::SUIT *suit) const;
@@ -296,8 +296,8 @@ inline void AIPlayerBase<RootCond, RootCondJack>::talonShuffled() {
 }
 
 template<class RootCond, class RootCondJack>
-inline void AIPlayerBase<RootCond, RootCondJack>::setnineIsSuspend(bool b) {
-	AbstractPlayer::setnineIsSuspend(b);
+inline void AIPlayerBase<RootCond, RootCondJack>::setNineIsSuspend(bool b) {
+	AbstractPlayer::setNineIsSuspend(b);
 }
 
 template<class RootCond, class RootCondJack>

@@ -146,19 +146,20 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 	if(m_state == ACCEPT_PLAYERS) {
 
 		const PLAYERS::const_iterator &f(find(player->getName()));
+		const RuleSet::IRuleSet *ruleSet = getRuleSet();
 
-		if(f == m_players.end() && m_players.size() <= getRuleSet()->getMaxPlayers()) {
+		if(f == m_players.end() && m_players.size() <= ruleSet->getMaxPlayers()) {
 
 			m_players.push_back(player);
 
-			m_dirChangeEnabled = m_players.size() > 2;
+			m_dirChangeEnabled = m_players.size() > 2u;
 
 			if(player->isAIPlayer()) {
-				getEventHandler().getConnection().addAIPlayers(std::vector<std::string>
-						(1, player->getName()));
+				getEventHandler().getConnection().
+				addAIPlayers(std::vector<std::string>(1, player->getName()));
 			}
 
-			player->setRuleSet(getRuleSet());
+			player->setRuleSet(ruleSet);
 			player->setEngineContext(&m_ctx);
 
 			getEventHandler().playerAdded(player);
@@ -493,40 +494,40 @@ void Engine::handleWinner(const Player::IPlayer *player) throw(Common::Exception
 
 	if(f != m_players.end()) m_players.erase(f);
 
-	m_nxtPlayer = m_nxtPlayer < m_players.size() ? m_nxtPlayer + 1 : 0;
+	const PLAYERS::size_type plsCnt = m_players.size();
+	RuleSet::IRuleSet *const rulSet = getRuleSet();
 
-	getRuleSet()->setCurPlayers(m_players.size());
+	m_nxtPlayer = m_nxtPlayer < plsCnt ? m_nxtPlayer + 1 : 0;
+
+	rulSet->setCurPlayers(plsCnt);
 
 	if(!hasPlayers()) {
 
-		if(getRuleSet()->takeIfLost() && m_talon->getUncoveredCard() == Common::ICard::SEVEN) {
+		if(rulSet->takeIfLost() && m_talon->getUncoveredCard() == Common::ICard::SEVEN) {
 			takeCards(m_players[m_nxtPlayer], Common::getIllegalCard());
 		}
 
-		const Common::IConnection::NAMESOCKFD nsf =
-			(m_players[m_nxtPlayer]->isAIPlayer()) ?
-			Common::IConnection::NAMESOCKFD(m_players[m_nxtPlayer]->getName(), "",
-											m_players[m_nxtPlayer]->getSerial(),
-											0) :
-			getEventHandler().getConnection().
-			getPlayerInfo(m_players[m_nxtPlayer]->getSerial());
+		const Common::IConnection::NAMESOCKFD nsf = (m_players[m_nxtPlayer]->isAIPlayer()) ?
+				Common::IConnection::NAMESOCKFD(m_players[m_nxtPlayer]->getName(), "",
+												m_players[m_nxtPlayer]->getSerial(), 0) :
+				getEventHandler().getConnection().
+				getPlayerInfo(m_players[m_nxtPlayer]->getSerial());
 
-		DB::SQLite::getInstance()->
-		playerLost(m_gameIndex, nsf, std::time(0L),
-				   getEventHandler().playerLost(m_players[m_nxtPlayer], m_turn,
-												getRuleSet()->
-												lostPointFactor(m_talon->
-														getUncoveredCard())));
+		DB::SQLite::getInstance()->playerLost(m_gameIndex, nsf, std::time(0L),
+											  getEventHandler().playerLost(m_players[m_nxtPlayer],
+													  m_turn, rulSet->lostPointFactor(m_talon->
+															  getUncoveredCard())));
 		m_state = FINISHED;
+
+	} else if(m_dirChangeEnabled && plsCnt <= 2u) {
+		setDirChangeIsSuspend(true);
 	}
 
 	getEventHandler().playerWins(player, m_turn, m_ultimate);
 
 	const Common::IConnection::NAMESOCKFD nsf = (player->isAIPlayer()) ?
-			Common::IConnection::NAMESOCKFD(player->getName(), "",
-											player->getSerial(), 0) :
-			getEventHandler().getConnection().
-			getPlayerInfo(player->getSerial());
+			Common::IConnection::NAMESOCKFD(player->getName(), "", player->getSerial(), 0) :
+			getEventHandler().getConnection().getPlayerInfo(player->getSerial());
 
 	DB::SQLite::getInstance()->playerWins(m_gameIndex, nsf);
 }
@@ -535,17 +536,18 @@ bool Engine::checkCard(Player::IPlayer *player, Common::ICardPtr &playedCard,
 					   const Common::ICardPtr &uc) const throw(Common::Exception::SocketException) {
 
 	bool noMatch, cardAccepted = false;
+	RuleSet::IRuleSet *ruleSet = getRuleSet();
 
 	while(playedCard && ((noMatch = (playedCard == Common::ICard::SUIT_ILLEGAL)) ||
-						 !(cardAccepted = getRuleSet()->checkCard(player, uc, playedCard,
+						 !(cardAccepted = ruleSet->checkCard(player, uc, playedCard,
 										  !m_ctx.getNextMessage())))) {
 
 		if(!noMatch) getEventHandler().cardRejected(player, uc, playedCard);
 
-		const Common::ICard::SUIT js = getRuleSet()->getJackSuit();
+		const Common::ICard::SUIT js = ruleSet->getJackSuit();
 
 		if(!(playedCard = player->requestCard(uc, m_jackMode ? &js : 0L,
-											  getRuleSet()->takeCardCount()))) {
+											  ruleSet->takeCardCount()))) {
 
 			if(!noMatch) {
 				Common::ICardPtr rc(m_talon->takeCard());
@@ -568,7 +570,9 @@ void Engine::disconnectError(SOCKET fd) const {
 void Engine::checkAndPerformDirChange(const Player::IPlayer *player, bool won)
 throw(Common::Exception::SocketException) {
 
-	if(getRuleSet()->hasDirChange()) {
+	RuleSet::IRuleSet *ruleSet = getRuleSet();
+
+	if(ruleSet->hasDirChange()) {
 
 		if(m_dirChangeEnabled && m_players.size() > 2u) {
 
@@ -585,7 +589,7 @@ throw(Common::Exception::SocketException) {
 			setDirChangeIsSuspend(true);
 		}
 
-		getRuleSet()->dirChanged();
+		ruleSet->dirChanged();
 	}
 }
 
@@ -684,7 +688,7 @@ void Engine::setDirChangeIsSuspend(bool b) throw(Common::Exception::SocketExcept
 	getRuleSet()->setDirChangeIsSuspend(b);
 
 	std::for_each(m_players.begin(), m_players.end(),
-				  std::bind2nd(std::mem_fun(&Player::IPlayer::setnineIsSuspend), b));
+				  std::bind2nd(std::mem_fun(&Player::IPlayer::setNineIsSuspend), b));
 }
 
 std::size_t Engine::getAICount() const {

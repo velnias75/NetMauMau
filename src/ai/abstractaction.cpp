@@ -194,12 +194,16 @@ NetMauMau::Common::ICardPtr AbstractAction::findRankTryAvoidSuit(NetMauMau::Comm
 
 	NetMauMau::Common::ICardPtr ret;
 	NetMauMau::Common::ICard::SUIT rndSuits[4];
+	NetMauMau::Player::IPlayer::CARDS myCards(c);
 
 	std::copy(getSuits(), getSuits() + 4, rndSuits);
 	std::random_shuffle(rndSuits, rndSuits + 4, NetMauMau::Common::genRandom<std::ptrdiff_t>);
 
 	for(unsigned int i = 0u; i < 4u; ++i) {
-		if(rndSuits[i] != avoidSuit && ((ret = NetMauMau::Common::findRank(r, c.begin(), c.end()))
+
+		const NetMauMau::Player::IPlayer::CARDS::iterator &e(pullSuit(myCards, rndSuits[i]));
+
+		if(rndSuits[i] != avoidSuit && ((ret = NetMauMau::Common::findRank(r, myCards.begin(), e))
 										&& ret == rndSuits[i])) break;
 	}
 

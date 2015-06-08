@@ -40,7 +40,20 @@ class IPlayer {
 public:
 	typedef std::vector<NetMauMau::Common::ICardPtr> CARDS;
 	typedef enum { MAUMAU, NOMATCH, SUSPEND } REASON;
+	typedef enum { LEFT = 0, RIGHT = 1, NEXT = 2 } NEIGHBOUR;
 	typedef enum { HUMAN, EASY, HARD } TYPE;
+
+	typedef struct _neighbourRankSuit {
+
+		inline _neighbourRankSuit() : rank(), suit() {
+			rank[LEFT] = rank[RIGHT] = Common::ICard::RANK_ILLEGAL;
+			suit[LEFT] = suit[RIGHT] = Common::ICard::SUIT_ILLEGAL;
+		}
+
+		Common::ICard::RANK rank[2];
+		Common::ICard::SUIT suit[2];
+
+	} NEIGHBOURRANKSUIT;
 
 	virtual ~IPlayer() {}
 
@@ -72,8 +85,9 @@ public:
 	virtual Common::ICard::RANK getLastPlayedRank() const = 0;
 
 	virtual bool cardAccepted(const Common::ICard *playedCard) = 0;
-	virtual void setNeighbourCardCount(std::size_t playerCount, std::size_t leftCount,
-									   std::size_t rightCount) = 0;
+	virtual void setNeighbourCardStats(std::size_t playerCount,
+									   const std::size_t *const neighbourCount,
+									   const NEIGHBOURRANKSUIT &neighbourRankSuit) = 0;
 	virtual void setDirChangeEnabled(bool dirChangeEnabled) = 0;
 	virtual void talonShuffled() = 0;
 	virtual void setNineIsSuspend(bool b) = 0;

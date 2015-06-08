@@ -81,12 +81,12 @@ using namespace NetMauMau::Player;
 
 AbstractPlayer::AbstractPlayer(const std::string &name, const NetMauMau::IPlayedOutCards *poc)
 	: IPlayer(), m_name(name), m_cards(), m_cardsTaken(false), m_ruleset(0L),
-	  m_playerHasFewCards(false), m_nineIsSuspend(false), m_leftCount(0), m_rightCount(0),
+	  m_playerHasFewCards(false), m_nineIsSuspend(false), m_neighbourCount(),
 	  m_dirChgEnabled(false), m_playerCount(0), m_engineCtx(0L), m_cardCountObserver(0L),
 	  m_poc(poc), m_lastPlayedSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL),
 	  m_lastPlayedRank(NetMauMau::Common::ICard::RANK_ILLEGAL),
 	  m_avoidSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL),
-	  m_avoidRank(NetMauMau::Common::ICard::RANK_ILLEGAL) {
+	  m_avoidRank(NetMauMau::Common::ICard::RANK_ILLEGAL), m_neighbourRankSuit() {
 	m_cards.reserve(32);
 }
 
@@ -124,11 +124,16 @@ NetMauMau::Common::ICard::RANK AbstractPlayer::getLastPlayedRank() const {
 	return m_lastPlayedRank;
 }
 
-void AbstractPlayer::setNeighbourCardCount(std::size_t playerCount, std::size_t leftCount,
-		std::size_t rightCount) {
-	m_leftCount = leftCount;
-	m_rightCount = rightCount;
+void AbstractPlayer::setNeighbourCardStats(std::size_t playerCount,
+		const std::size_t *const neighbourCount, const NEIGHBOURRANKSUIT &nrs) {
+	m_neighbourCount[LEFT] = neighbourCount[LEFT];
+	m_neighbourCount[RIGHT] = neighbourCount[RIGHT];
+	m_neighbourRankSuit = nrs;
 	m_playerCount = playerCount;
+}
+
+const IPlayer::NEIGHBOURRANKSUIT &AbstractPlayer::getNeighbourRankSuit() const {
+	return m_neighbourRankSuit;
 }
 
 void AbstractPlayer::setDirChangeEnabled(bool dirChangeEnabled) {
@@ -221,11 +226,11 @@ const NetMauMau::IPlayedOutCards::CARDS &AbstractPlayer::getPlayedOutCards() con
 }
 
 std::size_t AbstractPlayer::getLeftCount() const {
-	return m_leftCount;
+	return m_neighbourCount[LEFT];
 }
 
 std::size_t AbstractPlayer::getRightCount() const {
-	return m_rightCount;
+	return m_neighbourCount[RIGHT];
 }
 
 std::size_t AbstractPlayer::getPlayerCount() const {
@@ -260,9 +265,10 @@ void AbstractPlayer::shuffleCards() {
 void AbstractPlayer::reset() throw() {
 
 	m_playerHasFewCards = m_cardsTaken = m_nineIsSuspend = false;
-	m_leftCount = m_rightCount = m_playerCount = 0u;
+	m_neighbourCount[LEFT] = m_neighbourCount[RIGHT] = m_playerCount = 0u;
 	m_avoidSuit = m_lastPlayedSuit = NetMauMau::Common::ICard::SUIT_ILLEGAL;
 	m_avoidRank = m_lastPlayedRank = NetMauMau::Common::ICard::RANK_ILLEGAL;
+	m_neighbourRankSuit = NEIGHBOURRANKSUIT();
 	m_dirChgEnabled = false;
 	m_cards.clear();
 

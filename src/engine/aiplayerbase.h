@@ -66,8 +66,10 @@ public:
 	virtual Common::ICard::RANK getAvoidRank() const;
 
 	virtual bool cardAccepted(const Common::ICard *playedCard);
-	virtual void setNeighbourCardCount(std::size_t playerCount,
-									   std::size_t leftCount, std::size_t rightCount);
+	virtual void setNeighbourCardStats(std::size_t playerCount,
+									   const std::size_t *const neighbourCount,
+									   const NEIGHBOURRANKSUIT &nrs);
+	virtual const NEIGHBOURRANKSUIT &getNeighbourRankSuit() const;
 	virtual void setDirChangeEnabled(bool dirChangeEnabled);
 	virtual void setNineIsSuspend(bool b);
 	virtual void talonShuffled();
@@ -329,9 +331,15 @@ inline Common::ICard::RANK AIPlayerBase<RootCond, RootCondJack>::getAvoidRank() 
 }
 
 template<class RootCond, class RootCondJack>
-inline void AIPlayerBase<RootCond, RootCondJack>::setNeighbourCardCount(std::size_t playerCount,
-		std::size_t leftCount, std::size_t rightCount) {
-	AbstractPlayer::setNeighbourCardCount(playerCount, leftCount, rightCount);
+inline void AIPlayerBase<RootCond, RootCondJack>::setNeighbourCardStats(std::size_t playerCount,
+		const std::size_t *const neighbourCount, const NEIGHBOURRANKSUIT &nrs) {
+	AbstractPlayer::setNeighbourCardStats(playerCount, neighbourCount, nrs);
+}
+
+template<class RootCond, class RootCondJack>
+inline const Player::IPlayer::NEIGHBOURRANKSUIT &AIPlayerBase < RootCond,
+RootCondJack >::getNeighbourRankSuit() const {
+	return AbstractPlayer::getNeighbourRankSuit();
 }
 
 template<class RootCond, class RootCondJack>

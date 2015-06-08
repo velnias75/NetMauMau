@@ -98,6 +98,8 @@ const IConditionPtr &MaxSuitAction::perform(IAIState &state,
 
 	if(!bestCard) {
 
+		AbstractAction::pushRank(myCards.begin(), myCards.end(), state.getAvoidRank());
+
 		const NetMauMau::Player::IPlayer::CARDS::iterator
 		&e(AbstractAction::pullRank(myCards.begin(), myCards.end(),
 									NetMauMau::Common::ICard::SEVEN));

@@ -37,7 +37,7 @@ SkipPlayerAction::~SkipPlayerAction() {}
 const IConditionPtr &SkipPlayerAction::perform(IAIState &state,
 		const NetMauMau::Player::IPlayer::CARDS &) const {
 
-	const NetMauMau::Player::IPlayer::CARDS &myCards(state.getPlayerCards());
+	NetMauMau::Player::IPlayer::CARDS myCards(state.getPlayerCards());
 	const NetMauMau::Common::ICard::SUIT avoid = state.getAvoidSuit();
 
 	const NetMauMau::Player::IPlayer::CARDS::value_type nine = state.isDirChgEnabled() ?
@@ -46,6 +46,11 @@ const IConditionPtr &SkipPlayerAction::perform(IAIState &state,
 
 	const NetMauMau::Player::IPlayer::CARDS::value_type seven =
 		AbstractAction::findRankTryAvoidSuit(NetMauMau::Common::ICard::SEVEN, myCards, avoid);
+
+	AbstractAction::pushRank(myCards.begin(), myCards.end(),
+							 state.getNeighbourRankSuit().rank[NetMauMau::Player::IPlayer::LEFT]);
+	AbstractAction::pushRank(myCards.begin(), myCards.end(),
+							 state.getNeighbourRankSuit().rank[NetMauMau::Player::IPlayer::RIGHT]);
 
 	state.setCard(nine ? nine : seven ? seven :
 				  AbstractAction::findRankTryAvoidSuit(NetMauMau::Common::ICard::EIGHT, myCards,

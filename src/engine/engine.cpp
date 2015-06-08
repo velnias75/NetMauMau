@@ -410,11 +410,29 @@ sevenRule:
 		const Player::IPlayer *curPlayer = player;
 
 		if(!won) {
+
 			const std::size_t leftCount = player->getCardCount();
+			const Common::ICard::SUIT lps = player->getLastPlayedSuit();
+			const Common::ICard::RANK lpr = player->getLastPlayedRank();
+
 			m_nxtPlayer = (m_nxtPlayer + 1) >= m_players.size() ? 0 : m_nxtPlayer + 1;
-			const std::size_t rightCount = m_players[(m_nxtPlayer + 1) >= m_players.size() ? 0 :
-										   m_nxtPlayer + 1]->getCardCount();
-			m_players[m_nxtPlayer]->setNeighbourCardCount(m_players.size(), leftCount, rightCount);
+
+			const Player::IPlayer *rightPlayer = m_players[(m_nxtPlayer + 1) >= m_players.size()
+												 ? 0 : m_nxtPlayer + 1];
+
+			const std::size_t  rightCount = rightPlayer->getCardCount();
+			const Common::ICard::SUIT rps = rightPlayer->getLastPlayedSuit();
+			const Common::ICard::RANK rpr = rightPlayer->getLastPlayedRank();
+
+			const std::size_t neighbourCount[] = { leftCount, rightCount };
+
+			Player::IPlayer::NEIGHBOURRANKSUIT nrs;
+			nrs.rank[Player::IPlayer::LEFT]  = lpr;
+			nrs.rank[Player::IPlayer::RIGHT] = rpr;
+			nrs.suit[Player::IPlayer::LEFT]  = lps;
+			nrs.suit[Player::IPlayer::RIGHT] = rps;
+
+			m_players[m_nxtPlayer]->setNeighbourCardStats(m_players.size(), neighbourCount, nrs);
 		}
 
 		if(!m_nxtPlayer) ++m_turn;

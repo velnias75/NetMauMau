@@ -61,8 +61,10 @@ public:
 	virtual Common::ICard::RANK getLastPlayedRank() const _PURE;
 
 	virtual bool cardAccepted(const Common::ICard *playedCard);
-	virtual void setNeighbourCardCount(std::size_t playerCount, std::size_t leftCount,
-									   std::size_t rightCount);
+	virtual void setNeighbourCardStats(std::size_t playerCount,
+									   const std::size_t *const neighbourCount,
+									   const NEIGHBOURRANKSUIT &nrs);
+	virtual const NEIGHBOURRANKSUIT &getNeighbourRankSuit() const _CONST;
 	virtual void setDirChangeEnabled(bool dirChangeEnabled);
 	virtual void talonShuffled() _CONST;
 	virtual void setNineIsSuspend(bool b);
@@ -122,8 +124,7 @@ private:
 	const RuleSet::IRuleSet *m_ruleset;
 	bool m_playerHasFewCards;
 	bool m_nineIsSuspend;
-	std::size_t m_leftCount;
-	std::size_t m_rightCount;
+	std::size_t m_neighbourCount[2];
 	bool m_dirChgEnabled;
 	std::size_t m_playerCount;
 	const EngineContext *m_engineCtx;
@@ -133,6 +134,7 @@ private:
 	Common::ICard::RANK m_lastPlayedRank;
 	Common::ICard::SUIT m_avoidSuit;
 	Common::ICard::RANK m_avoidRank;
+	NEIGHBOURRANKSUIT m_neighbourRankSuit;
 };
 
 }

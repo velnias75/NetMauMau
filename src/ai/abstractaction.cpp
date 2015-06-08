@@ -148,9 +148,9 @@ NetMauMau::Player::IPlayer::CARDS::iterator
 AbstractAction::pushRank(const NetMauMau::Player::IPlayer::CARDS::iterator &first,
 						 const NetMauMau::Player::IPlayer::CARDS::iterator &last,
 						 NetMauMau::Common::ICard::RANK rank) {
-	return std::partition(first, last,
-						  std::not1(std::bind2nd(NetMauMau::Common::rankEqualTo
-									<NetMauMau::Player::IPlayer::CARDS::value_type>(), rank)));
+	return std::stable_partition(first, last,
+								 std::not1(std::bind2nd(NetMauMau::Common::rankEqualTo
+										   <NetMauMau::Player::IPlayer::CARDS::value_type>(), rank)));
 }
 
 NetMauMau::Player::IPlayer::CARDS::iterator

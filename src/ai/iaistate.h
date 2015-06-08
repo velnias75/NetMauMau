@@ -57,6 +57,7 @@ public:
 	virtual bool isDirChgEnabled() const = 0;
 	virtual bool tryAceRound() const = 0;
 	virtual void setTryAceRound(bool b) = 0;
+	virtual const Player::IPlayer::NEIGHBOURRANKSUIT &getNeighbourRankSuit() const = 0;
 	virtual Common::ICard::RANK getAvoidRank() const = 0;
 	virtual Common::ICard::SUIT getAvoidSuit() const = 0;
 	virtual Common::ICard::SUIT getPowerSuit() const = 0;

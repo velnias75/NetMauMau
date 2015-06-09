@@ -13,8 +13,7 @@ endif
 
 EXTRA_DIST = testimg.png stresstest.sh.in
 
-MAINTAINERCLEANFILES = testimg.h
-DISTCLEANFILES = stresstest.sh
+DISTCLEANFILES = stresstest.sh testimg.h
 
 BUILT_SOURCES = testimg.h
 
@@ -26,7 +25,7 @@ export NMM_NO_SQLITE := 1
 
 TESTS = $(check_PROGRAMS)
 
-noinst_HEADERS = testeventhandler.h testclient.h testimg.h
+noinst_HEADERS = testeventhandler.h testclient.h
 
 test_netmaumau_CPPFLAGS = $(GSL)
 test_netmaumau_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \

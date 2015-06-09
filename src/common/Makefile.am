@@ -3,11 +3,11 @@ noinst_LTLIBRARIES = libnetmaumaucommon_private.la
 
 BUILT_SOURCES = ai-icon.h
 
-noinst_HEADERS = ai-icon.h abstractconnectionimpl.h abstractsocketimpl.h base64.h basiclogger.h \
+noinst_HEADERS = abstractconnectionimpl.h abstractsocketimpl.h base64.h basiclogger.h \
 	ci_char_traits.h errorstring.h icardfactory.h iplayer.h logger.h mimemagic.h pngcheck.h \
 	protocol.h random_gen.h smartptr.h
 
-MAINTAINERCLEANFILES = ai-icon.h
+DISTCLEANFILES = ai-icon.h
 
 .DELETE_ON_ERROR:
 ai-icon.h: $(AI_IMAGE)

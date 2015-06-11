@@ -19,7 +19,6 @@
 
 #include "servesevenaction.h"
 
-#include "cardtools.h"                  // for findRank, getIllegalCard
 #include "skipplayercondition.h"        // for SkipPlayerCondition
 
 namespace {

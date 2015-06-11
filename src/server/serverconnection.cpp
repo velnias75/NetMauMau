@@ -70,7 +70,7 @@ const char *NOPNG = "";
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-struct _isPlayer : public std::binary_function < NetMauMau::Common::IConnection::NAMESOCKFD,
+struct _isPlayer : std::binary_function < NetMauMau::Common::IConnection::NAMESOCKFD,
 		std::string, bool > {
 	inline result_type operator()(const first_argument_type &nsd,
 								  const second_argument_type &player) const {

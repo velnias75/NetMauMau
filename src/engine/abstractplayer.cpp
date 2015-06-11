@@ -165,7 +165,8 @@ IPlayer::CARDS AbstractPlayer::getPossibleCards(const NetMauMau::Common::ICardPt
 
 bool AbstractPlayer::isAceRoundAllowed() const {
 	return std::count_if(getPlayerCards().begin(), getPlayerCards().end(),
-						 std::bind2nd(NetMauMau::Common::rankEqualTo<CARDS::value_type>(),
+						 std::bind2nd(NetMauMau::Common::equalTo < CARDS::value_type,
+									  NetMauMau::Common::ICard::RANK > (),
 									  m_ruleset->getAceRoundRank())) > 1;
 }
 

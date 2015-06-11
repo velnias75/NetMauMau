@@ -448,7 +448,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		if(*lastPlayedCard) {
 			const CARDS::iterator &f(std::find_if(_pimpl->m_cards.begin(), _pimpl->m_cards.end(),
-												  std::bind2nd(NetMauMau::Common::cardEqualTo
+												  std::bind2nd(NetMauMau::Common::equalTo
 														  <CARDS::iterator::value_type>(),
 														  *lastPlayedCard)));
 

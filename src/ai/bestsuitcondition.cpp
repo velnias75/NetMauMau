@@ -31,7 +31,7 @@ IActionPtr BestSuitCondition::perform(const IAIState &state,
 									  const NetMauMau::Player::IPlayer::CARDS &cards) const {
 
 	if(!state.getCard() && !state.isNoJack() && state.hasPlayerFewCards() &&
-			DecisionBase::countRank(cards, NetMauMau::Common::ICard::JACK)) {
+			DecisionBase::count(cards, NetMauMau::Common::ICard::JACK)) {
 		return IActionPtr(new PowerSuitAction());
 	} else {
 		return IActionPtr(new PowerSuitAction(NetMauMau::Common::ICard::SUIT_ILLEGAL));

@@ -20,7 +20,6 @@
 #include "powersuitaction.h"
 
 #include "aceroundcondition.h"          // for AceRoundCondition
-#include "cardtools.h"                  // for findRank
 #include "powersuitcondition.h"         // for PowerSuitCondition
 
 namespace {
@@ -48,15 +47,15 @@ const IConditionPtr &PowerSuitAction::perform(IAIState &state,
 		SUITCOUNT suitCount[4];
 		AbstractAction::countSuits(suitCount, myCards);
 
-		if(DecisionBase::countRank(myCards, NetMauMau::Common::ICard::SEVEN)) {
+		if(DecisionBase::count(myCards, NetMauMau::Common::ICard::SEVEN)) {
 
 			for(unsigned int p = 0u; p < 4u; ++p) {
 
-				AbstractAction::pullSuit(myCards, suitCount[p].suit);
+				AbstractAction::pull(myCards.begin(), myCards.end(), suitCount[p].suit);
 
 				const NetMauMau::Player::IPlayer::CARDS::value_type f =
-					NetMauMau::Common::findRank(NetMauMau::Common::ICard::SEVEN,
-												myCards.begin(), myCards.end());
+					NetMauMau::Common::find(NetMauMau::Common::ICard::SEVEN, myCards.begin(),
+											myCards.end());
 
 				if(f) {
 					state.setPowerSuit(f->getSuit());

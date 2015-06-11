@@ -21,7 +21,6 @@
 
 #include <cstring>                      // for memset
 
-#include "cardtools.h"                  // for findSuit, isRank, isSuit
 #include "random_gen.h"
 
 #if defined(TRACE_AI) && !defined(NDEBUG)
@@ -92,7 +91,7 @@ void AbstractAction::countSuits(SUITCOUNT *suitCount, const IAIState::PLAYEDOUTC
 	for(std::size_t i = 0; i < 4; ++i) {
 
 		const SUITCOUNT sc = {
-			SUIT[i], noCards ? 0 : DecisionBase::countSuit(myCards, SUIT[i])
+			SUIT[i], noCards ? 0 : DecisionBase::count(myCards, SUIT[i])
 		};
 
 		suitCount[i] = sc;
@@ -121,39 +120,6 @@ const IConditionPtr &AbstractAction::getNullCondition() {
 }
 
 NetMauMau::Player::IPlayer::CARDS::iterator
-AbstractAction::pullSuit(NetMauMau::Player::IPlayer::CARDS &cards,
-						 NetMauMau::Common::ICard::SUIT suit) {
-	return std::partition(cards.begin(), cards.end(),
-						  std::bind2nd(NetMauMau::Common::suitEqualTo
-									   <NetMauMau::Player::IPlayer::CARDS::value_type>(), suit));
-}
-
-NetMauMau::Player::IPlayer::CARDS::iterator
-AbstractAction::pullRank(NetMauMau::Player::IPlayer::CARDS &cards,
-						 NetMauMau::Common::ICard::RANK rank) {
-	return std::stable_partition(cards.begin(), cards.end(),
-								 std::bind2nd(NetMauMau::Common::rankEqualTo
-										 <NetMauMau::Player::IPlayer::CARDS::value_type>(), rank));
-}
-
-NetMauMau::Player::IPlayer::CARDS::iterator
-AbstractAction::pullRank(const NetMauMau::Player::IPlayer::CARDS::iterator &first,
-						 const NetMauMau::Player::IPlayer::CARDS::iterator &last,
-						 NetMauMau::Common::ICard::RANK rank) {
-	return std::stable_partition(first, last, std::bind2nd(NetMauMau::Common::rankEqualTo
-								 <NetMauMau::Player::IPlayer::CARDS::value_type>(), rank));
-}
-
-NetMauMau::Player::IPlayer::CARDS::iterator
-AbstractAction::pushRank(const NetMauMau::Player::IPlayer::CARDS::iterator &first,
-						 const NetMauMau::Player::IPlayer::CARDS::iterator &last,
-						 NetMauMau::Common::ICard::RANK rank) {
-	return std::stable_partition(first, last,
-								 std::not1(std::bind2nd(NetMauMau::Common::rankEqualTo
-										   <NetMauMau::Player::IPlayer::CARDS::value_type>(), rank)));
-}
-
-NetMauMau::Player::IPlayer::CARDS::iterator
 AbstractAction::pullSpecialRank(NetMauMau::Player::IPlayer::CARDS &cards,
 								NetMauMau::Common::ICard::RANK rank, bool nineIsSuspend) {
 	return std::partition(cards.begin(), cards.end(), std::bind2nd(_isSpecialRank(nineIsSuspend),
@@ -175,12 +141,12 @@ AbstractAction::hasRankPath(const NetMauMau::Common::ICardPtr &uc,
 		if(std::distance(mCards.begin(), e)) {
 
 			NetMauMau::Player::IPlayer::CARDS::value_type
-			f_src(NetMauMau::Common::findSuit(uc->getSuit(), mCards.begin(), e));
+			f_src(NetMauMau::Common::find(uc->getSuit(), mCards.begin(), e));
 
 			if(f_src) {
 
 				NetMauMau::Player::IPlayer::CARDS::value_type
-				f_dest(NetMauMau::Common::findSuit(s, mCards.begin(), e));
+				f_dest(NetMauMau::Common::find(s, mCards.begin(), e));
 
 				if(f_dest) return f_src;
 			}
@@ -202,13 +168,14 @@ NetMauMau::Common::ICardPtr AbstractAction::findRankTryAvoidSuit(NetMauMau::Comm
 
 	for(unsigned int i = 0u; i < 4u; ++i) {
 
-		const NetMauMau::Player::IPlayer::CARDS::iterator &e(pullSuit(myCards, rndSuits[i]));
+		const NetMauMau::Player::IPlayer::CARDS::iterator &e(pull(myCards.begin(), myCards.end(),
+				rndSuits[i]));
 
-		if(rndSuits[i] != avoidSuit && ((ret = NetMauMau::Common::findRank(r, myCards.begin(), e))
+		if(rndSuits[i] != avoidSuit && ((ret = NetMauMau::Common::find(r, myCards.begin(), e))
 										&& ret == rndSuits[i])) break;
 	}
 
-	return ret ? ret : NetMauMau::Common::findRank(r, c.begin(), c.end());
+	return ret ? ret : NetMauMau::Common::find(r, c.begin(), c.end());
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -20,7 +20,6 @@
 #include "skipplayeraction.h"
 
 #include "bestsuitcondition.h"          // for BestSuitCondition
-#include "cardtools.h"                  // for findRank
 #include "powersuitcondition.h"         // for PowerSuitCondition
 
 namespace {
@@ -47,10 +46,10 @@ const IConditionPtr &SkipPlayerAction::perform(IAIState &state,
 	const NetMauMau::Player::IPlayer::CARDS::value_type seven =
 		AbstractAction::findRankTryAvoidSuit(NetMauMau::Common::ICard::SEVEN, myCards, avoid);
 
-	AbstractAction::pushRank(myCards.begin(), myCards.end(),
-							 state.getNeighbourRankSuit().rank[NetMauMau::Player::IPlayer::LEFT]);
-	AbstractAction::pushRank(myCards.begin(), myCards.end(),
-							 state.getNeighbourRankSuit().rank[NetMauMau::Player::IPlayer::RIGHT]);
+	AbstractAction::push(myCards.begin(), myCards.end(),
+						 state.getNeighbourRankSuit().rank[NetMauMau::Player::IPlayer::LEFT]);
+	AbstractAction::push(myCards.begin(), myCards.end(),
+						 state.getNeighbourRankSuit().rank[NetMauMau::Player::IPlayer::RIGHT]);
 
 	state.setCard(nine ? nine : seven ? seven :
 				  AbstractAction::findRankTryAvoidSuit(NetMauMau::Common::ICard::EIGHT, myCards,

@@ -22,7 +22,6 @@
 #include <cassert>                      // for assert
 
 #include "aceroundcondition.h"          // for AceRoundCondition
-#include "cardtools.h"                  // for findRank, findSuit
 #include "iruleset.h"                   // for IRuleSet
 
 namespace {
@@ -61,13 +60,13 @@ const IConditionPtr &MaxSuitAction::perform(IAIState &state,
 
 	for(std::size_t i = suitCount[0].suit != state.getAvoidSuit() ? 0u : 1u; i < 4u; ++i) {
 
-		const NetMauMau::Player::IPlayer::CARDS::iterator &e(AbstractAction::pullSuit(myCards,
-				suitCount[i].suit));
+		const NetMauMau::Player::IPlayer::CARDS::iterator &e(AbstractAction::pull(myCards.begin(),
+				myCards.end(), suitCount[i].suit));
 
 		if(state.getJackSuit()) {
 
 			if(suitCount[i].count && (suitCount[i].suit == *state.getJackSuit())) {
-				AbstractAction::pullRank(myCards.begin(), e, NetMauMau::Common::ICard::SEVEN);
+				AbstractAction::stable_pull(myCards.begin(), e, NetMauMau::Common::ICard::SEVEN);
 				bestCard = myCards.front();
 				break;
 			}
@@ -82,11 +81,10 @@ const IConditionPtr &MaxSuitAction::perform(IAIState &state,
 
 			std::sort(myCards.begin(), e, cardGreater());
 
-			AbstractAction::pullRank(myCards.begin(), e, NetMauMau::Common::ICard::SEVEN);
+			AbstractAction::stable_pull(myCards.begin(), e, NetMauMau::Common::ICard::SEVEN);
 
 			const NetMauMau::Player::IPlayer::CARDS::value_type f =
-				NetMauMau::Common::findRank(state.getUncoveredCard()->getRank(), myCards.begin(),
-											e);
+				NetMauMau::Common::find(state.getUncoveredCard()->getRank(), myCards.begin(), e);
 
 			if(f && (f != NetMauMau::Common::ICard::SEVEN || state.getPlayedOutCards().size() >
 					 (4 * state.getTalonFactor()))) {
@@ -98,19 +96,19 @@ const IConditionPtr &MaxSuitAction::perform(IAIState &state,
 
 	if(!bestCard) {
 
-		AbstractAction::pushRank(myCards.begin(), myCards.end(), state.getAvoidRank());
+		AbstractAction::push(myCards.begin(), myCards.end(), state.getAvoidRank());
 
 		const NetMauMau::Player::IPlayer::CARDS::iterator
-		&e(AbstractAction::pullRank(myCards.begin(), myCards.end(),
-									NetMauMau::Common::ICard::SEVEN));
+		&e(AbstractAction::stable_pull(myCards.begin(), myCards.end(),
+									   NetMauMau::Common::ICard::SEVEN));
 
-		if(!state.isNoJack()) AbstractAction::pushRank(e, myCards.end(),
+		if(!state.isNoJack()) AbstractAction::push(e, myCards.end(),
 					NetMauMau::Common::ICard::JACK);
 
 		const NetMauMau::Player::IPlayer::CARDS::value_type f =
-			NetMauMau::Common::findSuit(state.getJackSuit() ? *state.getJackSuit() :
-										state.getUncoveredCard()->getSuit(), myCards.begin(),
-										myCards.end());
+			NetMauMau::Common::find(state.getJackSuit() ? *state.getJackSuit() :
+									state.getUncoveredCard()->getSuit(), myCards.begin(),
+									myCards.end());
 
 		if(f && f != NetMauMau::Common::ICard::JACK) bestCard = f;
 	}

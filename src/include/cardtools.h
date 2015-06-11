@@ -153,10 +153,10 @@ _EXPORT unsigned int rankOrderPosition(NetMauMau::Common::ICard::RANK rank) _CON
  * @ingroup util
  * @brief Checks if two cards are equal
  *
+ * @deprecated use the generic @c NetMauMau::Common::equalTo instead
+ *
  * @param lhs a card
  * @param rhs a card
- *
- * @depop
  *
  * @return @c true if the cards are equal, @c false otherwise
  */
@@ -208,23 +208,22 @@ _EXPORT bool cardGreater(const NetMauMau::Common::ICard *lhs,
 #pragma GCC diagnostic push
 /**
  * @ingroup util
+ * @brief Generic equality functor
  *
- * @brief Functor to compare cards
+ * @tparam CardType pointer to @c NetMauMau::Common::ICard type
+ * @tparam Tp @c NetMauMau::Common::ICard::SUIT, @c NetMauMau::Common::ICard::RANK or
+ * pointer to @c NetMauMau::Common::ICard type
  *
- * @tparam T pointer to card class type
- *
- * @relates NetMauMau::Common::ICard
- *
- * @since 0.20.2
+ * @since 0.21.0
  */
-template<class T>
-struct cardEqualTo : std::binary_function<T, T, bool> {
+template<class CardType, class Tp = CardType>
+struct equalTo : std::binary_function<CardType, Tp, bool> {
 private:
-	typedef std::binary_function<T, T, bool> bf;
+	typedef std::binary_function<CardType, Tp, bool> bf;
 public:
 	inline typename bf::result_type operator()(const typename bf::first_argument_type &lhs,
-			const typename bf::second_argument_type &rhs) const {
-		return !(lhs || rhs) || ((lhs && rhs) && *lhs == *rhs);
+			typename bf::second_argument_type rhs) const {
+		return *lhs == *rhs;
 	}
 };
 
@@ -287,7 +286,7 @@ public:
  * @param card the card to check
  * @param suit the @c SUIT to check for
  *
- * @depop or NetMauMau::Common::suitEqualTo
+ * @deprecated use the generic @c NetMauMau::Common::equalTo instead
  *
  * @return @c true if the card is of @c SUIT
  */
@@ -296,21 +295,11 @@ _EXPORT bool isSuit(const NetMauMau::Common::ICard *card,
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-/**
- * @ingroup util
- *
- * @brief Functor to compare a card against a suit
- *
- * @relates NetMauMau::Common::ICard
- *
- * @tparam T card class type
- *
- * @since 0.20.2
- */
-template<class T>
-struct suitEqualTo : std::binary_function<T, NetMauMau::Common::ICard::SUIT, bool> {
+template<class CardType>
+struct equalTo<CardType, NetMauMau::Common::ICard::SUIT> :
+		std::binary_function<CardType, NetMauMau::Common::ICard::SUIT, bool> {
 private:
-	typedef std::binary_function<T, NetMauMau::Common::ICard::SUIT, bool> bf;
+	typedef std::binary_function<CardType, NetMauMau::Common::ICard::SUIT, bool> bf;
 public:
 	inline typename bf::result_type operator()(const typename bf::first_argument_type &card,
 			typename bf::second_argument_type suit) const {
@@ -326,7 +315,7 @@ public:
  * @param card the card to check
  * @param rank the @c RANK to check for
  *
- * @depop or NetMauMau::Common::rankEqualTo
+ * @deprecated use the generic @c NetMauMau::Common::equalTo instead
  *
  * @return @c true if the card is of @c RANK
  */
@@ -335,28 +324,47 @@ _EXPORT bool isRank(const NetMauMau::Common::ICard *card,
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-/**
- * @ingroup util
- *
- * @brief Functor to compare a card againat a rank
- *
- * @relates NetMauMau::Common::ICard
- *
- * @tparam T card class type
- *
- * @since 0.20.2
- */
-template<class T>
-struct rankEqualTo : std::binary_function<T, NetMauMau::Common::ICard::RANK, bool> {
+template<class CardType>
+struct equalTo<CardType, NetMauMau::Common::ICard::RANK> :
+		std::binary_function<CardType, NetMauMau::Common::ICard::RANK, bool> {
 private:
-	typedef std::binary_function<T, NetMauMau::Common::ICard::RANK, bool> bf;
+	typedef std::binary_function<CardType, NetMauMau::Common::ICard::RANK, bool> bf;
 public:
 	inline typename bf::result_type operator()(const typename bf::first_argument_type &card,
-			typename bf::second_argument_type suit) const {
-		return card == suit;
+			typename bf::second_argument_type rank) const {
+		return card == rank;
 	}
 };
 #pragma GCC diagnostic pop
+
+/**
+ * @ingroup util
+ * @brief Generic find function
+ *
+ * Search for the first occurrence of a card
+ *
+ * @tparam Tp @c NetMauMau::Common::ICard::SUIT, @c NetMauMau::Common::ICard::RANK or
+ * pointer to @c NetMauMau::Common::ICard type
+ * @tparam Iterator iterator type to a collection of @c NetMauMau::Common::ICard type pointers
+ ** @deprecated use the generic @c NetMauMau::Common::equalTo instead
+ * @param arg @c NetMauMau::Common::ICard::SUIT, @c NetMauMau::Common::ICard::RANK or
+ * pointer to @c NetMauMau::Common::ICard type
+ * @param first @c iterator to begin of the range to search for
+ * @param last @c iterator to end of the range to search for
+ *
+ * @return a @c NetMauMau::Common::ICard type pointer, or @c NULL if nothing was found
+ *
+ * @since 0.21.0
+ */
+template<typename Tp, typename Iterator>
+typename Iterator::value_type find(Tp arg, Iterator first, Iterator last) {
+
+	const Iterator &f(std::find_if(first, last,
+								   std::bind2nd(equalTo<typename Iterator::value_type, Tp>(),
+										   arg)));
+
+	return f != last ? *f : typename Iterator::value_type();
+}
 
 /**
  * @ingroup util
@@ -364,20 +372,17 @@ public:
  *
  * @tparam Iterator an iterator
  *
+ * @deprecated use the generic @c NetMauMau::Common::find instead
+ *
  * @param suit the @c SUIT to find
  * @param first iterator to the first card
  * @param last iterator to the last card
  * @return the card if found @c 0L otherwise
  */
-template<typename Iterator>
-typename Iterator::value_type findSuit(NetMauMau::Common::ICard::SUIT suit, Iterator first,
-									   Iterator last) {
-
-	const Iterator &f(std::find_if(first, last,
-								   std::bind2nd(suitEqualTo<typename Iterator::value_type>(),
-										   suit)));
-
-	return f != last ? *f : typename Iterator::value_type();
+template<typename Iterator> _DEPRECATED
+inline typename Iterator::value_type findSuit(NetMauMau::Common::ICard::SUIT suit, Iterator first,
+		Iterator last) {
+	return NetMauMau::Common::find(suit, first, last);
 }
 
 /**
@@ -386,20 +391,17 @@ typename Iterator::value_type findSuit(NetMauMau::Common::ICard::SUIT suit, Iter
  *
  * @tparam Iterator an iterator
  *
+ * @deprecated use the generic @c NetMauMau::Common::find instead
+ *
  * @param rank the @c RANK to find
  * @param first iterator to the first card
  * @param last iterator to the last card
  * @return the card if found @c 0L otherwise
  */
-template<typename Iterator>
-typename Iterator::value_type findRank(NetMauMau::Common::ICard::RANK rank, Iterator first,
-									   Iterator last) {
-
-	const Iterator &f(std::find_if(first, last,
-								   std::bind2nd(rankEqualTo<typename Iterator::value_type>(),
-										   rank)));
-
-	return f != last ? *f : typename Iterator::value_type();
+template<typename Iterator> _DEPRECATED
+inline typename Iterator::value_type findRank(NetMauMau::Common::ICard::RANK rank, Iterator first,
+		Iterator last) {
+	return NetMauMau::Common::find(rank, first, last);
 }
 
 /**
@@ -408,20 +410,18 @@ typename Iterator::value_type findRank(NetMauMau::Common::ICard::RANK rank, Iter
  *
  * @tparam Iterator an iterator
  *
+ * @deprecated use the generic @c NetMauMau::Common::find instead
+ *
  * @param card the card to find
  * @param first iterator to the first card
  * @param last iterator to the last card
+ *
  * @return the card if found @c 0L otherwise
  */
-template<typename Iterator>
-typename Iterator::value_type findCard(typename Iterator::value_type card, Iterator first,
-									   Iterator last) {
-
-	const Iterator &f(std::find_if(first, last,
-								   std::bind2nd(cardEqualTo<typename Iterator::value_type>(),
-										   card)));
-
-	return f != last ? *f : typename Iterator::value_type();
+template<typename Iterator> _DEPRECATED
+inline typename Iterator::value_type findCard(typename Iterator::value_type card, Iterator first,
+		Iterator last) {
+	return NetMauMau::Common::find(card, first, last);
 }
 
 /// @}

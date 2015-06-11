@@ -107,7 +107,7 @@ NetMauMau::Common::ICard *TestClient::playCard(const CARDS &cards, std::size_t t
 		if(tc) std::cout << " 1) Take " << tc << " cards and choose again" << std::endl;
 
 		for(CARDS::const_iterator i(m_myCards.begin()); i != m_myCards.end(); ++i) {
-			if(NetMauMau::Common::findCard(*i, possibleCards.begin(), possibleCards.end())) {
+			if(NetMauMau::Common::find(*i, possibleCards.begin(), possibleCards.end())) {
 				std::cout << std::setw(2) << (pos + (tc ? 2 : 1)) << std::setw(0) << ") "
 						  << (*i)->description(true) << std::endl;
 				++pos;
@@ -236,8 +236,8 @@ void TestClient::cardRejected(const std::string &player,
 
 void TestClient::cardAccepted(const NetMauMau::Common::ICard *card) const {
 	m_myCards.erase(std::find_if(m_myCards.begin(), m_myCards.end(),
-								 std::bind2nd(NetMauMau::Common::cardEqualTo
-										 <CARDS::value_type>(), card)));
+								 std::bind2nd(NetMauMau::Common::equalTo<CARDS::value_type>(),
+										 card)));
 }
 
 void TestClient::jackSuit(NetMauMau::Common::ICard::SUIT suit) const {

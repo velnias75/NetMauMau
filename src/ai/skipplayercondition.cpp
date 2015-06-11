@@ -36,8 +36,7 @@ IActionPtr SkipPlayerCondition::perform(const IAIState &state,
 										const NetMauMau::Player::IPlayer::CARDS &) const {
 	return state.getPlayerCount() > 2 && (state.getRightCount() < state.getCardCount() ||
 										  state.getRightCount() < state.getLeftCount()) &&
-		   DecisionBase::countPlayedOutRank(state.getPlayedOutCards(),
-											NetMauMau::Common::ICard::SEVEN) ?
+		   DecisionBase::count(state.getPlayedOutCards(), NetMauMau::Common::ICard::SEVEN) ?
 		   IActionPtr(new SkipPlayerAction()) : AbstractCondition::createNextAction(BESTSUITCOND);
 }
 

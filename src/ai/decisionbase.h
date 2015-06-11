@@ -21,6 +21,7 @@
 #define NETMAUMAU_ENGINE_AI_DECISIONBASE_H
 
 #include "iaistate.h"                   // for IAIState, etc
+#include "cardtools.h"
 
 namespace NetMauMau {
 
@@ -31,17 +32,13 @@ class DecisionBase {
 public:
 	virtual ~DecisionBase();
 
-	static IAIState::PLAYEDOUTCARDS::difference_type
-	countPlayedOutRank(const IAIState::PLAYEDOUTCARDS &porv,
-					   NetMauMau::Common::ICard::RANK rank);
-
 	static Player::IPlayer::CARDS removeJack(const Player::IPlayer::CARDS &cards);
 
-	static Player::IPlayer::CARDS::difference_type countSuit(const Player::IPlayer::CARDS &cards,
-			Common::ICard::SUIT suit);
-
-	static Player::IPlayer::CARDS::difference_type countRank(const Player::IPlayer::CARDS &cards,
-			Common::ICard::RANK rank);
+	template<class CardType, class Tp>
+	static typename CardType::difference_type count(CardType cards, Tp arg) {
+		return std::count_if(cards.begin(), cards.end(), std::bind2nd(NetMauMau::Common::equalTo
+							 <typename CardType::value_type, Tp>(), arg));
+	}
 
 protected:
 	explicit DecisionBase();

@@ -19,7 +19,6 @@
 
 #include "randomjackaction.h"
 
-#include "cardtools.h"                  // for findSuit
 #include "random_gen.h"                 // for genRandom
 
 using namespace NetMauMau::AI;
@@ -34,11 +33,11 @@ const IConditionPtr &RandomJackAction::perform(IAIState &state,
 	NetMauMau::Player::IPlayer::CARDS myCards(cards);
 
 	const NetMauMau::Player::IPlayer::CARDS::size_type jackCnt =
-		static_cast<NetMauMau::Player::IPlayer::CARDS::size_type>
-		(DecisionBase::countRank(myCards, NetMauMau::Common::ICard::JACK));
+		static_cast<NetMauMau::Player::IPlayer::CARDS::size_type>(DecisionBase::count(myCards,
+				NetMauMau::Common::ICard::JACK));
 
 	const NetMauMau::Player::IPlayer::CARDS::iterator
-	&e(AbstractAction::pullRank(myCards, NetMauMau::Common::ICard::JACK));
+	&e(AbstractAction::stable_pull(myCards.begin(), myCards.end(), NetMauMau::Common::ICard::JACK));
 
 	if(jackCnt > 1) {
 
@@ -54,7 +53,7 @@ const IConditionPtr &RandomJackAction::perform(IAIState &state,
 		NetMauMau::Common::ICardPtr jack;
 
 		do {
-			if((jack = NetMauMau::Common::findSuit(suitCount[i].suit, myCards.begin(), e))) break;
+			if((jack = NetMauMau::Common::find(suitCount[i].suit, myCards.begin(), e))) break;
 		} while(++i <= 3u);
 
 		if(jack) {

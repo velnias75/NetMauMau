@@ -51,8 +51,8 @@ EasyPlayer::requestCard(const NetMauMau::Common::ICardPtr &uncoveredCard,
 			std::random_shuffle(c.begin(), c.end(),
 								NetMauMau::Common::genRandom<CARDS::difference_type>);
 
-			rrc = NetMauMau::Common::findCard(*c.begin(), getPlayerCards().begin(),
-											  getPlayerCards().end());
+			rrc = NetMauMau::Common::find(*c.begin(), getPlayerCards().begin(),
+										  getPlayerCards().end());
 		}
 
 	} else {

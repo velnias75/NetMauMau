@@ -19,24 +19,6 @@
 
 #include "decisionbase.h"
 
-#include "cardtools.h"                  // for isRank, isSuit
-
-namespace {
-
-#pragma GCC diagnostic ignored "-Weffc++"
-#pragma GCC diagnostic push
-struct playedOutRank : std::binary_function < NetMauMau::Common::ICardPtr,
-		NetMauMau::Common::ICard::RANK, bool > {
-
-	inline result_type operator()(const first_argument_type &desc,
-								  second_argument_type rank) const {
-		return desc == rank;
-	}
-};
-#pragma GCC diagnostic pop
-
-}
-
 using namespace NetMauMau::AI;
 
 DecisionBase::DecisionBase() {}
@@ -49,32 +31,11 @@ DecisionBase::removeJack(const NetMauMau::Player::IPlayer::CARDS &cards) {
 	NetMauMau::Player::IPlayer::CARDS myCards(cards);
 
 	myCards.erase(std::remove_if(myCards.begin(), myCards.end(),
-								 std::bind2nd(NetMauMau::Common::rankEqualTo
-										 <NetMauMau::Player::IPlayer::CARDS::value_type>(),
+								 std::bind2nd(NetMauMau::Common::equalTo
+										 < NetMauMau::Player::IPlayer::CARDS::value_type,
+										 NetMauMau::Common::ICard::RANK > (),
 										 NetMauMau::Common::ICard::JACK)), myCards.end());
 	return myCards;
-}
-
-NetMauMau::Player::IPlayer::CARDS::difference_type
-DecisionBase::countSuit(const NetMauMau::Player::IPlayer::CARDS &cards,
-						NetMauMau::Common::ICard::SUIT suit) {
-	return std::count_if(cards.begin(), cards.end(),
-						 std::bind2nd(NetMauMau::Common::suitEqualTo
-									  <NetMauMau::Player::IPlayer::CARDS::value_type>(), suit));
-}
-
-NetMauMau::Player::IPlayer::CARDS::difference_type
-DecisionBase::countRank(const NetMauMau::Player::IPlayer::CARDS &cards,
-						NetMauMau::Common::ICard::RANK rank) {
-	return std::count_if(cards.begin(), cards.end(),
-						 std::bind2nd(NetMauMau::Common::rankEqualTo
-									  <NetMauMau::Player::IPlayer::CARDS::value_type>(), rank));
-}
-
-IAIState::PLAYEDOUTCARDS::difference_type
-DecisionBase::countPlayedOutRank(const IAIState::PLAYEDOUTCARDS &porv,
-								 NetMauMau::Common::ICard::RANK rank) {
-	return std::count_if(porv.begin(), porv.end(), std::bind2nd(playedOutRank(), rank));
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

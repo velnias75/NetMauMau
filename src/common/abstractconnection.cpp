@@ -47,20 +47,20 @@ namespace {
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
 struct _isSocketFD :
-	public std::binary_function<NetMauMau::Common::AbstractConnection::NAMESOCKFD, SOCKET, bool> {
+		std::binary_function<NetMauMau::Common::AbstractConnection::NAMESOCKFD, SOCKET, bool> {
 	result_type operator()(const first_argument_type &nsd, second_argument_type sockfd) const {
 		return nsd.sockfd == sockfd;
 	}
 };
 
-struct _isInfo : public std::binary_function < NetMauMau::Common::AbstractConnection::NAMESOCKFD,
+struct _isInfo : std::binary_function < NetMauMau::Common::AbstractConnection::NAMESOCKFD,
 		NetMauMau::Common::AbstractConnection::INFO, bool > {
 	result_type operator()(const first_argument_type &nsd, const second_argument_type &info) const {
 		return nsd.name == info.name;
 	}
 };
 
-struct socketCloser : public std::unary_function<NetMauMau::Common::IConnection::NAMESOCKFD, void> {
+struct socketCloser : std::unary_function<NetMauMau::Common::IConnection::NAMESOCKFD, void> {
 	inline result_type operator()(const argument_type &nsf) const {
 		NetMauMau::Common::AbstractSocket::shutdown(nsf.sockfd);
 	}

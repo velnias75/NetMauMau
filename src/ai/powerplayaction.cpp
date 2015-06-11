@@ -22,7 +22,6 @@
 #include <cassert>                      // for assert
 
 #include "aceroundcondition.h"          // for AceRoundCondition
-#include "cardtools.h"                  // for findSuit
 #include "havejackcondition.h"          // for HaveJackCondition
 #include "maxsuitaction.h"              // for MaxSuitAction
 #include "staticcondition.h"            // for StaticCondition
@@ -62,19 +61,18 @@ const IConditionPtr &PowerPlayAction::perform(IAIState &state,
 
 		NetMauMau::Player::IPlayer::CARDS myCards(cards);
 
-		const NetMauMau::Player::IPlayer::CARDS::iterator &e(pullRank(myCards,
-				NetMauMau::Common::ICard::SEVEN));
+		const NetMauMau::Player::IPlayer::CARDS::iterator &e(stable_pull(myCards.begin(),
+				myCards.end(), NetMauMau::Common::ICard::SEVEN));
 
 		const NetMauMau::Player::IPlayer::CARDS::value_type f =
-			NetMauMau::Common::findSuit(state.getJackSuit() ? *state.getJackSuit() :
-										state.getUncoveredCard()->getSuit(), myCards.begin(), e);
+			NetMauMau::Common::find(state.getJackSuit() ? *state.getJackSuit() :
+									state.getUncoveredCard()->getSuit(), myCards.begin(), e);
 
 		const NetMauMau::Player::IPlayer::CARDS::difference_type mySevens =
 			std::distance(myCards.begin(), e);
 
 		const NetMauMau::Player::IPlayer::CARDS::difference_type poSevens =
-			DecisionBase::countPlayedOutRank(state.getPlayedOutCards(),
-											 NetMauMau::Common::ICard::SEVEN);
+			DecisionBase::count(state.getPlayedOutCards(), NetMauMau::Common::ICard::SEVEN);
 
 		if(f && (state.isPowerPlay() || mySevens + poSevens >
 				 static_cast<NetMauMau::Player::IPlayer::CARDS::difference_type>(2 *

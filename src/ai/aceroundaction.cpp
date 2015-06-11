@@ -19,7 +19,6 @@
 
 #include "aceroundaction.h"
 
-#include "cardtools.h"                  // for findRank
 #include "iruleset.h"                   // for IRuleSet
 #include "randomjackcondition.h"        // for RandomJackCondition
 
@@ -44,12 +43,13 @@ const IConditionPtr &AceRoundAction::perform(IAIState &state,
 
 	NetMauMau::Player::IPlayer::CARDS myCards(cards);
 
-	state.setTryAceRound(DecisionBase::countRank(myCards, state.getRuleSet()->getAceRoundRank()) >
+	state.setTryAceRound(DecisionBase::count(myCards, state.getRuleSet()->getAceRoundRank()) >
 						 (state.tryAceRound() ? 0 : 1));
 
 	if(state.tryAceRound()) {
 
-		AbstractAction::pullRank(myCards, state.getRuleSet()->getAceRoundRank());
+		AbstractAction::stable_pull(myCards.begin(), myCards.end(),
+									state.getRuleSet()->getAceRoundRank());
 		state.setCard(*myCards.begin());
 
 		return AbstractAction::getNullCondition();

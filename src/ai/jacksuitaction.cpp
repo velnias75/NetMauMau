@@ -22,7 +22,6 @@
 #include <cassert>                      // for assert
 
 #include "bestjackaction.h"             // for BestJackAction
-#include "cardtools.h"                  // for isRank
 #include "havelessthancondition.h"      // for HaveLessThanCondition
 
 namespace {
@@ -43,8 +42,9 @@ const IConditionPtr &JackSuitAction::perform(IAIState &state,
 
 	const NetMauMau::Player::IPlayer::CARDS::const_iterator
 	&f(std::find_if(state.getPlayerCards().begin(), state.getPlayerCards().end(),
-					std::not1(std::bind2nd(NetMauMau::Common::rankEqualTo
-										   <NetMauMau::Player::IPlayer::CARDS::value_type>(),
+					std::not1(std::bind2nd(NetMauMau::Common::equalTo
+										   < NetMauMau::Player::IPlayer::CARDS::value_type,
+										   NetMauMau::Common::ICard::RANK > (),
 										   NetMauMau::Common::ICard::JACK))));
 
 	if(f != state.getPlayerCards().end()) {

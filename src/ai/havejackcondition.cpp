@@ -20,7 +20,6 @@
 #include "havejackcondition.h"
 
 #include "bestjackaction.h"             // for BestJackAction
-#include "cardtools.h"                  // for findRank
 #include "havelessthancondition.h"      // for HaveLessThanCondition
 #include "jacksuitaction.h"             // for JackSuitAction
 
@@ -40,9 +39,8 @@ HaveJackCondition::~HaveJackCondition() {}
 IActionPtr HaveJackCondition::perform(const IAIState &state,
 									  const NetMauMau::Player::IPlayer::CARDS &cards) const {
 	return (state.getPlayerCards().size() == 2 &&
-			NetMauMau::Common::findRank(NetMauMau::Common::ICard::JACK, cards.begin(),
-										cards.end())) ? IActionPtr(new JackSuitAction()) :
-		   createNextAction(HAVELESSTHANEIGHTCOND);
+			NetMauMau::Common::find(NetMauMau::Common::ICard::JACK, cards.begin(), cards.end()))
+		   ? IActionPtr(new JackSuitAction()) : createNextAction(HAVELESSTHANEIGHTCOND);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

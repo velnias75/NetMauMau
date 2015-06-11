@@ -57,21 +57,9 @@ protected:
 
 	AbstractAction();
 
-	static Player::IPlayer::CARDS::iterator pullSuit(Player::IPlayer::CARDS &cards,
-			Common::ICard::SUIT suit);
-
-	static Player::IPlayer::CARDS::iterator pullRank(Player::IPlayer::CARDS &cards,
-			Common::ICard::RANK rank);
-
-	static Player::IPlayer::CARDS::iterator pullRank(const Player::IPlayer::CARDS::iterator &first,
-			const Player::IPlayer::CARDS::iterator &last, Common::ICard::RANK rank);
-
 	static Common::ICardPtr hasRankPath(const Common::ICardPtr &uc, Common::ICard::SUIT s,
 										Common::ICard::RANK r, const Player::IPlayer::CARDS &mCards,
 										bool nineIsSuspend);
-
-	static Player::IPlayer::CARDS::iterator pushRank(const Player::IPlayer::CARDS::iterator &first,
-			const Player::IPlayer::CARDS::iterator &last, Common::ICard::RANK rank);
 
 	static const Common::ICard::SUIT *getSuits() _CONST;
 
@@ -84,6 +72,24 @@ protected:
 			const NetMauMau::Player::IPlayer::CARDS &cards, Common::ICard::SUIT avoidSuit);
 
 	static const IConditionPtr &getNullCondition() _CONST;
+
+	template<class Iterator, class Tp>
+	inline static Iterator pull(Iterator first, Iterator last, Tp arg) {
+		return std::partition(first, last, std::bind2nd(Common::equalTo
+							  <typename Iterator::value_type, Tp>(), arg));
+	}
+
+	template<class Iterator, class Tp>
+	inline static Iterator stable_pull(Iterator first, Iterator last, Tp arg) {
+		return std::stable_partition(first, last, std::bind2nd(Common::equalTo
+									 <typename Iterator::value_type, Tp>(), arg));
+	}
+
+	template<class Iterator, class Tp>
+	inline static Iterator push(Iterator first, Iterator last, Tp arg) {
+		return std::stable_partition(first, last, std::not1(std::bind2nd(Common::equalTo
+									 <typename Iterator::value_type, Tp>(), arg)));
+	}
 
 private:
 	static Player::IPlayer::CARDS::iterator pullSpecialRank(Player::IPlayer::CARDS &cards,

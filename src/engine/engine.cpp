@@ -85,7 +85,7 @@ private:
 	const NetMauMau::Engine::PLAYERS &m_players;
 };
 
-struct PlayerNameEqualCI : public std::binary_function < NetMauMau::Player::IPlayer *,
+struct PlayerNameEqualCI : std::binary_function < NetMauMau::Player::IPlayer *,
 		std::string, bool > {
 
 	inline result_type operator()(const first_argument_type x,
@@ -94,7 +94,7 @@ struct PlayerNameEqualCI : public std::binary_function < NetMauMau::Player::IPla
 	}
 };
 
-struct PlayerNameEqual : public std::binary_function < NetMauMau::Player::IPlayer *,
+struct PlayerNameEqual : std::binary_function < NetMauMau::Player::IPlayer *,
 		NetMauMau::Player::IPlayer *, bool > {
 
 	inline result_type operator()(const first_argument_type x,

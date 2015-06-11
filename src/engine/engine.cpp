@@ -49,7 +49,6 @@
 
 #include "abstractsocket.h"
 #include "logger.h"                     // for logDebug, BasicLogger
-#include "cardtools.h"                  // for getIllegalCard
 #include "enginecontext.h"              // for EngineConfig
 #include "ieventhandler.h"              // for IEventHandler
 #include "iplayer.h"                    // for IPlayer, IPlayer::CARDS, etc

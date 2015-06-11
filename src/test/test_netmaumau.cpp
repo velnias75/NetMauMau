@@ -22,7 +22,6 @@
 #endif
 
 #include "logger.h"
-#include "cardtools.h"
 #include "hardplayer.h"
 #include "testeventhandler.h"
 

@@ -21,11 +21,8 @@
 #include "config.h"                     // IWYU pragma: keep
 #endif
 
-#include <ctime>
-
 #include "easyplayer.h"
 
-#include "cardtools.h"
 #include "random_gen.h"                 // for genRandom
 
 using namespace NetMauMau::Player;

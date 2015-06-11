@@ -33,7 +33,6 @@
 #include "testeventhandler.h"
 
 #include "iplayer.h"
-#include "smartptr.h"
 #include "cardtools.h"
 
 namespace {

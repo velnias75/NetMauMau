@@ -26,7 +26,7 @@ using namespace NetMauMau::AI;
 RandomJackAction::RandomJackAction() : AbstractAction() {}
 
 RandomJackAction::~RandomJackAction() {}
-#include "logger.h"
+
 const IConditionPtr &RandomJackAction::perform(IAIState &state,
 		const NetMauMau::Player::IPlayer::CARDS &cards) const {
 

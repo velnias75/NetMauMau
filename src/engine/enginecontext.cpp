@@ -29,7 +29,6 @@
 
 #include <sys/stat.h>                   // for stat
 #include <cstring>
-#include <cstdlib>                      // for getenv
 
 #include "logger.h"
 #include "luaruleset.h"                 // for LuaRuleSet

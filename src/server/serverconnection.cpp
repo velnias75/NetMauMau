@@ -27,8 +27,6 @@
 #include <netdb.h>                      // for NI_MAXHOST, NI_MAXSERV, etc
 #endif
 
-#include <cstdlib>                      // for strtoul, free
-
 #ifndef _WIN32
 #include <sys/select.h>                 // for select, FD_SET, FD_ZERO, etc
 #endif
@@ -38,8 +36,6 @@
 #include <cerrno>                       // for errno, ENOENT, ENOMEM
 #include <cstdio>                       // for NULL, fclose, feof, fopen, etc
 #include <cstring>                      // for strerror, strdup, strlen
-#include <new>                          // for nothrow, bad_alloc, etc
-#include <utility>                      // for pair
 
 #include "base64.h"                     // for BYTE, base64_encode, etc
 #include "logger.h"                     // for BasicLogger, logWarning, etc

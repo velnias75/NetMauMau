@@ -19,7 +19,6 @@
 
 #include "checkjacksuitaction.h"
 
-#include <algorithm>                    // for find_if
 #include <cassert>                      // for assert
 #include <stdbool.h>
 

@@ -35,13 +35,9 @@
 #include <popt.h>                       // for poptFreeContext, etc
 
 #include <limits>
-#include <csignal>                      // for sigaction, sigevent, etc
-#include <algorithm>                    // for max, min, count_if
 #include <climits>                      // IWYU pragma: keep
 #include <cstring>                      // for memset
 #include <cstdio>                       // for snprintf
-#include <cstdlib>
-#include <ctime>
 #include <iostream>                     // for operator<<, ostringstream, etc
 #include <stdbool.h>
 
@@ -67,7 +63,6 @@
 #include "game.h"                       // for Game, etc
 #include "gamecontext.h"                // for GameConfig
 #include "helpers.h"                    // for arRank, minPlayers, decks, etc
-#include "luaexception.h"               // for LuaException
 #include "servereventhandler.h"         // for EventHandler
 #include "serverplayer.h"               // for Player
 #include "iruleset.h"

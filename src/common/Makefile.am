@@ -11,8 +11,8 @@ DISTCLEANFILES = ai-icon.h
 
 .DELETE_ON_ERROR:
 ai-icon.h: $(AI_IMAGE)
-	$(AM_V_GEN) cat $(AI_IMAGE) | $(SHELL) $(top_srcdir)/src/images/create_ai_icon.sh 'ai_icon_data' \
-		> $(builddir)/$(@F)
+	$(AM_V_GEN) cat $(AI_IMAGE) | $(SHELL) $(top_srcdir)/src/images/create_ai_icon.sh \
+	'ai_icon_data' > $(builddir)/$(@F)
 
 if GSL
 GSL=-DHAVE_GSL
@@ -25,6 +25,7 @@ libnetmaumaucommon_private_la_CPPFLAGS = $(GSL) -DNMM_EXE_PATH=\"$(bindir)\" \
 libnetmaumaucommon_private_la_CXXFLAGS = -I$(top_srcdir)/src/include
 libnetmaumaucommon_private_la_SOURCES = cardtools.cpp ci_char_traits.cpp defaultplayerimage.cpp \
 	errorstring.cpp mimemagic.cpp pngcheck.cpp protocol.cpp
+libnetmaumaucommon_private_la_LIBADD = $(MAGIC_LIBS)
 
 libnetmaumaucommon_la_CPPFLAGS = $(GSL) -DNMM_EXE_PATH=\"$(bindir)\" \
 	-DNMM_EXE_NAME=\"nmm-server$(EXEEXT)\"

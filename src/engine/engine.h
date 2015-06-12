@@ -154,9 +154,10 @@ private:
 
 private:
 	EngineContext &m_ctx;
+	const DB::SQLite::SQLitePtr m_db;
 
 	STATE m_state;
-	Talon *m_talon;
+	Talon *const m_talon;
 	PLAYERS m_players;
 	std::size_t m_nxtPlayer;
 	std::size_t m_turn;

@@ -39,9 +39,9 @@ public:
 	virtual bool shutdown() const throw() _PURE;
 	virtual void reset() throw();
 
-	virtual void message(const std::string &msg, const std::vector<std::string> &except) const
+	virtual void message(const std::string &msg, const EXCEPTIONS &except) const
 	throw(Common::Exception::SocketException);
-	virtual void error(const std::string &msg, const std::vector<std::string> &except) const
+	virtual void error(const std::string &msg, const EXCEPTIONS &except) const
 	throw(Common::Exception::SocketException);
 
 	virtual void directionChange() const throw(Common::Exception::SocketException);
@@ -95,8 +95,7 @@ public:
 
 private:
 	void message_internal(const std::string &type, const std::string &msg,
-						  const std::vector<std::string> &except) const
-	throw(Common::Exception::SocketException);
+						  const EXCEPTIONS &except) const throw(Common::Exception::SocketException);
 
 private:
 	static bool m_interrupt;

@@ -117,10 +117,10 @@ const GSLRNG<std::ptrdiff_t> RNG;
 using namespace NetMauMau;
 
 Engine::Engine(EngineContext &ctx) throw(Common::Exception::SocketException) : ITalonChange(),
-	IAceRoundListener(), ICardCountObserver(), m_ctx(ctx), m_state(ACCEPT_PLAYERS),
-	m_talon(new Talon(this, ctx.getTalonFactor())), m_players(), m_nxtPlayer(0), m_turn(1),
-	m_curTurn(0), m_jackMode(false), m_initialChecked(false), m_ultimate(false),
-	m_initialJack(false), m_alwaysWait(false), m_alreadyWaited(false),
+	IAceRoundListener(), ICardCountObserver(), m_ctx(ctx), m_db(DB::SQLite::getInstance()),
+	m_state(ACCEPT_PLAYERS), m_talon(new Talon(this, ctx.getTalonFactor())), m_players(),
+	m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_jackMode(false), m_initialChecked(false),
+	m_ultimate(false), m_initialJack(false), m_alwaysWait(false), m_alreadyWaited(false),
 	m_initialNextMessage(ctx.getNextMessage()), m_gameIndex(0LL), m_dirChangeEnabled(false),
 	m_talonUnderflow(false) {
 	m_players.reserve(5);
@@ -136,8 +136,8 @@ const Event::IEventHandler &Engine::getEventHandler() const {
 }
 
 Engine::PLAYERS::const_iterator Engine::find(const std::string &player) const {
-	return std::find_if(m_players.begin(), m_players.end(),
-						std::bind2nd(PlayerNameEqualCI(), player));
+	return std::find_if(m_players.begin(), m_players.end(), std::bind2nd(PlayerNameEqualCI(),
+						player));
 }
 
 bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketException) {
@@ -209,31 +209,31 @@ bool Engine::distributeCards() throw(Common::Exception::SocketException) {
 
 	if(m_state == NOCARDS || m_state == ACCEPT_PLAYERS) {
 
-		std::vector<NetMauMau::Player::IPlayer::CARDS> cards(m_players.size());
+		std::vector<Player::IPlayer::CARDS> cards(m_players.size());
 
 		const std::size_t icc = getRuleSet()->initialCardCount();
 
-		for(std::size_t i = 0; i < icc; ++i) {
+		for(std::size_t i = 0u; i < icc; ++i) {
 
 			if(m_talon->empty()) return false;
 
-			for(PLAYERS::size_type j = 0; j < m_players.size(); ++j) {
+			for(PLAYERS::size_type j = 0u; j < m_players.size(); ++j) {
 				cards[j].push_back(m_talon->top());
 				m_talon->pop();
 			}
 		}
 
 		PLAYERS::const_iterator pi(m_players.begin());
-		const PLAYERS::const_iterator &pe(m_players.end());
 
-		for(std::size_t k = 0; pi != pe; ++pi, ++k) {
+		for(std::size_t k = 0u; pi != m_players.end(); ++pi, ++k) {
 
-			Player::IPlayer *p = *pi;
+			PLAYERS::const_iterator::reference p(*pi);
+			const std::vector<Player::IPlayer::CARDS>::reference card(cards[k]);
 
-			p->receiveCardSet(cards[k]);
+			p->receiveCardSet(card);
 			p->setDirChangeEnabled(m_dirChangeEnabled);
 
-			getEventHandler().cardsDistributed(p, cards[k]);
+			getEventHandler().cardsDistributed(p, card);
 		}
 
 		m_turn = 1;
@@ -252,8 +252,7 @@ bool Engine::distributeCards() throw(Common::Exception::SocketException) {
 }
 
 void Engine::setFirstPlayer(Player::IPlayer *p) {
-	std::stable_partition(m_players.begin(), m_players.end(),
-						  std::bind2nd(PlayerNameEqual(), p));
+	std::stable_partition(m_players.begin(), m_players.end(), std::bind2nd(PlayerNameEqual(), p));
 }
 
 void Engine::message(const std::string &msg) const throw(Common::Exception::SocketException) {
@@ -266,8 +265,8 @@ void Engine::error(const std::string &msg) const throw() {
 	} catch(const Common::Exception::SocketException &) {}
 }
 
-void Engine::suspends(Player::IPlayer *p, const Common::ICard *uc) const
-throw(Common::Exception::SocketException) {
+void Engine::suspends(Player::IPlayer *p,
+					  const Common::ICard *uc) const throw(Common::Exception::SocketException) {
 	getEventHandler().playerSuspends(p, uc);
 }
 
@@ -286,19 +285,19 @@ bool Engine::nextTurn() {
 
 		checkPlayersAlive();
 
-		Player::IPlayer *player = m_players[m_nxtPlayer];
+		PLAYERS::value_type player(m_players[m_nxtPlayer]);
 
 		player->setCardCountObserver(this);
 
 		if(m_curTurn != m_turn) {
 
-			DB::SQLite::getInstance()->turn(m_gameIndex, m_turn);
+			m_db->turn(m_gameIndex, m_turn);
 
 			getEventHandler().turn(m_turn);
 
 			if(m_turn == 1u) {
 
-				DB::SQLite::getInstance()->gamePlayStarted(m_gameIndex);
+				m_db->gamePlayStarted(m_gameIndex);
 				getEventHandler().initialCard(m_talon->uncoverCard());
 
 				if(getAICount() && m_talon->uncoverCard() == Common::ICard::EIGHT) {
@@ -330,8 +329,8 @@ bool Engine::nextTurn() {
 											  js != Common::ICard::SUIT_ILLEGAL)));
 
 		Common::ICardPtr pc(!suspend ? player->requestCard(uc, (m_jackMode || m_initialJack)
-							? &js : 0L, getRuleSet()->takeCardCount(), m_talonUnderflow) :
-								Common::ICardPtr());
+							? &js : 0L, getRuleSet()->takeCardCount(), m_talonUnderflow)
+								: Common::ICardPtr());
 
 		if(m_initialJack && !pc) m_jackMode = true;
 
@@ -374,8 +373,9 @@ sevenRule:
 				if(m_jackMode || m_initialJack) jackModeOff();
 
 				won = player->cardAccepted(pc);
+
 				m_talon->playCard(pc);
-				m_talonUnderflow = m_talon->thresholdReached(1 + (8 * m_ctx.getTalonFactor()));
+				m_talonUnderflow = m_talon->thresholdReached(1u + (8u * m_ctx.getTalonFactor()));
 
 				getEventHandler().playerPlaysCard(player, pc, uc);
 
@@ -406,7 +406,7 @@ sevenRule:
 
 		checkAndPerformDirChange(player, won);
 
-		const Player::IPlayer *curPlayer = player;
+		const PLAYERS::value_type curPlayer(player);
 
 		if(!won) {
 
@@ -414,10 +414,10 @@ sevenRule:
 			const Common::ICard::SUIT lps = player->getLastPlayedSuit();
 			const Common::ICard::RANK lpr = player->getLastPlayedRank();
 
-			m_nxtPlayer = (m_nxtPlayer + 1) >= m_players.size() ? 0 : m_nxtPlayer + 1;
+			m_nxtPlayer = (m_nxtPlayer + 1u) >= m_players.size() ? 0u : m_nxtPlayer + 1u;
 
-			const Player::IPlayer *rightPlayer = m_players[(m_nxtPlayer + 1) >= m_players.size()
-												 ? 0 : m_nxtPlayer + 1];
+			const Player::IPlayer *rightPlayer = m_players[(m_nxtPlayer + 1u) >= m_players.size()
+												 ? 0u : m_nxtPlayer + 1u];
 
 			const std::size_t  rightCount = rightPlayer->getCardCount();
 			const Common::ICard::SUIT rps = rightPlayer->getLastPlayedSuit();
@@ -459,15 +459,16 @@ sevenRule:
 		Common::IConnection &con(getEventHandler().getConnection());
 		const std::string &pName(con.getPlayerName(e.sockfd()));
 
-		std::vector<std::string> ex(1, pName);
+		const std::vector<std::string> ex(1, pName);
 		const PLAYERS::const_iterator &f(find(pName));
-		std::ostringstream os;
 
 		const bool lostWatchingPlayer = !pName.empty() && f == m_players.end();
 
 		if(!lostWatchingPlayer) {
 
 			if(!pName.empty()) {
+
+				std::ostringstream os;
 
 				os << "Lost connection to player \"" << pName << "\"";
 
@@ -530,10 +531,9 @@ void Engine::handleWinner(const Player::IPlayer *player) throw(Common::Exception
 				getEventHandler().getConnection().
 				getPlayerInfo(m_players[m_nxtPlayer]->getSerial());
 
-		DB::SQLite::getInstance()->playerLost(m_gameIndex, nsf, std::time(0L),
-											  getEventHandler().playerLost(m_players[m_nxtPlayer],
-													  m_turn, rulSet->lostPointFactor(m_talon->
-															  getUncoveredCard())));
+		m_db->playerLost(m_gameIndex, nsf, std::time(0L),
+						 getEventHandler().playerLost(m_players[m_nxtPlayer], m_turn,
+								 rulSet->lostPointFactor(m_talon->getUncoveredCard())));
 		m_state = FINISHED;
 
 	} else if(m_dirChangeEnabled && plsCnt <= 2u) {
@@ -546,7 +546,7 @@ void Engine::handleWinner(const Player::IPlayer *player) throw(Common::Exception
 			Common::IConnection::NAMESOCKFD(player->getName(), "", player->getSerial(), 0) :
 			getEventHandler().getConnection().getPlayerInfo(player->getSerial());
 
-	DB::SQLite::getInstance()->playerWins(m_gameIndex, nsf);
+	m_db->playerWins(m_gameIndex, nsf);
 }
 
 bool Engine::checkCard(Player::IPlayer *player, Common::ICardPtr &playedCard,
@@ -738,8 +738,11 @@ void Engine::jackModeOff() const throw(Common::Exception::SocketException) {
 
 void Engine::checkPlayersAlive() const throw(Common::Exception::SocketException) {
 	for(PLAYERS::const_iterator i(m_players.begin()); i != m_players.end(); ++i) {
-		if(!(*i)->isAlive()) {
-			(*i)->setCardCountObserver(0L);
+
+		PLAYERS::const_iterator::reference r(*i);
+
+		if(!r->isAlive()) {
+			r->setCardCountObserver(0L);
 			throw Common::Exception::SocketException((*i)->getName() + " is dead");
 		}
 	}
@@ -752,10 +755,11 @@ long Engine::getAIDelay() const {
 bool Engine::wait(const Player::IPlayer *p, bool suspend) const {
 
 	const bool isAI = p->isAIPlayer();
+	const PLAYERS::size_type pcnt(m_players.size());
 
-	if(isAI && getAICount() == m_players.size()) return true;
+	if(isAI && getAICount() == pcnt) return true;
 
-	if(m_players.size() == 2) return suspend && isAI;
+	if(pcnt == 2) return suspend && isAI;
 
 	return isAI ? m_alwaysWait : false;
 }

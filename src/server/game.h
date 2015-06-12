@@ -72,6 +72,8 @@ private:
 
 	const GameContext &m_ctx;
 	Engine m_engine;
+	const DB::SQLite::SQLitePtr m_db;
+
 	std::vector<Player::AbstractPlayer *> m_aiPlayers;
 	std::vector<Player::IPlayer *> m_players;
 	DB::GAMEIDX m_gameIndex;

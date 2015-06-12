@@ -91,7 +91,7 @@ AbstractConnection::~AbstractConnection() {
 	delete _pimpl;
 }
 
-bool AbstractConnection::registerPlayer(const NAMESOCKFD &nfd, const std::vector<std::string> &ai) {
+bool AbstractConnection::registerPlayer(const NAMESOCKFD &nfd, const PLAYERNAMES &ai) {
 
 	if(!(getPlayerName(nfd.sockfd).empty() &&
 			std::find(ai.begin(), ai.end(), nfd.name) == ai.end())) return false;
@@ -114,7 +114,7 @@ AbstractConnection::NAMESOCKFD AbstractConnection::getPlayerInfo(SOCKET sockfd) 
 	return f != _pimpl->m_registeredPlayers.end() ? *f : NAMESOCKFD();
 }
 
-std::string AbstractConnection::getPlayerName(SOCKET sockfd) const {
+IConnection::PLAYERNAMES::value_type AbstractConnection::getPlayerName(SOCKET sockfd) const {
 	return getPlayerInfo(sockfd).name;
 }
 
@@ -136,7 +136,7 @@ void AbstractConnection::removePlayer(SOCKET sockfd) {
 	if(f != _pimpl->m_registeredPlayers.end()) _pimpl->m_registeredPlayers.erase(f);
 }
 
-void AbstractConnection::addAIPlayers(const std::vector<std::string> &aiPlayers) {
+void AbstractConnection::addAIPlayers(const PLAYERNAMES &aiPlayers) {
 	_pimpl->m_aiPlayers.insert(_pimpl->m_aiPlayers.end(), aiPlayers.begin(), aiPlayers.end());
 }
 
@@ -170,7 +170,7 @@ void AbstractConnection::wait(long ms) throw(Exception::SocketException) {
 }
 #pragma GCC diagnostic pop
 
-const std::vector<std::string> &AbstractConnection::getAIPlayers() const {
+const IConnection::PLAYERNAMES &AbstractConnection::getAIPlayers() const {
 	return _pimpl->m_aiPlayers;
 }
 
@@ -204,12 +204,10 @@ uint16_t AbstractConnection::getMinorFromHello(const std::string &hello,
 
 bool AbstractConnection::hasHumanPlayers() const {
 
-	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
-			i != getRegisteredPlayers().end(); ++i) {
-		if(i->sockfd != INVALID_SOCKET) return true;
-	}
+	const PLAYERINFOS &pi(getRegisteredPlayers());
 
-	return false;
+	return std::find_if(pi.begin(), pi.end(), std::bind2nd(std::not_equal_to<SOCKET>(),
+						 INVALID_SOCKET)) != pi.end();
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

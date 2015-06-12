@@ -33,7 +33,7 @@ public:
 	~AbstractConnectionImpl();
 
 	AbstractConnection::PLAYERINFOS m_registeredPlayers;
-	std::vector<std::string> m_aiPlayers;
+	AbstractConnection::PLAYERNAMES m_aiPlayers;
 };
 
 }

@@ -44,7 +44,7 @@ protected:
 
 private:
 	const bool m_determineSuit;
-	Common::ICard::SUIT m_suit;
+	const Common::ICard::SUIT m_suit;
 };
 
 }

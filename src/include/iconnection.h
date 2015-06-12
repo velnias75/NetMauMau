@@ -137,20 +137,27 @@ public:
 		explicit _nameSockFD(const std::string &name, const std::string &playerPic, SOCKET sockfd,
 							 uint32_t clientVersion);
 		~_nameSockFD();
+
+		inline operator SOCKET() const {
+			return sockfd;
+		}
+
 		std::string name;
 		mutable std::string playerPic;
 		SOCKET sockfd;
 		uint32_t clientVersion;
+
 	} NAMESOCKFD;
 
 	typedef std::vector<NAMESOCKFD> PLAYERINFOS;
+	typedef std::vector<std::string> PLAYERNAMES;
 
 	virtual ~IConnection() {}
 
 	virtual NAMESOCKFD getPlayerInfo(SOCKET sockfd) const = 0;
 	virtual std::string getPlayerName(SOCKET sockfd) const = 0;
 	virtual void removePlayer(SOCKET sockfd) = 0;
-	virtual void addAIPlayers(const std::vector<std::string> &aiPlayers) = 0;
+	virtual void addAIPlayers(const PLAYERNAMES &aiPlayers) = 0;
 
 	virtual bool hasHumanPlayers() const = 0;
 

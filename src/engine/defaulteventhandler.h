@@ -38,9 +38,9 @@ public:
 	virtual bool shutdown() const throw() _CONST;
 	virtual void reset() throw() _CONST;
 
-	virtual void message(const std::string &msg, const std::vector<std::string> &except) const
+	virtual void message(const std::string &msg, const EXCEPTIONS &except) const
 	throw(Common::Exception::SocketException) _CONST;
-	virtual void error(const std::string &msg, const std::vector<std::string> &except) const
+	virtual void error(const std::string &msg, const EXCEPTIONS &except) const
 	throw(Common::Exception::SocketException) _CONST;
 
 	virtual void directionChange() const throw(Common::Exception::SocketException) _CONST;

@@ -89,8 +89,9 @@ struct _AINameCmp : std::binary_function<std::string, std::string, bool> {
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 #pragma GCC diagnostic push
 char *aiName = AI_NAME;
-std::vector<std::string> aiNames;
 #pragma GCC diagnostic pop
+
+NetMauMau::Server::GameContext::AINAMES aiNames;
 
 poptOption poptOptions[] = {
 	{

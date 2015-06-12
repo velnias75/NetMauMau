@@ -100,8 +100,8 @@ private:
 
 private:
 	CAPABILITIES m_caps;
-	uint32_t m_clientMinVer;
-	bool m_inetd;
+	const uint32_t m_clientMinVer;
+	const bool m_inetd;
 	const std::string **const m_aiPlayerImages;
 };
 

@@ -160,10 +160,13 @@ AC_TYPE_PID_T
 AC_C_INLINE
 
 # Checks for library functions.
+AC_LANG_PUSH([C++])
 AS_IF([test "x$cross_compiling" != "xyes"], [
   AC_FUNC_MALLOC
   AC_FUNC_REALLOC
 ])
+AC_CHECK_FUNCS([floor])
+AC_CHECK_FUNCS([strncasecmp])
 AC_CHECK_FUNCS([mkdir])
 AC_CHECK_FUNCS([initstate])
 AC_CHECK_FUNCS([strdup])
@@ -178,6 +181,7 @@ AC_CHECK_FUNC([arc4random_uniform],
 ])
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_CHOWN
+AC_LANG_POP([C++])
 
 # backwards compat with older pkg-config
 # - pull in AC_DEFUN from pkg.m4

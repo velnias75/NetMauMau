@@ -35,18 +35,19 @@ namespace Server {
 class GameContext {
 	GameContext &operator=(const GameContext &);
 public:
+	typedef std::vector<std::string> AINAMES;
+
 	explicit GameContext(const GameContext &);
 	explicit GameContext(Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange,
 						 Common::CARDCONFIG &cc, bool aiPlayer = false,
-						 const std::vector<std::string> &aiName = std::vector<std::string>(),
-						 char aceRound = 0);
+						 const AINAMES &aiNames = AINAMES(), char aceRound = 0);
 	~GameContext();
 
 	inline bool hasAIPlayer() const {
 		return m_aiPlayer;
 	}
 
-	inline const std::vector<std::string> &getAINames() const {
+	inline const AINAMES &getAINames() const {
 		return m_aiNames;
 	}
 
@@ -60,7 +61,7 @@ public:
 
 private:
 	const bool m_aiPlayer;
-	const std::vector<std::string> m_aiNames;
+	const AINAMES m_aiNames;
 	EngineContext m_engineCtx;
 	Common::CARDCONFIG &m_cardConfig;
 };

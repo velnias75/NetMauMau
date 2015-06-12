@@ -38,6 +38,7 @@ class IEventHandler {
 	DISALLOW_COPY_AND_ASSIGN(IEventHandler)
 public:
 	typedef std::vector<Common::ICardPtr> CARDS;
+	typedef std::vector<std::string> EXCEPTIONS;
 
 	virtual ~IEventHandler() {}
 
@@ -47,12 +48,10 @@ public:
 	virtual bool shutdown() const throw() = 0;
 	virtual void reset() throw() = 0;
 
-	virtual void message(const std::string &msg,
-						 const std::vector<std::string> &except = std::vector<std::string>()) const
+	virtual void message(const std::string &msg, const EXCEPTIONS &except = EXCEPTIONS()) const
 	throw(Common::Exception::SocketException) = 0;
 
-	virtual void error(const std::string &msg,
-					   const std::vector<std::string> &except = std::vector<std::string>()) const
+	virtual void error(const std::string &msg, const EXCEPTIONS &except = EXCEPTIONS()) const
 	throw(Common::Exception::SocketException) = 0;
 
 	virtual void directionChange() const throw(Common::Exception::SocketException) = 0;

@@ -34,7 +34,7 @@ public:
 	virtual NAMESOCKFD getPlayerInfo(SOCKET sockfd) const;
 	virtual std::string getPlayerName(SOCKET sockfd) const;
 	virtual void removePlayer(SOCKET sockfd) _CONST;
-	virtual void addAIPlayers(const std::vector<std::string> &aiPlayers) _CONST;
+	virtual void addAIPlayers(const PLAYERNAMES &aiPlayers) _CONST;
 
 	virtual bool hasHumanPlayers() const _CONST;
 

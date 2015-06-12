@@ -38,15 +38,18 @@ public:
 
 	virtual const IConditionPtr &perform(IAIState &state,
 										 const Player::IPlayer::CARDS &cards) const = 0;
-
 protected:
 	typedef struct _suitCount {
 
-		bool operator<(const _suitCount &sc) const {
+		inline _suitCount() : suit(Common::ICard::SUIT_ILLEGAL), count(0) {}
+		inline _suitCount(Common::ICard::SUIT s, Player::IPlayer::CARDS::difference_type c)
+			: suit(s), count(c) {}
+
+		inline bool operator<(const _suitCount &sc) const {
 			return !(count < sc.count);
 		}
 
-		bool operator==(Common::ICard::SUIT s) const {
+		inline bool operator==(Common::ICard::SUIT s) const {
 			return suit == s;
 		}
 

@@ -75,7 +75,7 @@ void EventHandler::reset() throw() {
 }
 
 void EventHandler::message_internal(const std::string &type, const std::string &msg,
-									const std::vector<std::string> &except) const
+									const EXCEPTIONS &except) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	for(Connection::PLAYERINFOS::const_iterator i(m_connection.getPlayers().begin());
@@ -92,7 +92,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 }
 
-void EventHandler::message(const std::string &msg, const std::vector<std::string> &except) const
+void EventHandler::message(const std::string &msg, const EXCEPTIONS &except) const
 throw(NetMauMau::Common::Exception::SocketException) {
 	if(msg != m_lastMsg) {
 		m_lastMsg = msg;

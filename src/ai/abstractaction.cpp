@@ -42,16 +42,18 @@ const NetMauMau::Common::ICard::SUIT SUIT[4] = {
 struct _isSpecialRank : std::binary_function < NetMauMau::Common::ICardPtr,
 		NetMauMau::Common::ICard::RANK, bool > {
 
-	explicit _isSpecialRank(bool nineIsSuspend) : m_nineIsSuspend(nineIsSuspend) {}
+	inline explicit _isSpecialRank(bool nineIsSuspend) : m_nineIsSuspend(nineIsSuspend) {}
 
-	result_type operator()(const first_argument_type &c, second_argument_type r) const {
-		return m_nineIsSuspend && r == NetMauMau::Common::ICard::EIGHT ?
-			   (c == NetMauMau::Common::ICard::EIGHT || c == NetMauMau::Common::ICard::NINE) :
-			   c == r;
+	inline result_type operator()(const first_argument_type &card,
+								  second_argument_type rank) const {
+
+		return m_nineIsSuspend && rank == NetMauMau::Common::ICard::EIGHT ?
+			   (card == NetMauMau::Common::ICard::EIGHT || card == NetMauMau::Common::ICard::NINE)
+			   : card == rank;
 	}
 
 private:
-	bool m_nineIsSuspend;
+	const bool m_nineIsSuspend;
 };
 #pragma GCC diagnostic pop
 
@@ -88,14 +90,8 @@ void AbstractAction::countSuits(SUITCOUNT *suitCount, const IAIState::PLAYEDOUTC
 
 	const bool noCards = myCards.empty();
 
-	for(std::size_t i = 0; i < 4; ++i) {
-
-		const SUITCOUNT sc = {
-			SUIT[i], noCards ? 0 : DecisionBase::count(myCards, SUIT[i])
-		};
-
-		suitCount[i] = sc;
-	}
+	for(std::size_t i = 0; i < 4; ++i) suitCount[i] = SUITCOUNT(SUIT[i],
+				noCards ? 0 : DecisionBase::count(myCards, SUIT[i]));
 
 	if(!noCards) std::sort(suitCount, suitCount + 4);
 }
@@ -126,27 +122,26 @@ AbstractAction::pullSpecialRank(NetMauMau::Player::IPlayer::CARDS &cards,
 						  rank));
 }
 
-NetMauMau::Common::ICardPtr
-AbstractAction::hasRankPath(const NetMauMau::Common::ICardPtr &uc,
-							NetMauMau::Common::ICard::SUIT s, NetMauMau::Common::ICard::RANK r,
-							const NetMauMau::Player::IPlayer::CARDS &c, bool nineIsSuspend) {
+NetMauMau::Common::ICardPtr AbstractAction::hasRankPath(const NetMauMau::Common::ICardPtr &uc,
+		NetMauMau::Common::ICard::SUIT suit, NetMauMau::Common::ICard::RANK rank,
+		const NetMauMau::Player::IPlayer::CARDS &c, bool nineIsSuspend) {
 
-	NetMauMau::Player::IPlayer::CARDS mCards(c);
+	if(c.size() > 1) {
 
-	if(mCards.size() > 1) {
+		NetMauMau::Player::IPlayer::CARDS myCards(c);
 
-		const NetMauMau::Player::IPlayer::CARDS::iterator &e(pullSpecialRank(mCards, r,
+		const NetMauMau::Player::IPlayer::CARDS::iterator &e(pullSpecialRank(myCards, rank,
 				nineIsSuspend));
 
-		if(std::distance(mCards.begin(), e)) {
+		if(std::distance(myCards.begin(), e)) {
 
-			NetMauMau::Player::IPlayer::CARDS::value_type
-			f_src(NetMauMau::Common::find(uc->getSuit(), mCards.begin(), e));
+			const NetMauMau::Player::IPlayer::CARDS::value_type
+			f_src(NetMauMau::Common::find(uc->getSuit(), myCards.begin(), e));
 
 			if(f_src) {
 
-				NetMauMau::Player::IPlayer::CARDS::value_type
-				f_dest(NetMauMau::Common::find(s, mCards.begin(), e));
+				NetMauMau::Player::IPlayer::CARDS::value_type f_dest(NetMauMau::Common::find(suit,
+						myCards.begin(), e));
 
 				if(f_dest) return f_src;
 			}

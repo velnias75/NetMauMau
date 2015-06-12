@@ -30,7 +30,7 @@ NullConnection &NullConnection::getInstance() {
 	return instance;
 }
 
-void NullConnection::addAIPlayers(const std::vector<std::string> &) {}
+void NullConnection::addAIPlayers(const PLAYERNAMES &) {}
 
 Common::IConnection::NAMESOCKFD NullConnection::getPlayerInfo(SOCKET) const {
 	return Common::IConnection::NAMESOCKFD();

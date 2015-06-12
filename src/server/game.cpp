@@ -36,8 +36,9 @@ using namespace NetMauMau::Server;
 
 long Game::m_gameServed = 0L;
 
-Game::Game(GameContext &ctx) throw(NetMauMau::Common::Exception::SocketException) :
-	m_ctx(ctx), m_engine(ctx.getEngineContext()), m_aiPlayers(), m_players(), m_gameIndex(0LL) {
+Game::Game(GameContext &ctx) throw(NetMauMau::Common::Exception::SocketException) : m_ctx(ctx),
+	m_engine(ctx.getEngineContext()), m_db(NetMauMau::DB::SQLite::getInstance()), m_aiPlayers(),
+	m_players(), m_gameIndex(0LL) {
 
 	const std::size_t orgAI = ctx.getAINames().size();
 	const std::size_t maxPl = ctx.getEngineContext().getRuleSet(&m_engine)->getMaxPlayers();
@@ -58,18 +59,18 @@ Game::Game(GameContext &ctx) throw(NetMauMau::Common::Exception::SocketException
 
 			if(!ctx.getAINames()[i].empty()) {
 
-				const std::string &aiSanName(ctx.getAINames()[i][0] == '+' ?
-											 & (ctx.getAINames()[i][1]) : ctx.getAINames()[i]);
+				const GameContext::AINAMES::value_type &aiSanName(ctx.getAINames()[i][0] == '+' ?
+						& (ctx.getAINames()[i][1]) : ctx.getAINames()[i]);
 
 				if(!aiSanName.empty()) {
 
-					const std::string::size_type spos = aiSanName.rfind(':');
+					const GameContext::AINAMES::value_type::size_type spos = aiSanName.rfind(':');
 
 					NetMauMau::Player::IPlayer::TYPE type = NetMauMau::Player::IPlayer::HARD;
 
-					if(spos != std::string::npos && aiSanName.length() > spos &&
-							(aiSanName.substr(spos + 1)[0] == 'e' ||
-							 aiSanName.substr(spos + 1)[0] == 'E')) {
+					if(spos != GameContext::AINAMES::value_type::npos && aiSanName.length() >
+							spos && (aiSanName.substr(spos + 1)[0] == 'e' ||
+									 aiSanName.substr(spos + 1)[0] == 'E')) {
 						type = NetMauMau::Player::IPlayer::EASY;
 					}
 
@@ -117,19 +118,21 @@ Game::COLLECT_STATE Game::collectPlayers(std::size_t minPlayers,
 
 		if(!addPlayer(player)) return Game::REFUSED;
 
-		NetMauMau::DB::SQLite::getInstance()->addPlayerToGame(m_gameIndex,
-				m_engine.getEventHandler().getConnection().getPlayerInfo(player->getSerial()));
+		m_db->addPlayerToGame(m_gameIndex, m_engine.getEventHandler().getConnection().
+							  getPlayerInfo(player->getSerial()));
 
 		if(m_engine.getPlayerCount() == minPlayers) {
 
 			for(std::vector<NetMauMau::Player::AbstractPlayer *>::const_iterator
 					i(m_aiPlayers.begin()); i != m_aiPlayers.end(); ++i) {
 
-				NetMauMau::DB::SQLite::getInstance()->addAIPlayer(*i);
-				NetMauMau::DB::SQLite::getInstance()->addPlayerToGame(m_gameIndex,
-						NetMauMau::Common::IConnection::NAMESOCKFD((*i)->getName(), "",
-								INVALID_SOCKET, MAKE_VERSION(SERVER_VERSION_MAJOR,
-										SERVER_VERSION_MINOR)));
+				const std::vector<NetMauMau::Player::AbstractPlayer *>::value_type p(*i);
+
+				m_db->addAIPlayer(p);
+				m_db->addPlayerToGame(m_gameIndex,
+									  NetMauMau::Common::IConnection::NAMESOCKFD(p->getName(),
+											  "", INVALID_SOCKET, MAKE_VERSION(SERVER_VERSION_MAJOR,
+													  SERVER_VERSION_MINOR)));
 			}
 
 			return ACCEPTED_READY;
@@ -208,14 +211,15 @@ void Game::reset(bool playerLost) throw() {
 			for(std::vector<NetMauMau::Player::AbstractPlayer *>::const_iterator
 					i(m_aiPlayers.begin()); i != m_aiPlayers.end(); ++i) {
 
-				(*i)->reset();
+				std::vector<NetMauMau::Player::AbstractPlayer *>::value_type p(*i);
 
-				NetMauMau::DB::SQLite::getInstance()->
-				logOutPlayer(NetMauMau::Common::IConnection::NAMESOCKFD((*i)->getName(), "",
-							 INVALID_SOCKET, MAKE_VERSION(SERVER_VERSION_MAJOR,
-									 SERVER_VERSION_MINOR)));
+				p->reset();
 
-				m_engine.addPlayer(*i);
+				m_db->logOutPlayer(NetMauMau::Common::IConnection::NAMESOCKFD(p->getName(), "",
+								   INVALID_SOCKET, MAKE_VERSION(SERVER_VERSION_MAJOR,
+										   SERVER_VERSION_MINOR)));
+
+				m_engine.addPlayer(p);
 			}
 
 			m_engine.setAlwaysWait(m_aiPlayers.size() > 1);
@@ -240,9 +244,9 @@ void Game::reset(bool playerLost) throw() {
 }
 
 void Game::gameReady() {
-	NetMauMau::DB::SQLite::getInstance()->gameEnded(m_gameIndex);
+	m_db->gameEnded(m_gameIndex);
 	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Ready for new game...");
-	m_engine.setGameId(m_gameIndex = NetMauMau::DB::SQLite::getInstance()->newGame());
+	m_engine.setGameId(m_gameIndex = m_db->newGame());
 }
 
 void Game::shutdown(const std::string &reason) const throw() {

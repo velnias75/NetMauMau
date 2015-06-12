@@ -69,9 +69,9 @@ private:
 	const NetMauMau::Common::ICardPtr uncoveredCard;
 	const NetMauMau::RuleSet::IRuleSet *const ruleset;
 	const NetMauMau::Common::ICard::SUIT *const suit;
-	NetMauMau::Common::ICard::RANK aceRoundRank;
-	NetMauMau::Common::ICard::RANK ucRank;
-	bool isAceRound;
+	const NetMauMau::Common::ICard::RANK aceRoundRank;
+	const NetMauMau::Common::ICard::RANK ucRank;
+	const bool isAceRound;
 };
 #pragma GCC diagnostic pop
 

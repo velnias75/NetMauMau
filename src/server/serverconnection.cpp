@@ -68,9 +68,15 @@ const char *NOPNG = "";
 #pragma GCC diagnostic push
 struct _isPlayer : std::binary_function < NetMauMau::Common::IConnection::NAMESOCKFD,
 		std::string, bool > {
-	inline result_type operator()(const first_argument_type &nsd,
+	inline result_type operator()(const first_argument_type &nsf,
 								  const second_argument_type &player) const {
-		return nsd.name == player;
+		return nsf.name == player;
+	}
+};
+
+struct _logOutPlayer : std::unary_function<NetMauMau::Common::IConnection::NAMESOCKFD, void> {
+	inline result_type operator()(const argument_type &nsf) const {
+		NetMauMau::DB::SQLite::getInstance()->logOutPlayer(nsf);
 	}
 };
 #pragma GCC diagnostic pop
@@ -506,7 +512,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 					std::size_t j = 0;
 
-					for(std::vector<std::string>::const_iterator i(getAIPlayers().begin());
+					for(PLAYERNAMES::const_iterator i(getAIPlayers().begin());
 							i != getAIPlayers().end(); ++i, ++j) {
 
 						std::string piz(*i);
@@ -702,12 +708,7 @@ bool Connection::isPNG(const std::string &pic) {
 }
 
 void Connection::reset() throw() {
-
-	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
-			i != getRegisteredPlayers().end(); ++i) {
-		NetMauMau::DB::SQLite::getInstance()->logOutPlayer(*i);
-	}
-
+	std::for_each(getRegisteredPlayers().begin(), getRegisteredPlayers().end(), _logOutPlayer());
 	AbstractConnection::reset();
 }
 

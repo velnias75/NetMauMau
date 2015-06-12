@@ -69,12 +69,12 @@ public:
 	virtual ~AbstractConnection();
 
 	virtual NAMESOCKFD getPlayerInfo(SOCKET sockfd) const;
-	virtual std::string getPlayerName(SOCKET sockfd) const;
+	virtual PLAYERNAMES::value_type getPlayerName(SOCKET sockfd) const;
 
 	virtual void removePlayer(SOCKET sockfd);
 	virtual void removePlayer(const INFO &info);
 
-	virtual void addAIPlayers(const std::vector<std::string> &aiPlayers);
+	virtual void addAIPlayers(const PLAYERNAMES &aiPlayers);
 	virtual void wait(long ms) throw(Exception::SocketException);
 
 	virtual bool hasHumanPlayers() const _PURE;
@@ -84,11 +84,10 @@ public:
 protected:
 	explicit AbstractConnection(const char *server, uint16_t port);
 
-	bool registerPlayer(const NAMESOCKFD &nfd,
-						const std::vector<std::string> &ai = std::vector<std::string>());
+	bool registerPlayer(const NAMESOCKFD &nfd, const PLAYERNAMES &ai = PLAYERNAMES());
 
 	const PLAYERINFOS &getRegisteredPlayers() const _PURE;
-	const std::vector<std::string> &getAIPlayers() const _PURE;
+	const PLAYERNAMES &getAIPlayers() const _PURE;
 
 	static bool isHello(std::string::size_type dot, std::string::size_type spc) _CONST;
 	static bool isValidHello(std::string::size_type dot, std::string::size_type spc,

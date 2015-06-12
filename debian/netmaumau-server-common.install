@@ -1,4 +1,4 @@
 /etc/xinetd.d/netmaumau
+/usr/share/bash-completion/completions/nmm-server
 /usr/share/netmaumau/*.PNG
 /usr/share/netmaumau/*.lua
-/usr/share/bash-completion/completions/nmm-server

@@ -33,10 +33,10 @@ JackPlusOneCondition::JackPlusOneCondition() : AbstractCondition() {}
 
 JackPlusOneCondition::~JackPlusOneCondition() {}
 
-IActionPtr JackPlusOneCondition::perform(const IAIState &state,
+IActionPtr JackPlusOneCondition::perform(const IAIState &/*state*/,
 		const NetMauMau::Player::IPlayer::CARDS &cards) const {
 
-	return (state.getPlayerCount() > 2 && cards.size() == 2u &&
+	return (/*state.getPlayerCount() > 2 &&*/ cards.size() == 2u &&
 			!NetMauMau::Common::find(NetMauMau::Common::ICard::SEVEN, cards.begin(), cards.end())
 			&& NetMauMau::Common::find(NetMauMau::Common::ICard::JACK, cards.begin(), cards.end()))
 		   ? JACKPLUSONEACTION : createNextAction(CHECKSEVENCOND);

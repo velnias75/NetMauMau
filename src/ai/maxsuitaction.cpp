@@ -115,6 +115,8 @@ const IConditionPtr &MaxSuitAction::perform(IAIState &state,
 
 	state.setCard(bestCard);
 
+	if(!state.isCardPossible()) state.setCard();
+
 	return ACEROUNDCOND;
 }
 

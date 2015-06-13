@@ -35,10 +35,12 @@ public:
 	virtual ~IAIState() {}
 
 	virtual std::string getName() const = 0;
-	virtual void setCard(const Common::ICardPtr &card) = 0;
+	virtual void setCard(const Common::ICardPtr &card = NetMauMau::Common::ICardPtr()) = 0;
 	virtual Common::ICardPtr getCard() const = 0;
 	virtual std::size_t getCardCount() const = 0;
 	virtual Common::ICardPtr getPlayedCard() const = 0;
+	virtual bool isCardPossible() const = 0;
+	virtual void setPossibleCards(const Player::IPlayer::CARDS &possCards) = 0;
 	virtual const Player::IPlayer::CARDS &getPlayerCards() const = 0;
 	virtual Common::ICardPtr getUncoveredCard() const = 0;
 	virtual const RuleSet::IRuleSet *getRuleSet() const = 0;

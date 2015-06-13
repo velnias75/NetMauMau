@@ -81,7 +81,12 @@ const IConditionPtr &PowerPlayAction::perform(IAIState &state,
 		state.setPowerPlay(false);
 	}
 
-	return state.getCard() ? ACEROUNDCOND : MAXSUITACTION;
+	if(!state.isCardPossible()) {
+		state.setCard();
+		return ACEROUNDCOND;
+	}
+
+	return MAXSUITACTION;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

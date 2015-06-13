@@ -18,19 +18,33 @@
  */
 
 #include "jackplusoneaction.h"
+#include "checksevencondition.h"
+
+namespace {
+const NetMauMau::AI::IConditionPtr CHECKSEVENCOND(new NetMauMau::AI::CheckSevenCondition());
+}
 
 using namespace NetMauMau::AI;
 
 JackPlusOneAction::JackPlusOneAction() : AbstractAction() {}
 
 JackPlusOneAction::~JackPlusOneAction() {}
-#include "logger.h"
+
 const IConditionPtr &JackPlusOneAction::perform(IAIState &state,
 		const NetMauMau::Player::IPlayer::CARDS &cards) const {
-logDebug("***********************");
-	state.setCard(NetMauMau::Common::find(NetMauMau::Common::ICard::JACK, cards.begin(),
-										  cards.end()));
-	return getNullCondition();
+
+	NetMauMau::Player::IPlayer::CARDS myCards(cards);
+
+	push(myCards.begin(), myCards.end(), NetMauMau::Common::ICard::JACK);
+
+	if(!(myCards.front() == state.getAvoidSuit() || myCards.front() == state.getAvoidRank())) {
+
+		state.setCard(NetMauMau::Common::find(NetMauMau::Common::ICard::JACK, myCards.begin(),
+											  myCards.end()));
+		return getNullCondition();
+	}
+
+	return CHECKSEVENCOND;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

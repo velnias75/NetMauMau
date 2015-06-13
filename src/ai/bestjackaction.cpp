@@ -38,11 +38,11 @@ BestJackAction::~BestJackAction() {}
 const IConditionPtr &BestJackAction::perform(IAIState &state,
 		const NetMauMau::Player::IPlayer::CARDS &) const {
 
-	state.setCard(NetMauMau::Common::ICardPtr());
-	const NetMauMau::Common::ICardPtr bc(DecisionChain < CheckSevenCondition,
-										 true > (state).getCard(true));
-	state.setCard((bc && bc != NetMauMau::Common::ICard::SUIT_ILLEGAL) ?
-				  bc : NetMauMau::Common::ICardPtr());
+	state.setCard();
+	const NetMauMau::Common::ICardPtr bc(DecisionChain<CheckSevenCondition, true>(state).
+										 getCard(NetMauMau::Player::IPlayer::CARDS(), true));
+	state.setCard((bc && bc != NetMauMau::Common::ICard::SUIT_ILLEGAL)
+				  ? bc : NetMauMau::Common::ICardPtr());
 
 	return CHECKJACKSUITACTION;
 }

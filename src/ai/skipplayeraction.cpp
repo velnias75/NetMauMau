@@ -55,7 +55,12 @@ const IConditionPtr &SkipPlayerAction::perform(IAIState &state,
 				  AbstractAction::findRankTryAvoidSuit(NetMauMau::Common::ICard::EIGHT, myCards,
 						  avoid));
 
-	return (state.getCard() || state.hasPlayerFewCards()) ? BESTSUITCOND : POWERSUITCOND;
+	if(!state.isCardPossible()) {
+		state.setCard();
+		return BESTSUITCOND;
+	}
+
+	return state.hasPlayerFewCards() ? BESTSUITCOND : POWERSUITCOND;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

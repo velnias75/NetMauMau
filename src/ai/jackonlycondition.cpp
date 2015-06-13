@@ -20,7 +20,7 @@
 #include "jackonlycondition.h"
 
 #include "aceroundaction.h"             // for AceRoundAction
-#include "checksevencondition.h"        // for CheckSevenCondition
+#include "jackplusonecondition.h"
 #include "iruleset.h"                   // for IRuleSet
 #include "playjackaction.h"             // for PlayJackAction
 #include "suspendaction.h"              // for SuspendAction
@@ -29,7 +29,7 @@ namespace {
 const NetMauMau::AI::IActionPtr ACEROUNDACTION(new NetMauMau::AI::AceRoundAction());
 const NetMauMau::AI::IActionPtr PLAYJACKACTION(new NetMauMau::AI::PlayJackAction());
 const NetMauMau::AI::IActionPtr SUSPENDACTION(new NetMauMau::AI::SuspendAction());
-const NetMauMau::AI::IConditionPtr CHECKSEVENCOND(new NetMauMau::AI::CheckSevenCondition());
+const NetMauMau::AI::IConditionPtr JACKPLUSONECOND(new NetMauMau::AI::JackPlusOneCondition());
 }
 
 using namespace NetMauMau::AI;
@@ -41,15 +41,14 @@ JackOnlyCondition::~JackOnlyCondition() {}
 IActionPtr JackOnlyCondition::perform(const IAIState &state,
 									  const NetMauMau::Player::IPlayer::CARDS &cards) const {
 
-	const NetMauMau::Player::IPlayer::CARDS::size_type s(cards.size());
+	const bool oneCard = cards.size() == 1u;
 
-	return state.getRuleSet() ? (state.getRuleSet()->isAceRound() ? ACEROUNDACTION :
-								 ((s == 1 &&
-								   !(state.getUncoveredCard() == NetMauMau::Common::ICard::JACK &&
-									 (*cards.begin()) == NetMauMau::Common::ICard::JACK)) ?
-								  PLAYJACKACTION : (s == 1 ? SUSPENDACTION :
-										  createNextAction(CHECKSEVENCOND)))) :
-			   createNextAction(CHECKSEVENCOND);
+	return state.getRuleSet() ?
+		   (state.getRuleSet()->isAceRound() ? ACEROUNDACTION : ((oneCard &&
+				   !(state.getUncoveredCard() == NetMauMau::Common::ICard::JACK && cards.front() ==
+					 NetMauMau::Common::ICard::JACK)) ? PLAYJACKACTION : (oneCard ? SUSPENDACTION :
+							 createNextAction(JACKPLUSONECOND)))) :
+			   createNextAction(JACKPLUSONECOND);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

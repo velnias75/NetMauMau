@@ -21,7 +21,7 @@ libai_la_CXXFLAGS = $(NO_EXCEPTIONS)
 libai_la_SOURCES = abstractaction.cpp abstractcondition.cpp aceroundaction.cpp \
 	aceroundcondition.cpp bestjackaction.cpp bestsuitcondition.cpp checkjacksuitaction.cpp \
 	checksevencondition.cpp decisionbase.cpp havejackcondition.cpp jackonlycondition.cpp \
-	jackplusonecondition.cpp jackplusoneaction.cpp jacksuitaction.cpp maxsuitaction.cpp \
+	jackplusoneaction.cpp jackplusonecondition.cpp jacksuitaction.cpp maxsuitaction.cpp \
 	nextaction.cpp playjackaction.cpp powerplayaction.cpp powersuitaction.cpp \
 	powersuitcondition.cpp randomjackaction.cpp randomjackcondition.cpp servesevenaction.cpp \
 	skipplayeraction.cpp skipplayercondition.cpp suspendaction.cpp

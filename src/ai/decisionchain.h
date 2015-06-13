@@ -55,7 +55,7 @@ public:
 
 	~DecisionChain() {}
 
-	Common::ICardPtr getCard(bool noJack = false) const;
+	Common::ICardPtr getCard(const Player::IPlayer::CARDS &possCards, bool noJack = false) const;
 
 private:
 	const IConditionPtr m_rootCondition;
@@ -63,7 +63,8 @@ private:
 };
 
 template<class RootCond, bool Jack>
-Common::ICardPtr DecisionChain<RootCond, Jack>::getCard(bool noJack) const {
+Common::ICardPtr DecisionChain<RootCond, Jack>::getCard(const Player::IPlayer::CARDS &possCards,
+		bool noJack) const {
 
 	IConditionPtr cond(m_rootCondition);
 	IActionPtr act;
@@ -71,6 +72,7 @@ Common::ICardPtr DecisionChain<RootCond, Jack>::getCard(bool noJack) const {
 	const bool oj = m_state.isNoJack();
 
 	m_state.setNoJack(noJack);
+	m_state.setPossibleCards(possCards);
 
 #if defined(TRACE_AI) && !defined(NDEBUG)
 

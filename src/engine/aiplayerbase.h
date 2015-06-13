@@ -40,7 +40,7 @@ public:
 	virtual ~AIPlayerBase() {}
 
 	virtual std::string getName() const;
-	virtual int getSerial() const;
+	virtual int  getSerial() const;
 	virtual bool isAIPlayer() const;
 	virtual bool isAlive() const;
 
@@ -65,6 +65,8 @@ public:
 	virtual Common::ICard::SUIT getAvoidSuit() const;
 	virtual Common::ICard::RANK getAvoidRank() const;
 
+	virtual bool isCardPossible() const;
+
 	virtual bool cardAccepted(const Common::ICard *playedCard);
 	virtual void setNeighbourCardStats(std::size_t playerCount,
 									   const std::size_t *const neighbourCount,
@@ -86,6 +88,7 @@ public:
 
 	virtual const CARDS &getPlayerCards() const;
 	virtual const IPlayedOutCards::CARDS &getPlayedOutCards() const;
+	virtual void setPossibleCards(const CARDS &possCards);
 
 	virtual std::size_t getPlayerCount() const;
 
@@ -109,6 +112,11 @@ protected:
 		  m_powerSuit(Common::ICard::SUIT_ILLEGAL), m_powerPlay(false),
 		  m_tryAceRound(false) {}
 
+	explicit AIPlayerBase(const std::string &name, const IPlayedOutCards *poc)
+		: AbstractPlayer(name, poc), AI::BaseAIPlayer<RootCond, RootCondJack>(),
+		  m_powerSuit(Common::ICard::SUIT_ILLEGAL), m_powerPlay(false),
+		  m_tryAceRound(false) {}
+
 	virtual void shuffleCards();
 	virtual std::size_t getTalonFactor() const;
 	virtual bool nineIsSuspend() const;
@@ -123,6 +131,7 @@ private:
 	mutable Common::ICard::SUIT m_powerSuit;
 	mutable bool m_powerPlay;
 	mutable bool m_tryAceRound;
+	Player::IPlayer::CARDS m_possCards;
 };
 
 template<class RootCond, class RootCondJack>
@@ -201,14 +210,15 @@ std::size_t, bool noSuspend) const {
 	AI::BaseAIPlayer<RootCond, RootCondJack>::m_jackSuit =
 		js ? const_cast<Common::ICard::SUIT *>(js) : 0L;
 
-	Common::ICardPtr
-	bestCard(AI::BaseAIPlayer<RootCond, RootCondJack>::getDecisionChain()->getCard());
+	Common::ICardPtr bestCard(AI::BaseAIPlayer<RootCond, RootCondJack>::getDecisionChain()->
+							  getCard(getPossibleCards(uc, js)));
 
 	AI::BaseAIPlayer<RootCond, RootCondJack>::m_playedCard =
 		AI::BaseAIPlayer<RootCond, RootCondJack>::m_card = Common::ICardPtr();
 
 	if(bestCard && bestCard == Common::ICard::JACK && uc == Common::ICard::JACK) {
-		bestCard = AI::BaseAIPlayer<RootCond, RootCondJack>::getDecisionChain()->getCard(true);
+		bestCard = AI::BaseAIPlayer<RootCond, RootCondJack>::getDecisionChain()->
+				   getCard(getPossibleCards(uc, js), true);
 	}
 
 	const Common::ICardPtr &rc(getRuleSet() ? (getRuleSet()->checkCard(uc,
@@ -262,7 +272,9 @@ const Common::ICardPtr &playedCard) const {
 	AI::BaseAIPlayer<RootCond, RootCondJack>::m_uncoveredCard = uncoveredCard;
 
 	const Common::ICardPtr &rc(AI::BaseAIPlayer < RootCond,
-							   RootCondJack >::getJackDecisionChain()->getCard(true));
+							   RootCondJack >::getJackDecisionChain()->getCard(uc ?
+									   getPossibleCards(uc, NULL) : Player::IPlayer::CARDS(),
+									   true));
 	assert(rc);
 	const Common::ICard::SUIT s = rc->getSuit();
 
@@ -366,6 +378,33 @@ template<class RootCond, class RootCondJack>
 inline const IPlayedOutCards::CARDS &AIPlayerBase < RootCond,
 RootCondJack >::getPlayedOutCards() const {
 	return AbstractPlayer::getPlayedOutCards();
+}
+
+template<class RootCond, class RootCondJack>
+inline void AIPlayerBase < RootCond,
+RootCondJack >::setPossibleCards(const Player::IPlayer::CARDS &pc) {
+	m_possCards.insert(m_possCards.end(), pc.begin(), pc.end());
+}
+
+template<class RootCond, class RootCondJack>
+inline bool AIPlayerBase<RootCond, RootCondJack>::isCardPossible() const {
+
+	const bool acceptable = !AI::BaseAIPlayer<RootCond, RootCondJack>::m_card ||
+							(AI::BaseAIPlayer<RootCond, RootCondJack>::m_card &&
+							 Common::find(AI::BaseAIPlayer<RootCond, RootCondJack>::m_card,
+										  m_possCards.begin(), m_possCards.end()));
+
+#if defined(TRACE_AI) && !defined(NDEBUG)
+
+	if(!acceptable && !std::getenv("NMM_NO_TRACE") &&
+			AI::BaseAIPlayer<RootCond, RootCondJack>::m_card) {
+		logDebug("   " << (AI::BaseAIPlayer<RootCond, RootCondJack>::m_card->
+						   description(isatty(fileno(stderr)))) << " is NOT an acceptable card");
+	}
+
+#endif
+
+	return acceptable;
 }
 
 template<class RootCond, class RootCondJack>

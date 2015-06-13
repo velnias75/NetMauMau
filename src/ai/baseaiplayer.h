@@ -47,6 +47,13 @@ protected:
 									IActionPtr(trueAct), IActionPtr(falseAct)))), m_card(),
 		m_uncoveredCard(), m_jackSuit(0L), m_playedCard(), m_noJack(false) {}
 
+	explicit BaseAIPlayer() : IAIState(),
+		m_decisionChain(Common::SmartPtr<DecisionChain<root_condition_type> >
+						(new DecisionChain<root_condition_type>(*this))),
+		m_jackDecisionChain(Common::SmartPtr<DecisionChain<jack_root_condition_type, true> >
+							(new DecisionChain<jack_root_condition_type, true>(*this))), m_card(),
+		m_uncoveredCard(), m_jackSuit(0L), m_playedCard(), m_noJack(false) {}
+
 	virtual Common::ICardPtr getUncoveredCard() const {
 		return m_uncoveredCard;
 	}

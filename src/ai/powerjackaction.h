@@ -17,21 +17,36 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "hardplayer.h"
+#ifndef NETMAUMAU_ENGINE_AI_POWERJACKACTION_H
+#define NETMAUMAU_ENGINE_AI_POWERJACKACTION_H
 
-#include "jackonlycondition.h"          // for JackOnlyCondition
-#include "powerjackcondition.h"         // for PowerJackCondition
+#include "abstractaction.h"             // for AbstractAction
 
-using namespace NetMauMau::Player;
+namespace NetMauMau {
 
-HardPlayer::HardPlayer(const std::string &name, const NetMauMau::IPlayedOutCards *poc)
-	: AIPlayerBase < NetMauMau::AI::JackOnlyCondition,
-	  NetMauMau::AI::PowerJackCondition > (name, poc) {}
+namespace AI {
 
-HardPlayer::~HardPlayer() {}
+class PowerJackAction : public AbstractAction {
+	DISALLOW_COPY_AND_ASSIGN(PowerJackAction)
+public:
+	PowerJackAction();
+	virtual ~PowerJackAction();
 
-IPlayer::TYPE HardPlayer::getType() const {
-	return HARD;
+	virtual const IConditionPtr &perform(IAIState &state,
+										 const Player::IPlayer::CARDS &cards) const;
+#if defined(TRACE_AI) && !defined(NDEBUG)
+protected:
+	virtual inline std::string traceLog() const {
+		return "PowerJackAction";
+	}
+#endif
+
+};
+
 }
+
+}
+
+#endif /* NETMAUMAU_ENGINE_AI_POWERJACKACTION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

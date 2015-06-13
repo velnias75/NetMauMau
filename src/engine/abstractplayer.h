@@ -117,6 +117,10 @@ protected:
 
 	void pushCard(const Common::ICardPtr &card);
 
+protected:
+	mutable Common::ICard::SUIT m_lastPlayedSuit;
+	mutable Common::ICard::RANK m_lastPlayedRank;
+
 private:
 	const std::string m_name;
 	CARDS m_cards;
@@ -130,8 +134,6 @@ private:
 	const EngineContext *m_engineCtx;
 	const ICardCountObserver *m_cardCountObserver;
 	const IPlayedOutCards *const m_poc;
-	Common::ICard::SUIT m_lastPlayedSuit;
-	Common::ICard::RANK m_lastPlayedRank;
 	Common::ICard::SUIT m_avoidSuit;
 	Common::ICard::RANK m_avoidRank;
 	NEIGHBOURRANKSUIT m_neighbourRankSuit;

@@ -276,13 +276,14 @@ const Common::ICardPtr &playedCard) const {
 									   getPossibleCards(uc, NULL) : Player::IPlayer::CARDS(),
 									   true));
 	assert(rc);
-	const Common::ICard::SUIT s = rc->getSuit();
+
+	m_lastPlayedSuit = rc->getSuit();
 
 	AI::BaseAIPlayer<RootCond, RootCondJack>::m_card = oc;
 	AI::BaseAIPlayer<RootCond, RootCondJack>::m_uncoveredCard = uc;
 	AI::BaseAIPlayer<RootCond, RootCondJack>::m_playedCard = Common::ICardPtr();
 
-	return s;
+	return m_lastPlayedSuit;
 }
 
 template<class RootCond, class RootCondJack>

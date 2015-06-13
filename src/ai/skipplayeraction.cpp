@@ -24,7 +24,7 @@
 
 namespace {
 const NetMauMau::AI::IConditionPtr POWERSUITCOND(new NetMauMau::AI::PowerSuitCondition());
-const NetMauMau::AI::IConditionPtr BESTSUITCOND(new NetMauMau::AI::BestSuitCondition());
+const NetMauMau::AI::IConditionPtr BESTJACKCOND(new NetMauMau::AI::BestSuitCondition());
 }
 
 using namespace NetMauMau::AI;
@@ -57,10 +57,10 @@ const IConditionPtr &SkipPlayerAction::perform(IAIState &state,
 
 	if(!state.isCardPossible()) {
 		state.setCard();
-		return BESTSUITCOND;
+		return BESTJACKCOND;
 	}
 
-	return state.hasPlayerFewCards() ? BESTSUITCOND : POWERSUITCOND;
+	return state.hasPlayerFewCards() ? BESTJACKCOND : POWERSUITCOND;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

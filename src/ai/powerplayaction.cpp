@@ -30,7 +30,7 @@
 namespace {
 const NetMauMau::AI::IConditionPtr
 MAXSUITACTION(new NetMauMau::AI::StaticCondition<NetMauMau::AI::MaxSuitAction>());
-const NetMauMau::AI::IConditionPtr HAVEJACKCOND(new NetMauMau::AI::HaveJackCondition());
+const NetMauMau::AI::IConditionPtr BESTJACKCOND(new NetMauMau::AI::HaveJackCondition());
 const NetMauMau::AI::IConditionPtr ACEROUNDCOND(new NetMauMau::AI::AceRoundCondition());
 }
 
@@ -55,7 +55,7 @@ const IConditionPtr &PowerPlayAction::perform(IAIState &state,
 		state.setCard(NetMauMau::Common::ICardPtr(NetMauMau::StdCardFactory().create(s,
 					  NetMauMau::Common::ICard::RANK_ILLEGAL)));
 
-		return HAVEJACKCOND;
+		return BESTJACKCOND;
 
 	} else if(!state.getCard()) {
 

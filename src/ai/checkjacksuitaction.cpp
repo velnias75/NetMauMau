@@ -54,9 +54,9 @@ const IConditionPtr &CheckJackSuitAction::perform(IAIState &state,
 	NetMauMau::Common::ICard::SUIT s = CheckJackSuitAction::findJackChoice(state);
 
 	if(s == NetMauMau::Common::ICard::SUIT_ILLEGAL) {
-		while((state.getUncoveredCard() ==
-				(s = AbstractAction::getSuits()[NetMauMau::Common::genRandom<std::ptrdiff_t>(4)]))
-				|| state.getPlayedCard() == s);
+		while(!((state.getUncoveredCard() ==
+				 (s = AbstractAction::getSuits()[NetMauMau::Common::genRandom<std::ptrdiff_t>(4)]))
+				|| state.getPlayedCard() == s) && s != state.getAvoidSuit());
 	}
 
 	assert(s != NetMauMau::Common::ICard::SUIT_ILLEGAL);

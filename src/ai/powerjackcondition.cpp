@@ -17,21 +17,25 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "hardplayer.h"
+#include "powerjackcondition.h"
 
-#include "jackonlycondition.h"          // for JackOnlyCondition
-#include "powerjackcondition.h"         // for PowerJackCondition
+#include "powerjackaction.h"
+#include "bestjackaction.h"
 
-using namespace NetMauMau::Player;
+namespace {
+const NetMauMau::AI::IActionPtr POWERJACKACTION(new NetMauMau::AI::PowerJackAction());
+const NetMauMau::AI::IActionPtr BESTJACKACTION(new NetMauMau::AI::BestJackAction());
+}
 
-HardPlayer::HardPlayer(const std::string &name, const NetMauMau::IPlayedOutCards *poc)
-	: AIPlayerBase < NetMauMau::AI::JackOnlyCondition,
-	  NetMauMau::AI::PowerJackCondition > (name, poc) {}
+using namespace NetMauMau::AI;
 
-HardPlayer::~HardPlayer() {}
+PowerJackCondition::PowerJackCondition() : AbstractCondition() {}
 
-IPlayer::TYPE HardPlayer::getType() const {
-	return HARD;
+PowerJackCondition::~PowerJackCondition() {}
+
+IActionPtr PowerJackCondition::perform(const IAIState &,
+									   const NetMauMau::Player::IPlayer::CARDS &cards) const {
+	return cards.size() == 1u ? POWERJACKACTION : BESTJACKACTION;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

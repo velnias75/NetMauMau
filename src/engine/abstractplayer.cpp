@@ -80,12 +80,11 @@ private:
 using namespace NetMauMau::Player;
 
 AbstractPlayer::AbstractPlayer(const std::string &name, const NetMauMau::IPlayedOutCards *poc)
-	: IPlayer(), m_name(name), m_cards(), m_cardsTaken(false), m_ruleset(0L),
-	  m_playerHasFewCards(false), m_nineIsSuspend(false), m_neighbourCount(),
-	  m_dirChgEnabled(false), m_playerCount(0), m_engineCtx(0L), m_cardCountObserver(0L),
-	  m_poc(poc), m_lastPlayedSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL),
-	  m_lastPlayedRank(NetMauMau::Common::ICard::RANK_ILLEGAL),
-	  m_avoidSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL),
+	: IPlayer(), m_lastPlayedSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL),
+	  m_lastPlayedRank(NetMauMau::Common::ICard::RANK_ILLEGAL), m_name(name), m_cards(),
+	  m_cardsTaken(false), m_ruleset(0L), m_playerHasFewCards(false), m_nineIsSuspend(false),
+	  m_neighbourCount(), m_dirChgEnabled(false), m_playerCount(0), m_engineCtx(0L),
+	  m_cardCountObserver(0L), m_poc(poc), m_avoidSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL),
 	  m_avoidRank(NetMauMau::Common::ICard::RANK_ILLEGAL), m_neighbourRankSuit() {
 	m_cards.reserve(32);
 }

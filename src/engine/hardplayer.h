@@ -26,12 +26,12 @@ namespace NetMauMau {
 
 namespace AI {
 class JackOnlyCondition;
-class PowerSuitCondition;
+class PowerJackCondition;
 }
 
 namespace Player {
 
-class HardPlayer : public AIPlayerBase<AI::JackOnlyCondition, AI::PowerSuitCondition> {
+class HardPlayer : public AIPlayerBase<AI::JackOnlyCondition, AI::PowerJackCondition> {
 	DISALLOW_COPY_AND_ASSIGN(HardPlayer)
 public:
 	explicit HardPlayer(const std::string &name, const IPlayedOutCards *poc);

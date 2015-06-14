@@ -41,7 +41,7 @@ public:
 
 	virtual void message(const std::string &msg, const EXCEPTIONS &except) const
 	throw(Common::Exception::SocketException);
-	virtual void error(const std::string &msg, const EXCEPTIONS &except) const
+	virtual void error(const std::string &msg, const EXCEPTIONS &except = EXCEPTIONS()) const
 	throw(Common::Exception::SocketException);
 
 	virtual void directionChange() const throw(Common::Exception::SocketException);

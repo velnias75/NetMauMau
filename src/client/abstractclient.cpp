@@ -34,6 +34,8 @@
 #include "interceptederrorexception.h"  // for InterceptedErrorException
 #include "pngcheck.h"                   // for checkPNG
 #include "scoresexception.h"            // for ScoresException
+#include "shutdownexception.h"
+#include "lostconnectionexception.h"
 
 #if defined(_WIN32)
 #undef TRUE
@@ -241,7 +243,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		} catch(const Exception::InterceptedErrorException &e) {
 
-			if(!_pimpl->m_disconnectNow) error(e.what());
+			if(!_pimpl->m_disconnectNow) checkedError(e.what());
 
 			break;
 
@@ -315,7 +317,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		message(msg);
 	} else if(!_pimpl->m_disconnectNow && msg == NetMauMau::Common::Protocol::V15::ERROR) {
 		_pimpl->m_connection >> msg;
-		error(msg);
+		checkedError(msg);
 		return BREAK;
 	} else if(!_pimpl->m_disconnectNow && msg == NetMauMau::Common::Protocol::V15::TURN) {
 
@@ -565,6 +567,24 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 
 	return OK;
+}
+
+void AbstractClientV05::checkedError(const std::string &msg) const
+throw(NetMauMau::Common::Exception::SocketException) {
+
+	if((msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_SHUTDOWNMSG) != std::string::npos)
+			|| (msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_MISCONFIGURED) !=
+				std::string::npos)) {
+		throw NetMauMau::Client::Exception::ShutdownException(msg);
+	}
+
+	if((msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_LOSTCONN) != std::string::npos) ||
+			(msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_LOSTCONNNAMED) !=
+			 std::string::npos)) {
+		throw NetMauMau::Client::Exception::LostConnectionException(msg);
+	}
+
+	error(msg);
 }
 
 uint32_t AbstractClientV05::getClientProtocolVersion() {

@@ -32,6 +32,11 @@ namespace Protocol {
 
 namespace V15 _EXPORT {
 
+extern const std::string ERR_TO_EXC_LOSTCONN;
+extern const std::string ERR_TO_EXC_SHUTDOWNMSG;
+extern const std::string ERR_TO_EXC_LOSTCONNNAMED;
+extern const std::string ERR_TO_EXC_MISCONFIGURED;
+
 extern const std::string ACEROUND;
 extern const std::string ACEROUNDENDED;
 extern const std::string ACEROUNDSTARTED;

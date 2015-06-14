@@ -28,9 +28,13 @@
 #include "logger.h"
 #include "luafatalexception.h"          // for LuaFatalException
 
-namespace {
-const std::string MISCONFIGURED("Misconfigured or compromised server. Please report: ");
-}
+#if defined(_WIN32)
+#undef TRUE
+#undef FALSE
+#undef ERROR
+#endif
+
+#include "protocol.h"
 
 using namespace NetMauMau::Server;
 
@@ -177,7 +181,8 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 
 	try {
 
-		while(ultimate ? m_engine.getPlayerCount() >= 2 : m_engine.getPlayerCount() == minPlayers) {
+		while(ultimate ? m_engine.getPlayerCount() >= 2u :
+				m_engine.getPlayerCount() == minPlayers) {
 			if(!m_engine.nextTurn()) break;
 		}
 
@@ -185,7 +190,7 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 
 	} catch(const NetMauMau::Lua::Exception::LuaFatalException &e) {
 		logFatal(e);
-		m_engine.error(MISCONFIGURED + e.what());
+		m_engine.error(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_MISCONFIGURED + e.what());
 		m_engine.gameOver();
 	}
 
@@ -200,7 +205,7 @@ void Game::reset(bool playerLost) throw() {
 
 	++m_gameServed;
 
-	if(playerLost) m_engine.error("Lost connection to a waiting player.");
+	if(playerLost) m_engine.error(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_LOSTCONN);
 
 	m_engine.reset();
 
@@ -250,7 +255,9 @@ void Game::gameReady() {
 }
 
 void Game::shutdown(const std::string &reason) const throw() {
-	m_engine.error(reason.empty() ? "The server has been shut down" : (MISCONFIGURED + reason));
+	m_engine.error(reason.empty() ? NetMauMau::Common::Protocol::V15::ERR_TO_EXC_SHUTDOWNMSG :
+				   (NetMauMau::Common::Protocol::V15::ERR_TO_EXC_MISCONFIGURED + reason));
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
+

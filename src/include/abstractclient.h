@@ -552,6 +552,9 @@ protected:
 private:
 	typedef enum { OK, NOT_UNDERSTOOD, BREAK } PIRET;
 
+	void checkedError(const std::string &msg) const
+	throw(NetMauMau::Common::Exception::SocketException);
+
 	virtual PIRET playInternal(std::string &msg, std::size_t *cturn, bool *initCardShown,
 							   std::string &cjackSuit,
 							   const NetMauMau::Common::ICard **lastPlayedCard)

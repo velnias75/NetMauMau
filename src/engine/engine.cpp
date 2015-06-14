@@ -57,6 +57,14 @@
 #include "talon.h"                      // for Talon
 #include "ci_char_traits.h"
 
+#if defined(_WIN32)
+#undef TRUE
+#undef FALSE
+#undef ERROR
+#endif
+
+#include "protocol.h"
+
 namespace {
 const std::string TALONUNDERFLOW("TALON-UNDERFLOW: attempt to take more cards from the talon " \
 								 "than available!");
@@ -470,7 +478,8 @@ sevenRule:
 
 				std::ostringstream os;
 
-				os << "Lost connection to player \"" << pName << "\"";
+				os << NetMauMau::Common::Protocol::V15::ERR_TO_EXC_LOSTCONNNAMED
+				   << "\"" << pName << "\"";
 
 				try {
 					getEventHandler().error(os.str(), ex);
@@ -478,7 +487,8 @@ sevenRule:
 
 			} else {
 				try {
-					getEventHandler().error("Lost connection to a player", ex);
+					getEventHandler().error(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_LOSTCONN,
+											ex);
 				} catch(const Common::Exception::SocketException &) {}
 			}
 

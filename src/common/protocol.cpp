@@ -27,6 +27,11 @@ namespace Protocol {
 
 namespace V15 {
 
+const std::string ERR_TO_EXC_LOSTCONN("Lost connection to a player.");
+const std::string ERR_TO_EXC_LOSTCONNNAMED("Lost connection to player ");
+const std::string ERR_TO_EXC_SHUTDOWNMSG("The server has been shut down");
+const std::string ERR_TO_EXC_MISCONFIGURED("Misconfigured or compromised server. Please report: ");
+
 const std::string ACEROUND("ACEROUND");
 const std::string ACEROUNDENDED("ACEROUNDENDED");
 const std::string ACEROUNDSTARTED("ACEROUNDSTARTED");

@@ -59,6 +59,12 @@
 #include <sys/wait.h>
 #endif
 
+#ifdef HAVE_LIBRT
+#include <sys/time.h>
+#include <csignal>
+#include <ctime>
+#endif
+
 #include "logger.h"                     // for BasicLogger, logger, etc
 #include "game.h"                       // for Game, etc
 #include "gamecontext.h"                // for GameConfig
@@ -421,6 +427,8 @@ int main(int argc, const char **argv) {
 											arRank[0] : 'A') : 0));
 			Server::Game game(ctx);
 
+			_game = &game;
+
 			if(cconf.decks != static_cast<std::size_t>(decks)) {
 				logWarning("Adjusted amount of card decks from " << decks << " to " << cconf.decks);
 				decks = static_cast<int>(cconf.decks);
@@ -595,7 +603,7 @@ int main(int argc, const char **argv) {
 					game.reset(true);
 				}
 
-				if(interrupt) game.shutdown();
+// 				if(interrupt) game.shutdown();
 
 				updatePlayerCap(caps, game.getPlayerCount(), con, aiOpponent);
 			}
@@ -607,6 +615,8 @@ int main(int argc, const char **argv) {
 			con.reset();
 			return EXIT_FAILURE;
 		}
+
+		_game = 0L;
 
 #ifndef _WIN32
 	} else {

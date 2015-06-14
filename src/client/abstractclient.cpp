@@ -569,20 +569,26 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	return OK;
 }
 
+bool AbstractClientV05::isLostConnMsg(const std::string &msg) {
+	return (msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_LOSTCONN) != std::string::npos) ||
+		   (msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_LOSTCONNNAMED) !=
+			std::string::npos);
+}
+
+bool AbstractClientV05::isShutdownMsg(const std::string &msg) {
+	return (msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_SHUTDOWNMSG) != std::string::npos)
+		   || (msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_MISCONFIGURED) !=
+			   std::string::npos);
+}
+
 void AbstractClientV05::checkedError(const std::string &msg) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	if((msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_SHUTDOWNMSG) != std::string::npos)
-			|| (msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_MISCONFIGURED) !=
-				std::string::npos)) {
-		throw NetMauMau::Client::Exception::ShutdownException(msg);
-	}
+	logDebug("Client library: " << __PRETTY_FUNCTION__ << ": " << msg);
 
-	if((msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_LOSTCONN) != std::string::npos) ||
-			(msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_LOSTCONNNAMED) !=
-			 std::string::npos)) {
-		throw NetMauMau::Client::Exception::LostConnectionException(msg);
-	}
+	if(isShutdownMsg(msg)) throw NetMauMau::Client::Exception::ShutdownException(msg);
+
+	if(isLostConnMsg(msg)) throw NetMauMau::Client::Exception::LostConnectionException(msg);
 
 	error(msg);
 }

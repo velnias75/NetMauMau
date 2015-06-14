@@ -427,8 +427,6 @@ int main(int argc, const char **argv) {
 											arRank[0] : 'A') : 0));
 			Server::Game game(ctx);
 
-			_game = &game;
-
 			if(cconf.decks != static_cast<std::size_t>(decks)) {
 				logWarning("Adjusted amount of card decks from " << decks << " to " << cconf.decks);
 				decks = static_cast<int>(cconf.decks);
@@ -494,6 +492,8 @@ int main(int argc, const char **argv) {
 			con.setCapabilities(caps);
 
 			while(!interrupt) {
+
+// 				if(interrupt) game.shutdown();
 
 				timeval tv = { 1, 0 };
 
@@ -603,8 +603,6 @@ int main(int argc, const char **argv) {
 					game.reset(true);
 				}
 
-// 				if(interrupt) game.shutdown();
-
 				updatePlayerCap(caps, game.getPlayerCount(), con, aiOpponent);
 			}
 
@@ -615,8 +613,6 @@ int main(int argc, const char **argv) {
 			con.reset();
 			return EXIT_FAILURE;
 		}
-
-		_game = 0L;
 
 #ifndef _WIN32
 	} else {

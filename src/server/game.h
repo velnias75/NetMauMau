@@ -59,6 +59,10 @@ public:
 	void reset(bool playerLost) throw();
 	void shutdown(const std::string &reason = std::string()) const throw();
 
+	static void setInterrupted() {
+		m_interrupted = true;
+	}
+
 	inline static long getServedGames() {
 		return m_gameServed;
 	}
@@ -69,6 +73,7 @@ private:
 
 private:
 	static long m_gameServed;
+	static bool m_interrupted;
 
 	const GameContext &m_ctx;
 	Engine m_engine;

@@ -32,13 +32,8 @@
 
 namespace NetMauMau _LOCAL {
 
-namespace Server {
-class Game;
-}
-
 extern volatile bool interrupt;
 
-extern NetMauMau::Server::Game *_game;
 extern std::size_t minPlayers;
 extern char *arRank;
 extern int decks;

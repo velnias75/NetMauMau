@@ -552,6 +552,9 @@ protected:
 private:
 	typedef enum { OK, NOT_UNDERSTOOD, BREAK } PIRET;
 
+	static bool isShutdownMsg(const std::string &msg);
+	static bool isLostConnMsg(const std::string &msg);
+
 	void checkedError(const std::string &msg) const
 	throw(NetMauMau::Common::Exception::SocketException);
 

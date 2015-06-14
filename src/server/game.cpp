@@ -39,6 +39,7 @@
 using namespace NetMauMau::Server;
 
 long Game::m_gameServed = 0L;
+bool Game::m_interrupted = false;
 
 Game::Game(GameContext &ctx) throw(NetMauMau::Common::Exception::SocketException) : m_ctx(ctx),
 	m_engine(ctx.getEngineContext()), m_db(NetMauMau::DB::SQLite::getInstance()), m_aiPlayers(),
@@ -183,7 +184,13 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 
 		while(ultimate ? m_engine.getPlayerCount() >= 2u :
 				m_engine.getPlayerCount() == minPlayers) {
+
 			if(!m_engine.nextTurn()) break;
+
+			if(m_interrupted) {
+				shutdown();
+				break;
+			}
 		}
 
 		if(ultimate || m_ctx.hasAIPlayer()) m_engine.gameOver();
@@ -204,6 +211,8 @@ void Game::removePlayer(const std::string &player) {
 void Game::reset(bool playerLost) throw() {
 
 	++m_gameServed;
+
+	m_interrupted = false;
 
 	if(playerLost) m_engine.error(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_LOSTCONN);
 
@@ -260,4 +269,3 @@ void Game::shutdown(const std::string &reason) const throw() {
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
-

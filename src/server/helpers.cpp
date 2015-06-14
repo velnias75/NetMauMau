@@ -65,7 +65,6 @@ namespace NetMauMau {
 
 volatile bool interrupt = false;
 
-NetMauMau::Server::Game *_game = 0L;
 double aiDelay = 1.0;
 bool aceRound = false;
 int decks = 1;
@@ -124,11 +123,8 @@ char *inetdParsedString(char *str) {
 }
 
 void sh_interrupt(int) {
-
 	logWarning(Common::Logger::time(TIMEFORMAT) << "Server is about to shut down");
-
-	if(_game) _game->shutdown();
-
+	Server::Game::setInterrupted();
 	Server::EventHandler::setInterrupted();
 	interrupt = true;
 }

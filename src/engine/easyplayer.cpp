@@ -21,6 +21,8 @@
 #include "config.h"                     // IWYU pragma: keep
 #endif
 
+#include <ctime>
+
 #include "easyplayer.h"
 
 #include "random_gen.h"                 // for genRandom

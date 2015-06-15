@@ -352,7 +352,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 						info.name = namePic.substr(0, namePic.find('\0'));
 
-						if(namePic.empty() || namePic == "+") refuse = true;
+						if(!(!namePic.empty() && namePic != '+')) refuse = true;
 
 						if(cver >= minver && cver <= maxver && !refuse) {
 

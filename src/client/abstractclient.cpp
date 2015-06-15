@@ -363,7 +363,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		endReceivePlayerPicture(msg);
 
-		const bool hasPlPic = !(plPic == "-" || plPicPng.empty());
+		const bool hasPlPic = (!plPicPng.empty() && plPic != '-');
 
 		playerJoined(msg, hasPlPic ? plPicPng.data() : 0L,
 					 hasPlPic ? plPicPng.size() : 0);

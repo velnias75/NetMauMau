@@ -184,11 +184,10 @@ local function isCardAcceptable(uncoveredCard, playedCard)
   if inAceRound and playedCard.RANK == nmm_aceRound.RANK then
     return true
   elseif not inAceRound then
-    return (playedCard.RANK == RANK.JACK and uncoveredCard.RANK ~= RANK.JACK)
-          or (((isJackMode() and getJackSuit() == playedCard.SUIT)
-            or (not isJackMode() and (uncoveredCard.SUIT == playedCard.SUIT
-                or (uncoveredCard.RANK == playedCard.RANK))))
-              and not (playedCard.RANK == RANK.JACK and uncoveredCard.RANK == RANK.JACK))
+    return playedCard.RANK == RANK.JACK and uncoveredCard.RANK ~= RANK.JACK
+            or (isJackMode() and getJackSuit() == playedCard.SUIT or not isJackMode() and not
+                 (uncoveredCard.SUIT ~= playedCard.SUIT and uncoveredCard.RANK ~= playedCard.RANK))
+            and not (playedCard.RANK == RANK.JACK and uncoveredCard.RANK == RANK.JACK)
   else
     return false
   end

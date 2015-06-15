@@ -518,7 +518,7 @@ sevenRule:
 void Engine::handleWinner(const Player::IPlayer *player) throw(Common::Exception::SocketException) {
 
 	PLAYERS::iterator f(m_players.begin());
-	std::advance(f, m_nxtPlayer);
+	std::advance(f, std::min(m_players.size() - 1u, m_nxtPlayer));
 
 	if(f != m_players.end()) m_players.erase(f);
 

@@ -21,6 +21,7 @@
 #include "config.h"                     // for PACKAGE_NAME, etc
 #endif
 
+#include <algorithm>
 #include <cstdlib>                      // for NULL, strtoll, strtoul
 #include <cstring>                      // for strncmp, memcpy
 #include <sstream>                      // for operator<<, ostringstream, etc
@@ -36,7 +37,7 @@
 #include "connectionrejectedexception.h"
 #include "gamerunningexception.h"       // for GameRunningException
 #include "interceptederrorexception.h"  // for InterceptedErrorException
-#include "nonetmaumauserverexception.h"  // for NoNetMauMauServerException
+#include "nonetmaumauserverexception.h" // for NoNetMauMauServerException
 #include "playerlistexception.h"        // for PlayerlistException
 #include "protocolerrorexception.h"     // for ProtocolErrorException
 #include "scoresexception.h"            // for ScoresException
@@ -72,7 +73,7 @@ Connection::~Connection() {
 
 void Connection::init() {
 	if(_pimpl->m_pName.length() > MAX_PNAME - 1) {
-		_pimpl->m_pName = _pimpl->m_pName.substr(0, MAX_PNAME - 1);
+		_pimpl->m_pName.substr(0, MAX_PNAME - 1).swap(_pimpl->m_pName);
 	}
 }
 
@@ -363,16 +364,28 @@ std::string Connection::wireError(const std::string &err) const {
 Connection &Connection::operator>>(std::string &msg)
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	char c;
 	std::string str;
+	std::size_t   l;
+	char  buf[1024];
 
-	while(recv(&c, 1, getSocketFD()) > 0 && c != '\0') str.append(1, c);
+	ConnectionImpl::BUFFER::iterator f;
 
-	msg = str;
+	while(_pimpl->m_buf.empty() || (f = std::find(_pimpl->m_buf.begin(),
+										_pimpl->m_buf.end(), '\0')) == _pimpl->m_buf.end()) {
+
+		if((l = recv(buf, 1024, getSocketFD())) > 0) {
+			_pimpl->m_buf.insert(_pimpl->m_buf.end(), buf, buf + l);
+		}
+	}
+
+	str.insert(str.begin(), _pimpl->m_buf.begin(), f);
+
+	_pimpl->m_buf.erase(_pimpl->m_buf.begin(), f + 1);
+
+	str.swap(msg);
 
 	if(msg.empty()) {
-		throw Exception::InterceptedErrorException("Lost connection to server",
-				getSocketFD());
+		throw Exception::InterceptedErrorException("Lost connection to server", getSocketFD());
 	} else if(msg == NetMauMau::Common::Protocol::V15::ERROR) {
 
 		std::string errMsg;
@@ -403,9 +416,11 @@ Connection::_base64RAII::operator const IBase64 *() {
 }
 
 Connection::_base64RAII &Connection::_base64RAII::operator=(const IBase64 *b) {
+
 	if(m_base64) delete m_base64;
 
 	m_base64 = b;
+
 	return *this;
 }
 

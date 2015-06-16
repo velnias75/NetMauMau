@@ -97,6 +97,8 @@ extern const GSLRNG<std::ptrdiff_t> RNG;
  * @param ubound upper bound
  * @return the random number
  */
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic push
 template<typename T>
 inline T genRandom(T ubound) {
 #if defined(HAVE_GSL)
@@ -107,6 +109,7 @@ inline T genRandom(T ubound) {
 	return ubound > 0 ? (std::rand() % ubound) : 0;
 #endif
 }
+#pragma GCC diagnostic pop
 
 }
 

@@ -16,9 +16,9 @@ noinst_HEADERS = abstractaction.h abstractcondition.h aceroundaction.h aceroundc
 	randomjackcondition.h servesevenaction.h skipplayeraction.h skipplayercondition.h \
 	staticcondition.h suspendaction.h
 
-libai_la_CPPFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
-	-I$(top_srcdir)/src/engine $(GSL)
-libai_la_CXXFLAGS = $(NO_EXCEPTIONS)
+libai_la_CPPFLAGS = $(GSL)
+libai_la_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
+	-I$(top_srcdir)/src/engine $(NO_EXCEPTIONS)
 libai_la_SOURCES = abstractaction.cpp abstractcondition.cpp aceroundaction.cpp \
 	aceroundcondition.cpp bestjackaction.cpp bestsuitcondition.cpp checkjacksuitaction.cpp \
 	checksevencondition.cpp decisionbase.cpp havejackcondition.cpp jackonlycondition.cpp \

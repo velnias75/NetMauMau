@@ -686,17 +686,6 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	return *this;
 }
 
-Connection &Connection::operator>>(std::string &msg)
-throw(NetMauMau::Common::Exception::SocketException) {
-
-	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
-			i != getRegisteredPlayers().end(); ++i) {
-		msg = read(i->sockfd);
-	}
-
-	return *this;
-}
-
 void Connection::intercept() throw(NetMauMau::Common::Exception::SocketException) {
 	INFO info;
 	accept(info, true);

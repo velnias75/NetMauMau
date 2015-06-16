@@ -17,12 +17,22 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
+#include "config.h"
+#endif
+
 #include "testclient.h"
 
+#include <ctime>
 #include <iomanip>                      // for operator<<, setw
 #include <iostream>                     // for basic_ostream, operator<<, etc
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #include "cardtools.h"                  // for ansiSuit, getSuitSymbols, etc
+#include "random_gen.h"
 #include "ci_char_traits.h"
 
 namespace {
@@ -46,9 +56,14 @@ const std::string BOLD_OFF;
 }
 
 TestClient::TestClient(const std::string &pName, const std::string &server, uint16_t port,
-					   const unsigned char *pngData, std::size_t pngDataLen)
+					   const unsigned char *pngData, std::size_t pngDataLen, bool autoPlay,
+					   int delay)
 	: NetMauMau::Client::AbstractClient(pName, pngData, pngDataLen, server, port, CLIENTVERSION),
-	  m_myCards() {}
+	  m_myCards(), m_autoPlay(autoPlay), m_delay(delay) {
+#ifndef HAVE_ARC4RANDOM_UNIFORM
+	std::srand(static_cast<unsigned int>(std::time(0L)));
+#endif
+}
 
 TestClient::~TestClient() {}
 
@@ -86,6 +101,12 @@ void TestClient::stats(const STATS &s) const {
 	}
 
 	if(mau) std::cout << "\a";
+
+#ifdef HAVE_UNISTD_H
+
+	if(m_autoPlay && m_delay > 0) sleep(m_delay);
+
+#endif
 }
 
 NetMauMau::Common::ICard *TestClient::playCard(const CARDS &cards, std::size_t tc) const {
@@ -118,7 +139,13 @@ NetMauMau::Common::ICard *TestClient::playCard(const CARDS &cards, std::size_t t
 		}
 
 		std::cout << "Choose: ";
-		std::cin >> pos;
+
+		if(!m_autoPlay) {
+			std::cin >> pos;
+		} else {
+			pos = tc ? 1u : (pos ? 1u + NetMauMau::Common::genRandom(pos - 1u) : 0u);
+			std::cout << pos << std::endl;
+		}
 
 	} while(pos > possibleCards.size() + (tc ? 1 : 0));
 
@@ -149,7 +176,13 @@ NetMauMau::Common::ICard::SUIT TestClient::getJackSuitChoice() const {
 		}
 
 		std::cout << "Choose: ";
-		std::cin >> pos;
+
+		if(!m_autoPlay) {
+			std::cin >> pos;
+		} else {
+			pos = pos ? 1u + NetMauMau::Common::genRandom(pos - 1u) : 0u;
+			std::cout << pos << std::endl;
+		}
 
 	} while(pos < 1 || pos > 4);
 
@@ -160,8 +193,13 @@ bool TestClient::getAceRoundChoice() const {
 
 	std::cout << "Do you want to start/continue an ace round? (y/n) ";
 
-	std::string acr;
-	std::cin >> acr;
+	std::string acr = NetMauMau::Common::genRandom(1u) ? "N" : "Y";
+
+	if(!m_autoPlay) {
+		std::cin >> acr;
+	} else {
+		std::cout << acr << std::endl;
+	}
 
 	return NetMauMau::Common::ci_char_traits::eq(acr[0], 'Y');
 }
@@ -241,8 +279,10 @@ void TestClient::cardAccepted(const NetMauMau::Common::ICard *card) const {
 }
 
 void TestClient::jackSuit(NetMauMau::Common::ICard::SUIT suit) const {
-	std::cout << "Suit chosen by Jack is " << NetMauMau::Common::suitToSymbol(suit, true, true)
-			  << std::endl;
+	if(suit != NetMauMau::Common::ICard::SUIT_ILLEGAL) {
+		std::cout << "Suit chosen by Jack is " << NetMauMau::Common::suitToSymbol(suit, true, true)
+				  << std::endl;
+	}
 }
 
 void TestClient::playerPicksCard(const std::string &player,

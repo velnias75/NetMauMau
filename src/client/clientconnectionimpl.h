@@ -20,6 +20,8 @@
 #ifndef NETMAUMAU_CLIENTCONNECTIONIMPL_H
 #define NETMAUMAU_CLIENTCONNECTIONIMPL_H
 
+#include <deque>
+
 #include "clientconnection.h"           // for Connection, etc
 
 namespace NetMauMau {
@@ -38,12 +40,14 @@ public:
 	bool hello(uint16_t *maj = 0L, uint16_t *min = 0L) throw(Common::Exception::SocketException);
 
 public:
+	typedef std::deque<std::string::traits_type::char_type> BUFFER;
 	Connection *const _piface;
 
 	std::string m_pName;
 	const timeval *m_timeout;
 	uint32_t m_clientVersion;
 	Connection::BASE64RAII &m_base64;
+	BUFFER m_buf;
 };
 
 }

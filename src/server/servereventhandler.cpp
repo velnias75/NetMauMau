@@ -95,8 +95,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 void EventHandler::message(const std::string &msg, const EXCEPTIONS &except) const
 throw(NetMauMau::Common::Exception::SocketException) {
 	if(msg != m_lastMsg) {
-		m_lastMsg = msg;
-		message_internal(NetMauMau::Common::Protocol::V15::MESSAGE, msg, except);
+		message_internal(NetMauMau::Common::Protocol::V15::MESSAGE, m_lastMsg = msg, except);
 	}
 }
 

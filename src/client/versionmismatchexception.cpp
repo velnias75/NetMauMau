@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -36,7 +36,7 @@ VersionMismatchException::VersionMismatchException(uint32_t serverVersion, uint3
 	   << static_cast<uint16_t>(m_serverVersion >> 16) << "."
 	   << static_cast<uint16_t>(m_serverVersion);
 
-	m_vMsg = os.str();
+	os.str().swap(m_vMsg);
 }
 
 VersionMismatchException::~VersionMismatchException() throw() {}

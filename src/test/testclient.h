@@ -28,7 +28,8 @@ class TestClient : public NetMauMau::Client::AbstractClient {
 	DISALLOW_COPY_AND_ASSIGN(TestClient)
 public:
 	explicit TestClient(const std::string &pName, const std::string &server, uint16_t port,
-						const unsigned char *pngData, std::size_t pngDataLen);
+						const unsigned char *pngData, std::size_t pngDataLen, bool autoPlay,
+						int delay);
 	virtual ~TestClient();
 
 protected:
@@ -76,6 +77,8 @@ protected:
 
 private:
 	mutable CARDS m_myCards;
+	const bool m_autoPlay;
+	const int m_delay;
 };
 
 #endif /* NETMAUMAU_TESTCLIENT_H */

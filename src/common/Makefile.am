@@ -5,7 +5,7 @@ BUILT_SOURCES = ai-icon.h
 
 noinst_HEADERS = abstractconnectionimpl.h abstractsocketimpl.h base64.h basiclogger.h \
 	ci_char_traits.h errorstring.h icardfactory.h iplayer.h logger.h mimemagic.h pngcheck.h \
-	protocol.h random_gen.h smartptr.h
+	protocol.h smartptr.h
 
 DISTCLEANFILES = ai-icon.h
 
@@ -29,7 +29,7 @@ libnetmaumaucommon_private_la_LIBADD = $(MAGIC_LIBS)
 
 libnetmaumaucommon_la_CPPFLAGS = $(GSL) -DNMM_EXE_PATH=\"$(bindir)\" \
 	-DNMM_EXE_NAME=\"nmm-server$(EXEEXT)\"
-libnetmaumaucommon_la_CXXFLAGS = -I$(top_srcdir)/src/include
+libnetmaumaucommon_la_CXXFLAGS = -I$(top_srcdir)/src/include 
 libnetmaumaucommon_la_SOURCES = abstractconnection.cpp abstractconnectionimpl.cpp \
 	abstractsocket.cpp abstractsocketimpl.cpp base64.cpp logger.cpp socketexception.cpp
 libnetmaumaucommon_la_LIBADD = libnetmaumaucommon_private.la

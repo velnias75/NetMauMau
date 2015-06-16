@@ -112,16 +112,6 @@ struct PlayerNameEqual : std::binary_function < NetMauMau::Player::IPlayer *,
 #pragma GCC diagnostic pop
 }
 
-#if defined(HAVE_GSL)
-namespace NetMauMau _EXPORT {
-
-namespace Common _EXPORT {
-const GSLRNG<std::ptrdiff_t> RNG;
-}
-
-}
-#endif
-
 using namespace NetMauMau;
 
 Engine::Engine(EngineContext &ctx) throw(Common::Exception::SocketException) : ITalonChange(),

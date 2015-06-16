@@ -46,14 +46,23 @@ using namespace NetMauMau::Client;
 
 ConnectionImpl::ConnectionImpl(Connection *piface, const std::string &pName,
 							   const timeval *timeout, uint32_t clientVersion) : _piface(piface),
-	m_pName(pName), m_timeout(timeout), m_clientVersion(clientVersion), m_base64(DEFAULTBASE64) {}
+	m_pName(pName), m_timeout(timeout), m_clientVersion(clientVersion), m_base64(DEFAULTBASE64),
+	m_buf() {}
 
 ConnectionImpl::ConnectionImpl(Connection *piface, const std::string &pName,
 							   const timeval *timeout, uint32_t clientVersion,
 							   Connection::BASE64RAII &base64) : _piface(piface),
-	m_pName(pName), m_timeout(timeout), m_clientVersion(clientVersion), m_base64(base64) {}
+	m_pName(pName), m_timeout(timeout), m_clientVersion(clientVersion), m_base64(base64),
+	m_buf() {}
 
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
+#pragma GCC diagnostic push
+#endif
 ConnectionImpl::~ConnectionImpl() {}
+#ifndef __clang__
+#pragma GCC diagnostic pop
+#endif
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic push

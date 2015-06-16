@@ -17,11 +17,16 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
+#include "config.h"
+#endif
+
 #include <popt.h>                       // for POPT_ARG_VAL, poptBadOption, etc
 #include <cstdlib>                      // for NULL, EXIT_FAILURE, etc
 #include <iomanip>                      // for operator<<, setw
 #include <iostream>                     // for basic_ostream, operator<<, etc
 #include <sstream>                      // IWYU pragma: keep
+#include <ctime>
 #include <stdbool.h>
 
 #include "testclient.h"                 // for TestClient
@@ -41,6 +46,9 @@ const std::string BOLD_OFF;
 #endif
 
 bool noImg = true;
+bool autoPlay = false;
+
+int delay = 1;
 
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 #pragma GCC diagnostic push
@@ -55,6 +63,16 @@ poptOption poptOptions[] = {
 		0, "Set the name of the player", "NAME"
 	},
 	{ "player-image", 'i', POPT_ARG_VAL, &noImg, 0, "Send a test player image", NULL },
+	{
+		"autoplay", 'a', POPT_ARG_VAL, &autoPlay,
+		1, "Automatically plays the first possible choice", NULL
+	},
+#ifdef HAVE_UNISTD_H
+	{
+		"delay", 'D', POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &delay,
+		0, "In auoplay mode delay before turn", "SECONDS"
+	},
+#endif
 	{ "caps", 'c', POPT_ARG_VAL, &showCaps, 1, "Display the server capabilities", NULL },
 	POPT_AUTOHELP
 	POPT_TABLEEND
@@ -95,7 +113,7 @@ int main(int argc, const char **argv) {
 	}
 
 	TestClient client(pName, server, port, noImg ? 0L : test_client_img, noImg ? 0 :
-					  sizeof(test_client_img));
+					  sizeof(test_client_img), autoPlay, delay);
 
 	try {
 		struct timeval tv = { 120, 0 };
@@ -111,7 +129,15 @@ int main(int argc, const char **argv) {
 			}
 
 		} else {
+
+			const std::time_t stime = std::time(0L);
+
 			client.play(&tv);
+
+			const std::time_t etime = std::time(0L) - stime;
+
+			std::cout << std::endl << "Playing time: " << (etime / 60) << ":" << (etime % 60)
+					  << std::endl;
 
 			const Client::Connection::SCORES &scores(client.getScores());
 

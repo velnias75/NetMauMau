@@ -203,7 +203,7 @@ void sh_dump(int, siginfo_t *info, void *) {
 		out << "Ultimate: " << ultimate << std::endl;
 
 		char sr[128];
-		std::snprintf(sr, 127, "Total received %.2f kb; total sent %.2f kb",
+		std::snprintf(sr, 127, "Total received %.2f kBytes; total sent %.2f kBytes",
 					  static_cast<double>(Common::AbstractSocket::getTotalReceivedBytes()) / 1024.0,
 					  static_cast<double>(Common::AbstractSocket::getTotalSentBytes()) / 1024.0);
 

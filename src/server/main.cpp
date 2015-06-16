@@ -403,7 +403,7 @@ int main(int argc, const char **argv) {
 							   MAKE_VERSION(MIN_MAJOR, MIN_MINOR), false, port,
 							   *host ? host : NULL);
 
-		ultimate = (!aiOpponent && minPlayers > 2) ? ultimate : !aiNames.empty();
+		ultimate = (!aiOpponent && minPlayers > 2) ? ultimate : true;
 
 		if(ultimate) logInfo("Running in ultimate mode");
 

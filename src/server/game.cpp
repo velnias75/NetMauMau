@@ -245,7 +245,7 @@ void Game::reset(bool playerLost) throw() {
 
 	char sr[128];
 
-	std::snprintf(sr, 127, "Received %.2f kb; sent %.2f kb", static_cast<double>
+	std::snprintf(sr, 127, "Received %.2f kBytes; sent %.2f kBytes", static_cast<double>
 				  (NetMauMau::Common::AbstractSocket::getReceivedBytes()) / 1024.0,
 				  static_cast<double>(NetMauMau::Common::AbstractSocket::getSentBytes()) / 1024.0);
 
@@ -259,7 +259,7 @@ void Game::reset(bool playerLost) throw() {
 
 void Game::gameReady() {
 	m_db->gameEnded(m_gameIndex);
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Ready for new game...");
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Ready for new game …");
 	m_engine.setGameId(m_gameIndex = m_db->newGame());
 }
 

@@ -370,8 +370,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	ConnectionImpl::BUFFER::iterator f;
 
-	while(_pimpl->m_buf.empty() || (f = std::find(_pimpl->m_buf.begin(),
-										_pimpl->m_buf.end(), '\0')) == _pimpl->m_buf.end()) {
+	while(!(!_pimpl->m_buf.empty() && (f = std::find(_pimpl->m_buf.begin(),
+										   _pimpl->m_buf.end(), '\0')) != _pimpl->m_buf.end())) {
 
 		if((l = recv(buf, 1024, getSocketFD())) > 0) {
 			_pimpl->m_buf.insert(_pimpl->m_buf.end(), buf, buf + l);

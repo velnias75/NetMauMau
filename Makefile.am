@@ -53,13 +53,19 @@ start-server.sh: $(top_srcdir)/start-server.sh.in
 if CHECKCPP
 # suppression template: // cppcheck-suppress {id}
 cppcheck:
+	@echo "Running $(CPPCHECK) …" ; \
 	$(CPPCHECK) $(srcdir)/src -q --inline-suppr --enable=style,performance \
 		--std=posix --std=c++03 --template="{file}:{line}: {severity}: {message} ({id})" \
-		--inconclusive -I$(builddir) -I$(srcdir)/src/include -I$(srcdir)/src/common \
-		-I$(srcdir)/src/sqlite -I$(srcdir)/src/lua -I$(srcdir)/src/ai \
-		-I$(srcdir)/src/engine -I$(srcdir)/src/server -I$(srcdir)/src/client \
-		-I$(srcdir)/src/test -i$(srcdir)/src/test
+		--inconclusive -I$(abs_top_builddir) -I$(abs_top_srcdir)/src/ai \
+		-I$(abs_top_srcdir)/src/client -I$(abs_top_srcdir)/src/common \
+		-I$(abs_top_srcdir)/src/engine -I$(abs_top_srcdir)/src/images \
+		-I$(abs_top_srcdir)/src/include -I$(abs_top_srcdir)/src/lua \
+		-I$(abs_top_srcdir)/src/server -I$(abs_top_srcdir)/src/sqlite \
+		-I$(abs_top_builddir)/src/common -i$(srcdir)/src/test
 endif
+
+deheader:
+	$(MAKE) -C$(top_builddir)/src deheader
 
 bashcompdir = @bashcompdir@
 

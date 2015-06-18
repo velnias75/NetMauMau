@@ -22,7 +22,6 @@
 #endif
 
 #include <algorithm>
-#include <cstdlib>                      // for NULL, strtoll, strtoul
 #include <cstring>                      // for strncmp, memcpy
 #include <sstream>                      // for operator<<, ostringstream, etc
 

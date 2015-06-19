@@ -142,6 +142,10 @@ Talon::CARDSTACK::container_type Talon::createCards(std::size_t factor) throw() 
 
 Talon::~Talon() {}
 
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
+#pragma GCC diagnostic push
+#endif
 const IPlayedOutCards::CARDS &Talon::getCards() const {
 
 	if(m_uncoveredDirty) {
@@ -162,6 +166,9 @@ const IPlayedOutCards::CARDS &Talon::getCards() const {
 
 	return m_playedOutCards;
 }
+#ifndef __clang__
+#pragma GCC diagnostic pop
+#endif
 
 Common::ICardPtr Talon::uncoverCard() {
 	m_uncovered.push(top());

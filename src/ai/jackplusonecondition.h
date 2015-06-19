@@ -30,7 +30,7 @@ class JackPlusOneCondition : public AbstractCondition {
 	DISALLOW_COPY_AND_ASSIGN(JackPlusOneCondition)
 public:
 	JackPlusOneCondition();
-	virtual ~JackPlusOneCondition();
+	virtual ~JackPlusOneCondition() _CONST;
 
 	virtual IActionPtr perform(const IAIState &state, const Player::IPlayer::CARDS &cards) const;
 

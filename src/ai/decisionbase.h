@@ -30,7 +30,7 @@ namespace AI {
 class DecisionBase {
 	DISALLOW_COPY_AND_ASSIGN(DecisionBase)
 public:
-	virtual ~DecisionBase();
+	virtual ~DecisionBase() _CONST;
 
 	static Player::IPlayer::CARDS removeJack(const Player::IPlayer::CARDS &cards);
 

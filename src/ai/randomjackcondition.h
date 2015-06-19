@@ -30,7 +30,7 @@ class RandomJackCondition : public AbstractCondition {
 	DISALLOW_COPY_AND_ASSIGN(RandomJackCondition)
 public:
 	RandomJackCondition();
-	virtual ~RandomJackCondition();
+	virtual ~RandomJackCondition() _CONST;
 
 	virtual IActionPtr perform(const IAIState &state, const Player::IPlayer::CARDS &cards) const;
 

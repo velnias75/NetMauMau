@@ -30,7 +30,7 @@ class PlayJackAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(PlayJackAction)
 public:
 	PlayJackAction();
-	virtual ~PlayJackAction();
+	virtual ~PlayJackAction() _CONST;
 
 	virtual const IConditionPtr &perform(IAIState &state,
 										 const Player::IPlayer::CARDS &cards) const;

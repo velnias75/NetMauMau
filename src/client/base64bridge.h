@@ -30,7 +30,7 @@ class Base64Bridge : public IBase64 {
 	DISALLOW_COPY_AND_ASSIGN(Base64Bridge)
 public:
 	explicit Base64Bridge();
-	virtual ~Base64Bridge();
+	virtual ~Base64Bridge() _CONST;
 
 	virtual std::string encode(const unsigned char *buf, unsigned int bufLen) const;
 	virtual std::vector<unsigned char> decode(const std::string &base64) const;

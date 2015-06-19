@@ -29,7 +29,7 @@ namespace NetMauMau {
 class StdCardFactory : public ICardFactory {
 public:
 	explicit StdCardFactory();
-	virtual ~StdCardFactory();
+	virtual ~StdCardFactory() _CONST;
 
 	virtual _NOUNUSED Common::ICard *create(Common::ICard::SUIT s, Common::ICard::RANK r) const;
 

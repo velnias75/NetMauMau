@@ -30,7 +30,7 @@ class PowerPlayAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(PowerPlayAction)
 public:
 	explicit PowerPlayAction(bool set = false);
-	virtual ~PowerPlayAction();
+	virtual ~PowerPlayAction() _CONST;
 
 	virtual const IConditionPtr &perform(IAIState &state,
 										 const Player::IPlayer::CARDS &cards) const;

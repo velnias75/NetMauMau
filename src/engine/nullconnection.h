@@ -27,7 +27,7 @@ namespace NetMauMau {
 class NullConnection : public Common::IConnection {
 	DISALLOW_COPY_AND_ASSIGN(NullConnection)
 public:
-	virtual ~NullConnection();
+	virtual ~NullConnection() _CONST;
 
 	static NullConnection &getInstance();
 

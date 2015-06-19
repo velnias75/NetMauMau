@@ -32,7 +32,7 @@ namespace AI {
 class AbstractAction : public IAction, protected DecisionBase {
 	DISALLOW_COPY_AND_ASSIGN(AbstractAction)
 public:
-	virtual ~AbstractAction();
+	virtual ~AbstractAction() _CONST;
 
 	virtual const IConditionPtr &operator()(IAIState &state) const;
 

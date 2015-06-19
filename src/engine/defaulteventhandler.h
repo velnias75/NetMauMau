@@ -30,7 +30,7 @@ class _EXPORT DefaultEventHandler : public IEventHandler {
 	DISALLOW_COPY_AND_ASSIGN(DefaultEventHandler)
 public:
 	explicit DefaultEventHandler();
-	virtual ~DefaultEventHandler();
+	virtual ~DefaultEventHandler() _CONST;
 
 	virtual Common::IConnection &getConnection() const;
 	virtual void gameAboutToStart() const _CONST;

@@ -30,7 +30,7 @@ class BestSuitCondition : public AbstractCondition {
 	DISALLOW_COPY_AND_ASSIGN(BestSuitCondition)
 public:
 	BestSuitCondition();
-	virtual ~BestSuitCondition();
+	virtual ~BestSuitCondition() _CONST;
 
 	virtual IActionPtr perform(const IAIState &state, const Player::IPlayer::CARDS &cards) const;
 

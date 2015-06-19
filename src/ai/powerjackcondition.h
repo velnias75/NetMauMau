@@ -30,7 +30,7 @@ class PowerJackCondition : public AbstractCondition {
 	DISALLOW_COPY_AND_ASSIGN(PowerJackCondition)
 public:
 	PowerJackCondition();
-	virtual ~PowerJackCondition();
+	virtual ~PowerJackCondition() _CONST;
 
 	virtual IActionPtr perform(const IAIState &state, const Player::IPlayer::CARDS &cards) const;
 

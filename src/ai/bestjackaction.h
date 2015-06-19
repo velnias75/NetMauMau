@@ -30,7 +30,7 @@ class BestJackAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(BestJackAction)
 public:
 	BestJackAction();
-	virtual ~BestJackAction();
+	virtual ~BestJackAction() _CONST;
 
 	virtual const IConditionPtr &perform(IAIState &state,
 										 const Player::IPlayer::CARDS &cards) const;

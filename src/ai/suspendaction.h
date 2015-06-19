@@ -30,7 +30,7 @@ class SuspendAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(SuspendAction)
 public:
 	SuspendAction();
-	virtual ~SuspendAction();
+	virtual ~SuspendAction() _CONST;
 
 	virtual const IConditionPtr &perform(IAIState &state,
 										 const Player::IPlayer::CARDS &cards) const _CONST;

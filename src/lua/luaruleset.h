@@ -38,7 +38,7 @@ public:
 	explicit LuaRuleSet(const std::vector<std::string> &luafiles, bool dirChangePossible,
 						std::size_t initialCardCount = 5,
 						const IAceRoundListener *l = 0L) throw(Lua::Exception::LuaException);
-	virtual ~LuaRuleSet();
+	virtual ~LuaRuleSet() _CONST;
 
 	virtual void checkInitial(const Player::IPlayer *player,
 							  const Common::ICardPtr &playedCard) throw(Lua::Exception::LuaException);

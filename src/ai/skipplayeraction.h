@@ -30,7 +30,7 @@ class SkipPlayerAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(SkipPlayerAction)
 public:
 	SkipPlayerAction();
-	virtual ~SkipPlayerAction();
+	virtual ~SkipPlayerAction() _CONST;
 
 	virtual const IConditionPtr &perform(IAIState &state,
 										 const Player::IPlayer::CARDS &cards) const;

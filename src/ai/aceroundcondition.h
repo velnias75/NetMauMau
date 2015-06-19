@@ -30,7 +30,7 @@ class AceRoundCondition : public AbstractCondition {
 	DISALLOW_COPY_AND_ASSIGN(AceRoundCondition)
 public:
 	AceRoundCondition();
-	virtual ~AceRoundCondition();
+	virtual ~AceRoundCondition() _CONST;
 
 	virtual IActionPtr perform(const IAIState &state, const Player::IPlayer::CARDS &cards) const;
 

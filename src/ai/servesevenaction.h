@@ -30,7 +30,7 @@ class ServeSevenAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(ServeSevenAction)
 public:
 	ServeSevenAction();
-	virtual ~ServeSevenAction();
+	virtual ~ServeSevenAction() _CONST;
 
 	virtual const IConditionPtr &perform(IAIState &state,
 										 const Player::IPlayer::CARDS &cards) const;

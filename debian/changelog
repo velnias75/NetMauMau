@@ -1,9 +1,9 @@
-netmaumau (0.21.1) UNRELEASED; urgency=low
+netmaumau (0.22.0) UNRELEASED; urgency=low
 
   * improved AI player
   * fixed ultimate mode
 
- -- Heiko Schäfer <heiko@rangun.de>  Tue, 16 Jun 2015 19:55:23 +0200
+ -- Heiko Schäfer <heiko@rangun.de>  Fri, 19 Jun 2015 06:59:13 +0200
 
 netmaumau (0.21.0) UNRELEASED; urgency=low
 

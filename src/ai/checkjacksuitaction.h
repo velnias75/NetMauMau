@@ -32,7 +32,7 @@ class CheckJackSuitAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(CheckJackSuitAction)
 public:
 	CheckJackSuitAction();
-	virtual ~CheckJackSuitAction();
+	virtual ~CheckJackSuitAction() _CONST;
 
 	virtual const IConditionPtr &perform(IAIState &state,
 										 const Player::IPlayer::CARDS &cards) const;

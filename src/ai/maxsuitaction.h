@@ -30,7 +30,7 @@ class MaxSuitAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(MaxSuitAction)
 public:
 	explicit MaxSuitAction();
-	virtual ~MaxSuitAction();
+	virtual ~MaxSuitAction() _CONST;
 
 	virtual const IConditionPtr &perform(IAIState &state,
 										 const Player::IPlayer::CARDS &cards) const;

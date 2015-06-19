@@ -30,7 +30,7 @@ class CheckSevenCondition : public AbstractCondition {
 	DISALLOW_COPY_AND_ASSIGN(CheckSevenCondition)
 public:
 	CheckSevenCondition();
-	virtual ~CheckSevenCondition();
+	virtual ~CheckSevenCondition() _CONST;
 
 	virtual IActionPtr perform(const IAIState &state, const Player::IPlayer::CARDS &cards) const;
 

@@ -31,7 +31,7 @@ class PowerSuitAction : public AbstractAction {
 public:
 	PowerSuitAction();
 	explicit PowerSuitAction(Common::ICard::SUIT suit);
-	virtual ~PowerSuitAction();
+	virtual ~PowerSuitAction() _CONST;
 
 	virtual const IConditionPtr &perform(IAIState &state,
 										 const Player::IPlayer::CARDS &cards) const;

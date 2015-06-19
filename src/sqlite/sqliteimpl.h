@@ -62,7 +62,7 @@ public:
 
 private:
 
-	bool prepareScoresStmt();
+	bool prepareStatements();
 
 	bool exec(const char *sql) const;
 

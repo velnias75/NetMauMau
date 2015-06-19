@@ -117,18 +117,7 @@ SQLiteImpl::SQLiteImpl() : m_db(0L), m_turnStmt(0L), m_winStmt(0L), m_scoreNormS
 
 		if(sqlite3_open(db.c_str(), &m_db) != SQLITE_ERROR) {
 
-			if(!(sqlite3_prepare_v2(m_db, "UPDATE games SET turns = @TURN " \
-									"WHERE id = @ID;", -1, &m_turnStmt, NULL) == SQLITE_OK &&
-					sqlite3_prepare_v2(m_db, "UPDATE games SET win_player = " \
-									   "(SELECT id FROM players WHERE name = @NAME) " \
-									   "WHERE id = @ID AND win_player IS NULL;",
-									   -1, &m_winStmt, NULL) == SQLITE_OK &&
-					prepareScoresStmt())) {
-
-				logDebug(sqlite3_errmsg(m_db));
-			}
-
-			exec(SCHEMA);
+			if(!(exec(SCHEMA) && prepareStatements())) logDebug(sqlite3_errmsg(m_db));
 
 			std::ostringstream sql;
 
@@ -169,8 +158,14 @@ SQLiteImpl::~SQLiteImpl() {
 	}
 }
 
-bool SQLiteImpl::prepareScoresStmt() {
+bool SQLiteImpl::prepareStatements() {
 	return m_db &&
+		   sqlite3_prepare_v2(m_db, "UPDATE games SET turns = @TURN " \
+							  "WHERE id = @ID;", -1, &m_turnStmt, NULL) == SQLITE_OK &&
+		   sqlite3_prepare_v2(m_db, "UPDATE games SET win_player = " \
+							  "(SELECT id FROM players WHERE name = @NAME) " \
+							  "WHERE id = @ID AND win_player IS NULL;",
+							  -1, &m_winStmt, NULL) == SQLITE_OK &&
 		   sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores;", -1,
 							  &m_scoreNormStmt, NULL) == SQLITE_OK &&
 		   sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores LIMIT @LIM;",
@@ -375,8 +370,6 @@ GAMEIDX SQLiteImpl::newGame() {
 
 	sql << "INSERT INTO games (server_start) VALUES (" << std::time(0L) << ");";
 
-	prepareScoresStmt();
-
 	return exec(sql.str()) ? (m_db ? sqlite3_last_insert_rowid(m_db) : 0LL) : 0LL;
 }
 
@@ -415,7 +408,7 @@ bool SQLiteImpl::turn(GAMEIDX gameIndex, std::size_t t) const {
 					  sqlite3_clear_bindings(m_turnStmt) == SQLITE_OK &&
 					  sqlite3_reset(m_turnStmt) == SQLITE_OK;
 
-	if(!succ && m_db) logWarning("SQLite: " << sqlite3_errmsg(m_db));
+	if(!succ && m_turnStmt && m_db) logWarning("SQLite: " << sqlite3_errmsg(m_db));
 
 	return succ;
 }
@@ -447,14 +440,13 @@ bool SQLiteImpl::playerWins(GAMEIDX gameIndex,
 							const NetMauMau::Common::IConnection::NAMESOCKFD &nsf) const {
 
 	const bool succ = m_db && m_winStmt && sqlite3_bind_text(m_winStmt, 1, nsf.name.c_str(),
-					  static_cast<int>(nsf.name.size()),
-					  SQLITE_TRANSIENT) == SQLITE_OK &&
+					  static_cast<int>(nsf.name.size()), SQLITE_TRANSIENT) == SQLITE_OK &&
 					  sqlite3_bind_int64(m_winStmt, 2, gameIndex) == SQLITE_OK &&
 					  sqlite3_step(m_winStmt) == SQLITE_DONE &&
 					  sqlite3_clear_bindings(m_winStmt) == SQLITE_OK &&
 					  sqlite3_reset(m_winStmt) == SQLITE_OK;
 
-	if(!succ && m_db) logWarning("SQLite: " << sqlite3_errmsg(m_db));
+	if(!succ && m_winStmt && m_db) logWarning("SQLite: " << sqlite3_errmsg(m_db));
 
 	return succ;
 }

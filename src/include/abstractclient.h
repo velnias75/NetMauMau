@@ -826,6 +826,7 @@ protected:
 class _EXPORT AbstractClientV11 : public AbstractClientV09 {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV11)
 public:
+	using AbstractClientV09::isPlayerImageUploadable;
 
 	/**
 	 * @name Server query methods
@@ -838,10 +839,13 @@ public:
 	 *
 	 * @param base64 interface to a custom implementation of @c IBase64
 	 *
+	 * @deprecated use
+	 * AbstractClientV05::isPlayerImageUploadable(const unsigned char *, std::size_t) instead
+	 *
 	 * @since 0.11
 	 */
 	static bool isPlayerImageUploadable(const unsigned char *pngData, std::size_t pngDataLen,
-										const IBase64 *base64);
+										const IBase64 *base64) _DEPRECATED;
 
 	/// @}
 
@@ -861,10 +865,13 @@ protected:
 	 *
 	 * @param base64 interface to a custom implementation of @c IBase64
 	 *
+	 * @deprecated
+	 * use AbstractClientV09(const std::string &, const std::string &, uint16_t, uint32_t) instead
+	 *
 	 * @since 0.11
 	 */
 	explicit AbstractClientV11(const std::string &player, const std::string &server, uint16_t port,
-							   uint32_t clientVersion, const IBase64 *base64);
+							   uint32_t clientVersion, const IBase64 *base64) _DEPRECATED;
 
 	/**
 	 * @brief Creates an @c AbstractClientV11 instance
@@ -874,11 +881,14 @@ protected:
 	 *
 	 * @param base64 interface to a custom implementation of @c IBase64
 	 *
+	 * @deprecated use AbstractClientV09(const std::string &, const unsigned char *, std::size_t,
+	 * 									const std::string &, uint16_t, uint32_t) instead
+	 *
 	 * @since 0.11
 	 */
 	explicit AbstractClientV11(const std::string &player, const unsigned char *pngData,
 							   std::size_t pngDataLen, const std::string &server, uint16_t port,
-							   uint32_t clientVersion, const IBase64 *base64);
+							   uint32_t clientVersion, const IBase64 *base64) _DEPRECATED;
 
 	/**
 	 * @brief Creates an @c AbstractClientV11 instance
@@ -919,10 +929,13 @@ protected:
 	 *
 	 * @param base64 interface to a custom implementation of @c IBase64
 	 *
+	 * @deprecated
+	 * use AbstractClientV11(const std::string &, const std::string &, uint16_t, uint32_t) instead
+	 *
 	 * @since 0.13
 	 */
 	explicit AbstractClientV13(const std::string &player, const std::string &server, uint16_t port,
-							   uint32_t clientVersion, const IBase64 *base64);
+							   uint32_t clientVersion, const IBase64 *base64) _DEPRECATED;
 
 	/**
 	 * @brief Creates an @c AbstractClientV13 instance
@@ -932,11 +945,14 @@ protected:
 	 *
 	 * @param base64 interface to a custom implementation of @c IBase64
 	 *
+	 * @deprecated use AbstractClientV11(const std::string &, const unsigned char *, std::size_t,
+	 * 									const std::string &, uint16_t, uint32_t) instead
+	 *
 	 * @since 0.13
 	 */
 	explicit AbstractClientV13(const std::string &player, const unsigned char *pngData,
 							   std::size_t pngDataLen, const std::string &server, uint16_t port,
-							   uint32_t clientVersion, const IBase64 *base64);
+							   uint32_t clientVersion, const IBase64 *base64) _DEPRECATED;
 
 	/**
 	 * @brief Creates an @c AbstractClientV13 instance

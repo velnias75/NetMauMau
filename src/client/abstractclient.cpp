@@ -25,12 +25,12 @@
 #include <sys/socket.h>
 #endif
 
+#include "base64.h"
 #include "abstractclientv05impl.h"      // for AbstractClientV05Impl
 #include "logger.h"                     // for BasicLogger, logDebug
 #include "capabilitiesexception.h"      // for CapabilitiesException
 #include "cardtools.h"                  // for symbolToSuit, suitToSymbol, etc
 #include "clientcardfactory.h"          // for CardFactory
-#include "ibase64.h"                    // for IBase64
 #include "interceptederrorexception.h"  // for InterceptedErrorException
 #include "pngcheck.h"                   // for checkPNG
 #include "scoresexception.h"            // for ScoresException
@@ -65,12 +65,12 @@ AbstractClientV13::AbstractClientV13(const std::string &player, const unsigned c
 
 AbstractClientV13::AbstractClientV13(const std::string &player, const unsigned char *pngData,
 									 std::size_t pngDataLen, const std::string &server,
-									 uint16_t port, uint32_t clientVersion, const IBase64 *base64)
-	: AbstractClientV11(player, pngData, pngDataLen, server, port, clientVersion, base64) {}
+									 uint16_t port, uint32_t clientVersion, const IBase64 *)
+	: AbstractClientV11(player, pngData, pngDataLen, server, port, clientVersion, 0L) {}
 
 AbstractClientV13::AbstractClientV13(const std::string &player, const std::string &server,
-									 uint16_t port, uint32_t clientVersion, const IBase64 *base64)
-	: AbstractClientV11(player, server, port, clientVersion, base64) {}
+									 uint16_t port, uint32_t clientVersion, const IBase64 *)
+	: AbstractClientV11(player, server, port, clientVersion, 0L) {}
 
 AbstractClientV13::AbstractClientV13(const std::string &player, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
@@ -85,16 +85,12 @@ AbstractClientV11::AbstractClientV11(const std::string &player, const unsigned c
 
 AbstractClientV11::AbstractClientV11(const std::string &player, const unsigned char *pngData,
 									 std::size_t pngDataLen, const std::string &server,
-									 uint16_t port, uint32_t clientVersion, const IBase64 *base64)
-	: AbstractClientV09(player, pngData, pngDataLen, server, port, clientVersion) {
-	AbstractClientV05Impl::setBase64(base64);
-}
+									 uint16_t port, uint32_t clientVersion, const IBase64 *)
+	: AbstractClientV09(player, pngData, pngDataLen, server, port, clientVersion) {}
 
 AbstractClientV11::AbstractClientV11(const std::string &player, const std::string &server,
-									 uint16_t port, uint32_t clientVersion, const IBase64 *base64)
-	: AbstractClientV09(player, server, port, clientVersion) {
-	AbstractClientV05Impl::setBase64(base64);
-}
+									 uint16_t port, uint32_t clientVersion, const IBase64 *)
+	: AbstractClientV09(player, server, port, clientVersion) {}
 
 AbstractClientV11::AbstractClientV11(const std::string &player, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
@@ -359,7 +355,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		_pimpl->m_connection >> plPic;
 
-		const std::vector<unsigned char> &plPicPng(_pimpl->getBase64()->decode(plPic));
+		const std::vector<unsigned char> &plPicPng(NetMauMau::Common::base64_decode(plPic));
 
 		endReceivePlayerPicture(msg);
 
@@ -624,17 +620,14 @@ uint16_t AbstractClientV05::getDefaultPort() {
 
 bool AbstractClientV05::isPlayerImageUploadable(const unsigned char *pngData,
 		std::size_t pngDataLen) {
-	return AbstractClientV11::isPlayerImageUploadable(pngData, pngDataLen, 0L);
+	const std::string &base64png(NetMauMau::Common::base64_encode(pngData, pngDataLen));
+	return !base64png.empty() && base64png.size() <= MAXPICBYTES &&
+		   NetMauMau::Common::checkPNG(pngData, pngDataLen);
 }
 
 bool AbstractClientV11::isPlayerImageUploadable(const unsigned char *pngData,
-		std::size_t pngDataLen, const IBase64 *base64) {
-
-	if(base64) AbstractClientV05Impl::setBase64(base64);
-
-	const std::string &base64png(AbstractClientV05Impl::getBase64()->encode(pngData, pngDataLen));
-	return !base64png.empty() && base64png.size() <= MAXPICBYTES &&
-		   NetMauMau::Common::checkPNG(pngData, pngDataLen);
+		std::size_t pngDataLen, const IBase64 *) {
+	return AbstractClientV05::isPlayerImageUploadable(pngData, pngDataLen);
 }
 
 void AbstractClientV05::beginReceivePlayerPicture(const std::string &) const throw() {}
@@ -652,8 +645,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 
 AbstractClientV09::SCORES AbstractClientV09::getScores(SCORE_TYPE::_scoreType type,
-		std::size_t limit, timeval *timeout)
-throw(NetMauMau::Common::Exception::SocketException) {
+		std::size_t limit, timeval *timeout) throw(NetMauMau::Common::Exception::SocketException) {
 
 	if(_pimpl->m_playing) throw Exception::ScoresException("Attempt to get scores in running game");
 

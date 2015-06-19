@@ -46,13 +46,11 @@ struct cardEqualsDescription : std::binary_function < NetMauMau::Common::ICard *
 
 using namespace NetMauMau::Client;
 
-Connection::BASE64RAII AbstractClientV05Impl::m_base64;
-
 AbstractClientV05Impl::AbstractClientV05Impl(const std::string &pName, const std::string &server,
-		uint16_t port, const unsigned char *pngData, std::size_t pngDataLen) :
-	m_connection(pName, server, port, m_base64), m_pName(pName),
-	m_pngData(new(std::nothrow) unsigned char[pngDataLen]()), m_pngDataLen(pngDataLen),
-	m_cards(), m_openCard(0L), m_disconnectNow(false), m_playing(false) {
+		uint16_t port, const unsigned char *pngData, std::size_t pngDataLen) : m_connection(pName,
+					server, port), m_pName(pName),
+	m_pngData(new(std::nothrow) unsigned char[pngDataLen]()),
+	m_pngDataLen(pngDataLen), m_cards(), m_openCard(0L), m_disconnectNow(false), m_playing(false) {
 
 	if(m_pngData && m_pngDataLen) {
 		std::memcpy(m_pngData, pngData, pngDataLen);
@@ -128,11 +126,9 @@ AbstractClientV05Impl::getCards(const AbstractClient::CARDS &mCards,
 }
 
 const IBase64 *AbstractClientV05Impl::getBase64() {
-	return m_base64;
+	return 0L;
 }
 
-void AbstractClientV05Impl::setBase64(const IBase64 *base64) {
-	m_base64 = base64;
-}
+void AbstractClientV05Impl::setBase64(const IBase64 *) {}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

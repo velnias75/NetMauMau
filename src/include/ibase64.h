@@ -41,9 +41,11 @@ namespace Client {
  * The algorithm used to encode/decode Base64-encoded data is defined in
  * [RFC 2045](http://www.rfc-editor.org/rfc/rfc2045.txt).
  *
+ * @deprecated do not use this @c interface anymore
+ *
  * @since 0.11
  */
-class IBase64 {
+class _DEPRECATED IBase64 {
 	DISALLOW_COPY_AND_ASSIGN(IBase64)
 public:
 	/**

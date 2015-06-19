@@ -29,8 +29,8 @@
 #include <sys/socket.h>
 #endif
 
+#include "base64.h"
 #include "abstractclient.h"             // for AbstractClient
-#include "base64bridge.h"               // for Base64Bridge
 #include "capabilitiesexception.h"      // for CapabilitiesException
 #include "clientconnectionimpl.h"       // for ConnectionImpl
 #include "connectionrejectedexception.h"
@@ -60,8 +60,8 @@ Connection::Connection(const std::string &pName, const std::string &server, uint
 }
 
 Connection::Connection(const std::string &pName, const std::string &server, uint16_t port,
-					   BASE64RAII &base64) : AbstractConnection(server.c_str(), port),
-	_pimpl(new ConnectionImpl(this, pName, 0L, 2, base64)) {
+					   BASE64RAII &) : AbstractConnection(server.c_str(), port),
+	_pimpl(new ConnectionImpl(this, pName, 0L, 2)) {
 	init();
 }
 
@@ -111,8 +111,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		while(pl != "PLAYERLISTEND") {
 
-			const std::vector<unsigned char> &pp((_pimpl->m_base64.
-												  operator const IBase64 * ())->decode(pic));
+			const std::vector<unsigned char> &pp(NetMauMau::Common::base64_decode(pic));
 
 			if(playerPNG) hdl->endReceivePlayerPicture(pl);
 
@@ -280,9 +279,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 					try {
 
-						const std::string
-						&base64png((_pimpl->m_base64.operator const IBase64 * ())->encode(data,
-								   len));
+						const std::string &base64png(NetMauMau::Common::base64_encode(data, len));
 
 						if(!base64png.empty()) {
 
@@ -364,13 +361,13 @@ Connection &Connection::operator>>(std::string &msg)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::string str;
-	std::size_t   l;
-	char  buf[1024];
+	char  buf[1024] = { 0 };
 
 	ConnectionImpl::BUFFER::iterator f;
 
 	while(!(!_pimpl->m_buf.empty() && (f = std::find(_pimpl->m_buf.begin(),
 										   _pimpl->m_buf.end(), '\0')) != _pimpl->m_buf.end())) {
+		std::size_t l;
 
 		if((l = recv(buf, 1024, getSocketFD())) > 0) {
 			_pimpl->m_buf.insert(_pimpl->m_buf.end(), buf, buf + l);
@@ -404,22 +401,15 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 Connection::_base64RAII::_base64RAII() : m_base64(0L) {}
 
-Connection::_base64RAII::_base64RAII(const IBase64 *base64) : m_base64(base64) {}
+Connection::_base64RAII::_base64RAII(const IBase64 *) : m_base64(0L) {}
 
-Connection::_base64RAII::~_base64RAII() {
-	delete m_base64;
-}
+Connection::_base64RAII::~_base64RAII() {}
 
 Connection::_base64RAII::operator const IBase64 *() {
-	return m_base64 ? m_base64 : (m_base64 = new Base64Bridge());
+	return 0L;
 }
 
-Connection::_base64RAII &Connection::_base64RAII::operator=(const IBase64 *b) {
-
-	if(m_base64) delete m_base64;
-
-	m_base64 = b;
-
+Connection::_base64RAII &Connection::_base64RAII::operator=(const IBase64 *) {
 	return *this;
 }
 

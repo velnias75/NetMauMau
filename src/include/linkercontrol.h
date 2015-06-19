@@ -1,7 +1,7 @@
 /*
  * linkercontrol.h - a common header for controlling visibility of functions and methods
  *
- * $Revision: 3997 $ $Author: heiko $
+ * $Revision: 4202 $ $Author: heiko $
  *
  * (c) 2012-2015 Heiko Schäfer <heiko@hgl.rangun.de>
  *
@@ -151,6 +151,10 @@ namespace Commons {
 #else
 #define _COLD __attribute__ ((cold))
 #endif
+#endif
+
+#ifndef _DEPRECATED
+#define _DEPRECATED __attribute__((deprecated))
 #endif
 
 #if GCC_VERSION >= 40800 || (defined(__x86_64__) && GCC_VERSION >= 40700)

@@ -20,11 +20,11 @@ set -e
 case "$1" in
     configure)
         chown nobody:nogroup /var/games/netmaumau
-        
+
         if [ -n "`pgrep -f "nmm-server"`" ]; then
             if [ -n "`pgrep -f "inetd"`" ]; then
                 echo "Detected a NetMauMau server started from (x)inetd."
-                echo "Stopping nmm-server to spawn the newly installed instance at next request…"
+                echo "Stopping nmm-server to spawn the newly installed instance at next request …"
                 killall nmm-server 2> /dev/null
             fi
         fi

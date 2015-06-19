@@ -48,8 +48,8 @@ public:
 	void sendPlayedCard(const NetMauMau::Common::ICard **lastPlayedCard)
 	throw(NetMauMau::Common::Exception::SocketException);
 
-	static const IBase64 *getBase64();
-	static void setBase64(const IBase64 *base64);
+	static const IBase64 *getBase64() _CONST _DEPRECATED _NOUNUSED;
+	static void setBase64(const IBase64 *base64) _CONST _DEPRECATED;
 
 public:
 	Connection m_connection;
@@ -60,9 +60,6 @@ public:
 	const Common::ICard *m_openCard;
 	bool m_disconnectNow;
 	bool m_playing;
-
-private:
-	static Connection::BASE64RAII m_base64;
 };
 
 }

@@ -3,12 +3,12 @@ if ENABLE_CLIENT
 lib_LTLIBRARIES = libnetmaumauclient.la
 noinst_LTLIBRARIES = libnetmaumauclient_private.la
 
-noinst_HEADERS = abstractclientv05impl.h base64bridge.h clientcardfactory.h clientconnectionimpl.h \
+noinst_HEADERS = abstractclientv05impl.h clientcardfactory.h clientconnectionimpl.h \
 	interceptederrorexception.h
 
 libnetmaumauclient_private_la_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
 	$(NO_EXCEPTIONS)
-libnetmaumauclient_private_la_SOURCES = base64bridge.cpp clientcardfactory.cpp
+libnetmaumauclient_private_la_SOURCES = clientcardfactory.cpp
 
 libnetmaumauclient_la_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common
 libnetmaumauclient_la_SOURCES = abstractclient.cpp abstractclientv05impl.cpp \

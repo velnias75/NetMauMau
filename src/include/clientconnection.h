@@ -91,21 +91,25 @@ public:
 	 */
 	typedef std::vector<PLAYERINFO> PLAYERINFOS;
 
-	typedef struct _base64RAII {
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic push
+	typedef struct _DEPRECATED _base64RAII {
 	private:
 		DISALLOW_COPY_AND_ASSIGN(_base64RAII)
 	public:
 		explicit _base64RAII();
 		explicit _base64RAII(const IBase64 *base64);
-		~_base64RAII();
+		~_base64RAII() _CONST;
 
-		operator const IBase64 *();
+		// cppcheck-suppress functionConst
+		operator const IBase64 *() _CONST _NOUNUSED;
 
-		_base64RAII &operator=(const IBase64 *);
+		_base64RAII &operator=(const IBase64 *) _CONST;
 
 	private:
 		const IBase64 *m_base64;
 	} BASE64RAII;
+#pragma GCC diagnostic pop
 
 	explicit Connection(const std::string &pName, const std::string &server, uint16_t port);
 	explicit Connection(const std::string &pName, const std::string &server, uint16_t port,

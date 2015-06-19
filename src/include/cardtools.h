@@ -26,10 +26,6 @@
 #ifndef NETMAUMAU_CARDTOOLS_H
 #define NETMAUMAU_CARDTOOLS_H
 
-#ifndef _DEPRECATED
-#define _DEPRECATED __attribute__((deprecated))
-#endif
-
 #include <algorithm>
 
 #include "icard.h"

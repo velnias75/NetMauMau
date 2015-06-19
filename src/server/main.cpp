@@ -493,8 +493,6 @@ int main(int argc, const char **argv) {
 
 			while(!interrupt) {
 
-// 				if(interrupt) game.shutdown();
-
 				timeval tv = { 1, 0 };
 
 				int r;

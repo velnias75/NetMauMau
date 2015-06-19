@@ -2,8 +2,9 @@ netmaumau (0.22.0) UNRELEASED; urgency=low
 
   * improved AI player
   * fixed ultimate mode
+  * fixed https://github.com/velnias75/NetMauMau/issues/36
 
- -- Heiko Schäfer <heiko@rangun.de>  Fri, 19 Jun 2015 06:59:13 +0200
+ -- Heiko Schäfer <heiko@rangun.de>  Fri, 19 Jun 2015 15:30:42 +0200
 
 netmaumau (0.21.0) UNRELEASED; urgency=low
 

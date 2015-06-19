@@ -32,6 +32,8 @@ class IBase64;
 
 class AbstractClientV05Impl {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV05Impl)
+	friend class AbstractClientV05;
+	typedef std::vector<unsigned char> PNGDATA;
 public:
 	explicit AbstractClientV05Impl(const std::string &pName, const std::string &server,
 								   uint16_t port, const unsigned char *pngData,
@@ -54,8 +56,7 @@ public:
 public:
 	Connection m_connection;
 	const std::string m_pName;
-	unsigned char *m_pngData;
-	std::size_t m_pngDataLen;
+	PNGDATA m_pngData;
 	AbstractClient::CARDS m_cards;
 	const Common::ICard *m_openCard;
 	bool m_disconnectNow;

@@ -22,6 +22,9 @@
 #include <algorithm>                    // for find_if
 #include <cstring>                      // for memcpy
 
+#include "logger.h"
+#include "pngcheck.h"
+
 #if defined(_WIN32)
 #undef TRUE
 #undef FALSE
@@ -48,16 +51,18 @@ using namespace NetMauMau::Client;
 
 AbstractClientV05Impl::AbstractClientV05Impl(const std::string &pName, const std::string &server,
 		uint16_t port, const unsigned char *pngData, std::size_t pngDataLen) : m_connection(pName,
-					server, port), m_pName(pName),
-	m_pngData(new(std::nothrow) unsigned char[pngDataLen]()),
-	m_pngDataLen(pngDataLen), m_cards(), m_openCard(0L), m_disconnectNow(false), m_playing(false) {
+					server, port), m_pName(pName), m_pngData(), m_cards(), m_openCard(0L),
+	m_disconnectNow(false), m_playing(false) {
 
-	if(m_pngData && m_pngDataLen) {
-		std::memcpy(m_pngData, pngData, pngDataLen);
-	} else {
-		delete [] m_pngData;
-		m_pngData = 0L;
-		m_pngDataLen = 0;
+	if(pngData && pngDataLen) {
+
+		if(m_pngData.max_size() >= pngDataLen) {
+			m_pngData.reserve(pngDataLen);
+			m_pngData.insert(m_pngData.end(), pngData, pngData + pngDataLen);
+		} else {
+			logDebug(__PRETTY_FUNCTION__ << " clearing m_pngData");
+			PNGDATA().swap(m_pngData);
+		}
 	}
 }
 
@@ -69,8 +74,6 @@ AbstractClientV05Impl::~AbstractClientV05Impl() {
 			i(m_cards.begin()); i != m_cards.end(); ++i) delete *i;
 
 	delete m_openCard;
-
-	delete [] m_pngData;
 }
 
 NetMauMau::Client::AbstractClient::CARDS AbstractClientV05Impl::recvPossibleCards(std::string &msg)

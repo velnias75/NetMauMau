@@ -123,14 +123,8 @@ SQLiteImpl::SQLiteImpl() : m_db(0L), m_turnStmt(0L), m_winStmt(0L), m_scoreNormS
 									   "(SELECT id FROM players WHERE name = @NAME) " \
 									   "WHERE id = @ID AND win_player IS NULL;",
 									   -1, &m_winStmt, NULL) == SQLITE_OK &&
-					sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores;", -1,
-									   &m_scoreNormStmt, NULL) == SQLITE_OK &&
-					sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores LIMIT @LIM;",
-									   -1, &m_scoreNormLimitStmt, NULL) == SQLITE_OK &&
-					sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores_abs;", -1,
-									   &m_scoreAbsStmt, NULL) == SQLITE_OK &&
-					sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores_abs LIMIT @LIM;",
-									   -1, &m_scoreAbsLimitStmt, NULL) == SQLITE_OK)) {
+					prepareScoresStmt())) {
+
 				logDebug(sqlite3_errmsg(m_db));
 			}
 
@@ -173,6 +167,18 @@ SQLiteImpl::~SQLiteImpl() {
 
 		sqlite3_close(m_db);
 	}
+}
+
+bool SQLiteImpl::prepareScoresStmt() {
+	return m_db &&
+		   sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores;", -1,
+							  &m_scoreNormStmt, NULL) == SQLITE_OK &&
+		   sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores LIMIT @LIM;",
+							  -1, &m_scoreNormLimitStmt, NULL) == SQLITE_OK &&
+		   sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores_abs;", -1,
+							  &m_scoreAbsStmt, NULL) == SQLITE_OK &&
+		   sqlite3_prepare_v2(m_db, "SELECT * FROM total_scores_abs LIMIT @LIM;",
+							  -1, &m_scoreAbsLimitStmt, NULL) == SQLITE_OK;
 }
 
 #pragma GCC diagnostic push
@@ -279,23 +285,31 @@ SQLite::SCORES SQLiteImpl::getScores(SQLite::SCORE_TYPE type, std::size_t limit)
 		break;
 		}
 
-		while(succ && sqlite3_step(stmt) == SQLITE_ROW) {
+		if(stmt) {
 
-			SQLite::SCORE sc = {
-				std::strtoll(reinterpret_cast<const char *>(sqlite3_column_text(stmt, 0)),
-				NULL, 10),
-				reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1)),
-				std::strtoll(reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2)),
-				NULL, 10),
-			};
+			while(succ && sqlite3_step(stmt) == SQLITE_ROW) {
 
-			res.push_back(sc);
-		}
+				const char *sct[3] = {
+					reinterpret_cast<const char *>(sqlite3_column_text(stmt, 0)),
+					reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1)),
+					reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2))
+				};
 
-		if(!(succ &&
-				sqlite3_clear_bindings(stmt) == SQLITE_OK &&
-				sqlite3_reset(stmt) == SQLITE_OK)) {
-			logDebug(sqlite3_errmsg(m_db));
+				SQLite::SCORE sc = {
+					sct[0] ? std::strtoll(sct[0], NULL, 10) : 0LL,
+					sct[1] ? sct[1] : "?",
+					sct[2] ? std::strtoll(sct[2], NULL, 10) : 0LL,
+				};
+
+				res.push_back(sc);
+			}
+
+			if(!(succ &&
+					sqlite3_clear_bindings(stmt) == SQLITE_OK &&
+					sqlite3_reset(stmt) == SQLITE_OK)) {
+				logDebug(sqlite3_errmsg(m_db));
+			}
+
 		}
 	}
 
@@ -361,6 +375,8 @@ GAMEIDX SQLiteImpl::newGame() {
 
 	sql << "INSERT INTO games (server_start) VALUES (" << std::time(0L) << ");";
 
+	prepareScoresStmt();
+
 	return exec(sql.str()) ? (m_db ? sqlite3_last_insert_rowid(m_db) : 0LL) : 0LL;
 }
 
@@ -393,7 +409,7 @@ bool SQLiteImpl::addPlayerToGame(GAMEIDX gid,
 
 bool SQLiteImpl::turn(GAMEIDX gameIndex, std::size_t t) const {
 
-	const bool succ = m_db && sqlite3_bind_int64(m_turnStmt, 1, t) == SQLITE_OK &&
+	const bool succ = m_db && m_turnStmt && sqlite3_bind_int64(m_turnStmt, 1, t) == SQLITE_OK &&
 					  sqlite3_bind_int64(m_turnStmt, 2, gameIndex) == SQLITE_OK &&
 					  sqlite3_step(m_turnStmt) == SQLITE_DONE &&
 					  sqlite3_clear_bindings(m_turnStmt) == SQLITE_OK &&
@@ -430,7 +446,7 @@ bool SQLiteImpl::playerLost(GAMEIDX gameIndex,
 bool SQLiteImpl::playerWins(GAMEIDX gameIndex,
 							const NetMauMau::Common::IConnection::NAMESOCKFD &nsf) const {
 
-	const bool succ = m_db && sqlite3_bind_text(m_winStmt, 1, nsf.name.c_str(),
+	const bool succ = m_db && m_winStmt && sqlite3_bind_text(m_winStmt, 1, nsf.name.c_str(),
 					  static_cast<int>(nsf.name.size()),
 					  SQLITE_TRANSIENT) == SQLITE_OK &&
 					  sqlite3_bind_int64(m_winStmt, 2, gameIndex) == SQLITE_OK &&

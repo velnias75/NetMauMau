@@ -36,6 +36,7 @@
 #include <cstring>                      // for NULL, strlen
 
 #include "abstractconnectionimpl.h"     // for AbstractConnectionImpl
+#include "ci_char_traits.h"
 #include "errorstring.h"                // for errorString
 
 #ifndef TEMP_FAILURE_RETRY
@@ -93,8 +94,16 @@ AbstractConnection::~AbstractConnection() {
 
 bool AbstractConnection::registerPlayer(const NAMESOCKFD &nfd, const PLAYERNAMES &ai) {
 
+	std::vector<NetMauMau::Common::ci_string> ciai;
+	ciai.reserve(ai.size());
+
+	// TODO: transform STL-like
+	for(PLAYERNAMES::const_iterator i(ai.begin()); i != ai.end(); ++i) ciai.push_back(i->c_str());
+
+	const NetMauMau::Common::ci_string name(nfd.name.c_str());
+
 	if(!(getPlayerName(nfd.sockfd).empty() &&
-			std::find(ai.begin(), ai.end(), nfd.name) == ai.end())) return false;
+			std::find(ciai.begin(), ciai.end(), name) == ciai.end())) return false;
 
 	_pimpl->m_registeredPlayers.push_back(nfd);
 
@@ -207,7 +216,7 @@ bool AbstractConnection::hasHumanPlayers() const {
 	const PLAYERINFOS &pi(getRegisteredPlayers());
 
 	return std::find_if(pi.begin(), pi.end(), std::bind2nd(std::not_equal_to<SOCKET>(),
-						 INVALID_SOCKET)) != pi.end();
+						INVALID_SOCKET)) != pi.end();
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

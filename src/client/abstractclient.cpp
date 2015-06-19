@@ -197,11 +197,9 @@ void AbstractClientV05::play(timeval *timeout)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	_pimpl->m_connection.setTimeout(timeout);
-	_pimpl->m_connection.connect(this, _pimpl->m_pngData, _pimpl->m_pngDataLen);
+	_pimpl->m_connection.connect(this, _pimpl->m_pngData.data(), _pimpl->m_pngData.size());
 
-	delete [] _pimpl->m_pngData;
-	_pimpl->m_pngDataLen = 0;
-	_pimpl->m_pngData = 0L;
+	AbstractClientV05Impl::PNGDATA().swap(_pimpl->m_pngData);
 
 	const NetMauMau::Common::ICard *lastPlayedCard = 0L;
 	bool initCardShown = false;

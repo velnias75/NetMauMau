@@ -327,6 +327,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						std::string namePic;
 
 						if(MAXPICBYTES <= namePic.max_size()) {
+
 							try {
 								namePic.reserve(MAXPICBYTES);
 							} catch(const std::bad_alloc &) {}
@@ -371,8 +372,8 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 									left += picLength.length() + 1;
 
-									std::size_t pl;
-									(std::istringstream(picLength)) >> pl;
+									const std::size_t pl = std::strtoul(picLength.c_str(),
+																		NULL, 10);
 
 									try {
 
@@ -442,6 +443,9 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 								} catch(const NetMauMau::Common::Exception::SocketException &) {
 									std::string().swap(playerPic);
 								}
+
+							} else {
+								std::string().swap(playerPic);
 							}
 
 							const NAMESOCKFD nsf(info.name, playerPic, cfd, cver);
@@ -487,7 +491,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 					const std::string::size_type spc = rHello.find(' ');
 					const std::string::size_type dot = rHello.find('.');
 
-					const PLAYERINFOS &pi(getRegisteredPlayers());
+					const PLAYERINFOS pi(getRegisteredPlayers());
 					const uint32_t cver = rHello.length() > 10 ?
 										  MAKE_VERSION(getMajorFromHello(rHello, dot, spc),
 													   getMinorFromHello(rHello, dot)) : 0;

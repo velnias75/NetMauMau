@@ -36,6 +36,8 @@ std::string NetMauMau::Common::base64_encode(BYTE const *buf, unsigned int bufLe
 
 	std::string ret;
 
+	if(!(bufLen && buf)) return ret;
+
 	int i = 0;
 	BYTE char_array_3[3];
 	BYTE char_array_4[4];
@@ -97,6 +99,8 @@ NetMauMau::Common::base64_decode(std::string const &encoded_string) {
 	BYTE char_array_4[4], char_array_3[3];
 
 	std::vector<BYTE> ret;
+
+	if(!in_len) return ret;
 
 	const std::string::size_type resBuf =
 		static_cast<std::string::size_type>(std::max(12, (2 * in_len - 23) / 3));

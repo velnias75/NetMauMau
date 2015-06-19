@@ -61,6 +61,9 @@ public:
 	bool playerWins(GAMEIDX gameIndex, const Common::IConnection::NAMESOCKFD &nsf) const;
 
 private:
+
+	bool prepareScoresStmt();
+
 	bool exec(const char *sql) const;
 
 	inline bool exec(const std::string &sql) const {

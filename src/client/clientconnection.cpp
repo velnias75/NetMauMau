@@ -260,6 +260,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		if(mver >= sver) {
 
 			std::ostringstream os;
+
 			os << PACKAGE_NAME << ' '
 			   << static_cast<uint16_t>(_pimpl->m_clientVersion << 16u) << '.'
 			   << static_cast<uint16_t>(_pimpl->m_clientVersion);
@@ -273,35 +274,36 @@ throw(NetMauMau::Common::Exception::SocketException) {
 				send(_pimpl->m_pName.c_str(), _pimpl->m_pName.length(), getSocketFD());
 			} else if(!std::strncmp(name, "NAMP", 4)) {
 
-				if(!(data && len)) {
+				const std::string &base64png(NetMauMau::Common::base64_encode(data, len));
+
+				if(base64png.empty()) {
+
 					send(_pimpl->m_pName.c_str(), _pimpl->m_pName.length(), getSocketFD());
+
+					if(data || len) l->uploadFailed(_pimpl->m_pName);
+
 				} else {
 
 					try {
 
-						const std::string &base64png(NetMauMau::Common::base64_encode(data, len));
+						std::ostringstream osp;
 
-						if(!base64png.empty()) {
+						osp << "+" << _pimpl->m_pName << '\0' << base64png.length() << '\0'
+							<< base64png;
 
-							std::ostringstream osp;
-							osp << "+" << _pimpl->m_pName << '\0' << base64png.length() << '\0'
-								<< base64png;
+						send(osp.str().c_str(), osp.str().length(), getSocketFD());
 
-							send(osp.str().c_str(), osp.str().length(), getSocketFD());
+						char ack[1024];
+						std::memset(ack, '0', 1023);
+						ack[1023] = 0;
 
-							char ack[1024] = "0";
-							recv(ack, 1023, getSocketFD());
+						recv(ack, 1023, getSocketFD());
 
-							if(std::strtoul(ack, NULL, 10) == base64png.length()) {
-								send("OK", 2, getSocketFD());
-								l->uploadSucceded(_pimpl->m_pName);
-							} else {
-								send("NO", 2, getSocketFD());
-								l->uploadFailed(_pimpl->m_pName);
-							}
-
+						if(std::strtoul(ack, NULL, 10) == base64png.length()) {
+							send("OK", 2, getSocketFD());
+							l->uploadSucceded(_pimpl->m_pName);
 						} else {
-							send(_pimpl->m_pName.c_str(), _pimpl->m_pName.length(), getSocketFD());
+							send("NO", 2, getSocketFD());
 							l->uploadFailed(_pimpl->m_pName);
 						}
 
@@ -365,8 +367,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	ConnectionImpl::BUFFER::iterator f;
 
-	while(!(!_pimpl->m_buf.empty() && (f = std::find(_pimpl->m_buf.begin(),
-										   _pimpl->m_buf.end(), '\0')) != _pimpl->m_buf.end())) {
+	while(_pimpl->m_buf.empty() || (!_pimpl->m_buf.empty() && (f = std::find(_pimpl->m_buf.begin(),
+									_pimpl->m_buf.end(), '\0')) == _pimpl->m_buf.end())) {
 		std::size_t l;
 
 		if((l = recv(buf, 1024, getSocketFD())) > 0) {

@@ -1,3 +1,8 @@
+Consequences of lack of feedback
+================================
+
+**Due to the overwhelming feedback *(ZERO!)* there was a long standing [bug](https://github.com/velnias75/NetMauMau/issues/36), which caused every new and fresh installation to crash at startup. It is fixed in [``#36``](https://github.com/velnias75/NetMauMau/issues/36), but I really seriously think about continuing *NetMauMau* if really nobody seems to be able just to drop a line, nor open an issue on [GitHub](https://github.com/velnias75/NetMauMau)!** :angry:
+
 Build instructions, binaries and rules
 ======================================
 

@@ -1,3 +1,9 @@
+netmaumau (0.22.1) UNRELEASED; urgency=low
+
+  * 
+
+ -- Heiko Schäfer <heiko@rangun.de>  Sat, 20 Jun 2015 11:39:55 +0200
+
 netmaumau (0.22.0) UNRELEASED; urgency=low
 
   * improved AI player

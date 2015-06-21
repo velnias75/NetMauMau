@@ -38,17 +38,6 @@
 #include "lostconnectionexception.h"
 #include "protocol.h"                   // for PLAYCARD, ACEROUND, etc
 
-namespace {
-#pragma GCC diagnostic ignored "-Weffc++"
-#pragma GCC diagnostic push
-struct nameExtractor : std::unary_function<NetMauMau::Client::Connection::PLAYERINFO, std::string> {
-	inline result_type operator()(const argument_type &pi) const {
-		return pi.name;
-	}
-};
-#pragma GCC diagnostic pop
-}
-
 using namespace NetMauMau::Client;
 
 AbstractClientV13::AbstractClientV13(const std::string &player, const unsigned char *pngData,
@@ -175,7 +164,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	if(pi.size() <= pl.max_size()) pl.reserve(pi.size());
 
-	std::transform(pi.begin(), pi.end(), std::back_inserter(pl), nameExtractor());
+	std::transform(pi.begin(), pi.end(), std::back_inserter(pl),
+				   std::mem_fun_ref(&PLAYERINFOS::value_type::getName));
 
 	return pl;
 }

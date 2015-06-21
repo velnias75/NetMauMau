@@ -291,7 +291,7 @@ bool Engine::nextTurn() {
 				m_db->gamePlayStarted(m_gameIndex);
 				getEventHandler().initialCard(m_talon->uncoverCard());
 
-				if(getAICount() && m_talon->uncoverCard() == Common::ICard::EIGHT) {
+				if(getAICount() && m_talon->getUncoveredCard() == Common::ICard::EIGHT) {
 					getEventHandler().getConnection().
 					wait(static_cast<long int>(std::floor(static_cast
 														  <float>(getAIDelay()) * 1.5f)));

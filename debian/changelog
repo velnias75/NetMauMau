@@ -1,8 +1,8 @@
 netmaumau (0.22.1) UNRELEASED; urgency=low
 
-  * 
+  * fixed uncovering card twice at game start
 
- -- Heiko Schäfer <heiko@rangun.de>  Sat, 20 Jun 2015 11:39:55 +0200
+ -- Heiko Schäfer <heiko@rangun.de>  Sun, 21 Jun 2015 11:29:23 +0200
 
 netmaumau (0.22.0) UNRELEASED; urgency=low
 

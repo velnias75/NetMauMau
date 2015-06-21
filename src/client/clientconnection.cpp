@@ -409,11 +409,11 @@ Connection::_base64RAII &Connection::_base64RAII::operator=(const IBase64 *) {
 }
 
 bool NetMauMau::Client::operator<(const std::string &x, const Connection::PLAYERINFO &y) {
-	return x < y.name;
+	return x < y.getName();
 }
 
 bool NetMauMau::Client::operator<(const Connection::PLAYERINFO &x, const std::string &y) {
-	return x.name < y;
+	return x.getName() < y;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

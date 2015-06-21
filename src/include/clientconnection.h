@@ -76,6 +76,11 @@ public:
 	 * @brief Holds the name as well as the PNG data of the player image
 	 */
 	typedef struct {
+
+		inline const std::string &getName() const {
+			return name;
+		}
+
 		std::string name; ///< the player name
 		const unsigned char *pngData; ///< raw data of the player image, must be freed by the client
 		std::size_t pngDataLen; ///< length of the raw data of the player image

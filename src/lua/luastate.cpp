@@ -32,13 +32,6 @@ extern "C" {
 #include "iplayer.h"                    // for IPlayer
 #include "random_gen.h"                 // for genRandom
 #include "smartptr.h"                   // for SmartPtr
-
-#if defined(_WIN32)
-#undef TRUE
-#undef FALSE
-#undef ERROR
-#endif
-
 #include "protocol.h"                   // for CARDCOUNT
 
 namespace {

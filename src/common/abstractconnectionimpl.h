@@ -32,6 +32,30 @@ public:
 	explicit AbstractConnectionImpl();
 	~AbstractConnectionImpl();
 
+	IConnection::NAMESOCKFD getPlayerInfo(SOCKET sockfd) const;
+
+	inline IConnection::PLAYERNAMES::value_type getPlayerName(SOCKET sockfd) const {
+		return getPlayerInfo(sockfd).name;
+	}
+
+	bool registerPlayer(const IConnection::NAMESOCKFD &nfd, const IConnection::PLAYERNAMES &ai);
+
+	inline void removePlayer(SOCKET sockfd) {
+		removePlayer(m_registeredPlayers, findBySocket(sockfd));
+	}
+
+	void removePlayer(const IConnection::INFO &info);
+
+private:
+	IConnection::PLAYERINFOS::iterator findBySocket(SOCKET sockfd);
+	IConnection::PLAYERINFOS::const_iterator findBySocket(SOCKET sockfd) const;
+
+	inline void removePlayer(IConnection::PLAYERINFOS &pi,
+							 const IConnection::PLAYERINFOS::iterator &i) {
+		if(i != pi.end()) pi.erase(i);
+	}
+
+public:
 	AbstractConnection::PLAYERINFOS m_registeredPlayers;
 	AbstractConnection::PLAYERNAMES m_aiPlayers;
 };

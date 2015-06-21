@@ -36,13 +36,6 @@
 #include "scoresexception.h"            // for ScoresException
 #include "shutdownexception.h"
 #include "lostconnectionexception.h"
-
-#if defined(_WIN32)
-#undef TRUE
-#undef FALSE
-#undef ERROR
-#endif
-
 #include "protocol.h"                   // for PLAYCARD, ACEROUND, etc
 
 namespace {

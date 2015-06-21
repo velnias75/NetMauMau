@@ -28,13 +28,6 @@
 #include "cardtools.h"                  // for getIllegalCard, etc
 #include "serverconnection.h"           // for Connection
 #include "serverplayerexception.h"      // for ServerPlayerException
-
-#if defined(_WIN32)
-#undef TRUE
-#undef FALSE
-#undef ERROR
-#endif
-
 #include "protocol.h"                   // for ACEROUND, CARDACCEPTED, etc
 
 namespace {

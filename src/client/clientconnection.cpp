@@ -41,13 +41,6 @@
 #include "protocolerrorexception.h"     // for ProtocolErrorException
 #include "scoresexception.h"            // for ScoresException
 #include "versionmismatchexception.h"   // for VersionMismatchException
-
-#if defined(_WIN32)
-#undef TRUE
-#undef FALSE
-#undef ERROR
-#endif
-
 #include "protocol.h"                   // for ERROR
 
 #define MAX_PNAME 1024

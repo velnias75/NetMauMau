@@ -43,13 +43,6 @@
 #include "errorstring.h"                // for errorString
 #include "pngcheck.h"                   // for checkPNG
 #include "sqlite.h"                     // for SQLite, SQLite::SCORES, etc
-
-#if defined(_WIN32)
-#undef TRUE
-#undef FALSE
-#undef ERROR
-#endif
-
 #include "protocol.h"                   // for BYE, VM_ADDPIC
 
 namespace {

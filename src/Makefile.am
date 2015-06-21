@@ -1,5 +1,6 @@
 SUBDIRS = include images common sqlite lua ai engine server client test
 
+if ENABLE_DEHEADER
 deheader:
 	@echo "Running deheader with DEHEADER_FLAGS=\"$(DEHEADER_FLAGS)\" …" ;
 	@cd $(abs_top_srcdir)/src && \
@@ -11,3 +12,4 @@ deheader:
 		-DNMM_EXE_PATH=\\\".\\\" -DSYSCONFDIR=\\\".\\\" -DLUADIR=\\\".\\\" -DCLIENTVERSION=15 \
 		-DBUILDDIR=\\\".\\\" -DPKGDATADIR=\\\".\\\" -I$(abs_top_builddir)/src/common \
 		-DHAVE_CONFIG_H=1 -I$(abs_top_builddir)/src/test -Werror -Wfatal-errors'"
+endif

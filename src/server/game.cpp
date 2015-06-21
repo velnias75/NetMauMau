@@ -27,13 +27,6 @@
 #include "ieventhandler.h"              // for IEventHandler
 #include "logger.h"
 #include "luafatalexception.h"          // for LuaFatalException
-
-#if defined(_WIN32)
-#undef TRUE
-#undef FALSE
-#undef ERROR
-#endif
-
 #include "protocol.h"
 
 using namespace NetMauMau::Server;

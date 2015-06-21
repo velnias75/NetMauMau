@@ -20,17 +20,8 @@
 #include "abstractclientv05impl.h"
 
 #include <algorithm>                    // for find_if
-#include <cstring>                      // for memcpy
 
 #include "logger.h"
-#include "pngcheck.h"
-
-#if defined(_WIN32)
-#undef TRUE
-#undef FALSE
-#undef ERROR
-#endif
-
 #include "protocol.h"                   // for PLAYCARDEND, SUSPEND
 
 namespace {

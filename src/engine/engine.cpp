@@ -56,13 +56,6 @@
 #include "luafatalexception.h"          // for LuaException
 #include "talon.h"                      // for Talon
 #include "ci_char_traits.h"
-
-#if defined(_WIN32)
-#undef TRUE
-#undef FALSE
-#undef ERROR
-#endif
-
 #include "protocol.h"
 
 namespace {

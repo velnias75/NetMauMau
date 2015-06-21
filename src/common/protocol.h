@@ -24,6 +24,12 @@
 
 #include "linkercontrol.h"
 
+#if defined(_WIN32)
+#undef TRUE
+#undef FALSE
+#undef ERROR
+#endif
+
 namespace NetMauMau {
 
 namespace Common {

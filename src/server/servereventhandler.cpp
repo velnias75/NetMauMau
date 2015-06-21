@@ -29,13 +29,6 @@
 #include "logger.h"                     // for BasicLogger, logError
 #include "cardtools.h"                  // for suitToSymbol
 #include "iplayer.h"                    // for IPlayer
-
-#if defined(_WIN32)
-#undef TRUE
-#undef FALSE
-#undef ERROR
-#endif
-
 #include "protocol.h"                   // for JACKSUIT, MESSAGE, etc
 
 using namespace NetMauMau::Server;

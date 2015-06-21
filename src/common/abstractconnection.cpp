@@ -36,7 +36,6 @@
 #include <cstring>                      // for NULL, strlen
 
 #include "abstractconnectionimpl.h"     // for AbstractConnectionImpl
-#include "ci_char_traits.h"
 #include "errorstring.h"                // for errorString
 
 #ifndef TEMP_FAILURE_RETRY
@@ -44,30 +43,14 @@
 #endif
 
 namespace {
-
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-struct _isSocketFD :
-		std::binary_function<NetMauMau::Common::AbstractConnection::NAMESOCKFD, SOCKET, bool> {
-	result_type operator()(const first_argument_type &nsd, second_argument_type sockfd) const {
-		return nsd.sockfd == sockfd;
-	}
-};
-
-struct _isInfo : std::binary_function < NetMauMau::Common::AbstractConnection::NAMESOCKFD,
-		NetMauMau::Common::AbstractConnection::INFO, bool > {
-	result_type operator()(const first_argument_type &nsd, const second_argument_type &info) const {
-		return nsd.name == info.name;
-	}
-};
-
 struct socketCloser : std::unary_function<NetMauMau::Common::IConnection::NAMESOCKFD, void> {
 	inline result_type operator()(const argument_type &nsf) const {
 		NetMauMau::Common::AbstractSocket::shutdown(nsf.sockfd);
 	}
 };
 #pragma GCC diagnostic pop
-
 }
 
 using namespace NetMauMau::Common;
@@ -93,56 +76,27 @@ AbstractConnection::~AbstractConnection() {
 }
 
 bool AbstractConnection::registerPlayer(const NAMESOCKFD &nfd, const PLAYERNAMES &ai) {
-
-	std::vector<NetMauMau::Common::ci_string> ciai;
-	ciai.reserve(ai.size());
-
-	// TODO: transform STL-like
-	for(PLAYERNAMES::const_iterator i(ai.begin()); i != ai.end(); ++i) ciai.push_back(i->c_str());
-
-	const NetMauMau::Common::ci_string name(nfd.name.c_str());
-
-	if(!(getPlayerName(nfd.sockfd).empty() &&
-			std::find(ciai.begin(), ciai.end(), name) == ciai.end())) return false;
-
-	_pimpl->m_registeredPlayers.push_back(nfd);
-
-	return true;
+	return _pimpl->registerPlayer(nfd, ai);
 }
 
-const AbstractConnection::PLAYERINFOS &AbstractConnection::getRegisteredPlayers() const {
+const IConnection::PLAYERINFOS &AbstractConnection::getRegisteredPlayers() const {
 	return _pimpl->m_registeredPlayers;
 }
 
-AbstractConnection::NAMESOCKFD AbstractConnection::getPlayerInfo(SOCKET sockfd) const {
-
-	const PLAYERINFOS::const_iterator &f(std::find_if(_pimpl->m_registeredPlayers.begin(),
-										 _pimpl->m_registeredPlayers.end(),
-										 std::bind2nd(_isSocketFD(), sockfd)));
-
-	return f != _pimpl->m_registeredPlayers.end() ? *f : NAMESOCKFD();
+IConnection::NAMESOCKFD AbstractConnection::getPlayerInfo(SOCKET sockfd) const {
+	return _pimpl->getPlayerInfo(sockfd);
 }
 
 IConnection::PLAYERNAMES::value_type AbstractConnection::getPlayerName(SOCKET sockfd) const {
-	return getPlayerInfo(sockfd).name;
+	return _pimpl->getPlayerName(sockfd);
 }
 
 void AbstractConnection::removePlayer(const IConnection::INFO &info) {
-
-	const PLAYERINFOS::iterator &f(std::find_if(_pimpl->m_registeredPlayers.begin(),
-								   _pimpl->m_registeredPlayers.end(),
-								   std::bind2nd(_isInfo(), info)));
-
-	if(f != _pimpl->m_registeredPlayers.end()) _pimpl->m_registeredPlayers.erase(f);
+	_pimpl->removePlayer(info);
 }
 
 void AbstractConnection::removePlayer(SOCKET sockfd) {
-
-	const PLAYERINFOS::iterator &f(std::find_if(_pimpl->m_registeredPlayers.begin(),
-								   _pimpl->m_registeredPlayers.end(),
-								   std::bind2nd(_isSocketFD(), sockfd)));
-
-	if(f != _pimpl->m_registeredPlayers.end()) _pimpl->m_registeredPlayers.erase(f);
+	_pimpl->removePlayer(sockfd);
 }
 
 void AbstractConnection::addAIPlayers(const PLAYERNAMES &aiPlayers) {

@@ -64,8 +64,10 @@ cppcheck:
 		-I$(abs_top_builddir)/src/common -i$(srcdir)/src/test
 endif
 
+if ENABLE_DEHEADER
 deheader:
 	$(MAKE) -C$(top_builddir)/src deheader
+endif
 
 bashcompdir = @bashcompdir@
 

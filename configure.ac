@@ -80,6 +80,7 @@ AX_CHECK_BASE64
 AC_CHECK_PROGS([HELP2MAN], [help2man])
 AC_CHECK_PROGS([DOXYGEN],  [doxygen])
 AC_CHECK_PROGS([CPPCHECK], [cppcheck])
+AC_CHECK_PROGS([DEHEADER], [deheader])
 
 if test -z "$ac_cv_prog_HELP2MAN"; then
   AM_CONDITIONAL([GENMAN], [ false ])
@@ -95,6 +96,12 @@ if test -z "$ac_cv_prog_CPPCHECK"; then
   AM_CONDITIONAL([CHECKCPP], [ false ])
 else
   AM_CONDITIONAL([CHECKCPP], [ true ])
+fi
+
+if test -z "$ac_cv_prog_DEHEADER"; then
+  AM_CONDITIONAL([ENABLE_DEHEADER], [ false ])
+else
+  AM_CONDITIONAL([ENABLE_DEHEADER], [ true ])
 fi
 
 if test -z "$ac_cv_prog_RC"; then

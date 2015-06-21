@@ -18,13 +18,24 @@
 #  along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-command -v xxd >/dev/null 2>&1 || \
-    { echo >&2 "I require xxd but it's not installed.  Aborting."; exit 1; }
+let braceSemi=1;
+
+if [ -n "`command -v xxdi.pl`" ]; then
+    XXD="`command -v xxdi.pl`";
+    braceSemi=0;
+elif [ -n "`command -v xxd`" ]; then
+    CLEANUP="";
+    XXD="`command -v xxd` -i";
+else
+    echo >&2 "I require xxdi.pl or xxd but it's not installed.  Aborting."; exit 1;
+fi
 
 if [ -z "$2" -o "$2" == "-" ]; then
-    PNGDATA="`xxd -i`"
+    PNGDATA="`$XXD | \\
+              sed 's/^unsigned char stdin.*\$//' | sed 's/^unsigned int stdin_len = [0-9]*;\$//'`"
 else
-    PNGDATA="`cat $2 | xxd -i`"
+    PNGDATA="`cat $2 | $XXD | \\
+              sed 's/^unsigned char stdin.*\$//' | sed 's/^unsigned int stdin_len = [0-9]*;\$//'`"
 fi
 
 HGUARD="CREATE_AI_ICON_`echo -n $1 | tr '[:lower:]' '[:upper:]'`_H"
@@ -47,7 +58,9 @@ cat << EOF
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
+ * Created with $XXD
+ *
  */
 
 #ifndef $HGUARD
@@ -57,11 +70,15 @@ namespace {
 
 const unsigned char $1[] = {
 $PNGDATA
-};
+EOF
+
+if [ $braceSemi == 1 ]; then echo "};" ; fi
+
+cat << EOF
 
 }
 
 #endif /* $HGUARD */
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;
 EOF

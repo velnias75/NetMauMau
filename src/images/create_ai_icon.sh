@@ -24,7 +24,6 @@ if [ -n "`command -v xxdi.pl`" ]; then
     XXD="`command -v xxdi.pl`";
     braceSemi=0;
 elif [ -n "`command -v xxd`" ]; then
-    CLEANUP="";
     XXD="`command -v xxd` -i";
 else
     echo >&2 "I require xxdi.pl or xxd but it's not installed.  Aborting."; exit 1;

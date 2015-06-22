@@ -87,6 +87,8 @@ std::string NetMauMau::Common::base64_encode(BYTE const *buf, unsigned int bufLe
 		while((i++ < 3)) ret += '=';
 	}
 
+	if(ret.capacity() > ret.size()) std::string(ret.begin(), ret.end()).swap(ret);
+
 	return ret;
 }
 
@@ -148,6 +150,8 @@ NetMauMau::Common::base64_decode(std::string const &encoded_string) {
 
 		for(j = 0; (j < i - 1); ++j) ret.push_back(char_array_3[j]);
 	}
+
+	if(ret.capacity() > ret.size()) std::vector<BYTE>(ret.begin(), ret.end()).swap(ret);
 
 	return ret;
 }

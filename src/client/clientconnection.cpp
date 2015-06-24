@@ -24,12 +24,14 @@
 #include <algorithm>
 #include <cstring>                      // for strncmp, memcpy
 #include <sstream>                      // for operator<<, ostringstream, etc
+#include <cstdio>
 
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
 
 #include "base64.h"
+#include "ci_char_traits.h"
 #include "abstractclient.h"             // for AbstractClient
 #include "capabilitiesexception.h"      // for CapabilitiesException
 #include "clientconnectionimpl.h"       // for ConnectionImpl
@@ -85,12 +87,17 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	if(_pimpl->hello()) {
 
 		if(playerPNG) {
-			std::ostringstream os;
-			os << "PLAYERLIST" << ' ' << SERVER_VERSION_MAJOR << '.' << SERVER_VERSION_MINOR;
 
-			send(os.str().c_str(), os.str().length(), getSocketFD());
+			char pl[30];
+			const std::size_t len =
+				static_cast<std::size_t>(std::snprintf(pl, 29, "%s %d.%d",
+										 NetMauMau::Common::Protocol::V15::PLAYERLIST.c_str(),
+										 SERVER_VERSION_MAJOR, SERVER_VERSION_MINOR));
+
+			send(pl, len, getSocketFD());
 		} else {
-			send("PLAYERLIST", 10, getSocketFD());
+			send(NetMauMau::Common::Protocol::V15::PLAYERLIST.c_str(),
+				 NetMauMau::Common::Protocol::V15::PLAYERLIST.length(), getSocketFD());
 		}
 
 		std::string pl, pic;
@@ -102,7 +109,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			*this >> pic;
 		}
 
-		while(pl != "PLAYERLISTEND") {
+		while(pl != NetMauMau::Common::Protocol::V15::PLAYERLISTEND) {
 
 			const std::vector<unsigned char> &pp(NetMauMau::Common::base64_decode(pic));
 
@@ -112,10 +119,10 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 			if(!pic.empty() && pic != "-") {
 
-				ppd = new(std::nothrow) unsigned char[pp.size()];
+				ppd = !pp.empty() ? new(std::nothrow) unsigned char[pp.size()] : 0L;
 
 				if(ppd) {
-					std::memcpy(ppd, pp.data(), pp.size() * sizeof(unsigned char));
+					std::copy(pp.begin(), pp.end(), ppd);
 				} else {
 					pic = "-";
 				}
@@ -127,7 +134,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 			*this >> pl;
 
-			const bool ple = (pl == "PLAYERLISTEND");
+			const bool ple = (pl == NetMauMau::Common::Protocol::V15::PLAYERLISTEND);
 
 			if(playerPNG) {
 				if(!ple) hdl->beginReceivePlayerPicture(pl);
@@ -150,12 +157,13 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	if(_pimpl->hello()) {
 
-		send("CAP", 3, getSocketFD());
+		send(NetMauMau::Common::Protocol::V15::CAP.c_str(),
+			 NetMauMau::Common::Protocol::V15::CAP.length(), getSocketFD());
 
 		std::string cap;
 		*this >> cap;
 
-		while(cap != "CAPEND") {
+		while(cap != NetMauMau::Common::Protocol::V15::CAPEND) {
 
 			const std::string::size_type p = cap.find('=');
 
@@ -181,14 +189,15 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		const CAPABILITIES &c(capabilities());
 		const CAPABILITIES::const_iterator &f(c.find("HAVE_SCORES"));
 
-		if(f != c.end() && f->second == "true") {
+		if(f != c.end() && NetMauMau::Common::ci_string(f->second.c_str()) ==
+				NetMauMau::Common::ci_string(NetMauMau::Common::Protocol::V15::TRUE.c_str())) {
 
 			SCORES scores;
 
 			if(_pimpl->hello()) {
 
 				std::ostringstream os;
-				os << "SCORES ";
+				os << NetMauMau::Common::Protocol::V15::SCORES << ' ';
 
 				switch(type) {
 				case SCORE_TYPE::NORM:
@@ -207,7 +216,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 				std::string score;
 				*this >> score;
 
-				while(score != "SCORESEND") {
+				while(score != NetMauMau::Common::Protocol::V15::SCORESEND) {
 
 					const std::string::size_type p = score.find('=');
 
@@ -252,13 +261,13 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		if(mver >= sver) {
 
-			std::ostringstream os;
+			char helloStr[100];
+			const std::size_t hlen = static_cast<std::size_t>(std::snprintf(helloStr, 99,
+									 "%s %u.%u", PACKAGE_NAME,
+									 static_cast<uint16_t>(_pimpl->m_clientVersion << 16u),
+									 static_cast<uint16_t>(_pimpl->m_clientVersion)));
 
-			os << PACKAGE_NAME << ' '
-			   << static_cast<uint16_t>(_pimpl->m_clientVersion << 16u) << '.'
-			   << static_cast<uint16_t>(_pimpl->m_clientVersion);
-
-			send(os.str().c_str(), os.str().length(), getSocketFD());
+			send(helloStr, hlen, getSocketFD());
 
 			char name[4] = { 0 };
 			recv(name, 4, getSocketFD());

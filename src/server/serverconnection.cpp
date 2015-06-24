@@ -300,8 +300,11 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 				const std::string rHello = read(cfd);
 
-				if(rHello != "CAP" && rHello.substr(0, 10) != "PLAYERLIST" &&
-						rHello.substr(0, 6) != "SCORES") {
+				if(rHello != NetMauMau::Common::Protocol::V15::CAP &&
+						rHello.substr(0, NetMauMau::Common::Protocol::V15::PLAYERLIST.length()) !=
+						NetMauMau::Common::Protocol::V15::PLAYERLIST &&
+						rHello.substr(0, NetMauMau::Common::Protocol::V15::SCORES.length()) !=
+						NetMauMau::Common::Protocol::V15::SCORES) {
 
 					const std::string::size_type spc = rHello.find(' ');
 					const std::string::size_type dot = rHello.find('.');
@@ -479,7 +482,8 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						shutdown(cfd);
 					}
 
-				} else if(rHello.substr(0, 10) == "PLAYERLIST") {
+				} else if(rHello.substr(0, NetMauMau::Common::Protocol::V15::PLAYERLIST.length())
+						  == NetMauMau::Common::Protocol::V15::PLAYERLIST) {
 
 					const std::string::size_type spc = rHello.find(' ');
 					const std::string::size_type dot = rHello.find('.');
@@ -534,13 +538,24 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						send(piz.c_str(), piz.length(), cfd);
 					}
 
-					send(cver >= 4 ? "PLAYERLISTEND\0-\0" : "PLAYERLISTEND\0",
-						 cver >= 4 ? 16 : 14, cfd);
+					std::vector<std::string::traits_type::char_type>
+					hdbvs(NetMauMau::Common::Protocol::V15::PLAYERLISTEND.begin(),
+						  NetMauMau::Common::Protocol::V15::PLAYERLISTEND.end());
+
+					hdbvs.push_back('\0');
+
+					if(cver >= 4) {
+						hdbvs.push_back('-');
+						hdbvs.push_back('\0');
+					}
+
+					send(hdbvs.data(), hdbvs.size(), cfd);
 
 					shutdown(cfd);
 					accepted = PLAYERLIST;
 
-				} else if(rHello.substr(0, 6) == "SCORES") {
+				} else if(rHello.substr(0, NetMauMau::Common::Protocol::V15::SCORES.length()) ==
+						  NetMauMau::Common::Protocol::V15::SCORES) {
 
 					const NetMauMau::DB::SQLite::SCORE_TYPE st =
 						rHello.substr(7, rHello.find(' ', 7) - 7) == "ABS" ?
@@ -560,7 +575,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						osscores << i->name << '=' << i->score << '\0';
 					}
 
-					osscores << "SCORESEND" << '\0';
+					osscores << NetMauMau::Common::Protocol::V15::SCORESEND << '\0';
 
 					send(osscores.str().c_str(), osscores.str().length(), cfd);
 
@@ -575,7 +590,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						oscap << i->first << '=' << i->second << '\0';
 					}
 
-					oscap << "CAPEND" << '\0';
+					oscap << NetMauMau::Common::Protocol::V15::CAPEND << '\0';
 
 					send(oscap.str().c_str(), oscap.str().length(), cfd);
 

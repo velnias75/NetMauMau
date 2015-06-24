@@ -241,9 +241,9 @@ AC_DEFINE_UNQUOTED([SERVER_VERSION_RELEASE], [${SERVER_VERSION_RELEASE}], [serve
 
 if test x$CLANG = xyes; then VISIBILITY=hidden; else VISIBILITY=internal; fi
 
-LDFLAGS="-Wl,--as-needed ${LDFLAGS}"
-CFLAGS="${CFLAGS} -std=gnu99 -fvisibility-inlines-hidden"
-CXXFLAGS="${CXXFLAGS} -std=gnu++98 -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
+LDFLAGS="-Wl,-z,noexecstack -Wl,--as-needed ${LDFLAGS}"
+CFLAGS="${CFLAGS} -Wa,--noexecstack -std=gnu99 -fvisibility-inlines-hidden"
+CXXFLAGS="${CXXFLAGS} -Wa,--noexecstack -std=gnu++98 -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
 CPPFLAGS="${CPPFLAGS} -DBASICLOGGER_NO_PTHREADS -D_GLIBCXX_VISIBILITY=0"
 NO_EXCEPTIONS="-fno-exceptions" ;
 

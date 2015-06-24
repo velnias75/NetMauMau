@@ -40,6 +40,7 @@
 #include <unistd.h>                     // for close
 #endif
 
+#include <cstdio>
 #include <cassert>                      // for assert
 #include <stdbool.h>
 
@@ -478,13 +479,16 @@ sevenRule:
 
 			if(!pName.empty()) {
 
-				std::ostringstream os;
+				const int lcl =
+					NetMauMau::Common::Protocol::V15::ERR_TO_EXC_LOSTCONNNAMED.length() +
+					pName.length();
 
-				os << NetMauMau::Common::Protocol::V15::ERR_TO_EXC_LOSTCONNNAMED
-				   << "\"" << pName << "\"";
+				char lc[1 + lcl];
+				std::snprintf(lc, lcl, "%s\"%s\"", NetMauMau::Common::Protocol::V15::
+							  ERR_TO_EXC_LOSTCONNNAMED.c_str(), pName.c_str());
 
 				try {
-					getEventHandler().error(os.str(), ex);
+					getEventHandler().error(lc, ex);
 				} catch(const Common::Exception::SocketException &) {}
 
 			} else {
@@ -498,9 +502,11 @@ sevenRule:
 
 			try {
 
-				std::ostringstream watcher;
-				watcher << pName << " is no more watching us";
-				getEventHandler().message(watcher.str());
+				char watcher[25 + pName.length()];
+				std::snprintf(watcher, 24 + pName.length(), "%s is no more watching us",
+							  pName.c_str());
+
+				getEventHandler().message(watcher);
 
 			} catch(const Common::Exception::SocketException &) {}
 		}

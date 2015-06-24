@@ -32,6 +32,13 @@ const std::string ERR_TO_EXC_LOSTCONNNAMED("Lost connection to player ");
 const std::string ERR_TO_EXC_SHUTDOWNMSG("The server has been shut down");
 const std::string ERR_TO_EXC_MISCONFIGURED("Misconfigured or compromised server. Please report: ");
 
+const std::string PLAYERLIST("PLAYERLIST");
+const std::string PLAYERLISTEND("PLAYERLISTEND");
+const std::string SCORES("SCORES");
+const std::string SCORESEND("SCORESEND");
+const std::string CAP("CAP");
+const std::string CAPEND("CAPEND");
+
 const std::string ACEROUND("ACEROUND");
 const std::string ACEROUNDENDED("ACEROUNDENDED");
 const std::string ACEROUNDSTARTED("ACEROUNDSTARTED");

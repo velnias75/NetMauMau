@@ -43,6 +43,13 @@ extern const std::string ERR_TO_EXC_SHUTDOWNMSG;
 extern const std::string ERR_TO_EXC_LOSTCONNNAMED;
 extern const std::string ERR_TO_EXC_MISCONFIGURED;
 
+extern const std::string PLAYERLIST;
+extern const std::string PLAYERLISTEND;
+extern const std::string SCORES;
+extern const std::string SCORESEND;
+extern const std::string CAP;
+extern const std::string CAPEND;
+
 extern const std::string ACEROUND;
 extern const std::string ACEROUNDENDED;
 extern const std::string ACEROUNDSTARTED;

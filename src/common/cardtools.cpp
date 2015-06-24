@@ -306,44 +306,44 @@ NetMauMau::Common::ICard *NetMauMau::Common::getIllegalCard() {
 
 bool NetMauMau::Common::parseCardDesc(const std::string &desc, ICard::SUIT *suit,
 									  ICard::RANK *rank) {
+	if(desc != IC) {
 
-	if(desc == IC) {
+		const std::string::size_type p = desc.find(' ');
+
+		if(p == std::string::npos) return false;
+
+		const std::string &r(desc.substr(p + 1));
+		const std::string::value_type rc(r[0]);
+
+		*suit = symbolToSuit(desc.substr(0, p));
+
+		unsigned int iVal;
+
+		if(::isdigit(rc) && (iVal = std::strtoul(r.c_str(), NULL, 10))) {
+			*rank = static_cast<ICard::RANK>(iVal);
+		} else {
+			switch(rc) {
+			case 'J':
+				*rank = ICard::JACK;
+				break;
+
+			case 'Q':
+				*rank = ICard::QUEEN;
+				break;
+
+			case 'K':
+				*rank = ICard::KING;
+				break;
+
+			case 'A':
+				*rank = ICard::ACE;
+				break;
+			}
+		}
+
+	} else {
 		*suit = ICard::SUIT_ILLEGAL;
 		*rank = ICard::RANK_ILLEGAL;
-		return true;
-	}
-
-	const std::string::size_type p = desc.find(' ');
-
-	if(p == std::string::npos) return false;
-
-	const std::string &r(desc.substr(p + 1));
-	const std::string::value_type rc(r[0]);
-
-	*suit = symbolToSuit(desc.substr(0, p));
-
-	unsigned int iVal;
-
-	if(::isdigit(rc) && (iVal = std::strtoul(r.c_str(), NULL, 10))) {
-		*rank = static_cast<ICard::RANK>(iVal);
-	} else {
-		switch(rc) {
-		case 'J':
-			*rank = ICard::JACK;
-			break;
-
-		case 'Q':
-			*rank = ICard::QUEEN;
-			break;
-
-		case 'K':
-			*rank = ICard::KING;
-			break;
-
-		case 'A':
-			*rank = ICard::ACE;
-			break;
-		}
 	}
 
 	return true;

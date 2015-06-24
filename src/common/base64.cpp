@@ -21,13 +21,17 @@
 
 #include "logger.h"                     // for logDebug
 
-static const std::string base64_chars =
+namespace {
+
+const std::string base64_chars(
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	"abcdefghijklmnopqrstuvwxyz"
-	"0123456789+/";
+	"0123456789+/");
 
-static inline bool is_base64(NetMauMau::Common::BYTE c) {
-	return (std::isalnum(c) || (c == '+') || (c == '/'));
+inline bool is_base64(NetMauMau::Common::BYTE c) {
+	return ((c == '+') || std::isalnum(c) || (c == '/'));
+}
+
 }
 
 #pragma GCC diagnostic ignored "-Wconversion"

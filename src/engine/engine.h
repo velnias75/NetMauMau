@@ -119,7 +119,12 @@ private:
 	throw(Common::Exception::SocketException);
 
 	void informAIStat() const;
-	std::size_t getAICount() const;
+	std::size_t countAI() const;
+
+	inline std::size_t getAICount() const {
+		return m_aiCount;
+	}
+
 	void setDirChangeIsSuspend(bool b) throw(Common::Exception::SocketException);
 	void jackModeOff() const throw(Common::Exception::SocketException);
 
@@ -140,7 +145,10 @@ private:
 
 	inline void removePlayers() throw() {
 		m_players.clear();
+		m_aiCount = 0;
 	}
+
+	PLAYERS::iterator erasePlayer(const PLAYERS::iterator &pi);
 
 	void disconnectError(SOCKET fd) const;
 
@@ -174,6 +182,8 @@ private:
 	DB::GAMEIDX m_gameIndex;
 	bool m_dirChangeEnabled;
 	bool m_talonUnderflow;
+
+	std::size_t m_aiCount;
 };
 
 }

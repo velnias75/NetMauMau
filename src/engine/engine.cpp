@@ -113,7 +113,7 @@ Engine::Engine(EngineContext &ctx) throw(Common::Exception::SocketException) : I
 	m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_jackMode(false), m_initialChecked(false),
 	m_ultimate(false), m_initialJack(false), m_alwaysWait(false), m_alreadyWaited(false),
 	m_initialNextMessage(ctx.getNextMessage()), m_gameIndex(0LL), m_dirChangeEnabled(false),
-	m_talonUnderflow(false) {
+	m_talonUnderflow(false), m_aiCount(0) {
 	m_players.reserve(5);
 	ctx.getEventHandler().acceptingPlayers();
 }
@@ -183,9 +183,7 @@ void Engine::removePlayer(const std::string &player) {
 Engine::PLAYERS::iterator Engine::removePlayer(Player::IPlayer *player)
 throw(Common::Exception::SocketException) {
 
-	const PLAYERS::iterator &f(std::find(m_players.begin(), m_players.end(), player));
-
-	if(f != m_players.end()) return m_players.erase(f);
+	const PLAYERS::iterator &f(erasePlayer(std::find(m_players.begin(), m_players.end(), player)));
 
 	try {
 		getRuleSet()->setCurPlayers(m_players.size());
@@ -196,7 +194,28 @@ throw(Common::Exception::SocketException) {
 	return f;
 }
 
+Engine::PLAYERS::iterator Engine::erasePlayer(const PLAYERS::iterator &pi) {
+
+	if(pi != m_players.end()) {
+
+		const PLAYERS::iterator f(m_players.erase(pi));
+
+		m_aiCount = countAI();
+
+		return f;
+	}
+
+	return pi;
+}
+
+std::size_t Engine::countAI() const {
+	return static_cast<std::size_t>(std::count_if(m_players.begin(), m_players.end(),
+									std::mem_fun(&Player::IPlayer::isAIPlayer)));
+}
+
 bool Engine::distributeCards() throw(Common::Exception::SocketException) {
+
+	m_aiCount = countAI();
 
 	if(m_state == NOCARDS || m_state == ACCEPT_PLAYERS) {
 
@@ -502,8 +521,7 @@ void Engine::handleWinner(const Player::IPlayer *player) throw(Common::Exception
 
 	PLAYERS::iterator f(m_players.begin());
 	std::advance(f, std::min(m_players.size() - 1u, m_nxtPlayer));
-
-	if(f != m_players.end()) m_players.erase(f);
+	erasePlayer(f);
 
 	const PLAYERS::size_type plsCnt = m_players.size();
 	RuleSet::IRuleSet *const rulSet = getRuleSet();
@@ -699,11 +717,6 @@ void Engine::setDirChangeIsSuspend(bool b) throw(Common::Exception::SocketExcept
 
 	std::for_each(m_players.begin(), m_players.end(),
 				  std::bind2nd(std::mem_fun(&Player::IPlayer::setNineIsSuspend), b));
-}
-
-std::size_t Engine::getAICount() const {
-	return static_cast<std::size_t>(std::count_if(m_players.begin(), m_players.end(),
-									std::mem_fun(&Player::IPlayer::isAIPlayer)));
 }
 
 void Engine::gameAboutToStart() const {

@@ -47,9 +47,8 @@ struct _isSpecialRank : std::binary_function < NetMauMau::Common::ICardPtr,
 	inline result_type operator()(const first_argument_type &card,
 								  second_argument_type rank) const {
 
-		return m_nineIsSuspend && rank == NetMauMau::Common::ICard::EIGHT ?
-			   (card == NetMauMau::Common::ICard::EIGHT || card == NetMauMau::Common::ICard::NINE)
-			   : card == rank;
+		return !(rank == NetMauMau::Common::ICard::EIGHT && m_nineIsSuspend) ? card == rank :
+			   (card == NetMauMau::Common::ICard::EIGHT || card == NetMauMau::Common::ICard::NINE);
 	}
 
 private:

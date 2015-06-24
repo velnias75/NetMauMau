@@ -156,10 +156,12 @@ AC_CHECK_HEADERS([sys/socket.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AX_CXX_GCC_ABI_DEMANGLE
+AX_CHECK_COMPILE_FLAG([-fvisibility=internal],
+  [ VISIBILITY="internal" ], [ VISIBILITY="hidden" ])
 AX_CHECK_COMPILE_FLAG([-Wa,--noexecstack],
-  [ NOEXECSTACK_AS="-Wa,--noexecstack" ] )
+  [ NOEXECSTACK_AS="-Wa,--noexecstack" ])
 AX_CHECK_LINK_FLAG([-Wl,-z,noexecstack],
-  [ NOEXECSTACK_LD="-Wl,-z,noexecstack" ] )
+  [ NOEXECSTACK_LD="-Wl,-z,noexecstack" ])
 AC_CHECK_TYPES([ptrdiff_t])
 AC_CHECK_MEMBERS([struct stat.st_rdev])
 AC_TYPE_SIZE_T
@@ -243,10 +245,8 @@ AC_DEFINE_UNQUOTED([SERVER_VERSION_MAJOR], [${SERVER_VERSION_MAJOR}], [server ve
 AC_DEFINE_UNQUOTED([SERVER_VERSION_MINOR], [${SERVER_VERSION_MINOR}], [server version minor])
 AC_DEFINE_UNQUOTED([SERVER_VERSION_RELEASE], [${SERVER_VERSION_RELEASE}], [server version release])
 
-if test x$CLANG = xyes; then VISIBILITY=hidden; else VISIBILITY=internal; fi
-
 LDFLAGS="${NOEXECSTACK_LD} -Wl,--as-needed ${LDFLAGS}"
-CFLAGS="${CFLAGS} ${NOEXECSTACK_AS} -std=gnu99 -fvisibility-inlines-hidden"
+CFLAGS="${CFLAGS} ${NOEXECSTACK_AS} -std=gnu99 -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
 CXXFLAGS="${CXXFLAGS} ${NOEXECSTACK_AS} -std=gnu++98 -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
 CPPFLAGS="${CPPFLAGS} -DBASICLOGGER_NO_PTHREADS -D_GLIBCXX_VISIBILITY=0"
 NO_EXCEPTIONS="-fno-exceptions" ;

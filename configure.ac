@@ -28,7 +28,7 @@ AC_ARG_ENABLE([client], [AS_HELP_STRING([--disable-client], [disables build of c
   [ AM_CONDITIONAL([ENABLE_CLIENT], [ test x$enable_client = xyes ]) ],
   [ AM_CONDITIONAL([ENABLE_CLIENT], [ true ]) ])
 
-AC_ARG_ENABLE([console-client], [AS_HELP_STRING([--enable-console-client], 
+AC_ARG_ENABLE([console-client], [AS_HELP_STRING([--enable-console-client],
   [enables build of console client])],
   [ AM_CONDITIONAL([ENABLE_CLI_CLIENT], [ test x$enable_console_client = xyes ]) ],
   [ AM_CONDITIONAL([ENABLE_CLI_CLIENT], [ false ]) ])
@@ -116,12 +116,12 @@ fi
 
 # Checks for libraries.
 PKG_CHECK_MODULES([POPT], [popt >= 1.10])
-AC_CHECK_LIB([magic], [magic_open], 
-  [ AC_SUBST(DOCMAGIC, "libmagic") 
+AC_CHECK_LIB([magic], [magic_open],
+  [ AC_SUBST(DOCMAGIC, "libmagic")
 	AC_DEFINE([HAVE_LIBMAGIC], [1], [Define to 1 if you have the `magic' library (-lmagic).])
-	AC_SUBST([MAGIC_LIBS], [-lmagic]) ], 
+	AC_SUBST([MAGIC_LIBS], [-lmagic]) ],
   [ AC_SUBST(DOCMAGIC, "") ])
-AC_CHECK_LIB([rt], [timer_create], 
+AC_CHECK_LIB([rt], [timer_create],
   [ AC_DEFINE([HAVE_LIBRT], [1], [Define to 1 if you have the `rt' library (-lrt).])
 	AC_SUBST([RT_LIBS], [-lrt]) ])
 PKG_CHECK_MODULES([GSL], [gsl >= 1.9],
@@ -156,6 +156,10 @@ AC_CHECK_HEADERS([sys/socket.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AX_CXX_GCC_ABI_DEMANGLE
+AX_CHECK_COMPILE_FLAG([-Wa,--noexecstack],
+  [ NOEXECSTACK_AS="-Wa,--noexecstack" ] )
+AX_CHECK_LINK_FLAG([-Wl,-z,noexecstack],
+  [ NOEXECSTACK_LD="-Wl,-z,noexecstack" ] )
 AC_CHECK_TYPES([ptrdiff_t])
 AC_CHECK_MEMBERS([struct stat.st_rdev])
 AC_TYPE_SIZE_T
@@ -211,7 +215,7 @@ AS_VAR_IF([$1], [""], [$5], [$4])dnl
 AM_CONDITIONAL([INSTALL_BASHCOMP], [ false ])
 
 AC_ARG_WITH([bashcompletiondir], [AS_HELP_STRING([--with-bashcompletiondir=DIR],
-  [directory to install bash completion files into])], 
+  [directory to install bash completion files into])],
   [ if test "x$with_bashcompletiondir" != "xno"; then
       AM_CONDITIONAL([INSTALL_BASHCOMP], [ true ])
       bashcompdir="$with_bashcompletiondir"
@@ -241,9 +245,9 @@ AC_DEFINE_UNQUOTED([SERVER_VERSION_RELEASE], [${SERVER_VERSION_RELEASE}], [serve
 
 if test x$CLANG = xyes; then VISIBILITY=hidden; else VISIBILITY=internal; fi
 
-LDFLAGS="-Wl,-z,noexecstack -Wl,--as-needed ${LDFLAGS}"
-CFLAGS="${CFLAGS} -Wa,--noexecstack -std=gnu99 -fvisibility-inlines-hidden"
-CXXFLAGS="${CXXFLAGS} -Wa,--noexecstack -std=gnu++98 -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
+LDFLAGS="${NOEXECSTACK_LD} -Wl,--as-needed ${LDFLAGS}"
+CFLAGS="${CFLAGS} ${NOEXECSTACK_AS} -std=gnu99 -fvisibility-inlines-hidden"
+CXXFLAGS="${CXXFLAGS} ${NOEXECSTACK_AS} -std=gnu++98 -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
 CPPFLAGS="${CPPFLAGS} -DBASICLOGGER_NO_PTHREADS -D_GLIBCXX_VISIBILITY=0"
 NO_EXCEPTIONS="-fno-exceptions" ;
 

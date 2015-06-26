@@ -1,4 +1,4 @@
-netmaumau (0.22.1) UNRELEASED; urgency=low
+netmaumau (0.23.0) UNRELEASED; urgency=low
 
   * fixed uncovering card twice at game start
 

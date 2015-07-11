@@ -162,6 +162,8 @@ AX_CHECK_COMPILE_FLAG([-Wa,--noexecstack],
   [ NOEXECSTACK_AS="-Wa,--noexecstack" ])
 AX_CHECK_LINK_FLAG([-Wl,-z,noexecstack],
   [ NOEXECSTACK_LD="-Wl,-z,noexecstack" ])
+AX_CHECK_LINK_FLAG([-funsafe-math-optimizations],
+  [ FASTMATH_LD="-funsafe-math-optimizations" ])
 AC_CHECK_TYPES([ptrdiff_t])
 AC_CHECK_MEMBERS([struct stat.st_rdev])
 AC_TYPE_SIZE_T
@@ -245,11 +247,11 @@ AC_DEFINE_UNQUOTED([SERVER_VERSION_MAJOR], [${SERVER_VERSION_MAJOR}], [server ve
 AC_DEFINE_UNQUOTED([SERVER_VERSION_MINOR], [${SERVER_VERSION_MINOR}], [server version minor])
 AC_DEFINE_UNQUOTED([SERVER_VERSION_RELEASE], [${SERVER_VERSION_RELEASE}], [server version release])
 
-LDFLAGS="${NOEXECSTACK_LD} -Wl,--as-needed ${LDFLAGS}"
-CFLAGS="${CFLAGS} ${NOEXECSTACK_AS} -std=gnu99 -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
-CXXFLAGS="${CXXFLAGS} ${NOEXECSTACK_AS} -std=gnu++98 -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
+LDFLAGS="${NOEXECSTACK_LD} ${FASTMATH_LD} -Wl,--as-needed ${LDFLAGS}"
+CFLAGS="${CFLAGS} ${NOEXECSTACK_AS} -std=gnu99 -ffast-math -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
+CXXFLAGS="${CXXFLAGS} ${NOEXECSTACK_AS} -std=gnu++98 -ffast-math -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
 CPPFLAGS="${CPPFLAGS} -DBASICLOGGER_NO_PTHREADS -D_GLIBCXX_VISIBILITY=0"
-NO_EXCEPTIONS="-fno-exceptions" ;
+NO_EXCEPTIONS="-fno-exceptions"
 
 if test x$CLANG = xyes; then CXXFLAGS="-fexceptions -frtti ${CXXFLAGS}" ; fi
 

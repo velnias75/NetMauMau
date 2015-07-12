@@ -1,0 +1,3 @@
+NAME(PowerPlayAction)
+PARAM(bool set = false)
+PRIVVAR(bool m_set)

@@ -18,7 +18,8 @@ libengine_gslrng_la_LIBADD   = $(GSL_LIBS)
 
 libengine_private_la_CPPFLAGS = $(GSL) -DLUADIR=\"$(pkgdatadir)\" -DSYSCONFDIR=\"$(sysconfdir)\"
 libengine_private_la_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
-	-I$(top_srcdir)/src/ai -I$(top_srcdir)/src/lua -I$(top_srcdir)/src/sqlite $(GSL_CFLAGS)
+	-I$(top_builddir)/src/ai -I$(top_srcdir)/src/ai -I$(top_srcdir)/src/lua \
+	-I$(top_srcdir)/src/sqlite $(GSL_CFLAGS)
 libengine_private_la_SOURCES = abstractplayer.cpp easyplayer.cpp engine.cpp enginecontext.cpp \
 	hardplayer.cpp nullconnection.cpp
 libengine_private_la_LIBADD = ../ai/libai.la libengine_gslrng.la

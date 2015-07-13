@@ -20,9 +20,6 @@
 ####################################################################################################
 
 match($0, /^NAME\(([^\)]+)\)/, m) { name = m[1]; }
-match($0, /^PARAM\(([^\)]+)\)/, m) { param = m[1]; }
-match($0, /^PRIVVAR\(([^\)]+)\)/, m) { pv[p_v++] = m[1]; }
-/^CONSTPERFORM\(\)/ { constPerf=1; }
 
 END {
 
@@ -45,53 +42,34 @@ END {
 	print " * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.";
 	print " */\n";
 
-	print "#ifndef NETMAUMAU_AI_" toupper(name) "_AAI_H";
-	print "#define NETMAUMAU_AI_" toupper(name) "_AAI_H\n";
+	print "#ifndef NETMAUMAU_AI_" toupper(name) "_CAI_H";
+	print "#define NETMAUMAU_AI_" toupper(name) "_CAI_H\n";
 
-	print "#include \"abstractaction.h\"             // for AbstractAction\n";
+	print "#include \"abstractcondition.h\"          // for AbstractCondition\n";
 
 	print "namespace NetMauMau {\n";
 
 	print "namespace AI {\n";
-	
-	print "template<class> class StaticCondition;\n";
 
-	print "class " name " : public AbstractAction {";
+	print "class " name " : public AbstractCondition {";
 	print "\tDISALLOW_COPY_AND_ASSIGN(" name ")";
-	print "\ttemplate<class> friend class StaticCondition;";
 	print "public:";
-	print "\t" name "(" param ");";
+	print "\t" name "();";
 	print "\tvirtual ~" name "() _CONST;\n";
 
-	print "\tvirtual const IConditionPtr &perform(IAIState &state,";
-	printf "\t\tconst Player::IPlayer::CARDS &cards) const";
-	
-	if(constPerf == 1) {
-		printf " _CONST";
-	}
-	
-	print ";\n";
-	
+	print "\tvirtual IActionPtr perform(const IAIState &state, const Player::IPlayer::CARDS &cards) const;\n";
+
 	print "#if defined(TRACE_AI) && !defined(NDEBUG)";
 	print "protected:";
 	print "\tinline virtual std::string traceLog() const {";
 	print "\t\treturn \"" name "\";";
 	print "\t}";
-	print "#endif\n";
-	
-	if(length(pv) > 0) {
-		print "private:";
-		
-		for(v in pv) {
-			print "\t" pv[v] ";";
-		}
-	}
-	
+	print "#endif";
 	print "};\n";
 
 	print "}\n";
 
 	print "}\n";
 
-	print "#endif /* NETMAUMAU_AI_" toupper(name) "_AAI_H */\n";
+	print "#endif /* NETMAUMAU_AI_" toupper(name) "_CAI_H */";
 }

@@ -1,6 +1,11 @@
 bin_PROGRAMS = nmm-server
 noinst_LTLIBRARIES = libnmm_server_private.la
 
+if MICROHTTPD
+LMHL = libhttpd.la
+noinst_LTLIBRARIES += $(LMHL)
+endif
+
 man1_MANS =
 
 if GENMAN
@@ -17,9 +22,9 @@ MAINTAINERCLEANFILES = $(bin_PROGRAMS).1
 
 DISTCLEANFILES = $(man1_MANS) netmaumau.h2m
 
-noinst_HEADERS = gamecontext.h game.h helpers.h serverconnection.h servereventhandler.h \
+noinst_HEADERS = gamecontext.h game.h helpers.h httpd.h serverconnection.h servereventhandler.h \
 	serverplayerexception.h serverplayer.h ttynamecheckdir.h
-
+	
 libnmm_server_private_la_CPPFLAGS = -UDISABLE_ANSI -DDISABLE_ANSI=1
 libnmm_server_private_la_CXXFLAGS = -I$(top_srcdir)/src/engine -I$(top_srcdir)/src/include \
 	-I$(top_srcdir)/src/lua -I$(top_srcdir)/src/sqlite -I$(top_srcdir)/src/common \
@@ -36,6 +41,13 @@ if !GENMAN
 nmm_server_CPPFLAGS += -DNOH2M
 endif
 
+if MICROHTTPD
+libhttpd_la_CXXFLAGS = $(NO_EXCEPTIONS) $(LIBMICROHTTPD_CFLAGS) -I$(top_srcdir)/src/include \
+	-I$(top_srcdir)/src/common -I$(top_srcdir)/src/sqlite -I$(top_srcdir)/src/engine
+libhttpd_la_SOURCES  = httpd.cpp
+libhttpd_la_LIBADD   = $(LIBMICROHTTPD_LIBS)
+endif
+
 nmm_server_CPPFLAGS += -DPKGDATADIR="\"$(pkgdatadir)\""
 nmm_server_CXXFLAGS =  -I$(top_srcdir)/src/engine -I$(top_srcdir)/src/include \
 	-I$(top_srcdir)/src/sqlite -I$(top_srcdir)/src/common -I$(top_srcdir)/src/ai \
@@ -43,7 +55,7 @@ nmm_server_CXXFLAGS =  -I$(top_srcdir)/src/engine -I$(top_srcdir)/src/include \
 nmm_server_SOURCES = game.cpp main.cpp serverconnection.cpp servereventhandler.cpp \
 	serverplayer.cpp serverplayerexception.cpp
 nmm_server_LDADD = ../common/libnetmaumaucommon.la libnmm_server_private.la \
-	../engine/libengine.la $(POPT_LIBS) $(RT_LIBS)
+	../engine/libengine.la $(LMHL) $(POPT_LIBS) $(RT_LIBS)
 
 if RC
 nmm_server_LDADD += netmaumau.rc.lo

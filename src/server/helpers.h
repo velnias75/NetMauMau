@@ -49,6 +49,11 @@ extern bool dirChange;
 extern bool aceRound;
 extern char *dpErr;
 
+#ifdef HAVE_LIBMICROHTTPD
+extern bool httpd;
+extern uint16_t hport;
+#endif
+
 #ifndef _WIN32
 extern const char *interface;
 #endif
@@ -72,6 +77,7 @@ void exit_hdlr();
 #endif
 
 void conLog(const NetMauMau::Common::IConnection::INFO &info);
+void dump(std::ostream &out);
 
 }
 

@@ -17,6 +17,7 @@ AC_DEFINE_UNQUOTED([BUILD_HOST], ["$build_cpu-$build_vendor-$build_os"], [the bu
 AC_DEFINE_UNQUOTED([BUILD_TARGET], ["$host_cpu-$host_vendor-$host_os"], [the build target])
 
 AC_DEFINE([SERVER_PORT], [8899], [the default server port])
+AC_DEFINE([HTTPD_PORT], [9000], [the default httpd port])
 
 AC_ARG_ENABLE([ansi], [AS_HELP_STRING([--disable-ansi], [disables ANSI support])],
   [ if test x$enable_ansi = xno; then
@@ -143,6 +144,10 @@ PKG_CHECK_MODULES([LIBSQLITE], [sqlite3 >= 3.4.2])
 PKG_CHECK_MODULES([LIBLUA], [lua5.1 >= 5.1.2], [ AC_SUBST([PKGC_LUA], [lua5.1]) ],
   [ PKG_CHECK_MODULES([LIBLUA], [lua51 >= 5.1.2], [ AC_SUBST([PKGC_LUA], [lua51]) ],
   [ PKG_CHECK_MODULES([LIBLUA], [lua >= 5.1.2 lua < 5.2], [AC_SUBST([PKGC_LUA], [lua])] ) ] ) ])
+PKG_CHECK_MODULES([LIBMICROHTTPD], [libmicrohttpd >= 0.4.6], 
+				  [ AM_CONDITIONAL([MICROHTTPD], [ true ])
+					AC_DEFINE([HAVE_LIBMICROHTTPD], [1], [Define to 1 if you have libmicrohttpd.])],
+				  [ AM_CONDITIONAL([MICROHTTPD], [ false ]) ])
 
 # Checks for header files.
 AC_HEADER_STDBOOL

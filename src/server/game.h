@@ -21,6 +21,7 @@
 #define NETMAUMAU_SERVER_GAME_H
 
 #include "engine.h"                     // for Engine
+#include "observable.h"
 
 #ifndef _WIN32
 #define TIMEFORMAT "%T - "
@@ -38,10 +39,11 @@ namespace Server {
 
 class GameContext;
 
-class Game {
+typedef enum { PLAYERADDED, PLAYERREMOVED, GAMESTARTED, GAMEENDED } NOTIFYWHAT;
+
+class Game : public Common::Observable<Game, NOTIFYWHAT> {
 	DISALLOW_COPY_AND_ASSIGN(Game)
 public:
-
 	typedef enum { ACCEPTED, REFUSED, ACCEPTED_READY, REFUSED_FULL } COLLECT_STATE;
 
 	explicit Game(GameContext &gameCtx) throw(Common::Exception::SocketException);
@@ -67,6 +69,10 @@ public:
 		return m_gameServed;
 	}
 
+	inline bool isRunning() const {
+		return m_running;
+	}
+
 private:
 	bool addPlayer(Player::IPlayer *player);
 	void gameReady();
@@ -82,6 +88,8 @@ private:
 	std::vector<Player::AbstractPlayer *> m_aiPlayers;
 	std::vector<Player::IPlayer *> m_players;
 	DB::GAMEIDX m_gameIndex;
+
+	bool m_running;
 };
 
 }

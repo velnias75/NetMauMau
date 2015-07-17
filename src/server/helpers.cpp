@@ -89,6 +89,11 @@ char *arRank = "ACE";
 char *dpErr = 0L;
 #pragma GCC diagnostic pop
 
+#ifdef HAVE_LIBMICROHTTPD
+bool httpd = false;
+uint16_t hport = HTTPD_PORT;
+#endif
+
 void updatePlayerCap(Server::Connection::CAPABILITIES &caps, std::size_t count,
 					 Server::Connection &con, bool aiOpponent) {
 
@@ -188,44 +193,46 @@ void sh_dump(int, siginfo_t *info, void *) {
 
 	free(p);
 
-	if(out.is_open()) {
+	if(out.is_open()) dump(out);
+}
 
-		out << std::boolalpha << "== Options ==" << std::endl;
-		out << "AI-delay: " << static_cast<float>(aiDelay) << " sec" << std::endl;
-		out << "A/K/Q rounds: " << aceRound << std::endl;
+void dump(std::ostream &out) {
 
-		if(aceRound) out << "A/K/Q rank: " << ((arRank != 0L) ? arRank : "ACE") << std::endl;
+	out << std::boolalpha << "== Options ==" << std::endl;
+	out << "AI-delay: " << static_cast<float>(aiDelay) << " sec" << std::endl;
+	out << "A/K/Q rounds: " << aceRound << std::endl;
 
-		out << "Decks: " << decks << std::endl;
-		out << "Direction change: " << dirChange << std::endl;
-		out << "Initial card count: " << initialCardCount << std::endl;
-		out << "Players: " << minPlayers << std::endl;
-		out << "Ultimate: " << ultimate << std::endl;
+	if(aceRound) out << "A/K/Q rank: " << ((arRank != 0L) ? arRank : "ACE") << std::endl;
 
-		char sr[128];
-		std::snprintf(sr, 127, "Total received %.2f kBytes; total sent %.2f kBytes",
-					  static_cast<double>(Common::AbstractSocket::getTotalReceivedBytes()) / 1024.0,
-					  static_cast<double>(Common::AbstractSocket::getTotalSentBytes()) / 1024.0);
+	out << "Decks: " << decks << std::endl;
+	out << "Direction change: " << dirChange << std::endl;
+	out << "Initial card count: " << initialCardCount << std::endl;
+	out << "Players: " << minPlayers << std::endl;
+	out << "Ultimate: " << ultimate << std::endl;
 
-		out << "== Network ==" << std::endl;
-		out << "Host: " << (host && *host ? host : "localhost") << std::endl;
-		out << "Port: " << port << std::endl;
-		out << sr << std::endl;
+	char sr[128];
+	std::snprintf(sr, 127, "Total received %.2f kBytes; total sent %.2f kBytes",
+				  static_cast<double>(Common::AbstractSocket::getTotalReceivedBytes()) / 1024.0,
+				  static_cast<double>(Common::AbstractSocket::getTotalSentBytes()) / 1024.0);
 
-		char outstr[256];
-		// cppcheck-suppress nonreentrantFunctionslocaltime
-		struct tm *tmp = std::localtime(&startTime);
+	out << "== Network ==" << std::endl;
+	out << "Host: " << (host && *host ? host : "localhost") << std::endl;
+	out << "Port: " << port << std::endl;
+	out << sr << std::endl;
 
-		if(tmp && std::strftime(outstr, sizeof(outstr), "Server start: %c", tmp)) {
-			out << outstr << std::endl;
-		}
+	char outstr[256];
+	// cppcheck-suppress nonreentrantFunctionslocaltime
+	struct tm *tmp = std::localtime(&startTime);
 
-		out << "Served games since server start: " << Server::Game::getServedGames() << std::endl;
+	if(tmp && std::strftime(outstr, sizeof(outstr), "Server start: %c", tmp)) {
+		out << outstr << std::endl;
+	}
 
-		if(!DB::SQLite::getInstance()->getDBFilename().empty()) {
-			out << "Total served games on this server: "
-				<< DB::SQLite::getInstance()->getServedGames() << std::endl;
-		}
+	out << "Served games since server start: " << Server::Game::getServedGames() << std::endl;
+
+	if(!DB::SQLite::getInstance()->getDBFilename().empty()) {
+		out << "Total served games on this server: "
+			<< DB::SQLite::getInstance()->getServedGames() << std::endl;
 	}
 }
 

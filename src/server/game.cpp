@@ -34,9 +34,10 @@ using namespace NetMauMau::Server;
 long Game::m_gameServed = 0L;
 bool Game::m_interrupted = false;
 
-Game::Game(GameContext &ctx) throw(NetMauMau::Common::Exception::SocketException) : m_ctx(ctx),
-	m_engine(ctx.getEngineContext()), m_db(NetMauMau::DB::SQLite::getInstance()), m_aiPlayers(),
-	m_players(), m_gameIndex(0LL) {
+Game::Game(GameContext &ctx) throw(NetMauMau::Common::Exception::SocketException) :
+	Common::Observable<Game, NOTIFYWHAT>(), m_ctx(ctx), m_engine(ctx.getEngineContext()),
+	m_db(NetMauMau::DB::SQLite::getInstance()), m_aiPlayers(), m_players(), m_gameIndex(0LL),
+	m_running(false) {
 
 	const std::size_t orgAI = ctx.getAINames().size();
 	const std::size_t maxPl = ctx.getEngineContext().getRuleSet(&m_engine)->getMaxPlayers();
@@ -82,6 +83,7 @@ Game::Game(GameContext &ctx) throw(NetMauMau::Common::Exception::SocketException
 					logInfo("Adding AI player \"" << m_aiPlayers.back()->getName() << "\" ("
 							<< (m_aiPlayers.back()->getType() ==
 								NetMauMau::Player::IPlayer::HARD ? "hard" : "easy") << ")");
+
 					m_engine.addPlayer(m_aiPlayers.back());
 					++aiAdded;
 				}
@@ -150,6 +152,7 @@ bool Game::addPlayer(NetMauMau::Player::IPlayer *player) {
 	try {
 
 		if(m_engine.addPlayer(m_players.back())) {
+			notify(PLAYERADDED);
 			return true;
 		} else {
 			delete m_players.back();
@@ -175,6 +178,10 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 
 	try {
 
+		m_running = true;
+
+		notify(GAMESTARTED);
+
 		while(ultimate ? m_engine.getPlayerCount() >= 2u :
 				m_engine.getPlayerCount() == minPlayers) {
 
@@ -190,6 +197,7 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 
 	} catch(const NetMauMau::Lua::Exception::LuaFatalException &e) {
 		logFatal(e);
+		m_running = false;
 		m_engine.error(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_MISCONFIGURED + e.what());
 		m_engine.gameOver();
 	}
@@ -199,13 +207,14 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 
 void Game::removePlayer(const std::string &player) {
 	m_engine.removePlayer(player);
+	notify(PLAYERREMOVED);
 }
 
 void Game::reset(bool playerLost) throw() {
 
 	++m_gameServed;
 
-	m_interrupted = false;
+	m_running = m_interrupted = false;
 
 	if(playerLost) m_engine.error(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_LOSTCONN);
 
@@ -247,6 +256,7 @@ void Game::reset(bool playerLost) throw() {
 	NetMauMau::Common::AbstractSocket::resetReceivedBytes();
 	NetMauMau::Common::AbstractSocket::resetSentBytes();
 
+	notify(GAMEENDED);
 	gameReady();
 }
 

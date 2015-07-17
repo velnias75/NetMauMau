@@ -74,6 +74,10 @@
 #include "iruleset.h"
 #include "ci_char_traits.h"
 
+#ifdef HAVE_LIBMICROHTTPD
+#include "httpd.h"
+#endif
+
 namespace {
 
 bool inetd = false;
@@ -141,8 +145,14 @@ poptOption poptOptions[] = {
 #endif
 	{
 		"port", 0, POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &NetMauMau::port, 0,
-		"Set the port to listen to", "PORT"
+		"Set the port the to listen to", "PORT"
 	},
+#ifdef HAVE_LIBMICROHTTPD
+	{
+		"webserver", 'W', POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT | POPT_ARGFLAG_OPTIONAL,
+		&NetMauMau::hport, 'W', "Enable the webserver at PORT", "PORT"
+	},
+#endif
 #ifndef _WIN32
 	{
 		"user", 0, POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &NetMauMau::user, 0,
@@ -182,6 +192,16 @@ int main(int argc, const char **argv) {
 			}
 		}
 		break;
+
+#ifdef HAVE_LIBMICROHTTPD
+
+		case 'W':
+			NetMauMau::httpd = true;
+
+			if(NetMauMau::hport == 0) NetMauMau::hport = HTTPD_PORT;
+
+			break;
+#endif
 
 		case 'V': {
 
@@ -427,6 +447,10 @@ int main(int argc, const char **argv) {
 											arRank[0] : 'A') : 0));
 			Server::Game game(ctx);
 
+#ifdef HAVE_LIBMICROHTTPD
+			game.addObserver(NetMauMau::Server::Httpd::getInstance());
+#endif
+
 			if(cconf.decks != static_cast<std::size_t>(decks)) {
 				logWarning("Adjusted amount of card decks from " << decks << " to " << cconf.decks);
 				decks = static_cast<int>(cconf.decks);
@@ -490,6 +514,10 @@ int main(int argc, const char **argv) {
 			caps.insert(std::make_pair("CUR_PLAYERS", cpos.str()));
 
 			con.setCapabilities(caps);
+
+#ifdef HAVE_LIBMICROHTTPD
+			NetMauMau::Server::Httpd::getInstance()->setCapabilities(caps);
+#endif
 
 			while(!interrupt) {
 

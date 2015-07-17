@@ -71,6 +71,9 @@ AC_ARG_ENABLE([xinetd], [AS_HELP_STRING([--disable-xinetd], [disables creation a
   [ AM_CONDITIONAL([XINETD], [ test x$enable_xinetd = xyes ]) ],
   [ AM_CONDITIONAL([XINETD], [ true ]) ])
 
+AC_ARG_ENABLE([webserver], [AS_HELP_STRING([--disable-webserver], [disables the integrated webserver])],
+  [ if test x$enable_webserver = xyes; then NOHTTPD=0; else NOHTTPD=1; fi ], [ NOHTTPD=0 ])
+
 PKG_PROG_PKG_CONFIG([0.22])
 
 # Checks for programs.
@@ -144,10 +147,13 @@ PKG_CHECK_MODULES([LIBSQLITE], [sqlite3 >= 3.4.2])
 PKG_CHECK_MODULES([LIBLUA], [lua5.1 >= 5.1.2], [ AC_SUBST([PKGC_LUA], [lua5.1]) ],
   [ PKG_CHECK_MODULES([LIBLUA], [lua51 >= 5.1.2], [ AC_SUBST([PKGC_LUA], [lua51]) ],
   [ PKG_CHECK_MODULES([LIBLUA], [lua >= 5.1.2 lua < 5.2], [AC_SUBST([PKGC_LUA], [lua])] ) ] ) ])
-PKG_CHECK_MODULES([LIBMICROHTTPD], [libmicrohttpd >= 0.4.6], 
-				  [ AM_CONDITIONAL([MICROHTTPD], [ true ])
-					AC_DEFINE([HAVE_LIBMICROHTTPD], [1], [Define to 1 if you have libmicrohttpd.])],
-				  [ AM_CONDITIONAL([MICROHTTPD], [ false ]) ])
+PKG_CHECK_MODULES([LIBMICROHTTPD], [libmicrohttpd >= 0.4.6],
+				  [ if test $NOHTTPD -eq 0; then
+				      AM_CONDITIONAL([MICROHTTPD], [ true ])
+					  AC_DEFINE([HAVE_LIBMICROHTTPD], [1], [Define to 1 if you have libmicrohttpd.])
+					else
+					  AM_CONDITIONAL([MICROHTTPD], [ false ])
+					fi ], [ AM_CONDITIONAL([MICROHTTPD], [ false ]) ])
 
 # Checks for header files.
 AC_HEADER_STDBOOL

@@ -50,6 +50,19 @@ namespace {
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
+struct scoresTable : std::unary_function<NetMauMau::DB::SQLite::SCORES::value_type, void> {
+
+	inline explicit scoresTable(std::ostringstream &o) : os(o) {}
+	inline result_type operator()(const argument_type &s) const {
+		os << "<tr><td>" << s.name << "</td><td>"
+		   << (s.score < 0 ? "<font color=\"red\">" : "") << s.score
+		   << (s.score < 0 ? "</font>" : "") << "</td></tr>";
+	}
+
+private:
+	std::ostringstream &os;
+};
+
 struct capaTable :
 		std::unary_function<NetMauMau::Common::AbstractConnection::CAPABILITIES::value_type, void> {
 
@@ -72,13 +85,35 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 	std::ostringstream os;
 
-	os << "<html><head><title>" << PACKAGE_STRING << " (" << BUILD_TARGET << ")</title>"
-	   << "<body bgcolor=\"#eeeeee\"><font face=\"Sans-Serif\"><h1 align=\"center\">"
-	   << PACKAGE_STRING << "</h1><hr /><center><table width=\"50%\" border=1>";
+	os << "<html><head><title>" << PACKAGE_STRING << " (" << BUILD_TARGET << ")</title>";
+
+	os << "<style>"
+	   << "table, td, th { background-color:white; border: thin solid black; "
+	   << "border-spacing: 0; border-collapse: collapse; }"
+	   << "pre { background-color:white; }"
+	   << "</style>";
+
+	os << "<body bgcolor=\"#eeeeee\"><font face=\"Sans-Serif\"><h1 align=\"center\">"
+	   << PACKAGE_STRING << "</h1><hr />";
+
+	if(httpd->getCapabilities().find("HAVE_SCORES") != httpd->getCapabilities().end()) {
+		const NetMauMau::DB::SQLite::SCORES
+		&sc(NetMauMau::DB::SQLite::getInstance()->getScores(NetMauMau::DB::SQLite::NORM));
+
+		os << "<center><h2>Hall of Fame</h2><table width=\"50%\">"
+		   << "<tr><th>NAME</th><th>SCORE</th></tr>";
+
+		std::for_each(sc.begin(), sc.end(), scoresTable(os));
+
+		os << "</table></center><hr />";
+	}
+
+	os << "<center><h2>Server capabilities</h2><table width=\"50%\">"
+	   << "<tr><th>NAME</th><th>VALUE</th></tr>";
 
 	std::for_each(httpd->getCapabilities().begin(), httpd->getCapabilities().end(), capaTable(os));
 
-	os << "</table></center><hr /><tt><pre>";
+	os << "</table></center><hr /><h2 align=\"center\">Server dump</h2><tt><pre>";
 
 	NetMauMau::dump(os);
 
@@ -102,13 +137,14 @@ using namespace NetMauMau::Server;
 HttpdPtr Httpd::m_instance;
 
 Httpd::Httpd() : m_daemon(NetMauMau::httpd ? MHD_start_daemon(MHD_USE_SELECT_INTERNALLY,
-							  NetMauMau::hport, NULL, NULL, &answer_to_connection, this,
-							  MHD_OPTION_END) : 0L), m_source(0L), m_caps() {
+							  static_cast<unsigned short>(NetMauMau::hport), NULL, NULL,
+							  &answer_to_connection, this, MHD_OPTION_END) : 0L), m_source(0L),
+	m_caps() {
 
 	if(NetMauMau::httpd && !m_daemon) {
 		logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
 				   << "Failed to start webserver at port " << NetMauMau::hport);
-	} else {
+	} else if(NetMauMau::httpd) {
 		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT)
 				<< "Started webserver at port " << NetMauMau::hport);
 	}

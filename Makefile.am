@@ -40,8 +40,13 @@ AM_DISTCHECK_CONFIGURE_FLAGS = --disable-client --enable-console-client --enable
 	--with-bashcompletiondir=no
 
 if XINETD
+if MICROHTTPD
+ADDWEBSERVER=-W
+endif
+
 netmaumau: $(top_srcdir)/netmaumau.xinetd.in
-	$(AM_V_GEN)$(SED) -e 's|@bindir[@]|$(bindir)|g' < $< > $@
+	$(AM_V_GEN)$(SED) -e 's|@bindir[@]|$(bindir)|g' \
+	-e 's|@ADDWEBSERVER[@]|$(ADDWEBSERVER)|g'< $< > $@
 endif
 
 start-server.sh: $(top_srcdir)/start-server.sh.in

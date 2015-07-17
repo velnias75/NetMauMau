@@ -53,6 +53,10 @@
 #include "servereventhandler.h"         // for EventHandler
 #include "ttynamecheckdir.h"            // for ttynameCheckDir
 
+#ifdef HAVE_LIBMICROHTTPD
+#include "httpd.h"
+#endif
+
 #ifndef DP_USER
 #define DP_USER "nobody"
 #endif
@@ -74,7 +78,7 @@ std::size_t minPlayers = 1;
 bool ultimate = false;
 char bind[HOST_NAME_MAX] = { 0 };
 char *host = bind;
-uint16_t port = SERVER_PORT;
+int port = SERVER_PORT;
 
 #ifndef _WIN32
 const time_t startTime = std::time(0L);
@@ -91,17 +95,21 @@ char *dpErr = 0L;
 
 #ifdef HAVE_LIBMICROHTTPD
 bool httpd = false;
-uint16_t hport = HTTPD_PORT;
+int hport = HTTPD_PORT;
 #endif
 
 void updatePlayerCap(Server::Connection::CAPABILITIES &caps, std::size_t count,
-					 Server::Connection &con, bool aiOpponent) {
+					 Server::Connection &con) {
 
 	std::ostringstream os;
 
-	os << count - (aiOpponent ? 1 : 0);
+	os << count;
 	caps["CUR_PLAYERS"] = os.str();
 	con.setCapabilities(caps);
+
+#ifdef HAVE_LIBMICROHTTPD
+	NetMauMau::Server::Httpd::getInstance()->setCapabilities(caps);
+#endif
 }
 
 char *inetdParsedString(char *str) {

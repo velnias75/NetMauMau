@@ -41,7 +41,7 @@ extern int initialCardCount;
 extern double aiDelay;
 extern char bind[];
 extern char *host;
-extern uint16_t port;
+extern int port;
 extern char *user;
 extern char *grp;
 extern bool ultimate;
@@ -51,7 +51,7 @@ extern char *dpErr;
 
 #ifdef HAVE_LIBMICROHTTPD
 extern bool httpd;
-extern uint16_t hport;
+extern int hport;
 #endif
 
 #ifndef _WIN32
@@ -59,7 +59,7 @@ extern const char *interface;
 #endif
 
 void updatePlayerCap(Server::Connection::CAPABILITIES &caps, std::size_t count,
-					 Server::Connection &con, bool aiOpponent);
+					 Server::Connection &con);
 
 char *inetdParsedString(char *str);
 void sh_interrupt(int);

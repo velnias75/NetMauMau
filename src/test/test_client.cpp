@@ -64,8 +64,8 @@ poptOption poptOptions[] = {
 	},
 	{ "player-image", 'i', POPT_ARG_VAL, &noImg, 0, "Send a test player image", NULL },
 	{
-		"autoplay", 'a', POPT_ARG_VAL, &autoPlay,
-		1, "Automatically plays the first possible choice", NULL
+		"autoplay", 'a', POPT_ARG_NONE, NULL,
+		'A', "Automatically plays the first possible choice", NULL
 	},
 #ifdef HAVE_UNISTD_H
 	{
@@ -89,7 +89,14 @@ int main(int argc, const char **argv) {
 
 	poptSetOtherOptionHelp(pctx, "[OPTIONS]* [<server[:port]>]");
 
-	while((c = poptGetNextOpt(pctx)) >= 0);
+	while((c = poptGetNextOpt(pctx)) >= 0) {
+
+		switch(c) {
+		case 'A':
+			autoPlay = true;
+			break;
+		}
+	}
 
 	const char *lo = poptGetArg(pctx);
 	std::string server(lo ? lo : "localhost");

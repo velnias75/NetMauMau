@@ -420,8 +420,8 @@ int main(int argc, const char **argv) {
 		}
 
 		Server::Connection con(aceRound ? std::max(7u, MAKE_VERSION(MIN_MAJOR, MIN_MINOR)) :
-							   MAKE_VERSION(MIN_MAJOR, MIN_MINOR), false, port,
-							   *host ? host : NULL);
+							   MAKE_VERSION(MIN_MAJOR, MIN_MINOR), false,
+							   static_cast<uint16_t>(port), *host ? host : NULL);
 
 		ultimate = (!aiOpponent && minPlayers > 2) ? ultimate : true;
 
@@ -513,11 +513,7 @@ int main(int argc, const char **argv) {
 			cpos << game.getPlayerCount();
 			caps.insert(std::make_pair("CUR_PLAYERS", cpos.str()));
 
-			con.setCapabilities(caps);
-
-#ifdef HAVE_LIBMICROHTTPD
-			NetMauMau::Server::Httpd::getInstance()->setCapabilities(caps);
-#endif
+			updatePlayerCap(caps, game.getPlayerCount(), con);
 
 			while(!interrupt) {
 
@@ -550,7 +546,7 @@ int main(int argc, const char **argv) {
 							if(cs == Server::Game::ACCEPTED || cs == Server::Game::ACCEPTED_READY) {
 
 								logger("accepted");
-								updatePlayerCap(caps, game.getPlayerCount(), con, aiOpponent);
+								updatePlayerCap(caps, game.getPlayerCount(), con);
 
 								if(cs == Server::Game::ACCEPTED_READY) {
 
@@ -581,8 +577,7 @@ int main(int argc, const char **argv) {
 
 										if(!inetd) {
 #endif
-											updatePlayerCap(caps, game.getPlayerCount(), con,
-															aiOpponent);
+											updatePlayerCap(caps, game.getPlayerCount(), con);
 #ifdef HAVE_LIBRT
 										} else {
 
@@ -629,7 +624,7 @@ int main(int argc, const char **argv) {
 					game.reset(true);
 				}
 
-				updatePlayerCap(caps, game.getPlayerCount(), con, aiOpponent);
+				updatePlayerCap(caps, game.getPlayerCount(), con);
 			}
 
 			NetMauMau::DB::SQLite::getInstance()->gameEnded(NOGAME_IDX);

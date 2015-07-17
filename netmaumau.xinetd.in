@@ -7,7 +7,7 @@ service netmaumau
 	protocol	= tcp
 	user		= root
 	server		= @bindir@/nmm-server
-	server_args	= --inetd --group=tty
+	server_args	= --inetd --group=tty @ADDWEBSERVER@
 	type		= UNLISTED
 	wait		= yes
 	instances	= 1

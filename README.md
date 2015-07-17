@@ -10,9 +10,11 @@ Prerequisites
 
 * xxd (from the vim package [on **Debian** based distributions *vim-common*; on **Gentoo** *vim-core*])
 
-* libmagic (*optionally, but recommended*)
+* libmagic (*optional, but recommended*)
 
-* GNU Scientific Library >= 1.9 (*optionally*, for better random number generator)
+* GNU Scientific Library >= 1.9 (*optional*, for better random number generator)
+
+* [libmicrohttpd](http://www.gnu.org/software/libmicrohttpd) (*optional, for the integrated webserver*)
 
 * sqlite3
 

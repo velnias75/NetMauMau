@@ -66,7 +66,6 @@
 #endif
 
 #include "logger.h"                     // for BasicLogger, logger, etc
-#include "game.h"                       // for Game, etc
 #include "gamecontext.h"                // for GameConfig
 #include "helpers.h"                    // for arRank, minPlayers, decks, etc
 #include "servereventhandler.h"         // for EventHandler

@@ -24,6 +24,8 @@
 
 #include "socketexception.h"            // for SOCKET
 
+struct addrinfo;
+
 namespace NetMauMau {
 
 namespace Common {
@@ -33,6 +35,9 @@ class AbstractSocketImpl {
 public:
 	explicit AbstractSocketImpl(const char *server, uint16_t port);
 	~AbstractSocketImpl();
+
+	_EXPORT static int getAddrInfo(const char *server, uint16_t port, struct addrinfo **result,
+								   bool ipv4 = false);
 
 public:
 	const std::string m_server;

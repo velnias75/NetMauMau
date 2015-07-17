@@ -17,6 +17,17 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
+#include "config.h"                     // for HAVE_NETDB_H, HAVE_UNISTD_H
+#endif
+
+#ifdef HAVE_NETDB_H
+#include <netdb.h>                      // for addrinfo, freeaddrinfo, etc
+#endif
+
+#include <cstring>
+#include <cstdio>
+
 #include "abstractsocketimpl.h"
 
 using namespace NetMauMau::Common;
@@ -25,5 +36,32 @@ AbstractSocketImpl::AbstractSocketImpl(const char *server, uint16_t port)
 	: m_server(server ? server : ""), m_port(port), m_sfd(INVALID_SOCKET), m_wireError() {}
 
 AbstractSocketImpl::~AbstractSocketImpl() {}
+
+int AbstractSocketImpl::getAddrInfo(const char *server, uint16_t port, struct addrinfo **result,
+									bool ipv4) {
+
+	struct addrinfo hints;
+	char portS[256];
+
+	std::snprintf(portS, 255, "%u", port);
+	std::memset(&hints, 0, sizeof(struct addrinfo));
+
+#ifdef _WIN32
+	hints.ai_family = AF_INET;
+#else
+	hints.ai_family = ipv4 ? AF_INET : AF_UNSPEC;
+#endif
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_PASSIVE | AI_V4MAPPED | AI_ADDRCONFIG;
+
+	if(server) hints.ai_flags |= AI_CANONNAME | AI_CANONIDN;
+
+	hints.ai_protocol = 0;
+	hints.ai_canonname = NULL;
+	hints.ai_addr = NULL;
+	hints.ai_next = NULL;
+
+	return getaddrinfo(server, portS, &hints, result);
+}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

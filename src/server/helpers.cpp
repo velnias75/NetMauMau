@@ -48,7 +48,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "game.h"                       // for TIMEFORMAT, Game
 #include "logger.h"                     // for Logger
 #include "servereventhandler.h"         // for EventHandler
 #include "ttynamecheckdir.h"            // for ttynameCheckDir

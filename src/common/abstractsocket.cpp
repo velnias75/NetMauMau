@@ -41,7 +41,6 @@
 
 #include <cerrno>                       // for errno, ENOMEM
 #include <cstdio>                       // for NULL, fileno, snprintf, etc
-#include <cstring>                      // for memset
 #include <vector>                       // for vector
 #include <stdbool.h>
 
@@ -104,28 +103,11 @@ void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 
 	if(!inetd) {
 
-		struct addrinfo hints;
 		struct addrinfo *result, *rp = NULL;
-		char portS[256];
 		int s;
 
-		std::snprintf(portS, 255, "%u", _pimpl->m_port);
-		std::memset(&hints, 0, sizeof(struct addrinfo));
-
-#ifdef _WIN32
-		hints.ai_family = AF_INET;
-#else
-		hints.ai_family = AF_UNSPEC;
-#endif
-		hints.ai_socktype = SOCK_STREAM;
-		hints.ai_flags = AI_PASSIVE;
-		hints.ai_protocol = 0;
-		hints.ai_canonname = NULL;
-		hints.ai_addr = NULL;
-		hints.ai_next = NULL;
-
-		if((s = getaddrinfo(_pimpl->m_server.empty() ? 0L : _pimpl->m_server.c_str(), portS, &hints,
-							&result)) != 0) {
+		if((s = _pimpl->getAddrInfo(_pimpl->m_server.empty() ? 0L : _pimpl->m_server.c_str(),
+									_pimpl->m_port, &result)) != 0) {
 			throw Exception::SocketException(gai_strerror(s), _pimpl->m_sfd, errno);
 		}
 

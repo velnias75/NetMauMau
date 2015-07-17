@@ -17,9 +17,9 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "game.h"
-
 #include <cstdio>
+
+#include "game.h"
 
 #include "abstractsocket.h"             // for AbstractSocket
 #include "easyplayer.h"                 // for EasyPlayer

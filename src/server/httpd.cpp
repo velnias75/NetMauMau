@@ -23,22 +23,20 @@
 
 #include <cstring>
 #include <cstdarg>
-#include <cstdlib>
-#include <sstream>
-#include <iterator>
 
 #include <stdint.h>
 #include <sys/types.h>
-#include <sys/select.h>
 #include <sys/socket.h>
 
 #define MHD_PLATFORM_H 1
 
 #include <microhttpd.h>
+#include <netdb.h>
 
 #include "httpd.h"
 #include "logger.h"
 #include "helpers.h"
+#include "abstractsocketimpl.h"
 
 #ifndef _WIN32
 #define TIMEFORMAT "%T - "
@@ -48,19 +46,22 @@
 
 namespace {
 
+const char *B2TOP = "<a href=\"#top\">Back to top</a>";
+
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
 struct scoresTable : std::unary_function<NetMauMau::DB::SQLite::SCORES::value_type, void> {
 
-	inline explicit scoresTable(std::ostringstream &o) : os(o) {}
+	inline explicit scoresTable(std::ostringstream &o) : os(o), pos(0) {}
 	inline result_type operator()(const argument_type &s) const {
-		os << "<tr><td>" << s.name << "</td><td>"
-		   << (s.score < 0 ? "<font color=\"red\">" : "") << s.score
+		os << "<tr><td align=\"right\">" << ++pos << "&nbsp;</td><td>&nbsp;" << s.name
+		   << "</td><td align=\"center\">" << (s.score < 0 ? "<font color=\"red\">" : "") << s.score
 		   << (s.score < 0 ? "</font>" : "") << "</td></tr>";
 	}
 
 private:
 	std::ostringstream &os;
+	mutable std::size_t pos;
 };
 
 struct capaTable :
@@ -68,7 +69,7 @@ struct capaTable :
 
 	inline explicit capaTable(std::ostringstream &o) : os(o) {}
 	inline result_type operator()(const argument_type &p) const {
-		os << "<tr><td>" << p.first << "</td><td>" << p.second << "</td></tr>";
+		os << "<tr><td>&nbsp;" << p.first << "</td><td>&nbsp;" << p.second << "</td></tr>";
 	}
 
 private:
@@ -82,6 +83,8 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 						 void **/*con_cls*/) {
 
 	const NetMauMau::Server::Httpd *httpd = reinterpret_cast<NetMauMau::Server::Httpd *>(cls);
+	const bool haveScores = httpd->getCapabilities().find("HAVE_SCORES") !=
+							httpd->getCapabilities().end();
 
 	std::ostringstream os;
 
@@ -91,33 +94,44 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 	   << "table, td, th { background-color:white; border: thin solid black; "
 	   << "border-spacing: 0; border-collapse: collapse; }"
 	   << "pre { background-color:white; }"
+	   << "a { text-decoration:none; }"
 	   << "</style>";
 
-	os << "<body bgcolor=\"#eeeeee\"><font face=\"Sans-Serif\"><h1 align=\"center\">"
-	   << PACKAGE_STRING << "</h1><hr />";
+	os << "<body bgcolor=\"#eeeeee\"><a name=\"top\"><font face=\"Sans-Serif\">"
+	   << "<h1 align=\"center\">" << PACKAGE_STRING << "</h1></a><hr />";
 
-	if(httpd->getCapabilities().find("HAVE_SCORES") != httpd->getCapabilities().end()) {
+	os << "<p><ul>";
+
+	if(haveScores) os << "<li><a href=\"#scores\">Hall of Fame</a></li>";
+
+	os << "<li><a href=\"#capa\">Server capabilities</a></li>";
+	os << "<li><a href=\"#dump\">Server dump</a></li>";
+
+	os << "</ul></p><hr />";
+
+	if(haveScores) {
 		const NetMauMau::DB::SQLite::SCORES
 		&sc(NetMauMau::DB::SQLite::getInstance()->getScores(NetMauMau::DB::SQLite::NORM));
 
-		os << "<center><h2>Hall of Fame</h2><table width=\"50%\">"
-		   << "<tr><th>NAME</th><th>SCORE</th></tr>";
+		os << "<a name=\"scores\"><center><h2>Hall of Fame</h2><table width=\"50%\">"
+		   << "<tr><th>&nbsp;</th><th>PLAYER</th><th>SCORE</th></tr>";
 
 		std::for_each(sc.begin(), sc.end(), scoresTable(os));
 
-		os << "</table></center><hr />";
+		os << "</table></center></a>" << B2TOP << "<hr />";
 	}
 
-	os << "<center><h2>Server capabilities</h2><table width=\"50%\">"
+	os << "<a name=\"capa\"><center><h2>Server capabilities</h2><table width=\"50%\">"
 	   << "<tr><th>NAME</th><th>VALUE</th></tr>";
 
 	std::for_each(httpd->getCapabilities().begin(), httpd->getCapabilities().end(), capaTable(os));
 
-	os << "</table></center><hr /><h2 align=\"center\">Server dump</h2><tt><pre>";
+	os << "</table></center></a>" << B2TOP << "<hr /><a name=\"dump\">"
+	   << "<h2 align=\"center\">Server dump</h2><tt><pre>";
 
 	NetMauMau::dump(os);
 
-	os << "</pre></tt></font></body></html>";
+	os << "</pre></a></tt><hr />" << B2TOP << "</font></body></html>";
 
 	MHD_Response *response = MHD_create_response_from_data(os.str().length(),
 							 static_cast<void *>(const_cast<char *>(strdup(os.str().c_str()))),
@@ -136,18 +150,32 @@ using namespace NetMauMau::Server;
 
 HttpdPtr Httpd::m_instance;
 
-Httpd::Httpd() : m_daemon(NetMauMau::httpd ? MHD_start_daemon(MHD_USE_SELECT_INTERNALLY,
-							  static_cast<unsigned short>(NetMauMau::hport), NULL, NULL,
-							  &answer_to_connection, this, MHD_OPTION_END) : 0L), m_source(0L),
-	m_caps() {
+Httpd::Httpd() : m_daemon(0L), m_source(0L), m_caps() {
 
-	if(NetMauMau::httpd && !m_daemon) {
+	struct addrinfo *ai = NULL;
+
+	if(NetMauMau::httpd && !NetMauMau::Common::AbstractSocketImpl::getAddrInfo(NetMauMau::host &&
+			*NetMauMau::host ? NetMauMau::host : 0L, static_cast<uint16_t>(NetMauMau::hport), &ai,
+			true) && ai && !(m_daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY,
+										static_cast<unsigned short>(NetMauMau::hport), NULL, NULL,
+										&answer_to_connection, this,
+										MHD_OPTION_SOCK_ADDR, ai->ai_addr,
+										MHD_OPTION_PER_IP_CONNECTION_LIMIT, 10,
+										MHD_OPTION_CONNECTION_LIMIT, 10,
+										MHD_OPTION_THREAD_POOL_SIZE, 5, MHD_OPTION_END))) {
+
 		logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
-				   << "Failed to start webserver at port " << NetMauMau::hport);
+				   << "Failed to start webserver at http://"
+				   << (ai && ai->ai_canonname ? ai->ai_canonname : "localhost")
+				   << ":" << NetMauMau::hport);
+
 	} else if(NetMauMau::httpd) {
-		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT)
-				<< "Started webserver at port " << NetMauMau::hport);
+		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Started webserver at http://"
+				<< (ai && ai->ai_canonname ? ai->ai_canonname : "localhost")
+				<< ":" << NetMauMau::hport);
 	}
+
+	freeaddrinfo(ai);
 }
 
 Httpd::~Httpd() {

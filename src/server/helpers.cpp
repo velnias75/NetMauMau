@@ -54,6 +54,8 @@
 
 #ifdef HAVE_LIBMICROHTTPD
 #include "httpd.h"
+#else
+#include "game.h"
 #endif
 
 #ifndef DP_USER

@@ -25,6 +25,10 @@
 #include <netdb.h>                      // for addrinfo, freeaddrinfo, etc
 #endif
 
+#ifdef _WIN32
+#include <ws2tcpip.h>
+#endif
+
 #include <cstring>
 #include <cstdio>
 
@@ -52,9 +56,18 @@ int AbstractSocketImpl::getAddrInfo(const char *server, uint16_t port, struct ad
 	hints.ai_family = ipv4 ? AF_INET : AF_UNSPEC;
 #endif
 	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_PASSIVE | AI_V4MAPPED | AI_ADDRCONFIG;
+	hints.ai_flags = AI_PASSIVE;
 
-	if(server) hints.ai_flags |= AI_CANONNAME | AI_CANONIDN;
+#ifndef _WIN32
+	hints.ai_flags |= AI_V4MAPPED | AI_ADDRCONFIG;
+#endif
+
+	if(server) {
+		hints.ai_flags |= AI_CANONNAME;
+#ifndef _WIN32
+		hints.ai_flags |= AI_CANONIDN;
+#endif
+	}
 
 	hints.ai_protocol = 0;
 	hints.ai_canonname = NULL;

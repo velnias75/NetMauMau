@@ -75,6 +75,8 @@
 
 #ifdef HAVE_LIBMICROHTTPD
 #include "httpd.h"
+#else
+#include "game.h"
 #endif
 
 namespace {

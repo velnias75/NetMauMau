@@ -36,7 +36,7 @@ public:
 	virtual ~IObserver() {}
 
 	virtual void setSource(const source_type *s) = 0;
-	virtual void update(what_type what) = 0;
+	virtual void update(const what_type &what) = 0;
 
 protected:
 	IObserver() {}

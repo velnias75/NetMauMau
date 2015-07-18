@@ -33,15 +33,30 @@ class Httpd;
 
 typedef Common::SmartPtr<Httpd> HttpdPtr;
 
-class Httpd : public Common::IObserver<Game> {
+class Httpd : public Common::IObserver<Game>, public Common::IObserver<Engine> {
 	DISALLOW_COPY_AND_ASSIGN(Httpd)
 public:
 	virtual ~Httpd();
 
 	static Httpd *getInstance();
 
+	virtual void setSource(const Common::IObserver<Engine>::source_type *s);
 	virtual void setSource(const Common::IObserver<Game>::source_type *s);
-	virtual void update(Common::IObserver<Game>::what_type what);
+
+	virtual void update(const Common::IObserver<Engine>::what_type &what);
+	virtual void update(const Common::IObserver<Game>::what_type &what);
+
+	inline std::string getWebServerURL() const {
+		return m_url;
+	}
+
+	inline bool isWaiting() const {
+		return m_waiting;
+	}
+
+	inline const NetMauMau::Common::IObserver<NetMauMau::Engine>::what_type &getPlayers() const {
+		return m_players;
+	}
 
 	inline void setCapabilities(const Common::AbstractConnection::CAPABILITIES &caps) {
 		m_caps = caps;
@@ -58,8 +73,13 @@ private:
 	static HttpdPtr m_instance;
 
 	MHD_Daemon *m_daemon;
-	const Common::IObserver<Game>::source_type *m_source;
+	const Common::IObserver<Game>::source_type *m_gameSource;
+	const Common::IObserver<Engine>::source_type *m_engineSource;
+	NetMauMau::Common::IObserver<NetMauMau::Engine>::what_type m_players;
 	Common::AbstractConnection::CAPABILITIES m_caps;
+	bool m_gameRunning;
+	bool m_waiting;
+	std::string m_url;
 };
 
 }

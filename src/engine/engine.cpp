@@ -154,6 +154,7 @@ bool Engine::addPlayer(Player::IPlayer *player) throw(Common::Exception::SocketE
 			player->setEngineContext(&m_ctx);
 
 			getEventHandler().playerAdded(player);
+			notify(m_players);
 
 			return true;
 
@@ -202,6 +203,7 @@ Engine::PLAYERS::iterator Engine::erasePlayer(const PLAYERS::iterator &pi) {
 		const PLAYERS::iterator f(m_players.erase(pi));
 
 		m_aiCount = countAI();
+		notify(m_players);
 
 		return f;
 	}

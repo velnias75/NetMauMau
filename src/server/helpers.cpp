@@ -109,6 +109,7 @@ void updatePlayerCap(Server::Connection::CAPABILITIES &caps, std::size_t count,
 	con.setCapabilities(caps);
 
 #ifdef HAVE_LIBMICROHTTPD
+	caps["WEBSERVER_URL"] = NetMauMau::Server::Httpd::getInstance()->getWebServerURL();
 	NetMauMau::Server::Httpd::getInstance()->setCapabilities(caps);
 #endif
 }

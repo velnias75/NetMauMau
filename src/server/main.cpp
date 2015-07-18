@@ -450,6 +450,7 @@ int main(int argc, const char **argv) {
 
 #ifdef HAVE_LIBMICROHTTPD
 			game.addObserver(NetMauMau::Server::Httpd::getInstance());
+			game.getEngine().addObserver(NetMauMau::Server::Httpd::getInstance());
 #endif
 
 			if(cconf.decks != static_cast<std::size_t>(decks)) {

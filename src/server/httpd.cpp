@@ -36,6 +36,7 @@
 #include "httpd.h"
 #include "logger.h"
 #include "helpers.h"
+#include "iplayer.h"
 #include "abstractsocketimpl.h"
 
 #ifndef _WIN32
@@ -69,7 +70,25 @@ struct capaTable :
 
 	inline explicit capaTable(std::ostringstream &o) : os(o) {}
 	inline result_type operator()(const argument_type &p) const {
-		os << "<tr><td>&nbsp;" << p.first << "</td><td>&nbsp;" << p.second << "</td></tr>";
+		const bool isWurl = p.first == "WEBSERVER_URL";
+		os << "<tr><td>&nbsp;" << p.first << "</td><td>&nbsp;" << (isWurl ? "<a href=\"" : "")
+		   << p.second << (isWurl ? "\">" : "") << (isWurl ? p.second : "")
+		   << (isWurl ? "</a>" : "") << "</td></tr>";
+	}
+
+private:
+	std::ostringstream &os;
+};
+
+struct listPlayers : std::unary_function
+		<NetMauMau::Common::IObserver<NetMauMau::Engine>::what_type::value_type, void> {
+
+	inline explicit listPlayers(std::ostringstream &o) : os(o) {}
+	inline result_type operator()(const argument_type &p) const {
+		os << "<li><b>" << p->getName() << "</b>&nbsp;<i>("
+		   << (p->getType() == NetMauMau::Player::IPlayer::HUMAN ? "human player" :
+			   (p->getType() == NetMauMau::Player::IPlayer::HARD ? "hard AI" : "easy AI"))
+		   << ")</i></li>";
 	}
 
 private:
@@ -83,8 +102,9 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 						 void **/*con_cls*/) {
 
 	const NetMauMau::Server::Httpd *httpd = reinterpret_cast<NetMauMau::Server::Httpd *>(cls);
-	const bool haveScores = httpd->getCapabilities().find("HAVE_SCORES") !=
-							httpd->getCapabilities().end();
+	const bool haveScores  = httpd->getCapabilities().find("HAVE_SCORES") !=
+							 httpd->getCapabilities().end();
+	const bool havePlayers = !httpd->getPlayers().empty();
 
 	std::ostringstream os;
 
@@ -102,12 +122,23 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 	os << "<p><ul>";
 
+	if(havePlayers) os << "<li><a href=\"#players\">Players online</a></li>";
+
 	if(haveScores) os << "<li><a href=\"#scores\">Hall of Fame</a></li>";
 
 	os << "<li><a href=\"#capa\">Server capabilities</a></li>";
 	os << "<li><a href=\"#dump\">Server dump</a></li>";
 
 	os << "</ul></p><hr />";
+
+	if(havePlayers) {
+		os << "<a name=\"players\"><h2 align=\"center\">Players online <i>("
+		   << (httpd->isWaiting() ?  "waiting" : "running") << ")</i></h2><p><ol>";
+
+		std::for_each(httpd->getPlayers().begin(), httpd->getPlayers().end(), listPlayers(os));
+
+		os << "</ol></p></a>" << B2TOP << "<hr />";
+	}
 
 	if(haveScores) {
 		const NetMauMau::DB::SQLite::SCORES
@@ -137,6 +168,10 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 							 static_cast<void *>(const_cast<char *>(strdup(os.str().c_str()))),
 							 true, false);
 
+	MHD_add_response_header(response, "Content-Type", "text/html; charset=utf-8");
+	MHD_add_response_header(response, "Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
+	MHD_add_response_header(response, "Cache-Control", "no-cache");
+
 	const int ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
 
 	MHD_destroy_response(response);
@@ -150,7 +185,8 @@ using namespace NetMauMau::Server;
 
 HttpdPtr Httpd::m_instance;
 
-Httpd::Httpd() : m_daemon(0L), m_source(0L), m_caps() {
+Httpd::Httpd() : m_daemon(0L), m_gameSource(0L), m_engineSource(0L), m_players(), m_caps(),
+	m_gameRunning(false), m_waiting(true), m_url() {
 
 	struct addrinfo *ai = NULL;
 
@@ -169,10 +205,15 @@ Httpd::Httpd() : m_daemon(0L), m_source(0L), m_caps() {
 				   << (ai && ai->ai_canonname ? ai->ai_canonname : "localhost")
 				   << ":" << NetMauMau::hport);
 
-	} else if(NetMauMau::httpd) {
+	} else if(NetMauMau::httpd && ai && m_daemon) {
 		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Started webserver at http://"
 				<< (ai && ai->ai_canonname ? ai->ai_canonname : "localhost")
 				<< ":" << NetMauMau::hport);
+
+		std::ostringstream uos;
+		uos << "http://" << (ai && ai->ai_canonname ? ai->ai_canonname : "localhost") << ':'
+			<< NetMauMau::hport;
+		m_url = uos.str();
 	}
 
 	freeaddrinfo(ai);
@@ -189,27 +230,38 @@ Httpd *Httpd::getInstance() {
 	return m_instance;
 }
 
-void Httpd::setSource(const Common::IObserver<Game>::source_type *s) {
-	m_source = s;
+void Httpd::setSource(const NetMauMau::Common::IObserver<NetMauMau::Engine>::source_type *s) {
+	m_engineSource = s;
 }
 
-void Httpd::update(what_type what) {
+void Httpd::setSource(const NetMauMau::Common::IObserver<Game>::source_type *s) {
+	m_gameSource = s;
+}
+
+void Httpd::update(const NetMauMau::Common::IObserver<NetMauMau::Engine>::what_type &what) {
+	m_players = what;
+}
+
+void Httpd::update(const NetMauMau::Common::IObserver<Game>::what_type &what) {
 
 	switch(what) {
 	case PLAYERADDED:
-		logDebug("Received PLAYERADDED notification");
+	case PLAYERREMOVED:
 		break;
 
-	case PLAYERREMOVED:
-		logDebug("Received PLAYERREMOVED notification");
+	case READY:
+		m_waiting = false;
 		break;
 
 	case GAMESTARTED:
-		logDebug("Received GAMESTARTED notification");
+		m_gameRunning = true;
+		m_waiting = false;
 		break;
 
 	case GAMEENDED:
-		logDebug("Received GAMEENDED notification");
+		m_players.clear();
+		m_waiting = true;
+		m_gameRunning = false;
 		break;
 	}
 }

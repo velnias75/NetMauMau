@@ -135,7 +135,9 @@ Game::COLLECT_STATE Game::collectPlayers(std::size_t minPlayers,
 													  SERVER_VERSION_MINOR)));
 			}
 
+			notify(READY);
 			return ACCEPTED_READY;
+
 		} else {
 			return ACCEPTED;
 		}

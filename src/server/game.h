@@ -39,7 +39,7 @@ namespace Server {
 
 class GameContext;
 
-typedef enum { PLAYERADDED, PLAYERREMOVED, GAMESTARTED, GAMEENDED } NOTIFYWHAT;
+typedef enum { PLAYERADDED, PLAYERREMOVED, GAMESTARTED, GAMEENDED, READY } NOTIFYWHAT;
 
 class Game : public Common::Observable<Game, NOTIFYWHAT> {
 	DISALLOW_COPY_AND_ASSIGN(Game)
@@ -71,6 +71,14 @@ public:
 
 	inline bool isRunning() const {
 		return m_running;
+	}
+
+	inline DB::GAMEIDX getGameIndex() const {
+		return m_gameIndex;
+	}
+
+	inline Engine &getEngine() {
+		return m_engine;
 	}
 
 private:

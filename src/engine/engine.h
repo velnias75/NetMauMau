@@ -27,6 +27,7 @@
 #include "icardcountobserver.h"         // for ICardCountObserver
 #include "italonchange.h"               // for ITalonChange
 #include "socketexception.h"            // for SocketException, SOCKET
+#include "observable.h"
 #include "sqlite.h"
 
 namespace NetMauMau {
@@ -44,11 +45,11 @@ class IRuleSet;
 }
 
 class _EXPORT Engine : private ITalonChange, public IAceRoundListener,
-	private ICardCountObserver {
+	private ICardCountObserver, public Common::Observable<Engine, std::vector<Player::IPlayer *> > {
 	DISALLOW_COPY_AND_ASSIGN(Engine)
 	typedef enum { ACCEPT_PLAYERS, NOCARDS, PLAYING, FINISHED } STATE;
 public:
-	typedef std::vector<Player::IPlayer *> PLAYERS;
+	typedef what_type PLAYERS;
 
 	explicit Engine(EngineContext &ctx) throw(Common::Exception::SocketException);
 
@@ -145,6 +146,7 @@ private:
 
 	inline void removePlayers() throw() {
 		m_players.clear();
+		notify(m_players);
 		m_aiCount = 0;
 	}
 

@@ -106,7 +106,12 @@ private:
 
 int answer_to_connection(void *cls, struct MHD_Connection *connection, const char */*url*/,
 						 const char */*method*/, const char */*version*/,
-						 const char */*upload_data*/, size_t */*upload_data_size*/,
+						 const char */*upload_data*/,
+#if MHD_VERSION > 0x00000200
+						 size_t */*upload_data_size*/,
+#else
+						 unsigned int */*upload_data_size*/,
+#endif
 						 void **/*con_cls*/) {
 
 	const NetMauMau::Server::Httpd *httpd = reinterpret_cast<NetMauMau::Server::Httpd *>(cls);
@@ -176,9 +181,9 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 							 static_cast<void *>(const_cast<char *>(strdup(os.str().c_str()))),
 							 true, false);
 
-	MHD_add_response_header(response, "Content-Type", "text/html; charset=utf-8");
-	MHD_add_response_header(response, "Expires", "Thu, 01 Dec 1994 16:00:00 GMT");
-	MHD_add_response_header(response, "Cache-Control", "no-cache");
+	MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, "text/html; charset=utf-8");
+	MHD_add_response_header(response, MHD_HTTP_HEADER_EXPIRES, "Thu, 01 Dec 1994 16:00:00 GMT");
+	MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL, "no-cache");
 
 	const int ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
 
@@ -203,24 +208,42 @@ Httpd::Httpd() : m_daemon(0L), m_gameSource(0L), m_engineSource(0L), m_players()
 			true) && ai && !(m_daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY,
 										static_cast<unsigned short>(NetMauMau::hport), NULL, NULL,
 										&answer_to_connection, this,
+										MHD_OPTION_CONNECTION_LIMIT, 10,
+#if MHD_VERSION > 0x00000200
 										MHD_OPTION_SOCK_ADDR, ai->ai_addr,
 										MHD_OPTION_PER_IP_CONNECTION_LIMIT, 10,
-										MHD_OPTION_CONNECTION_LIMIT, 10,
-										MHD_OPTION_THREAD_POOL_SIZE, 5, MHD_OPTION_END))) {
+										MHD_OPTION_THREAD_POOL_SIZE, 5,
+#endif
+										MHD_OPTION_END))) {
 
 		logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
 				   << "Failed to start webserver at http://"
+#if MHD_VERSION > 0x00000200
 				   << (ai && ai->ai_canonname ? ai->ai_canonname : "localhost")
+#else
+				   << "localhost"
+#endif
 				   << ":" << NetMauMau::hport);
 
 	} else if(NetMauMau::httpd && ai && m_daemon) {
 		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Started webserver at http://"
+#if MHD_VERSION > 0x00000200
 				<< (ai && ai->ai_canonname ? ai->ai_canonname : "localhost")
+#else
+				<< "localhost"
+#endif
 				<< ":" << NetMauMau::hport);
 
 		std::ostringstream uos;
-		uos << "http://" << (ai && ai->ai_canonname ? ai->ai_canonname : "localhost") << ':'
+
+		uos << "http://"
+#if MHD_VERSION > 0x00000200
+			<< (ai && ai->ai_canonname ? ai->ai_canonname : "localhost") << ':'
+#else
+			<< "localhost:"
+#endif
 			<< NetMauMau::hport;
+
 		m_url = uos.str();
 	}
 

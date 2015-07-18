@@ -47,8 +47,19 @@ public:
 	}
 
 	void notify(const what_type what) {
+
+#if GCC_VERSION < 40300
+
+		for(typename std::vector<IObserver<SourceType> *>::const_iterator iter(m_observers.begin());
+				iter != m_observers.end(); ++iter) {
+			(*iter)->update(what);
+		}
+
+#else
 		std::for_each(m_observers.begin(), m_observers.end(),
 					  std::bind2nd(std::mem_fun(&IObserver<SourceType>::update), what));
+#endif
+
 	}
 
 protected:

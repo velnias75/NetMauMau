@@ -26,12 +26,20 @@
 
 #include <stdint.h>
 #include <sys/types.h>
-#include <sys/socket.h>
 
+#ifdef HAVE_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
+
+#ifndef _WIN32
 #define MHD_PLATFORM_H 1
+#endif
 
 #include <microhttpd.h>
+
+#ifdef HAVE_NETDB_H
 #include <netdb.h>
+#endif
 
 #include "httpd.h"
 #include "logger.h"

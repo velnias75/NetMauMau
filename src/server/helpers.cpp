@@ -81,8 +81,9 @@ char bind[HOST_NAME_MAX] = { 0 };
 char *host = bind;
 int port = SERVER_PORT;
 
-#ifndef _WIN32
 const time_t startTime = std::time(0L);
+
+#ifndef _WIN32
 const char *interface;
 #endif
 
@@ -204,46 +205,6 @@ void sh_dump(int, siginfo_t *info, void *) {
 	free(p);
 
 	if(out.is_open()) dump(out);
-}
-
-void dump(std::ostream &out) {
-
-	out << std::boolalpha << "== Options ==" << std::endl;
-	out << "AI-delay: " << static_cast<float>(aiDelay) << " sec" << std::endl;
-	out << "A/K/Q rounds: " << aceRound << std::endl;
-
-	if(aceRound) out << "A/K/Q rank: " << ((arRank != 0L) ? arRank : "ACE") << std::endl;
-
-	out << "Decks: " << decks << std::endl;
-	out << "Direction change: " << dirChange << std::endl;
-	out << "Initial card count: " << initialCardCount << std::endl;
-	out << "Players: " << minPlayers << std::endl;
-	out << "Ultimate: " << ultimate << std::endl;
-
-	char sr[128];
-	std::snprintf(sr, 127, "Total received %.2f kBytes; total sent %.2f kBytes",
-				  static_cast<double>(Common::AbstractSocket::getTotalReceivedBytes()) / 1024.0,
-				  static_cast<double>(Common::AbstractSocket::getTotalSentBytes()) / 1024.0);
-
-	out << "== Network ==" << std::endl;
-	out << "Host: " << (host && *host ? host : "localhost") << std::endl;
-	out << "Port: " << port << std::endl;
-	out << sr << std::endl;
-
-	char outstr[256];
-	// cppcheck-suppress nonreentrantFunctionslocaltime
-	struct tm *tmp = std::localtime(&startTime);
-
-	if(tmp && std::strftime(outstr, sizeof(outstr), "Server start: %c", tmp)) {
-		out << outstr << std::endl;
-	}
-
-	out << "Served games since server start: " << Server::Game::getServedGames() << std::endl;
-
-	if(!DB::SQLite::getInstance()->getDBFilename().empty()) {
-		out << "Total served games on this server: "
-			<< DB::SQLite::getInstance()->getServedGames() << std::endl;
-	}
 }
 
 int getGroup(gid_t *gid, const char *group) {
@@ -374,6 +335,46 @@ void conLog(const Common::IConnection::INFO &info) {
 	logInfo(Common::Logger::time(TIMEFORMAT) << "Connection from " << info.host << ":" << info.port
 			<< " as \"" << info.name << "\" (" << info.maj << "." << info.min << ") "
 			<< Common::Logger::nonl());
+}
+
+void dump(std::ostream &out) {
+
+	out << std::boolalpha << "== Options ==" << std::endl;
+	out << "AI-delay: " << static_cast<float>(aiDelay) << " sec" << std::endl;
+	out << "A/K/Q rounds: " << aceRound << std::endl;
+
+	if(aceRound) out << "A/K/Q rank: " << ((arRank != 0L) ? arRank : "ACE") << std::endl;
+
+	out << "Decks: " << decks << std::endl;
+	out << "Direction change: " << dirChange << std::endl;
+	out << "Initial card count: " << initialCardCount << std::endl;
+	out << "Players: " << minPlayers << std::endl;
+	out << "Ultimate: " << ultimate << std::endl;
+
+	char sr[128];
+	std::snprintf(sr, 127, "Total received %.2f kBytes; total sent %.2f kBytes",
+				  static_cast<double>(Common::AbstractSocket::getTotalReceivedBytes()) / 1024.0,
+				  static_cast<double>(Common::AbstractSocket::getTotalSentBytes()) / 1024.0);
+
+	out << "== Network ==" << std::endl;
+	out << "Host: " << (host && *host ? host : "localhost") << std::endl;
+	out << "Port: " << port << std::endl;
+	out << sr << std::endl;
+
+	char outstr[256];
+	// cppcheck-suppress nonreentrantFunctionslocaltime
+	struct tm *tmp = std::localtime(&startTime);
+
+	if(tmp && std::strftime(outstr, sizeof(outstr), "Server start: %c", tmp)) {
+		out << outstr << std::endl;
+	}
+
+	out << "Served games since server start: " << Server::Game::getServedGames() << std::endl;
+
+	if(!DB::SQLite::getInstance()->getDBFilename().empty()) {
+		out << "Total served games on this server: "
+			<< DB::SQLite::getInstance()->getServedGames() << std::endl;
+	}
 }
 
 }

@@ -21,6 +21,12 @@
 #include "config.h"                     // for HAVE_NETDB_H, HAVE_UNISTD_H
 #endif
 
+#include <sys/types.h>
+
+#ifdef HAVE_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
+
 #ifdef HAVE_NETDB_H
 #include <netdb.h>                      // for addrinfo, freeaddrinfo, etc
 #endif
@@ -58,13 +64,13 @@ int AbstractSocketImpl::getAddrInfo(const char *server, uint16_t port, struct ad
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 
-#ifndef _WIN32
+#if !defined(_WIN32) && defined(AI_V4MAPPED) && defined(AI_ADDRCONFIG)
 	hints.ai_flags |= AI_V4MAPPED | AI_ADDRCONFIG;
 #endif
 
 	if(server) {
 		hints.ai_flags |= AI_CANONNAME;
-#ifndef _WIN32
+#if !defined(_WIN32) && defined(AI_CANONIDN)
 		hints.ai_flags |= AI_CANONIDN;
 #endif
 	}

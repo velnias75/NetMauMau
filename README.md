@@ -4,22 +4,14 @@ Build instructions, binaries and rules
 Prerequisites
 -------------
 
-* a [GNU GCC compiler](https://gcc.gnu.org/) (currently NetMauMau uses a certain amount of features exclusive to GCC)
-
+* [GNU GCC compiler](https://gcc.gnu.org/) (currently NetMauMau uses a certain amount of features exclusive to GCC)
 * [POPT library](http://rpm5.org/files/popt/) >= 1.10
-
 * xxd (from the vim package [on **Debian** based distributions *vim-common*; on **Gentoo** *vim-core*])
-
 * libmagic (*optional, but recommended*)
-
 * [GNU Scientific Library](http://www.gnu.org/software/gsl/) >= 1.9 (*optional*, for better random number generator)
-
 * [libmicrohttpd](http://www.gnu.org/software/libmicrohttpd) (*optional, for the integrated webserver*)
-
 * [sqlite3](https://www.sqlite.org/)
-
 * [libtool](http://www.gnu.org/software/libtool/)
-
 * [Lua](http://www.lua.org/) 5.1
 
 (x)inetd support

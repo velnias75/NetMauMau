@@ -115,8 +115,12 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 						 void **/*con_cls*/) {
 
 	const NetMauMau::Server::Httpd *httpd = reinterpret_cast<NetMauMau::Server::Httpd *>(cls);
-	const bool haveScores  = httpd->getCapabilities().find("HAVE_SCORES") !=
-							 httpd->getCapabilities().end();
+	const NetMauMau::DB::SQLite::SCORES &sc(httpd->getCapabilities().find("HAVE_SCORES") !=
+											httpd->getCapabilities().end() ?
+											NetMauMau::DB::SQLite::getInstance()->
+											getScores(NetMauMau::DB::SQLite::NORM) :
+											NetMauMau::DB::SQLite::SCORES());
+
 	const bool havePlayers = !httpd->getPlayers().empty();
 
 	std::ostringstream os;
@@ -137,7 +141,7 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 	if(havePlayers) os << "<li><a href=\"#players\">Players online</a></li>";
 
-	if(haveScores) os << "<li><a href=\"#scores\">Hall of Fame</a></li>";
+	if(!sc.empty()) os << "<li><a href=\"#scores\">Hall of Fame</a></li>";
 
 	os << "<li><a href=\"#capa\">Server capabilities</a></li>";
 	os << "<li><a href=\"#dump\">Server dump</a></li>";
@@ -153,10 +157,7 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 		os << "</ol></p></a>" << B2TOP << "<hr />";
 	}
 
-	if(haveScores) {
-		const NetMauMau::DB::SQLite::SCORES
-		&sc(NetMauMau::DB::SQLite::getInstance()->getScores(NetMauMau::DB::SQLite::NORM));
-
+	if(!sc.empty()) {
 		os << "<a name=\"scores\"><center><h2>Hall of Fame</h2><table width=\"50%\">"
 		   << "<tr><th>&nbsp;</th><th>PLAYER</th><th>SCORE</th></tr>";
 

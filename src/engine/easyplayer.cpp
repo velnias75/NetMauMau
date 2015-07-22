@@ -25,12 +25,15 @@
 
 #include "easyplayer.h"
 
+#include "jackonlycondition.h"
+#include "powerjackcondition.h"
+
 #include "random_gen.h"                 // for genRandom
 
 using namespace NetMauMau::Player;
 
 EasyPlayer::EasyPlayer(const std::string &name, const NetMauMau::IPlayedOutCards *poc)
-	: HardPlayer(name, poc) {}
+	: AIPlayerBase<AI::JackOnlyCondition, AI::PowerJackCondition>(name, poc) {}
 
 EasyPlayer::~EasyPlayer() {}
 

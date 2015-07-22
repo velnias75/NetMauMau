@@ -20,13 +20,18 @@
 #ifndef NETMAUMAU_PLAYER_EASYPLAYER_H
 #define NETMAUMAU_PLAYER_EASYPLAYER_H
 
-#include "hardplayer.h"                 // for HardPlayer
+#include "aiplayerbase.h"
 
 namespace NetMauMau {
 
+namespace AI {
+class JackOnlyCondition;
+class PowerJackCondition;
+}
+
 namespace Player {
 
-class EasyPlayer : public HardPlayer {
+class EasyPlayer : public AIPlayerBase<AI::JackOnlyCondition, AI::PowerJackCondition> {
 	DISALLOW_COPY_AND_ASSIGN(EasyPlayer)
 public:
 	explicit EasyPlayer(const std::string &name, const IPlayedOutCards *poc);

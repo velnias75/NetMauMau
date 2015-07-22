@@ -260,9 +260,8 @@ Common::ICardPtr AIPlayerBase<RootCond, RootCondJack>::noSuspendCard(const Commo
 }
 
 template<class RootCond, class RootCondJack>
-inline Common::ICard::SUIT AIPlayerBase < RootCond,
-	   RootCondJack >::getJackChoice(const Common::ICardPtr &uncoveredCard,
-const Common::ICardPtr &playedCard) const {
+inline Common::ICard::SUIT AIPlayerBase<RootCond, RootCondJack>::
+getJackChoice(const Common::ICardPtr &uncoveredCard, const Common::ICardPtr &playedCard) const {
 
 	const Common::ICardPtr oc(AI::BaseAIPlayer<RootCond, RootCondJack>::m_card);
 	const Common::ICardPtr uc(AI::BaseAIPlayer<RootCond, RootCondJack>::m_uncoveredCard);

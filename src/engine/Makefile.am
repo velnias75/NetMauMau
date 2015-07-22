@@ -2,7 +2,7 @@ noinst_LTLIBRARIES = libengine.la libengine_gslrng.la libengine_private.la
 
 noinst_HEADERS = abstractplayer.h aiplayerbase.h defaulteventhandler.h easyplayer.h \
 	enginecontext.h engine.h hardplayer.h iaceroundlistener.h icardcountobserver.h \
-	ieventhandler.h iplayedoutcards.h iruleset.h italonchange.h nullconnection.h \
+	ieventhandler.h iplayedoutcards.h iruleset.h italonchange.h nextturn.h nullconnection.h \
 	random_gen.h stdcardfactory.h talon.h
 
 if GSL
@@ -21,7 +21,7 @@ libengine_private_la_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/
 	-I$(top_builddir)/src/ai -I$(top_srcdir)/src/ai -I$(top_srcdir)/src/lua \
 	-I$(top_srcdir)/src/sqlite $(GSL_CFLAGS)
 libengine_private_la_SOURCES = abstractplayer.cpp easyplayer.cpp engine.cpp enginecontext.cpp \
-	hardplayer.cpp nullconnection.cpp
+	hardplayer.cpp nextturn.cpp nullconnection.cpp
 libengine_private_la_LIBADD = ../ai/libai.la libengine_gslrng.la
 
 libengine_la_CPPFLAGS = $(GSL)

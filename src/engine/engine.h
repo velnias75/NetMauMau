@@ -48,6 +48,7 @@ class _EXPORT Engine : private ITalonChange, public IAceRoundListener,
 	private ICardCountObserver, public Common::Observable<Engine, std::vector<Player::IPlayer *> > {
 	DISALLOW_COPY_AND_ASSIGN(Engine)
 	typedef enum { ACCEPT_PLAYERS, NOCARDS, PLAYING, FINISHED } STATE;
+	friend class NextTurn;
 public:
 	typedef what_type PLAYERS;
 
@@ -113,32 +114,9 @@ protected:
 	throw(Common::Exception::SocketException);
 
 private:
-	void calcScore(Player::IPlayer *player) const;
-
-	bool checkCard(Player::IPlayer *player, Common::ICardPtr &playedCard,
-				   const Common::ICardPtr &uncoveredCard) const
-	throw(Common::Exception::SocketException);
-
-	void informAIStat() const;
 	std::size_t countAI() const;
 
-	inline std::size_t getAICount() const {
-		return m_aiCount;
-	}
-
-	void setDirChangeIsSuspend(bool b) throw(Common::Exception::SocketException);
-	void jackModeOff() const throw(Common::Exception::SocketException);
-
-	void checkAndPerformDirChange(const Player::IPlayer *player, bool won)
-	throw(Common::Exception::SocketException);
-
-	void suspends(Player::IPlayer *player, const Common::ICard *uncoveredCard = NULL) const
-	throw(Common::Exception::SocketException);
-	bool takeCards(Player::IPlayer *player, const Common::ICard *card) const
-	throw(Common::Exception::SocketException);
-	void handleWinner(const Player::IPlayer *player) throw(Common::Exception::SocketException);
-
-	RuleSet::IRuleSet *getRuleSet() const;
+	RuleSet::IRuleSet *getRuleSet();
 
 	PLAYERS::const_iterator find(const std::string &name) const;
 	PLAYERS::iterator removePlayer(Player::IPlayer *player)
@@ -152,19 +130,12 @@ private:
 
 	PLAYERS::iterator erasePlayer(const PLAYERS::iterator &pi);
 
-	void disconnectError(SOCKET fd) const;
-
-	void checkPlayersAlive() const throw(Common::Exception::SocketException);
-
 	virtual void cardCountChanged(const Player::IPlayer *player) const throw();
 
-	long getAIDelay() const;
-
-	bool wait(const Player::IPlayer *player, bool suspend) const;
+	static const std::string &getTalonUnderflowString() _CONST;
 
 private:
 	EngineContext &m_ctx;
-	const DB::SQLite::SQLitePtr m_db;
 
 	STATE m_state;
 	Talon *const m_talon;

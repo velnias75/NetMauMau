@@ -136,12 +136,9 @@ char *inetdParsedString(char *str) {
 
 			++ptr;
 		}
-
-		return str;
-
-	} else {
-		return 0L;
 	}
+
+	return str;
 }
 
 void sh_interrupt(int) {

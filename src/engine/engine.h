@@ -34,6 +34,7 @@ namespace NetMauMau {
 
 class IPlayedOutCards;
 class EngineContext;
+class NextTurn;
 class Talon;
 
 namespace Event {
@@ -88,7 +89,8 @@ public:
 	}
 
 	bool distributeCards() throw(Common::Exception::SocketException);
-	bool nextTurn();
+	void initialTurn() throw(Common::Exception::SocketException);
+	bool nextTurn() throw(Common::Exception::SocketException);
 
 	void message(const std::string &msg) const throw(Common::Exception::SocketException);
 	void error(const std::string &msg) const throw();
@@ -136,6 +138,7 @@ private:
 
 private:
 	EngineContext &m_ctx;
+	NextTurn *m_nextTurn;
 
 	STATE m_state;
 	Talon *const m_talon;
@@ -145,9 +148,7 @@ private:
 	std::size_t m_curTurn;
 
 	bool m_jackMode;
-	bool m_initialChecked;
 	bool m_ultimate;
-	bool m_initialJack;
 	bool m_alwaysWait;
 	bool m_alreadyWaited;
 

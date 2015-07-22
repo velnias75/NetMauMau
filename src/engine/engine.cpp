@@ -83,18 +83,18 @@ struct PlayerNameEqual : std::binary_function < NetMauMau::Player::IPlayer *,
 using namespace NetMauMau;
 
 Engine::Engine(EngineContext &ctx) throw(Common::Exception::SocketException) : ITalonChange(),
-	IAceRoundListener(), ICardCountObserver(), m_ctx(ctx),
+	IAceRoundListener(), ICardCountObserver(), m_ctx(ctx), m_nextTurn(0L),
 	m_state(ACCEPT_PLAYERS), m_talon(new Talon(this, ctx.getTalonFactor())), m_players(),
-	m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_jackMode(false), m_initialChecked(false),
-	m_ultimate(false), m_initialJack(false), m_alwaysWait(false), m_alreadyWaited(false),
-	m_initialNextMessage(ctx.getNextMessage()), m_gameIndex(0LL), m_dirChangeEnabled(false),
-	m_talonUnderflow(false), m_aiCount(0) {
+	m_nxtPlayer(0), m_turn(1), m_curTurn(0), m_jackMode(false), m_ultimate(false),
+	m_alwaysWait(false), m_alreadyWaited(false), m_initialNextMessage(ctx.getNextMessage()),
+	m_gameIndex(0LL), m_dirChangeEnabled(false), m_talonUnderflow(false), m_aiCount(0) {
 	m_players.reserve(5);
 	ctx.getEventHandler().acceptingPlayers();
 }
 
 Engine::~Engine() {
 	delete m_talon;
+	delete m_nextTurn;
 }
 
 const Event::IEventHandler &Engine::getEventHandler() const {
@@ -219,6 +219,7 @@ bool Engine::distributeCards() throw(Common::Exception::SocketException) {
 
 			p->receiveCardSet(card);
 			p->setDirChangeEnabled(m_dirChangeEnabled);
+			p->setCardCountObserver(this);
 
 			getEventHandler().cardsDistributed(p, card);
 		}
@@ -252,8 +253,15 @@ void Engine::error(const std::string &msg) const throw() {
 	} catch(const Common::Exception::SocketException &) {}
 }
 
-bool Engine::nextTurn() {
-	return NextTurn(this).compute();
+void Engine::initialTurn() throw(Common::Exception::SocketException) {
+
+	if(m_nextTurn) delete m_nextTurn;
+
+	m_nextTurn = new NextTurn(this);
+}
+
+bool Engine::nextTurn() throw(Common::Exception::SocketException) {
+	return m_nextTurn->compute();
 }
 
 void Engine::uncoveredCard(const Common::ICard *top) const
@@ -357,10 +365,12 @@ void Engine::reset() throw() {
 	m_nxtPlayer = m_curTurn = 0u;
 	m_turn = 1u;
 
-	m_jackMode = m_initialChecked =
-					 m_initialJack = m_alwaysWait = m_alreadyWaited = m_talonUnderflow = false;
+	m_jackMode = m_alwaysWait = m_alreadyWaited = m_talonUnderflow = false;
 
 	m_ctx.setNextMessage(m_initialNextMessage);
+
+	delete m_nextTurn;
+	m_nextTurn = 0L;
 }
 
 const std::string &Engine::getTalonUnderflowString() {

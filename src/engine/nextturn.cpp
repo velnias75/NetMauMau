@@ -59,13 +59,34 @@ private:
 
 using namespace NetMauMau;
 
-NextTurn::NextTurn(Engine *const engine) : m_engine(engine), m_db(DB::SQLite::getInstance()),
-	m_player(0L), m_curPlayer(0L), m_rightPlayer(0L), m_uncoveredCard(), m_playedCard(),
-	m_neighbourCount(), m_leftCount(0u), m_rightCount(0u), m_reason(Player::IPlayer::MAUMAU),
-	m_jackSuit(Common::ICard::SUIT_ILLEGAL), m_lps(Common::ICard::SUIT_ILLEGAL),
-	m_lpr(Common::ICard::RANK_ILLEGAL), m_rps(Common::ICard::SUIT_ILLEGAL),
-	m_rpr(Common::ICard::RANK_ILLEGAL), m_nrs(), m_suspend(false), m_won(false), m_noCardOk(false),
-	m_cardAccepted(false), m_lostWatchingPlayer(false) {}
+NextTurn::NextTurn(Engine *const engine) throw(Common::Exception::SocketException)
+	: m_engine(engine), m_db(DB::SQLite::getInstance()),
+	  m_player(m_engine->m_players[engine->m_nxtPlayer]), m_curPlayer(0L), m_rightPlayer(0L),
+	  m_uncoveredCard(), m_playedCard(), m_neighbourCount(), m_leftCount(0u), m_rightCount(0u),
+	  m_reason(Player::IPlayer::MAUMAU), m_jackSuit(Common::ICard::SUIT_ILLEGAL),
+	  m_lps(Common::ICard::SUIT_ILLEGAL), m_lpr(Common::ICard::RANK_ILLEGAL),
+	  m_rps(Common::ICard::SUIT_ILLEGAL), m_rpr(Common::ICard::RANK_ILLEGAL), m_nrs(),
+	  m_initialJack(false), m_suspend(false), m_won(false), m_noCardOk(false),
+	  m_cardAccepted(false), m_lostWatchingPlayer(false) {
+
+	checkPlayersAlive();
+
+	m_db->gamePlayStarted(m_engine->m_gameIndex);
+
+	m_engine->getEventHandler().initialCard(m_engine->m_talon->uncoverCard());
+
+	if(getAICount() && m_engine->m_talon->getUncoveredCard() == Common::ICard::EIGHT) {
+		m_engine->getEventHandler().getConnection().
+		wait(static_cast<long int>(std::floor(static_cast<float>(getAIDelay()) * 1.5f)));
+	}
+
+	m_uncoveredCard = m_engine->m_talon->getUncoveredCard();
+	m_engine->getRuleSet()->checkInitial(m_player, m_uncoveredCard);
+
+	checkAndPerformDirChange(m_player, false);
+
+	m_initialJack = m_engine->getRuleSet()->isJackMode();
+}
 
 NextTurn::~NextTurn() {}
 
@@ -86,53 +107,27 @@ bool NextTurn::compute() throw(Common::Exception::SocketException) {
 
 		m_player = m_engine->m_players[m_engine->m_nxtPlayer];
 
-		m_player->setCardCountObserver(m_engine);
-
 		if(m_engine->m_curTurn != m_engine->m_turn) {
-
 			m_db->turn(m_engine->m_gameIndex, m_engine->m_turn);
-
 			m_engine->getEventHandler().turn(m_engine->m_turn);
-
-			if(m_engine->m_turn == 1u) {
-
-				m_db->gamePlayStarted(m_engine->m_gameIndex);
-				m_engine->getEventHandler().initialCard(m_engine->m_talon->uncoverCard());
-
-				if(getAICount() && m_engine->m_talon->getUncoveredCard() == Common::ICard::EIGHT) {
-					m_engine->getEventHandler().getConnection().
-					wait(static_cast<long int>(std::floor(static_cast
-														  <float>(getAIDelay()) * 1.5f)));
-				}
-			}
-
 			m_engine->m_curTurn = m_engine->m_turn;
 		}
 
 		if(m_engine->m_ctx.getNextMessage()) m_engine->getEventHandler().nextPlayer(m_player);
 
-		m_uncoveredCard = m_engine->m_talon->getUncoveredCard();
-
-		if(!m_engine->m_initialChecked) {
-			m_engine->getRuleSet()->checkInitial(m_player, m_uncoveredCard);
-			checkAndPerformDirChange(m_player, false);
-			m_engine->m_initialJack = m_engine->getRuleSet()->isJackMode();
-			m_engine->m_initialChecked = true;
-		}
-
 		m_suspend = m_engine->getRuleSet()->hasToSuspend() && !m_engine->m_talonUnderflow;
 		m_jackSuit = m_engine->getRuleSet()->getJackSuit();
+		m_uncoveredCard = m_engine->m_talon->getUncoveredCard();
 
 		assert(m_uncoveredCard != Common::ICard::JACK || (m_uncoveredCard == Common::ICard::JACK &&
-				((m_engine->m_jackMode || m_engine->m_initialJack) &&
+				((m_engine->m_jackMode || m_initialJack) &&
 				 m_jackSuit != Common::ICard::SUIT_ILLEGAL)));
 
 		m_playedCard = !m_suspend ? m_player->requestCard(m_uncoveredCard, (m_engine->m_jackMode ||
-					   m_engine->m_initialJack) ? &m_jackSuit : 0L,
-					   m_engine->getRuleSet()->takeCardCount(), m_engine->m_talonUnderflow)
-						   : Common::ICardPtr();
+					   m_initialJack) ? &m_jackSuit : 0L, m_engine->getRuleSet()->takeCardCount(),
+					   m_engine->m_talonUnderflow) : Common::ICardPtr();
 
-		if(m_engine->m_initialJack && !m_playedCard) m_engine->m_jackMode = true;
+		if(m_initialJack && !m_playedCard) m_engine->m_jackMode = true;
 
 		m_won = false;
 
@@ -172,7 +167,7 @@ sevenRule:
 
 			if(m_playedCard && m_cardAccepted) {
 
-				if(m_engine->m_jackMode || m_engine->m_initialJack) jackModeOff();
+				if(m_engine->m_jackMode || m_initialJack) jackModeOff();
 
 				m_won = m_player->cardAccepted(m_playedCard);
 
@@ -245,7 +240,7 @@ sevenRule:
 
 		if(!m_engine->m_nxtPlayer) ++m_engine->m_turn;
 
-		m_engine->m_initialJack = false;
+		m_initialJack = false;
 
 		if(!m_engine->m_alreadyWaited && wait(m_curPlayer, false)) {
 			m_engine->getEventHandler().getConnection().wait(getAIDelay());

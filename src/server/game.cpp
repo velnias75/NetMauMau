@@ -184,6 +184,8 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 
 		notify(GAMESTARTED);
 
+		m_engine.initialTurn();
+
 		while(ultimate ? m_engine.getPlayerCount() >= 2u :
 				m_engine.getPlayerCount() == minPlayers) {
 

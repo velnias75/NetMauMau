@@ -28,7 +28,7 @@ namespace NetMauMau {
 class NextTurn {
 	DISALLOW_COPY_AND_ASSIGN(NextTurn)
 public:
-	NextTurn(Engine *const engine);
+	NextTurn(Engine *const engine) throw(Common::Exception::SocketException);
 	~NextTurn();
 
 	bool compute() throw(Common::Exception::SocketException);
@@ -90,6 +90,7 @@ private:
 
 	Player::IPlayer::NEIGHBOURRANKSUIT m_nrs;
 
+	bool m_initialJack;
 	bool m_suspend;
 	bool m_won;
 	bool m_noCardOk;

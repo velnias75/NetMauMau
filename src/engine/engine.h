@@ -143,14 +143,11 @@ private:
 	STATE m_state;
 	Talon *const m_talon;
 	PLAYERS m_players;
-	std::size_t m_nxtPlayer;
 	std::size_t m_turn;
 	std::size_t m_curTurn;
 
-	bool m_jackMode;
 	bool m_ultimate;
 	bool m_alwaysWait;
-	bool m_alreadyWaited;
 
 	const bool m_initialNextMessage;
 	DB::GAMEIDX m_gameIndex;

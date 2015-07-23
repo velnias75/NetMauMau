@@ -79,6 +79,7 @@ private:
 	std::size_t m_neighbourCount[2];
 	std::size_t m_leftCount;
 	std::size_t m_rightCount;
+	std::size_t m_nxtPlayer;
 
 	Player::IPlayer::REASON m_reason;
 
@@ -90,12 +91,14 @@ private:
 
 	Player::IPlayer::NEIGHBOURRANKSUIT m_nrs;
 
+	bool m_jackMode;
 	bool m_initialJack;
 	bool m_suspend;
 	bool m_won;
 	bool m_noCardOk;
 	bool m_cardAccepted;
 	bool m_lostWatchingPlayer;
+	bool m_alreadyWaited;
 };
 
 }

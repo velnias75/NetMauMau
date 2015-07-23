@@ -23,6 +23,10 @@
 
 #include <ctime>
 
+#if defined(TRACE_AI) && !defined(NDEBUG)
+#include <cstdio>
+#endif
+
 #include "easyplayer.h"
 
 #include "jackonlycondition.h"
@@ -69,8 +73,7 @@ EasyPlayer::requestCard(const NetMauMau::Common::ICardPtr &uncoveredCard,
 	const bool ansi = isatty(fileno(stderr));
 
 	if(!std::getenv("NMM_NO_TRACE")) logDebug("-> trace of AI \"" << getName() << "\" -> "
-				<< (rrc ? rrc->description(ansi) : "NO CARD")
-				<< " <-");
+				<< (rrc ? rrc->description(ansi) : "NO CARD") << " <-");
 
 #endif
 

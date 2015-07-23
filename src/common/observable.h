@@ -46,21 +46,7 @@ public:
 		}
 	}
 
-	void notify(const what_type what) {
-
-#if GCC_VERSION < 40300
-
-		for(typename std::vector<IObserver<SourceType> *>::const_iterator iter(m_observers.begin());
-				iter != m_observers.end(); ++iter) {
-			(*iter)->update(what);
-		}
-
-#else
-		std::for_each(m_observers.begin(), m_observers.end(),
-					  std::bind2nd(std::mem_fun(&IObserver<SourceType>::update), what));
-#endif
-
-	}
+	void notify(const what_type what);
 
 protected:
 	Observable() : m_observers() {}
@@ -71,6 +57,23 @@ private:
 
 template<class SourceType, class WhatType>
 Observable<SourceType, WhatType>::~Observable() {}
+
+template<class SourceType, class WhatType>
+void Observable<SourceType, WhatType>::notify(const what_type what) {
+
+#if GCC_VERSION < 40300
+
+	for(typename std::vector<IObserver<SourceType> *>::const_iterator iter(m_observers.begin());
+			iter != m_observers.end(); ++iter) {
+		(*iter)->update(what);
+	}
+
+#else
+	std::for_each(m_observers.begin(), m_observers.end(),
+				  std::bind2nd(std::mem_fun(&IObserver<SourceType>::update), what));
+#endif
+
+}
 
 }
 

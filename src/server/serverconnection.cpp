@@ -110,9 +110,7 @@ Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *s
 					std::size_t r;
 
 					while((r = std::fread(ptr, static_cast<std::size_t>(s.st_size),
-										  sizeof(NetMauMau::Common::BYTE), in))) {
-						ptr += r;
-					}
+										  sizeof(NetMauMau::Common::BYTE), in))) ptr += r;
 
 					if(std::feof(in)) {
 
@@ -447,6 +445,8 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 							const NAMESOCKFD nsf(info.name, playerPic, cfd, cver);
 							const bool isOk = registerPlayer(nsf, getAIPlayers());
 
+							if(isOk) notify(std::make_pair(info.name, playerPic));
+
 							send(isOk ? "OK" : "IN", 2, cfd);
 
 							if(isOk) {
@@ -528,6 +528,8 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 																   !m_aiPlayerImages[j]->empty() ?
 																   m_aiPlayerImages[j]->length() :
 																   aiBase64.length()) + 1;
+
+							notify(std::make_pair(*i, piz));
 
 							if(resPiz <= piz.max_size()) piz.reserve(resPiz);
 

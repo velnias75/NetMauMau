@@ -42,9 +42,11 @@
 #endif
 
 #include "httpd.h"
+#include "base64.h"
 #include "logger.h"
 #include "helpers.h"
 #include "iplayer.h"
+#include "defaultplayerimage.h"
 #include "abstractsocketimpl.h"
 
 #ifndef _WIN32
@@ -60,7 +62,6 @@ const char *B2TOP = "<a href=\"#top\">Back to top</a>";
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
 struct scoresTable : std::unary_function<NetMauMau::DB::SQLite::SCORES::value_type, void> {
-
 	inline explicit scoresTable(std::ostringstream &o) : os(o), pos(0) {}
 	inline result_type operator()(const argument_type &s) const {
 		os << "<tr><td align=\"right\">" << ++pos << "&nbsp;</td><td>&nbsp;" << s.name
@@ -75,7 +76,6 @@ private:
 
 struct capaTable :
 		std::unary_function<NetMauMau::Common::AbstractConnection::CAPABILITIES::value_type, void> {
-
 	inline explicit capaTable(std::ostringstream &o) : os(o) {}
 	inline result_type operator()(const argument_type &p) const {
 		const bool isWurl = p.first == "WEBSERVER_URL";
@@ -88,12 +88,11 @@ private:
 	std::ostringstream &os;
 };
 
-struct listPlayers : std::unary_function
-		<NetMauMau::Common::IObserver<NetMauMau::Engine>::what_type::value_type, void> {
-
+struct listPlayers : std::unary_function<NetMauMau::Server::Httpd::PLAYERS::value_type, void> {
 	inline explicit listPlayers(std::ostringstream &o) : os(o) {}
 	inline result_type operator()(const argument_type &p) const {
-		os << "<li><b>" << p->getName() << "</b>&nbsp;<i>("
+		os << "<li><a href=\"/images/" << p->getName() << "\"><img height=\"30\" src=\"/images/"
+		   << p->getName() << "\">" << "</a>&nbsp;<b>" << p->getName() << "</b>&nbsp;<i>("
 		   << (p->getType() == NetMauMau::Player::IPlayer::HUMAN ? "human player" :
 			   (p->getType() == NetMauMau::Player::IPlayer::HARD ? "hard AI" : "easy AI"))
 		   << ")</i></li>";
@@ -104,7 +103,7 @@ private:
 };
 #pragma GCC diagnostic pop
 
-int answer_to_connection(void *cls, struct MHD_Connection *connection, const char */*url*/,
+int answer_to_connection(void *cls, struct MHD_Connection *connection, const char *url,
 						 const char */*method*/, const char */*version*/,
 						 const char */*upload_data*/,
 #if MHD_VERSION > 0x00000200
@@ -115,74 +114,131 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 						 void **/*con_cls*/) {
 
 	const NetMauMau::Server::Httpd *httpd = reinterpret_cast<NetMauMau::Server::Httpd *>(cls);
-	const NetMauMau::DB::SQLite::SCORES &sc(httpd->getCapabilities().find("HAVE_SCORES") !=
-											httpd->getCapabilities().end() ?
-											NetMauMau::DB::SQLite::getInstance()->
-											getScores(NetMauMau::DB::SQLite::NORM) :
-											NetMauMau::DB::SQLite::SCORES());
-
 	const bool havePlayers = !httpd->getPlayers().empty();
 
+	std::vector<std::string::traits_type::char_type> bin;
 	std::ostringstream os;
+	os.unsetf(std::ios_base::skipws);
 
-	os << "<html><head><title>" << PACKAGE_STRING << " (" << BUILD_TARGET << ")</title>";
+	const char *contentType = 0L;
+	bool binary = false;
 
-	os << "<style>"
-	   << "table, td, th { background-color:white; border: thin solid black; "
-	   << "border-spacing: 0; border-collapse: collapse; }"
-	   << "pre { background-color:white; }"
-	   << "a { text-decoration:none; }"
-	   << "</style>";
+	switch(std::strncmp("/images/", url, 8)) {
+	case 0: {
 
-	os << "<body bgcolor=\"#eeeeee\"><a name=\"top\"><font face=\"Sans-Serif\">"
-	   << "<h1 align=\"center\">" << PACKAGE_STRING << "</h1></a><hr />";
+		binary = true;
+		contentType = "image/png";
+		bin.clear();
 
-	os << "<p><ul>";
+		const char *name = std::strrchr(url, '/');
 
-	if(havePlayers) os << "<li><a href=\"#players\">Players online</a></li>";
+		if(name && *(name + 1)) {
 
-	if(!sc.empty()) os << "<li><a href=\"#scores\">Hall of Fame</a></li>";
+			const NetMauMau::Server::Httpd::IMAGES::const_iterator
+			&f(httpd->getImages().find(name + 1));
 
-	os << "<li><a href=\"#capa\">Server capabilities</a></li>";
-	os << "<li><a href=\"#dump\">Server dump</a></li>";
+			if(f != httpd->getImages().end()) {
+				bin.insert(bin.end(), f->second.begin(), f->second.end());
+			} else {
+				bin.insert(bin.end(), NetMauMau::Common::DefaultPlayerImage.begin(),
+						   NetMauMau::Common::DefaultPlayerImage.end());
+			}
 
-	os << "</ul></p><hr />";
+		} else {
+			bin.insert(bin.end(), NetMauMau::Common::DefaultPlayerImage.begin(),
+					   NetMauMau::Common::DefaultPlayerImage.end());
+		}
+	}
+	break;
 
-	if(havePlayers) {
-		os << "<a name=\"players\"><h2 align=\"center\">Players online <i>("
-		   << (httpd->isWaiting() ?  "waiting" : "running") << ")</i></h2><p><ol>";
+	default: {
 
-		std::for_each(httpd->getPlayers().begin(), httpd->getPlayers().end(), listPlayers(os));
+		contentType = "text/html; charset=utf-8";
 
-		os << "</ol></p></a>" << B2TOP << "<hr />";
+		const NetMauMau::DB::SQLite::SCORES &sc(httpd->getCapabilities().find("HAVE_SCORES") !=
+												httpd->getCapabilities().end() ?
+												NetMauMau::DB::SQLite::getInstance()->
+												getScores(NetMauMau::DB::SQLite::NORM) :
+												NetMauMau::DB::SQLite::SCORES());
+
+		os << "<html><head><title>" << PACKAGE_STRING << " (" << BUILD_TARGET << ")</title>";
+
+		os << "<style>"
+		   << "table, td, th { background-color:white; border: thin solid black; "
+		   << "border-spacing: 0; border-collapse: collapse; }"
+		   << "pre { background-color:white; }"
+		   << "a { text-decoration:none; }"
+		   << "img { border:none; }"
+		   << "</style>";
+
+		os << "<body bgcolor=\"#eeeeee\"><a name=\"top\"><font face=\"Sans-Serif\">"
+		   << "<h1 align=\"center\">" << PACKAGE_STRING << "</h1></a><hr />";
+
+		os << "<p><ul>";
+
+		if(havePlayers) os << "<li><a href=\"#players\">Players online</a></li>";
+
+		if(!sc.empty()) os << "<li><a href=\"#scores\">Hall of Fame</a></li>";
+
+		os << "<li><a href=\"#capa\">Server capabilities</a></li>";
+		os << "<li><a href=\"#dump\">Server dump</a></li>";
+
+		os << "</ul></p><hr />";
+
+		if(havePlayers) {
+			os << "<a name=\"players\"><h2 align=\"center\">Players online <i>("
+			   << (httpd->isWaiting() ?  "waiting" : "running") << ")</i></h2><p><ol>";
+
+			std::for_each(httpd->getPlayers().begin(), httpd->getPlayers().end(), listPlayers(os));
+
+			os << "</ol></p></a>" << B2TOP << "<hr />";
+		}
+
+		if(!sc.empty()) {
+			os << "<a name=\"scores\"><center><h2>Hall of Fame</h2><table width=\"50%\">"
+			   << "<tr><th>&nbsp;</th><th>PLAYER</th><th>SCORE</th></tr>";
+
+			std::for_each(sc.begin(), sc.end(), scoresTable(os));
+
+			os << "</table></center></a>" << B2TOP << "<hr />";
+		}
+
+		os << "<a name=\"capa\"><center><h2>Server capabilities</h2><table width=\"50%\">"
+		   << "<tr><th>NAME</th><th>VALUE</th></tr>";
+
+		std::for_each(httpd->getCapabilities().begin(), httpd->getCapabilities().end(),
+					  capaTable(os));
+
+		os << "</table></center></a>" << B2TOP << "<hr /><a name=\"dump\">"
+		   << "<h2 align=\"center\">Server dump</h2><tt><pre>";
+
+		NetMauMau::dump(os);
+
+		os << "</pre></a></tt><hr />" << B2TOP << "</font></body></html>";
+	}
+	break;
 	}
 
-	if(!sc.empty()) {
-		os << "<a name=\"scores\"><center><h2>Hall of Fame</h2><table width=\"50%\">"
-		   << "<tr><th>&nbsp;</th><th>PLAYER</th><th>SCORE</th></tr>";
+	void *data = 0L;
 
-		std::for_each(sc.begin(), sc.end(), scoresTable(os));
+	if(binary) {
 
-		os << "</table></center></a>" << B2TOP << "<hr />";
+		if((data = malloc(bin.size()))) {
+			std::memcpy(data, bin.data(), bin.size());
+		}
+
+	} else {
+		data = static_cast<void *>(const_cast<char *>(strndup(os.str().c_str(),
+								   os.str().length())));
 	}
 
-	os << "<a name=\"capa\"><center><h2>Server capabilities</h2><table width=\"50%\">"
-	   << "<tr><th>NAME</th><th>VALUE</th></tr>";
+	const std::size_t len = binary ? (data ? bin.size() : 0u) : os.str().length();
 
-	std::for_each(httpd->getCapabilities().begin(), httpd->getCapabilities().end(), capaTable(os));
+	bin.clear();
 
-	os << "</table></center></a>" << B2TOP << "<hr /><a name=\"dump\">"
-	   << "<h2 align=\"center\">Server dump</h2><tt><pre>";
+	MHD_Response *response = MHD_create_response_from_data(len, data, true, false);
 
-	NetMauMau::dump(os);
-
-	os << "</pre></a></tt><hr />" << B2TOP << "</font></body></html>";
-
-	MHD_Response *response = MHD_create_response_from_data(os.str().length(),
-							 static_cast<void *>(const_cast<char *>(strdup(os.str().c_str()))),
-							 true, false);
-
-	MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, "text/html; charset=utf-8");
+	MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, contentType);
 	MHD_add_response_header(response, MHD_HTTP_HEADER_EXPIRES, "Thu, 01 Dec 1994 16:00:00 GMT");
 	MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL, "no-cache");
 
@@ -199,8 +255,8 @@ using namespace NetMauMau::Server;
 
 HttpdPtr Httpd::m_instance;
 
-Httpd::Httpd() : m_daemon(0L), m_gameSource(0L), m_engineSource(0L), m_players(), m_caps(),
-	m_gameRunning(false), m_waiting(true), m_url() {
+Httpd::Httpd() : m_daemon(0L), m_gameSource(0L), m_engineSource(0L), m_connectionSource(0L),
+	m_players(), m_images(), m_caps(), m_gameRunning(false), m_waiting(true), m_url() {
 
 	struct addrinfo *ai = NULL;
 
@@ -262,12 +318,27 @@ Httpd *Httpd::getInstance() {
 	return m_instance;
 }
 
+void Httpd::setSource(const NetMauMau::Common::IObserver<Connection>::source_type *s) {
+	m_connectionSource = s;
+}
+
 void Httpd::setSource(const NetMauMau::Common::IObserver<NetMauMau::Engine>::source_type *s) {
 	m_engineSource = s;
 }
 
 void Httpd::setSource(const NetMauMau::Common::IObserver<Game>::source_type *s) {
 	m_gameSource = s;
+}
+
+void Httpd::update(const NetMauMau::Common::IObserver<Connection>::what_type &what) {
+
+	const std::vector<NetMauMau::Common::BYTE> &b64(NetMauMau::Common::base64_decode(what.second));
+
+	if(b64.empty()) {
+		m_images.insert(std::make_pair(what.first, NetMauMau::Common::DefaultPlayerImage));
+	} else {
+		m_images.insert(std::make_pair(what.first, std::string(b64.begin(), b64.end())));
+	}
 }
 
 void Httpd::update(const NetMauMau::Common::IObserver<NetMauMau::Engine>::what_type &what) {

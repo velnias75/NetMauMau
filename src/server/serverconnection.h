@@ -28,6 +28,7 @@
 #include <functional>                   // for greater
 
 #include "abstractconnection.h"         // for AbstractConnection, etc
+#include "observable.h"
 
 struct timeval;
 
@@ -40,7 +41,8 @@ namespace NetMauMau {
 
 namespace Server {
 
-class Connection : public Common::AbstractConnection {
+class Connection : public Common::AbstractConnection,
+	public Common::Observable<Connection, std::pair<std::string, std::string> > {
 	DISALLOW_COPY_AND_ASSIGN(Connection)
 public:
 	using Common::AbstractConnection::wait;

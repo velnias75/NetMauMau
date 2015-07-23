@@ -21,7 +21,7 @@
 #define NETMAUMAU_SERVER_HTTPD_H
 
 #include "game.h"
-#include "abstractconnection.h"
+#include "serverconnection.h"
 
 struct MHD_Daemon;
 
@@ -33,16 +33,23 @@ class Httpd;
 
 typedef Common::SmartPtr<Httpd> HttpdPtr;
 
-class Httpd : public Common::IObserver<Game>, public Common::IObserver<Engine> {
+class Httpd : public Common::IObserver<Game>, public Common::IObserver<Engine>,
+	public Common::IObserver<Connection> {
 	DISALLOW_COPY_AND_ASSIGN(Httpd)
 public:
+	typedef NetMauMau::Common::IObserver<NetMauMau::Engine>::what_type PLAYERS;
+	typedef std::map < NetMauMau::Common::IObserver<Connection>::what_type::first_type,
+			NetMauMau::Common::IObserver<Connection>::what_type::second_type > IMAGES;
+
 	virtual ~Httpd();
 
 	static Httpd *getInstance();
 
+	virtual void setSource(const Common::IObserver<Connection>::source_type *s);
 	virtual void setSource(const Common::IObserver<Engine>::source_type *s);
 	virtual void setSource(const Common::IObserver<Game>::source_type *s);
 
+	virtual void update(const Common::IObserver<Connection>::what_type &what);
 	virtual void update(const Common::IObserver<Engine>::what_type &what);
 	virtual void update(const Common::IObserver<Game>::what_type &what);
 
@@ -54,8 +61,12 @@ public:
 		return m_waiting;
 	}
 
-	inline const NetMauMau::Common::IObserver<NetMauMau::Engine>::what_type &getPlayers() const {
+	inline const PLAYERS &getPlayers() const {
 		return m_players;
+	}
+
+	inline const IMAGES &getImages() const {
+		return m_images;
 	}
 
 	inline void setCapabilities(const Common::AbstractConnection::CAPABILITIES &caps) {
@@ -75,7 +86,9 @@ private:
 	MHD_Daemon *m_daemon;
 	const Common::IObserver<Game>::source_type *m_gameSource;
 	const Common::IObserver<Engine>::source_type *m_engineSource;
-	NetMauMau::Common::IObserver<NetMauMau::Engine>::what_type m_players;
+	const Common::IObserver<Connection>::source_type *m_connectionSource;
+	PLAYERS m_players;
+	IMAGES m_images;
 	Common::AbstractConnection::CAPABILITIES m_caps;
 	bool m_gameRunning;
 	bool m_waiting;

@@ -449,6 +449,7 @@ int main(int argc, const char **argv) {
 			Server::Game game(ctx);
 
 #ifdef HAVE_LIBMICROHTTPD
+			con.addObserver(NetMauMau::Server::Httpd::getInstance());
 			game.addObserver(NetMauMau::Server::Httpd::getInstance());
 			game.getEngine().addObserver(NetMauMau::Server::Httpd::getInstance());
 #endif

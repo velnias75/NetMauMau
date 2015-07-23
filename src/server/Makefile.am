@@ -42,6 +42,9 @@ nmm_server_CPPFLAGS += -DNOH2M
 endif
 
 if MICROHTTPD
+dist_pkgdata_DATA = $(top_srcdir)/netmaumau.ico
+
+libhttpd_la_CPPFLAGS = -DPKGDATADIR="\"$(pkgdatadir)\""	
 libhttpd_la_CXXFLAGS = $(NO_EXCEPTIONS) $(LIBMICROHTTPD_CFLAGS) -I$(top_srcdir)/src/include \
 	-I$(top_srcdir)/src/common -I$(top_srcdir)/src/sqlite -I$(top_srcdir)/src/engine
 libhttpd_la_SOURCES  = httpd.cpp

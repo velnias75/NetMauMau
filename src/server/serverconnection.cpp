@@ -529,12 +529,14 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 																   m_aiPlayerImages[j]->length() :
 																   aiBase64.length()) + 1;
 
-							notify(std::make_pair(*i, piz));
-
 							if(resPiz <= piz.max_size()) piz.reserve(resPiz);
 
 							piz.append(m_aiPlayerImages[j] && !m_aiPlayerImages[j]->empty() ?
 									   (*m_aiPlayerImages[j]) : aiBase64).append(1, 0);
+
+							notify(std::make_pair(*i, (m_aiPlayerImages[j] &&
+													   !m_aiPlayerImages[j]->empty()) ?
+												  (*m_aiPlayerImages[j]) : aiBase64));
 						}
 
 						send(piz.c_str(), piz.length(), cfd);

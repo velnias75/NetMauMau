@@ -21,8 +21,14 @@
 #include "config.h"
 #endif
 
+#if defined(IN_IDE_PARSER)
+#define PKGDATADIR ""
+#endif
+
+#include <fstream>
 #include <cstring>
 #include <cstdarg>
+#include <iterator>
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -123,8 +129,7 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 	const char *contentType = 0L;
 	bool binary = false;
 
-	switch(std::strncmp("/images/", url, 8)) {
-	case 0: {
+	if(!std::strncmp("/images/", url, 8)) {
 
 		binary = true;
 		contentType = "image/png";
@@ -148,10 +153,25 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 			bin.insert(bin.end(), NetMauMau::Common::DefaultPlayerImage.begin(),
 					   NetMauMau::Common::DefaultPlayerImage.end());
 		}
-	}
-	break;
 
-	default: {
+	} else if(!std::strncmp("/favicon.ico", url, 8)) {
+
+		binary = true;
+		contentType = "image/vnd.microsoft.icon";
+
+		std::ifstream fav(PKGDATADIR "/netmaumau.ico", std::ios::binary);
+
+		bin.clear();
+
+		if(!fav.fail()) {
+			bin.insert(bin.end(),
+					   std::istreambuf_iterator<std::string::traits_type::char_type>(fav),
+					   std::istreambuf_iterator<std::string::traits_type::char_type>());
+		} else {
+			logWarning("Failed to open favicon file: \"" << PKGDATADIR << "/netmaumau.ico\"");
+		}
+
+	} else {
 
 		contentType = "text/html; charset=utf-8";
 
@@ -161,7 +181,11 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 												getScores(NetMauMau::DB::SQLite::NORM) :
 												NetMauMau::DB::SQLite::SCORES());
 
-		os << "<html><head><title>" << PACKAGE_STRING << " (" << BUILD_TARGET << ")</title>";
+		os << "<html><head>"
+		   << "<link rel=\"shortcut icon\" type=\"image/vnd.microsoft.icon\" "
+		   << "href=\"/favicon.ico\" />"
+		   << "<link rel=\"icon\" type=\"image/vnd.microsoft.icon\" href=\"/favicon.ico\" />"
+		   << "<title>" << PACKAGE_STRING << " (" << BUILD_TARGET << ")</title>";
 
 		os << "<style>"
 		   << "table, td, th { background-color:white; border: thin solid black; "
@@ -169,7 +193,7 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 		   << "pre { background-color:white; }"
 		   << "a { text-decoration:none; }"
 		   << "img { border:none; }"
-		   << "</style>";
+		   << "</style></head>";
 
 		os << "<body bgcolor=\"#eeeeee\"><a name=\"top\"><font face=\"Sans-Serif\">"
 		   << "<h1 align=\"center\">" << PACKAGE_STRING << "</h1></a><hr />";
@@ -215,8 +239,6 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 		NetMauMau::dump(os);
 
 		os << "</pre></a></tt><hr />" << B2TOP << "</font></body></html>";
-	}
-	break;
 	}
 
 	void *data = 0L;
@@ -363,6 +385,7 @@ void Httpd::update(const NetMauMau::Common::IObserver<Game>::what_type &what) {
 
 	case GAMEENDED:
 		m_players.clear();
+		m_images.clear();
 		m_waiting = true;
 		m_gameRunning = false;
 		break;

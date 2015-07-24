@@ -35,31 +35,29 @@
 #include "random_gen.h"
 #include "ci_char_traits.h"
 
-namespace {
 #ifndef DISABLE_ANSI
-const std::string RED_ON("\x1B[31m");
-const std::string RED_OFF("\x1B[39m");
-const std::string BLUE_ON("\x1B[1m\x1B[34m");
-const std::string BLUE_OFF("\x1B[39m\x1B[22m");
-const std::string BOLD_ON("\x1B[1m");
-const std::string BOLD_P_ON("Player \x1B[1m");
-const std::string BOLD_OFF("\x1B[22m");
+const char *RED_ON = "\x1B[31m";
+const char *RED_OFF = "\x1B[39m";
+const char *BLUE_ON = "\x1B[1m\x1B[34m";
+const char *BLUE_OFF = "\x1B[39m\x1B[22m";
+const char *BOLD_ON = "\x1B[1m";
+const char *BOLD_P_ON = "Player \x1B[1m";
+const char *BOLD_OFF = "\x1B[22m";
 #else
-const std::string RED_ON;
-const std::string RED_OFF;
-const std::string BLUE_ON;
-const std::string BLUE_OFF;
-const std::string BOLD_ON;
-const std::string BOLD_P_ON("Player ");
-const std::string BOLD_OFF;
+const char *RED_ON = "";
+const char *RED_OFF = "";
+const char *BLUE_ON = "";
+const char *BLUE_OFF = "";
+const char *BOLD_ON = "";
+const char *BOLD_P_ON = "Player ";
+const char *BOLD_OFF = "";
 #endif
-}
 
 TestClient::TestClient(const std::string &pName, const std::string &server, uint16_t port,
 					   const unsigned char *pngData, std::size_t pngDataLen, bool autoPlay,
-					   int delay)
-	: NetMauMau::Client::AbstractClient(pName, pngData, pngDataLen, server, port, CLIENTVERSION),
-	  m_myCards(), m_autoPlay(autoPlay), m_delay(delay) {
+					   int delay) :
+	NetMauMau::Client::AbstractClient(pName, pngData, pngDataLen, server, port, CLIENTVERSION),
+	m_myCards(), m_autoPlay(autoPlay), m_delay(delay) {
 #ifndef HAVE_ARC4RANDOM_UNIFORM
 	std::srand(static_cast<unsigned int>(std::time(0L)));
 #endif
@@ -72,7 +70,7 @@ void TestClient::message(const std::string &msg) const {
 }
 
 void TestClient::error(const std::string &msg) const {
-	message(BOLD_ON + RED_ON + "ERROR: " + msg + RED_OFF + BOLD_OFF);
+	message(std::string(BOLD_ON) + RED_ON + "ERROR: " + msg + RED_OFF + BOLD_OFF);
 }
 
 void TestClient::unknownServerMessage(const std::string &msg) const {

@@ -33,18 +33,6 @@
 #include "testimg.h"                    // for test_client_img
 
 namespace {
-#ifndef DISABLE_ANSI
-const std::string RED_ON("\x1B[31m");
-const std::string RED_OFF("\x1B[39m");
-const std::string BOLD_ON("\x1B[1m");
-const std::string BOLD_OFF("\x1B[22m");
-#else
-const std::string RED_ON;
-const std::string RED_OFF;
-const std::string BOLD_ON;
-const std::string BOLD_OFF;
-#endif
-
 bool noImg = true;
 bool autoPlay = false;
 
@@ -165,8 +153,7 @@ int main(int argc, const char **argv) {
 		}
 
 	} catch(const Common::Exception::SocketException &e) {
-		std::cerr << RED_ON << BOLD_ON << "ERROR: " << e.what() << BOLD_OFF << RED_OFF
-				  << std::endl;
+		std::cerr << RED_ON << BOLD_ON << "ERROR: " << e.what() << BOLD_OFF << RED_OFF << std::endl;
 		return EXIT_FAILURE;
 	}
 

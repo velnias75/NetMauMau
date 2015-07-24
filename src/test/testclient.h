@@ -24,6 +24,14 @@
 
 #include "abstractclient.h"             // for AbstractClientV05::CARDS, etc
 
+extern const char *RED_ON;
+extern const char *RED_OFF;
+extern const char *BLUE_ON;
+extern const char *BLUE_OFF;
+extern const char *BOLD_ON;
+extern const char *BOLD_P_ON;
+extern const char *BOLD_OFF;
+
 class TestClient : public NetMauMau::Client::AbstractClient {
 	DISALLOW_COPY_AND_ASSIGN(TestClient)
 public:

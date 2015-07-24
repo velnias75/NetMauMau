@@ -40,6 +40,8 @@ public:
 						const IAceRoundListener *l = 0L) throw(Lua::Exception::LuaException);
 	virtual ~LuaRuleSet() _CONST;
 
+	virtual bool isNull() const _CONST;
+
 	virtual void checkInitial(const Player::IPlayer *player,
 							  const Common::ICardPtr &playedCard) throw(Lua::Exception::LuaException);
 	virtual bool checkCard(const Player::IPlayer *player, const Common::ICardPtr &uncoveredCard,

@@ -301,6 +301,10 @@ throw(NetMauMau::Lua::Exception::LuaException) : IRuleSet() {
 
 LuaRuleSet::~LuaRuleSet() {}
 
+bool LuaRuleSet::isNull() const {
+	return false;
+}
+
 std::vector<const char *> LuaRuleSet::checkInterface() {
 	return std::for_each(FUNCTIONS, &FUNCTIONS[ENDFUNCTIONS], _checkMissing()).missing;
 }

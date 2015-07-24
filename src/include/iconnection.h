@@ -29,6 +29,7 @@
 
 #include <stdint.h>
 
+#include "inullable.h"
 #include "socketexception.h"
 
 /**
@@ -119,7 +120,7 @@ namespace Common {
  * @author Heiko Schäfer <heiko@rangun.de>
  * @since 0.14
  */
-class IConnection {
+class IConnection : INullable {
 	DISALLOW_COPY_AND_ASSIGN(IConnection)
 public:
 	typedef struct _EXPORT _info {
@@ -164,7 +165,7 @@ public:
 	virtual void wait(long ms) throw(Exception::SocketException) = 0;
 
 protected:
-	explicit IConnection() {}
+	explicit IConnection() : INullable() {}
 };
 
 }

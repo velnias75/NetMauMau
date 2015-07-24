@@ -75,6 +75,10 @@ AbstractConnection::~AbstractConnection() {
 	delete _pimpl;
 }
 
+bool AbstractConnection::isNull() const {
+	return false;
+}
+
 bool AbstractConnection::registerPlayer(const NAMESOCKFD &nfd, const PLAYERNAMES &ai) {
 	return _pimpl->registerPlayer(nfd, ai);
 }

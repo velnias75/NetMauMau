@@ -4,8 +4,8 @@ noinst_LTLIBRARIES = libnetmaumaucommon_private.la
 BUILT_SOURCES = ai-icon.h
 
 noinst_HEADERS = abstractconnectionimpl.h abstractsocketimpl.h base64.h basiclogger.h \
-	ci_char_traits.h errorstring.h icardfactory.h iobserver.h iplayer.h logger.h mimemagic.h \
-	observable.h pngcheck.h protocol.h smartptr.h
+	ci_char_traits.h errorstring.h icardfactory.h iobserver.h iplayer.h logger.h \
+	mimemagic.h observable.h pngcheck.h protocol.h smartptr.h
 
 DISTCLEANFILES = ai-icon.h
 
@@ -34,4 +34,4 @@ libnetmaumaucommon_la_SOURCES = abstractconnection.cpp abstractconnectionimpl.cp
 	abstractsocket.cpp abstractsocketimpl.cpp base64.cpp logger.cpp socketexception.cpp
 libnetmaumaucommon_la_LIBADD = libnetmaumaucommon_private.la
 libnetmaumaucommon_la_LDFLAGS = -nodefaultlibs -nostartfiles \
-	-version-info 5:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
+	-version-info 6:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)

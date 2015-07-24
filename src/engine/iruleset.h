@@ -20,6 +20,7 @@
 #ifndef NETMAUMAU_IRULESET_H
 #define NETMAUMAU_IRULESET_H
 
+#include "inullable.h"
 #include "icard.h"
 
 namespace NetMauMau {
@@ -30,7 +31,7 @@ class IPlayer;
 
 namespace RuleSet {
 
-class IRuleSet {
+class IRuleSet : public Common::INullable {
 	DISALLOW_COPY_AND_ASSIGN(IRuleSet)
 public:
 	virtual ~IRuleSet() {}
@@ -73,7 +74,7 @@ public:
 	virtual void reset() throw() = 0;
 
 protected:
-	explicit IRuleSet() {}
+	explicit IRuleSet() : INullable() {}
 };
 
 }

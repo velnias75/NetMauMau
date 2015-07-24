@@ -50,7 +50,7 @@
 #include "logger.h"                     // for logDebug, BasicLogger
 #include "enginecontext.h"              // for EngineConfig
 #include "ieventhandler.h"              // for IEventHandler
-#include "iruleset.h"                   // for IRuleSet
+#include "nullruleset.h"
 #include "talon.h"                      // for Talon
 #include "ci_char_traits.h"
 
@@ -88,7 +88,18 @@ Engine::Engine(EngineContext &ctx) throw(Common::Exception::SocketException) : I
 	m_ultimate(false), m_alwaysWait(false), m_initialNextMessage(ctx.getNextMessage()),
 	m_gameIndex(0LL), m_dirChangeEnabled(false), m_talonUnderflow(false), m_aiCount(0) {
 	m_players.reserve(5);
-	ctx.getEventHandler().acceptingPlayers();
+
+	try {
+
+		if(getRuleSet()->isNull()) {
+			throw Common::Exception::SocketException("Can't create engine due to missing ruleset");
+		}
+
+		ctx.getEventHandler().acceptingPlayers();
+	} catch(const Common::Exception::SocketException &) {
+		delete m_talon;
+		throw;
+	}
 }
 
 Engine::~Engine() {
@@ -338,7 +349,7 @@ RuleSet::IRuleSet *Engine::getRuleSet() {
 		return m_ctx.getRuleSet(this);
 	} catch(const Lua::Exception::LuaException &e) {
 		logWarning(e);
-		return 0L;
+		return NetMauMau::RuleSet::NullRuleSet::getInstance();
 	}
 }
 

@@ -18,7 +18,7 @@ libnetmaumauclient_la_SOURCES = abstractclient.cpp abstractclientv05impl.cpp \
 	protocolerrorexception.cpp scoresexception.cpp shutdownexception.cpp timeoutexception.cpp \
 	versionmismatchexception.cpp 
 libnetmaumauclient_la_LDFLAGS = -nodefaultlibs -nostartfiles -no-undefined \
-	-version-info 4:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
+	-version-info 5:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
 libnetmaumauclient_la_LIBADD = libnetmaumauclient_private.la ../common/libnetmaumaucommon.la
 
 endif

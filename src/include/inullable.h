@@ -17,39 +17,30 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "nullconnection.h"
+#ifndef NETMAUMAU_INULLABLE_H
+#define NETMAUMAU_INULLABLE_H
 
-using namespace NetMauMau;
+#include "linkercontrol.h"
 
-NullConnection::NullConnection() : Common::IConnection() {}
+namespace NetMauMau {
 
-NullConnection::~NullConnection() {}
+namespace Common {
 
-NullConnection &NullConnection::getInstance() {
-	static NullConnection instance;
-	return instance;
+class INullable {
+	DISALLOW_COPY_AND_ASSIGN(INullable)
+public:
+	virtual ~INullable() {}
+
+	virtual bool isNull() const = 0;
+
+protected:
+	INullable() {}
+};
+
 }
 
-bool NullConnection::isNull() const {
-	return true;
 }
 
-void NullConnection::addAIPlayers(const PLAYERNAMES &) {}
-
-Common::IConnection::NAMESOCKFD NullConnection::getPlayerInfo(SOCKET) const {
-	return Common::IConnection::NAMESOCKFD();
-}
-
-std::string NullConnection::getPlayerName(SOCKET) const {
-	return std::string();
-}
-
-bool NullConnection::hasHumanPlayers() const {
-	return false;
-}
-
-void NullConnection::removePlayer(SOCKET) {}
-
-void NullConnection::wait(long) throw(Common::Exception::SocketException) {}
+#endif /* NETMAUMAU_INULLABLE_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

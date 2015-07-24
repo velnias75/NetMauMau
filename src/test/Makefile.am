@@ -41,7 +41,7 @@ nmm_client_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/engine \
 	-I$(top_srcdir)/src/common $(GSL_CFLAGS) $(POPT_CFLAGS)
 nmm_client_SOURCES = test_client.cpp testclient.cpp
 nmm_client_LDADD = ../common/libnetmaumaucommon.la ../client/libnetmaumauclient.la \
-	../engine/libengine_gslrng.la $(POPT_LIBS)
+	$(POPT_LIBS) $(GSL_LIBS)
 endif
 
 .DELETE_ON_ERROR:

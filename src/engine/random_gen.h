@@ -41,6 +41,15 @@ namespace NetMauMau {
 
 namespace Common {
 
+template<typename T>
+inline T fallBackRnd(T ubound) {
+#ifdef HAVE_ARC4RANDOM_UNIFORM
+	return static_cast<T>(ubound > 0 ? static_cast<T>(::arc4random_uniform(ubound)) : 0);
+#else
+	return static_cast<T>(ubound > 0 ? (static_cast<T>(std::rand()) % ubound) : 0);
+#endif
+}
+
 #if defined(HAVE_GSL)
 template<typename T>
 class GSLRNG {
@@ -75,18 +84,12 @@ public:
 											   static_cast<unsigned long int>(ubound))) : 0;
 		}
 
-#ifdef HAVE_ARC4RANDOM_UNIFORM
-		return ubound > 0 ? ::arc4random_uniform(ubound) : 0;
-#else
-		return ubound > 0 ? (std::rand() % ubound) : 0;
-#endif
+		return fallBackRnd(ubound);
 	}
 
 private:
 	gsl_rng *m_rng;
 };
-
-extern const GSLRNG<std::ptrdiff_t> RNG;
 
 #endif
 
@@ -97,19 +100,15 @@ extern const GSLRNG<std::ptrdiff_t> RNG;
  * @param ubound upper bound
  * @return the random number
  */
-#pragma GCC diagnostic ignored "-Wsign-conversion"
-#pragma GCC diagnostic push
 template<typename T>
 inline T genRandom(T ubound) {
 #if defined(HAVE_GSL)
-	return static_cast<T>(RNG.rand(ubound));
-#elif HAVE_ARC4RANDOM_UNIFORM
-	return ubound > 0 ? ::arc4random_uniform(ubound) : 0;
+	static GSLRNG<T> grnd;
+	return static_cast<T>(grnd.rand(ubound));
 #else
-	return ubound > 0 ? (std::rand() % ubound) : 0;
+	return fallBackRnd(ubound);
 #endif
 }
-#pragma GCC diagnostic pop
 
 }
 

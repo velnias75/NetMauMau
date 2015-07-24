@@ -24,49 +24,52 @@
 #include "config.h"
 #endif
 
+#include <string>
 #include <cstddef>                      // for size_t
 
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
 #include <magic.h>
 
+#define _MM_CONST
+
 #ifndef MAGIC_MIME_TYPE
 #define MAGIC_MIME_TYPE MAGIC_MIME
 #endif
+#else
+#define _MM_CONST _CONST
 #endif
 
 #include "linkercontrol.h"
 #include "smartptr.h"
 
+#ifdef HAVE_LIBMICROHTTPD
+#define _EXPORT_MIMEMAGIC _EXPORT
+#else
+#define _EXPORT_MIMEMAGIC
+#endif
+
 namespace NetMauMau {
 
 namespace Common {
 
-class MimeMagic {
+class _EXPORT_MIMEMAGIC MimeMagic {
 	DISALLOW_COPY_AND_ASSIGN(MimeMagic)
 public:
 	typedef SmartPtr<MimeMagic> MimeMagicPtr;
 
-	~MimeMagic()
-#if !(defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC))
-	_CONST
-#endif
-	;
+	~MimeMagic() _MM_CONST;
 
 	static MimeMagicPtr getInstance();
 
 	// cppcheck-suppress functionStatic
-	bool checkMime(const unsigned char *data, std::size_t dataLen, const char *mime) const
-#if !(defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC))
-	_CONST
-#endif
-	;
+	std::string getMime(const unsigned char *data, std::size_t dataLen) const _MM_CONST;
+
+	// cppcheck-suppress functionStatic
+	bool checkMime(const unsigned char *data, std::size_t dataLen,
+				   const char *mime) const _MM_CONST;
 
 private:
-	explicit MimeMagic()
-#if !(defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC))
-	_CONST
-#endif
-	;
+	explicit MimeMagic() _MM_CONST;
 
 private:
 	static MimeMagicPtr m_instance;

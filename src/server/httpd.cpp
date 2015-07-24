@@ -25,7 +25,12 @@
 #define PKGDATADIR ""
 #endif
 
+#ifndef _WIN32
 #include <fstream>
+#else
+#include "windows.h"
+#endif
+
 #include <cstring>
 #include <cstdarg>
 #include <iterator>
@@ -52,6 +57,7 @@
 #include "logger.h"
 #include "helpers.h"
 #include "iplayer.h"
+#include "mimemagic.h"
 #include "defaultplayerimage.h"
 #include "abstractsocketimpl.h"
 
@@ -63,6 +69,7 @@
 
 namespace {
 
+std::string LKFIM;
 const char *B2TOP = "<a href=\"#top\">Back to top</a>";
 
 #pragma GCC diagnostic ignored "-Weffc++"
@@ -126,13 +133,13 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 	std::ostringstream os;
 	os.unsetf(std::ios_base::skipws);
 
-	const char *contentType = 0L;
+	char *contentType = 0L;
 	bool binary = false;
+	bool nocache = true;
 
 	if(!std::strncmp("/images/", url, 8)) {
 
 		binary = true;
-		contentType = "image/png";
 		bin.clear();
 
 		const char *name = std::strrchr(url, '/');
@@ -154,26 +161,46 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 					   NetMauMau::Common::DefaultPlayerImage.end());
 		}
 
+		const std::string &mime(NetMauMau::Common::MimeMagic::getInstance()->
+								getMime(reinterpret_cast<const unsigned char *>(bin.data()),
+										bin.size()));
+
+		contentType = !mime.empty() ? strdup((mime + "; charset=binary").c_str()) :
+					  strdup("image/png; charset=binary");
+
+#ifndef _WIN32
 	} else if(!std::strncmp("/favicon.ico", url, 8)) {
 
 		binary = true;
-		contentType = "image/vnd.microsoft.icon";
-
-		std::ifstream fav(PKGDATADIR "/netmaumau.ico", std::ios::binary);
+		LKFIM = contentType = strdup("image/vnd.microsoft.icon; charset=binary");
 
 		bin.clear();
 
+		std::ifstream fav(PKGDATADIR "/netmaumau.ico", std::ios::binary);
+
 		if(!fav.fail()) {
+
+			nocache = false;
+
 			bin.insert(bin.end(),
 					   std::istreambuf_iterator<std::string::traits_type::char_type>(fav),
 					   std::istreambuf_iterator<std::string::traits_type::char_type>());
+
+			const std::string &mime(NetMauMau::Common::MimeMagic::getInstance()->
+									getMime(reinterpret_cast<const unsigned char *>(bin.data()),
+											bin.size()));
+
+			if(!mime.empty()) LKFIM = contentType = strdup((mime + "; charset=binary").c_str());
+
 		} else {
 			logWarning("Failed to open favicon file: \"" << PKGDATADIR << "/netmaumau.ico\"");
 		}
 
+#endif
+
 	} else {
 
-		contentType = "text/html; charset=utf-8";
+		contentType = strdup("text/html; charset=utf-8");
 
 		const NetMauMau::DB::SQLite::SCORES &sc(httpd->getCapabilities().find("HAVE_SCORES") !=
 												httpd->getCapabilities().end() ?
@@ -182,10 +209,21 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 												NetMauMau::DB::SQLite::SCORES());
 
 		os << "<html><head>"
-		   << "<link rel=\"shortcut icon\" type=\"image/vnd.microsoft.icon\" "
-		   << "href=\"/favicon.ico\" />"
-		   << "<link rel=\"icon\" type=\"image/vnd.microsoft.icon\" href=\"/favicon.ico\" />"
-		   << "<title>" << PACKAGE_STRING << " (" << BUILD_TARGET << ")</title>";
+#ifndef _WIN32
+		   << "<link rel=\"shortcut icon\" type=\""
+		   << (!LKFIM.empty() ? LKFIM.c_str() : "image/vnd.microsoft.icon")
+		   << "\" href=\"/favicon.ico\" />"
+		   << "<link rel=\"icon\" type=\""
+		   << (!LKFIM.empty() ? LKFIM.c_str() : "image/vnd.microsoft.icon")
+		   << "\" href=\"/favicon.ico\" />"
+#endif
+		   << "<title>" << PACKAGE_STRING << " ("
+#ifndef _WIN32
+		   << BUILD_TARGET
+#else
+		   << "Windows [" << BUILD_TARGET << "]"
+#endif
+		   << ")</title>";
 
 		os << "<style>"
 		   << "table, td, th { background-color:white; border: thin solid black; "
@@ -250,8 +288,12 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 		}
 
 	} else {
+#ifdef HAVE_STRNDUP
 		data = static_cast<void *>(const_cast<char *>(strndup(os.str().c_str(),
 								   os.str().length())));
+#else
+		data = static_cast<void *>(const_cast<char *>(strdup(os.str().c_str())));
+#endif
 	}
 
 	const std::size_t len = binary ? (data ? bin.size() : 0u) : os.str().length();
@@ -261,12 +303,18 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 	MHD_Response *response = MHD_create_response_from_data(len, data, true, false);
 
 	MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, contentType);
-	MHD_add_response_header(response, MHD_HTTP_HEADER_EXPIRES, "Thu, 01 Dec 1994 16:00:00 GMT");
-	MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL, "no-cache");
+
+	if(nocache) MHD_add_response_header(response, MHD_HTTP_HEADER_EXPIRES,
+											"Thu, 01 Dec 1994 16:00:00 GMT");
+
+	MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL,
+							nocache ? "no-cache" : "public");
 
 	const int ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
 
 	MHD_destroy_response(response);
+
+	free(contentType);
 
 	return ret;
 }

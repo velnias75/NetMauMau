@@ -53,12 +53,20 @@ MimeMagic::MimeMagicPtr MimeMagic::getInstance() {
 	return m_instance;
 }
 
-bool MimeMagic::checkMime(const unsigned char *data, std::size_t dataLen,
-						  const char *mime) const {
-
+std::string MimeMagic::getMime(const unsigned char *data, std::size_t dataLen) const {
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
 	const char *m = m_magic ? magic_buffer(m_magic, data, dataLen) : 0L;
-	return m ? (std::strcmp(m, mime) == 0) : true;
+	return m ? std::string(m) : std::string();
+#else
+	return std::string();
+#endif
+}
+
+bool MimeMagic::checkMime(const unsigned char *data, std::size_t dataLen,
+						  const char *mime) const {
+#if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
+	const std::string &m(getMime(data, dataLen));
+	return m.empty() ? true : m == mime;
 #else
 	return true;
 #endif

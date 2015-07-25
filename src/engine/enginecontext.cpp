@@ -21,11 +21,11 @@
 #include "config.h"                     // for PACKAGE_NAME
 #endif
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 #include "enginecontext.h"
+
+#ifdef _WIN32
+#include "pathtools.h"
+#endif
 
 #include <sys/stat.h>                   // for stat
 #include <cstring>
@@ -81,8 +81,6 @@ std::vector<std::string> EngineContext::getLuaScriptPaths() {
 
 #ifndef _WIN32
 	luaDir = strdup(SYSCONFDIR);
-#else
-	luaDir = std::getenv("APPDATA");
 #endif
 
 #ifndef _WIN32
@@ -102,20 +100,11 @@ std::vector<std::string> EngineContext::getLuaScriptPaths() {
 		addPaths.push_back(std::string(SYSCONFDIR) +  "/" + PACKAGE + STDRULESLUA);
 #else
 
-	if(!(luaDir && !stat((std::string(luaDir) + "\\" + STDRULESLUA + ".lua").c_str(), &ls))) {
-		TCHAR buffer[MAX_PATH];
-
-		GetModuleFileName(NULL, buffer, MAX_PATH);
-
-		char drive[_MAX_DRIVE];
-		char dir[_MAX_DIR];
-		char fname[_MAX_FNAME];
-		char ext[_MAX_EXT];
-
-		_splitpath(buffer, drive, dir, fname, ext);
-		_makepath(buffer, drive, dir, STDRULESLUA, "lua");
-
-		return std::vector<std::string>(1, std::string(buffer));
+	if(!stat(NetMauMau::Common::getModulePath(NetMauMau::Common::USER, STDRULESLUA,
+			 "lua").c_str(), &ls)) {
+		return std::vector<std::string>
+			   (1, NetMauMau::Common::getModulePath(NetMauMau::Common::PKGDATA, STDRULESLUA,
+					   "lua"));
 #endif
 	}
 
@@ -135,7 +124,14 @@ std::vector<std::string> EngineContext::getLuaScriptPaths() {
 	return addPaths;
 
 #else
-	return std::vector<std::string>(1, std::string(luaDir) + "\\" + STDRULESLUA + ".lua");
+	else {
+		logInfo("To use your own custom rules you can place your rules to \""
+				<< NetMauMau::Common::getModulePath(NetMauMau::Common::USER, STDRULESLUA, "lua")
+				<< "\"");
+	}
+
+	return std::vector<std::string>(1, NetMauMau::Common::getModulePath(NetMauMau::Common::BINDIR,
+									STDRULESLUA, "lua"));
 #endif
 }
 

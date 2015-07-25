@@ -32,6 +32,10 @@
 #include "logger.h"                     // for logDebug, logWarning
 #include "iplayer.h"                    // for IPlayer
 
+#ifdef _WIN32
+#include "pathtools.h"
+#endif
+
 namespace {
 
 int gamesCountCallback(void *arg, int cols, char **col_text, char **) {
@@ -208,25 +212,7 @@ std::string SQLiteImpl::getDBFilename() {
 #ifndef _WIN32
 	return std::string();
 #else
-	char buffer[MAX_PATH];
-
-	strcpy(buffer, getenv("APPDATA"));
-
-	if(strlen(buffer)) {
-
-		char drive[_MAX_DRIVE];
-		char dir[_MAX_DIR];
-		char fname[_MAX_FNAME];
-		char ext[_MAX_EXT];
-
-		_splitpath(buffer, drive, dir, fname, ext);
-		_makepath(buffer, drive, dir, PACKAGE_NAME, "db");
-
-		return std::string(buffer);
-	} else {
-		return std::string();
-	}
-
+	return NetMauMau::Common::getModulePath(NetMauMau::Common::USER, PACKAGE_NAME, "db");
 #endif
 }
 #pragma GCC diagnostic pop

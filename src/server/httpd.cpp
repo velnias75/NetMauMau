@@ -25,15 +25,8 @@
 #define PKGDATADIR ""
 #endif
 
-#ifndef _WIN32
 #include <fstream>
-#else
-#include "windows.h"
-#endif
-
 #include <cstring>
-#include <cstdarg>
-#include <iterator>
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -58,6 +51,7 @@
 #include "helpers.h"
 #include "iplayer.h"
 #include "mimemagic.h"
+#include "pathtools.h"
 #include "defaultplayerimage.h"
 #include "abstractsocketimpl.h"
 
@@ -102,17 +96,20 @@ private:
 };
 
 struct listPlayers : std::unary_function<NetMauMau::Server::Httpd::PLAYERS::value_type, void> {
-	inline explicit listPlayers(std::ostringstream &o) : os(o) {}
+	inline explicit listPlayers(std::ostringstream &o) : os(o), pos(0u) {}
 	inline result_type operator()(const argument_type &p) const {
-		os << "<li><a href=\"/images/" << p->getName() << "\"><img height=\"30\" src=\"/images/"
-		   << p->getName() << "\">" << "</a>&nbsp;<b>" << p->getName() << "</b>&nbsp;<i>("
+		os << "<tr><td align=\"right\">&nbsp;" << ++pos
+		   << ".&nbsp;</td><td align=\"center\">&nbsp;<a href=\"/images/" << p->getName()
+		   << "\"><img height=\"30\" src=\"/images/" << p->getName() << "\">"
+		   << "</a><b>&nbsp;</td><td>&nbsp;" << p->getName() << "</b>&nbsp;<i>("
 		   << (p->getType() == NetMauMau::Player::IPlayer::HUMAN ? "human player" :
 			   (p->getType() == NetMauMau::Player::IPlayer::HARD ? "hard AI" : "easy AI"))
-		   << ")</i></li>";
+		   << ")</i>&nbsp;</td></tr>";
 	}
 
 private:
 	std::ostringstream &os;
+	mutable std::size_t pos;
 };
 #pragma GCC diagnostic pop
 
@@ -140,7 +137,6 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 	if(!std::strncmp("/images/", url, 8)) {
 
 		binary = true;
-		bin.clear();
 
 		const char *name = std::strrchr(url, '/');
 
@@ -150,14 +146,14 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 			&f(httpd->getImages().find(name + 1));
 
 			if(f != httpd->getImages().end()) {
-				bin.insert(bin.end(), f->second.begin(), f->second.end());
+				bin.assign(f->second.begin(), f->second.end());
 			} else {
-				bin.insert(bin.end(), NetMauMau::Common::DefaultPlayerImage.begin(),
+				bin.assign(NetMauMau::Common::DefaultPlayerImage.begin(),
 						   NetMauMau::Common::DefaultPlayerImage.end());
 			}
 
 		} else {
-			bin.insert(bin.end(), NetMauMau::Common::DefaultPlayerImage.begin(),
+			bin.assign(NetMauMau::Common::DefaultPlayerImage.begin(),
 					   NetMauMau::Common::DefaultPlayerImage.end());
 		}
 
@@ -168,22 +164,19 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 		contentType = !mime.empty() ? strdup((mime + "; charset=binary").c_str()) :
 					  strdup("image/png; charset=binary");
 
-#ifndef _WIN32
 	} else if(!std::strncmp("/favicon.ico", url, 8)) {
 
 		binary = true;
 		LKFIM = contentType = strdup("image/vnd.microsoft.icon; charset=binary");
 
-		bin.clear();
-
-		std::ifstream fav(PKGDATADIR "/netmaumau.ico", std::ios::binary);
+		std::ifstream fav(NetMauMau::Common::getModulePath(NetMauMau::Common::PKGDATA,
+						  "netmaumau", "ico").c_str(), std::ios::binary);
 
 		if(!fav.fail()) {
 
 			nocache = false;
 
-			bin.insert(bin.end(),
-					   std::istreambuf_iterator<std::string::traits_type::char_type>(fav),
+			bin.assign(std::istreambuf_iterator<std::string::traits_type::char_type>(fav),
 					   std::istreambuf_iterator<std::string::traits_type::char_type>());
 
 			const std::string &mime(NetMauMau::Common::MimeMagic::getInstance()->
@@ -193,10 +186,10 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 			if(!mime.empty()) LKFIM = contentType = strdup((mime + "; charset=binary").c_str());
 
 		} else {
-			logWarning("Failed to open favicon file: \"" << PKGDATADIR << "/netmaumau.ico\"");
+			logWarning("Failed to open favicon file: \"" <<
+					   NetMauMau::Common::getModulePath(NetMauMau::Common::PKGDATA, "netmaumau",
+							   "ico") << "\"");
 		}
-
-#endif
 
 	} else {
 
@@ -209,14 +202,12 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 												NetMauMau::DB::SQLite::SCORES());
 
 		os << "<html><head>"
-#ifndef _WIN32
 		   << "<link rel=\"shortcut icon\" type=\""
 		   << (!LKFIM.empty() ? LKFIM.c_str() : "image/vnd.microsoft.icon")
 		   << "\" href=\"/favicon.ico\" />"
 		   << "<link rel=\"icon\" type=\""
 		   << (!LKFIM.empty() ? LKFIM.c_str() : "image/vnd.microsoft.icon")
 		   << "\" href=\"/favicon.ico\" />"
-#endif
 		   << "<title>" << PACKAGE_STRING << " ("
 #ifndef _WIN32
 		   << BUILD_TARGET
@@ -249,11 +240,12 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 		if(havePlayers) {
 			os << "<a name=\"players\"><h2 align=\"center\">Players online <i>("
-			   << (httpd->isWaiting() ?  "waiting" : "running") << ")</i></h2><p><ol>";
+			   << (httpd->isWaiting() ?  "waiting" : "running") << ")</i></h2><p align=\"center\">"
+			   << "<table>";
 
 			std::for_each(httpd->getPlayers().begin(), httpd->getPlayers().end(), listPlayers(os));
 
-			os << "</ol></p></a>" << B2TOP << "<hr />";
+			os << "</table></p></a>" << B2TOP << "<hr />";
 		}
 
 		if(!sc.empty()) {
@@ -297,8 +289,6 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 	}
 
 	const std::size_t len = binary ? (data ? bin.size() : 0u) : os.str().length();
-
-	bin.clear();
 
 	MHD_Response *response = MHD_create_response_from_data(len, data, true, false);
 

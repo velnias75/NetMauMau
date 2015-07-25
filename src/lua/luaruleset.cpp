@@ -29,6 +29,12 @@
 #include "luastate.h"                   // for LuaState
 #include "smartptr.h"                   // for SmartPtr
 
+#ifndef _WIN32
+#define ELLIPSIS "…"
+#else
+#define ELLIPSIS "..."
+#endif
+
 namespace {
 
 const std::string WRONGTYPE("Wrong return type; expecting ");
@@ -280,7 +286,7 @@ throw(NetMauMau::Lua::Exception::LuaException) : IRuleSet() {
 	if(luafiles.empty()) throw NetMauMau::Lua::Exception::LuaException("no Lua rule files given");
 
 	for(std::vector<std::string>::const_iterator i(luafiles.begin()); i != luafiles.end(); ++i) {
-		logInfo("Loading Lua rules file \"" << *i << "\" …");
+		logInfo("Loading Lua rules file \"" << *i << ELLIPSIS);
 		l.load(*i, dirChangePossible, icc, arl);
 	}
 

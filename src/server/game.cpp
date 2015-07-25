@@ -30,6 +30,12 @@
 #include "luafatalexception.h"          // for LuaFatalException
 #include "protocol.h"
 
+#ifndef _WIN32
+#define ELLIPSIS "…"
+#else
+#define ELLIPSIS "..."
+#endif
+
 using namespace NetMauMau::Server;
 
 long Game::m_gameServed = 0L;
@@ -268,7 +274,7 @@ void Game::reset(bool playerLost) throw() {
 
 void Game::gameReady() {
 	m_db->gameEnded(m_gameIndex);
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Ready for new game …");
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Ready for new game " << ELLIPSIS);
 	m_engine.setGameId(m_gameIndex = m_db->newGame());
 }
 

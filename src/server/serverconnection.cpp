@@ -32,7 +32,6 @@
 #endif
 
 #include <sys/stat.h>                   // for stat
-#include <algorithm>                    // for find_if, min
 #include <cerrno>                       // for errno, ENOENT, ENOMEM
 #include <cstdio>                       // for NULL, fclose, feof, fopen, etc
 #include <cstring>                      // for strerror, strdup, strlen

@@ -11,7 +11,8 @@ deheader:
 		-I$(abs_top_srcdir)/src/include -I$(abs_top_srcdir)/src/lua \
 		-I$(abs_top_srcdir)/src/server -I$(abs_top_srcdir)/src/sqlite \
 		-I$(abs_top_srcdir)/src/test -I$(abs_top_builddir) -DNMM_EXE_NAME=\\\".\\\" \
-		-DNMM_EXE_PATH=\\\".\\\" -DSYSCONFDIR=\\\".\\\" -DLUADIR=\\\".\\\" -DCLIENTVERSION=15 \
-		-DBUILDDIR=\\\".\\\" -DPKGDATADIR=\\\".\\\" -I$(abs_top_builddir)/src/common \
-		-DHAVE_CONFIG_H=1 -I$(abs_top_builddir)/src/test -Werror -Wfatal-errors'"
+		-DNMM_EXE_EXT=\\\".\\\" -DNMM_EXE_PATH=\\\".\\\" -DSYSCONFDIR=\\\".\\\" \
+		-DLUADIR=\\\".\\\" -DCLIENTVERSION=15 -DBUILDDIR=\\\".\\\" -DPKGDATADIR=\\\".\\\" \
+		-I$(abs_top_builddir)/src/common -DHAVE_CONFIG_H=1 \
+		-I$(abs_top_builddir)/src/test -Werror -Wfatal-errors'"
 endif

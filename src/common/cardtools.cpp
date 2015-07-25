@@ -22,6 +22,7 @@
 #endif
 
 #include "cardtools.h"                  // IWYU pragma: keep
+#include "pathtools.h"
 
 #include <cmath>
 #include <cstdio>                       // for snprintf, NULL
@@ -36,12 +37,6 @@ const std::string ANSI_DFT _INIT_PRIO(101) = "\x1B[39m";
 #else
 const std::string ANSI_RED _INIT_PRIO(101);
 const std::string ANSI_DFT _INIT_PRIO(101);
-#endif
-
-#ifndef _WIN32
-const std::string SERVER_EXE(std::string(NMM_EXE_PATH).append(1, '/').append(NMM_EXE_NAME));
-#else
-const std::string SERVER_EXE(NMM_EXE_NAME);
 #endif
 
 #ifndef SUIT_DIAMONDS
@@ -397,7 +392,7 @@ std::string NetMauMau::Common::ansiSuit(const std::string &suit) {
 }
 
 const char *NetMauMau::Common::getServerExe() {
-	return SERVER_EXE.c_str();
+	return NetMauMau::Common::getModulePath(NetMauMau::Common::BINDIR).c_str();
 }
 
 bool operator<(const NetMauMau::Common::ICard &lhs, const NetMauMau::Common::ICard &rhs) {

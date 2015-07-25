@@ -19,8 +19,6 @@
 
 #include "mimemagic.h"
 
-#include <cstring>                      // for NULL, strcmp
-
 using namespace NetMauMau::Common;
 
 MimeMagic::MimeMagicPtr MimeMagic::m_instance;
@@ -30,9 +28,8 @@ MimeMagic::MimeMagic() : m_magic(magic_open(MAGIC_MIME_TYPE | MAGIC_NO_CHECK_ASC
 									 MAGIC_NO_CHECK_COMPRESS | MAGIC_NO_CHECK_ELF |
 									 MAGIC_NO_CHECK_FORTRAN | MAGIC_NO_CHECK_TAR |
 									 MAGIC_NO_CHECK_TOKENS | MAGIC_NO_CHECK_TROFF)) {
-	if(m_magic) {
-		if(magic_load(m_magic, NULL)) m_magic = NULL;
-	}
+
+	if(m_magic && magic_load(m_magic, NULL)) m_magic = NULL;
 }
 #else
 MimeMagic::MimeMagic() {}

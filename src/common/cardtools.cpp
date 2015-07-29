@@ -62,6 +62,7 @@ const std::string SUIT[] _INIT_PRIO(101) = { SUIT_DIAMONDS, SUIT_HEARTS, SUIT_SP
 #endif
 
 const std::string IC("ILLEGAL CARD");
+const std::string SE(NetMauMau::Common::getModulePath(NetMauMau::Common::BINDIR));
 
 class _ICARD : public NetMauMau::Common::ICard {
 	DISALLOW_COPY_AND_ASSIGN(_ICARD)
@@ -392,7 +393,7 @@ std::string NetMauMau::Common::ansiSuit(const std::string &suit) {
 }
 
 const char *NetMauMau::Common::getServerExe() {
-	return NetMauMau::Common::getModulePath(NetMauMau::Common::BINDIR).c_str();
+	return SE.c_str();
 }
 
 bool operator<(const NetMauMau::Common::ICard &lhs, const NetMauMau::Common::ICard &rhs) {

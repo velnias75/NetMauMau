@@ -35,7 +35,7 @@ public:
 
 	virtual ~SmartSingleton() {}
 
-	static const smartptr_type getInstance();
+	static const smartptr_type &getInstance();
 
 	static inline typename smartptr_type::element_pointer getInstancePtr() {
 		return getInstance();
@@ -52,9 +52,9 @@ template<class T>
 typename SmartSingleton<T>::smartptr_type SmartSingleton<T>::m_instance;
 
 template<class T>
-const typename SmartSingleton<T>::smartptr_type SmartSingleton<T>::getInstance() {
+const typename SmartSingleton<T>::smartptr_type &SmartSingleton<T>::getInstance() {
 
-	if(!m_instance) m_instance = smartptr_type(new T());
+	if(!m_instance) m_instance = smartptr_type(new typename smartptr_type::element_type());
 
 	return m_instance;
 }

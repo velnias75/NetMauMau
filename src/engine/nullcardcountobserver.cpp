@@ -21,21 +21,13 @@
 
 using namespace NetMauMau;
 
-NullCardCountObserver::NullCardCountObserverPtr NullCardCountObserver::m_instance;
-
-NullCardCountObserver::NullCardCountObserver() : ICardCountObserver() {}
+NullCardCountObserver::NullCardCountObserver() : ICardCountObserver(),
+	Common::SmartSingleton<NullCardCountObserver>() {}
 
 NullCardCountObserver::~NullCardCountObserver() {}
 
 bool NullCardCountObserver::isNull() const throw() {
 	return true;
-}
-
-NullCardCountObserver::NullCardCountObserverPtr NullCardCountObserver::getInstance() {
-
-	if(!m_instance) m_instance = NullCardCountObserverPtr(new NullCardCountObserver());
-
-	return m_instance;
 }
 
 void NullCardCountObserver::cardCountChanged(const Player::IPlayer *) const throw() {}

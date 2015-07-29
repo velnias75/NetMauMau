@@ -21,18 +21,17 @@
 
 using namespace NetMauMau::Common;
 
-MimeMagic::MimeMagicPtr MimeMagic::m_instance;
-
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
-MimeMagic::MimeMagic() : m_magic(magic_open(MAGIC_MIME_TYPE | MAGIC_NO_CHECK_ASCII |
-									 MAGIC_NO_CHECK_COMPRESS | MAGIC_NO_CHECK_ELF |
-									 MAGIC_NO_CHECK_FORTRAN | MAGIC_NO_CHECK_TAR |
-									 MAGIC_NO_CHECK_TOKENS | MAGIC_NO_CHECK_TROFF)) {
+MimeMagic::MimeMagic() : Common::SmartSingleton<MimeMagic>(),
+	m_magic(magic_open(MAGIC_MIME_TYPE | MAGIC_NO_CHECK_ASCII |
+					   MAGIC_NO_CHECK_COMPRESS | MAGIC_NO_CHECK_ELF |
+					   MAGIC_NO_CHECK_FORTRAN | MAGIC_NO_CHECK_TAR |
+					   MAGIC_NO_CHECK_TOKENS | MAGIC_NO_CHECK_TROFF)) {
 
 	if(m_magic && magic_load(m_magic, NULL)) m_magic = NULL;
 }
 #else
-MimeMagic::MimeMagic() {}
+MimeMagic::MimeMagic() : Common::SmartSingleton<MimeMagic>() {}
 #endif
 
 MimeMagic::~MimeMagic() {
@@ -41,13 +40,6 @@ MimeMagic::~MimeMagic() {
 	if(m_magic) magic_close(m_magic);
 
 #endif
-}
-
-MimeMagic::MimeMagicPtr MimeMagic::getInstance() {
-
-	if(!m_instance) m_instance = MimeMagicPtr(new MimeMagic());
-
-	return m_instance;
 }
 
 std::string MimeMagic::getMime(const unsigned char *data, std::size_t dataLen) const {

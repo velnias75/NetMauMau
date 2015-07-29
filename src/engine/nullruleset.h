@@ -21,20 +21,17 @@
 #define NETMAUMAU_NULLRULESET_H
 
 #include "iruleset.h"
-#include "smartptr.h"
+#include "smartsingleton.h"
 
 namespace NetMauMau {
 
 namespace RuleSet {
 
-class NullRuleSet : public IRuleSet {
+class NullRuleSet : public IRuleSet, public Common::SmartSingleton<NullRuleSet> {
 	DISALLOW_COPY_AND_ASSIGN(NullRuleSet)
+	friend class Common::SmartSingleton<NullRuleSet>;
 public:
-	typedef Common::SmartPtr<NullRuleSet> NullRuleSetPtr;
-
-	~NullRuleSet();
-
-	static NullRuleSetPtr getInstance();
+	virtual ~NullRuleSet();
 
 	virtual bool isNull() const throw() _CONST;
 
@@ -77,9 +74,6 @@ public:
 
 private:
 	NullRuleSet();
-
-private:
-	static NullRuleSetPtr m_instance;
 };
 
 }

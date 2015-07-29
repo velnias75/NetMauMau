@@ -24,7 +24,7 @@
 #include <ctime>                        // for time_t
 
 #include "iconnection.h"                // for IConnection, etc
-#include "smartptr.h"                   // for SmartPtr
+#include "smartsingleton.h"
 
 #define NOGAME_IDX static_cast<NetMauMau::DB::GAMEIDX>(-1LL)
 
@@ -40,11 +40,12 @@ typedef long long int GAMEIDX;
 
 class SQLiteImpl;
 
-class SQLite {
+class SQLite : public Common::SmartSingleton<SQLite> {
 	DISALLOW_COPY_AND_ASSIGN(SQLite)
+	friend class Common::SmartSingleton<SQLite>;
 public:
-	typedef Common::SmartPtr<SQLite> SQLitePtr;
-
+	typedef smartptr_type SQLitePtr;
+	
 	typedef struct {
 		GAMEIDX id;
 		std::string name;
@@ -55,8 +56,6 @@ public:
 	typedef enum { NORM, ABS } SCORE_TYPE;
 
 	~SQLite();
-
-	static SQLitePtr getInstance();
 
 	static std::string getDBFilename();
 
@@ -81,8 +80,6 @@ private:
 	explicit SQLite();
 
 private:
-	static SQLitePtr m_instance;
-
 	// cppcheck-suppress unsafeClassCanLeak
 	SQLiteImpl *const _pimpl;
 };

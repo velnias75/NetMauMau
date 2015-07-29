@@ -31,9 +31,9 @@ public:
 	typedef T element_type;
 	typedef element_type *element_pointer;
 
-	explicit SmartPtr(T *p);
+	explicit SmartPtr(element_pointer p);
 
-	explicit SmartPtr(const T *p = 0L);
+	explicit SmartPtr(const element_type *p = 0L);
 
 	SmartPtr(const SmartPtr &o) throw() : m_refCounter(0L), m_constRawPtr(o.m_constRawPtr) {
 		acquire(o.m_refCounter);
@@ -41,7 +41,7 @@ public:
 
 	~SmartPtr();
 
-	SmartPtr &operator=(const T *p) {
+	SmartPtr &operator=(const element_pointer p) {
 		release();
 		m_constRawPtr = p;
 		return *this;
@@ -66,17 +66,17 @@ public:
 		return *this;
 	}
 
-	const T &operator*() const throw() {
+	const element_type &operator*() const throw() {
 		return m_refCounter ? *m_refCounter->m_ptr : *m_constRawPtr;
 	}
 
-	const T *operator->() const throw() {
+	const element_type *operator->() const throw() {
 		return  m_refCounter ? m_refCounter->m_ptr : m_constRawPtr;
 	}
 
-	operator T *() const throw() {
+	operator element_type *() const throw() {
 		return m_refCounter ? m_refCounter->m_ptr : (m_constRawPtr ?
-				const_cast<T *>(m_constRawPtr) : 0L);
+				const_cast<element_pointer >(m_constRawPtr) : 0L);
 	}
 
 	bool unique() const throw() {
@@ -95,19 +95,20 @@ private:
 
 private:
 	struct refCounter {
-		refCounter(T *p = 0L, unsigned int c = 1U) : m_ptr(p), m_count(c) {}
-		T *const m_ptr;
+		refCounter(element_pointer p = 0L, unsigned int c = 1U) : m_ptr(p), m_count(c) {}
+		element_pointer const m_ptr;
 		unsigned int m_count;
 	} *m_refCounter;
 
-	const T *m_constRawPtr;
+	const element_type *m_constRawPtr;
 };
 
 template<class T>
-SmartPtr<T>::SmartPtr(T *p) : m_refCounter(p ? new refCounter(p) : 0L), m_constRawPtr(0L) {}
+SmartPtr<T>::SmartPtr(element_type *p) : m_refCounter(p ? new refCounter(p) : 0L),
+	m_constRawPtr(0L) {}
 
 template<class T>
-SmartPtr<T>::SmartPtr(const T *p) : m_refCounter(0L), m_constRawPtr(p) {}
+SmartPtr<T>::SmartPtr(const element_type *p) : m_refCounter(0L), m_constRawPtr(p) {}
 
 template<class T>
 SmartPtr<T>::~SmartPtr() {

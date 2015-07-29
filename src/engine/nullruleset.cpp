@@ -21,18 +21,9 @@
 
 using namespace NetMauMau::RuleSet;
 
-NullRuleSet::NullRuleSetPtr NullRuleSet::m_instance;
-
-NullRuleSet::NullRuleSet() : IRuleSet() {}
+NullRuleSet::NullRuleSet() : IRuleSet(), Common::SmartSingleton<NullRuleSet>() {}
 
 NullRuleSet::~NullRuleSet() {}
-
-NullRuleSet::NullRuleSetPtr NullRuleSet::getInstance() {
-
-	if(!m_instance) m_instance = NullRuleSetPtr(new NullRuleSet());
-
-	return m_instance;
-}
 
 bool NullRuleSet::isNull() const throw() {
 	return true;

@@ -313,10 +313,10 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 using namespace NetMauMau::Server;
 
-HttpdPtr Httpd::m_instance;
-
-Httpd::Httpd() : m_daemon(0L), m_gameSource(0L), m_engineSource(0L), m_connectionSource(0L),
-	m_players(), m_images(), m_caps(), m_gameRunning(false), m_waiting(true), m_url() {
+Httpd::Httpd() : Common::IObserver<Game>(), Common::IObserver<Engine>(),
+	Common::IObserver<Connection>(), Common::SmartSingleton<Httpd>(), m_daemon(0L),
+	m_gameSource(0L), m_engineSource(0L), m_connectionSource(0L), m_players(), m_images(), m_caps(),
+	m_gameRunning(false), m_waiting(true), m_url() {
 
 	struct addrinfo *ai = NULL;
 
@@ -369,13 +369,6 @@ Httpd::Httpd() : m_daemon(0L), m_gameSource(0L), m_engineSource(0L), m_connectio
 
 Httpd::~Httpd() {
 	if(m_daemon) MHD_stop_daemon(m_daemon);
-}
-
-Httpd *Httpd::getInstance() {
-
-	if(!m_instance) m_instance = HttpdPtr(new Httpd());
-
-	return m_instance;
 }
 
 void Httpd::setSource(const NetMauMau::Common::IObserver<Connection>::source_type *s) {

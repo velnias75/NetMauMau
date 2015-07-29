@@ -21,32 +21,26 @@
 #define NETMAUMAU_NULLACEROUNDLISTENER_H
 
 #include "iaceroundlistener.h"
-
-#include <smartptr.h>
+#include "smartsingleton.h"
 
 namespace NetMauMau {
 
-class NullAceRoundListener : public IAceRoundListener {
+class NullAceRoundListener : public IAceRoundListener,
+	public Common::SmartSingleton<NullAceRoundListener> {
 	DISALLOW_COPY_AND_ASSIGN(NullAceRoundListener)
+	friend class Common::SmartSingleton<NullAceRoundListener>;
 public:
-	typedef Common::SmartPtr<NullAceRoundListener> NullAceRoundListenerPtr;
-
 	virtual ~NullAceRoundListener();
 
 	virtual bool isNull() const throw() _CONST;
-
-	static NullAceRoundListenerPtr getInstance();
 
 	virtual Common::ICard::RANK getAceRoundRank() const _CONST;
 
 	virtual void aceRoundStarted(const Player::IPlayer *player) const _CONST;
 	virtual void aceRoundEnded(const Player::IPlayer *player) const _CONST;
 
-protected:
-	NullAceRoundListener();
-
 private:
-	static NullAceRoundListenerPtr m_instance;
+	NullAceRoundListener();
 };
 
 }

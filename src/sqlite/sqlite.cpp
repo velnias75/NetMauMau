@@ -21,19 +21,10 @@
 
 using namespace NetMauMau::DB;
 
-SQLite::SQLitePtr SQLite::m_instance;
-
-SQLite::SQLite() : _pimpl(new SQLiteImpl()) {}
+SQLite::SQLite() : Common::SmartSingleton<SQLite>(), _pimpl(new SQLiteImpl()) {}
 
 SQLite::~SQLite() {
 	delete _pimpl;
-}
-
-SQLite::SQLitePtr SQLite::getInstance() {
-
-	if(!m_instance) m_instance = SQLitePtr(new SQLite());
-
-	return m_instance;
 }
 
 std::string SQLite::getDBFilename() {

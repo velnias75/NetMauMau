@@ -114,7 +114,7 @@ void updatePlayerCap(Server::Connection::CAPABILITIES &caps, std::size_t count,
 
 	if(!url.empty()) caps["WEBSERVER_URL"] = url;
 
-	NetMauMau::Server::Httpd::getInstance()->setCapabilities(caps);
+	NetMauMau::Server::Httpd::getInstancePtr()->setCapabilities(caps);
 
 #endif
 

@@ -21,21 +21,13 @@
 
 using namespace NetMauMau;
 
-NullAceRoundListener::NullAceRoundListenerPtr NullAceRoundListener::m_instance;
-
-NullAceRoundListener::NullAceRoundListener() : IAceRoundListener() {}
+NullAceRoundListener::NullAceRoundListener() : IAceRoundListener(),
+	Common::SmartSingleton<NullAceRoundListener>() {}
 
 NullAceRoundListener::~NullAceRoundListener() {}
 
 bool NullAceRoundListener::isNull() const throw() {
 	return true;
-}
-
-NullAceRoundListener::NullAceRoundListenerPtr NullAceRoundListener::getInstance() {
-
-	if(!m_instance) m_instance = NullAceRoundListenerPtr(new NullAceRoundListener());
-
-	return m_instance;
 }
 
 Common::ICard::RANK NullAceRoundListener::getAceRoundRank() const {

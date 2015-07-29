@@ -39,8 +39,7 @@
 #define _MM_CONST _CONST
 #endif
 
-#include "linkercontrol.h"
-#include "smartptr.h"
+#include "smartsingleton.h"
 
 #ifdef HAVE_LIBMICROHTTPD
 #define _EXPORT_MIMEMAGIC _EXPORT
@@ -52,14 +51,11 @@ namespace NetMauMau {
 
 namespace Common {
 
-class _EXPORT_MIMEMAGIC MimeMagic {
+class _EXPORT_MIMEMAGIC MimeMagic : public Common::SmartSingleton<MimeMagic> {
 	DISALLOW_COPY_AND_ASSIGN(MimeMagic)
+	friend class Common::SmartSingleton<MimeMagic>;
 public:
-	typedef SmartPtr<MimeMagic> MimeMagicPtr;
-
 	~MimeMagic() _MM_CONST;
-
-	static MimeMagicPtr getInstance();
 
 	// cppcheck-suppress functionStatic
 	std::string getMime(const unsigned char *data, std::size_t dataLen) const _MM_CONST;
@@ -72,8 +68,6 @@ private:
 	explicit MimeMagic() _MM_CONST;
 
 private:
-	static MimeMagicPtr m_instance;
-
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
 	magic_t m_magic;
 #endif

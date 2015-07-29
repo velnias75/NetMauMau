@@ -20,6 +20,8 @@
 #ifndef NETMAUMAU_SERVER_HTTPD_H
 #define NETMAUMAU_SERVER_HTTPD_H
 
+#include "smartsingleton.h"
+
 #include "game.h"
 #include "serverconnection.h"
 
@@ -31,19 +33,16 @@ namespace Server {
 
 class Httpd;
 
-typedef Common::SmartPtr<Httpd> HttpdPtr;
-
 class Httpd : public Common::IObserver<Game>, public Common::IObserver<Engine>,
-	public Common::IObserver<Connection> {
+	public Common::IObserver<Connection>, public Common::SmartSingleton<Httpd> {
 	DISALLOW_COPY_AND_ASSIGN(Httpd)
+	friend class Common::SmartSingleton<Httpd>;
 public:
 	typedef NetMauMau::Common::IObserver<NetMauMau::Engine>::what_type PLAYERS;
 	typedef std::map < NetMauMau::Common::IObserver<Connection>::what_type::first_type,
 			NetMauMau::Common::IObserver<Connection>::what_type::second_type > IMAGES;
 
 	virtual ~Httpd();
-
-	static Httpd *getInstance();
 
 	virtual void setSource(const Common::IObserver<Connection>::source_type *s);
 	virtual void setSource(const Common::IObserver<Engine>::source_type *s);
@@ -81,8 +80,6 @@ private:
 	Httpd();
 
 private:
-	static HttpdPtr m_instance;
-
 	MHD_Daemon *m_daemon;
 	const Common::IObserver<Game>::source_type *m_gameSource;
 	const Common::IObserver<Engine>::source_type *m_engineSource;

@@ -17,31 +17,52 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_NULLCARDCOUNTOBSERVER_H
-#define NETMAUMAU_NULLCARDCOUNTOBSERVER_H
+#ifndef NETMAUMAU_COMMON_SMARTSINGLETON_H
+#define NETMAUMAU_COMMON_SMARTSINGLETON_H
 
-#include "icardcountobserver.h"
-#include "smartsingleton.h"
+#include "linkercontrol.h"
+#include "smartptr.h"
 
 namespace NetMauMau {
 
-class NullCardCountObserver : public ICardCountObserver,
-	public Common::SmartSingleton<NullCardCountObserver> {
-	DISALLOW_COPY_AND_ASSIGN(NullCardCountObserver)
-	friend class Common::SmartSingleton<NullCardCountObserver>;
+namespace Common {
+
+template<class T>
+class SmartSingleton {
+	DISALLOW_COPY_AND_ASSIGN(SmartSingleton)
 public:
-	virtual ~NullCardCountObserver();
+	typedef Common::SmartPtr<T> smartptr_type;
 
-	virtual bool isNull() const throw() _CONST;
+	virtual ~SmartSingleton() {}
 
-	virtual void cardCountChanged(const Player::IPlayer *player) const throw() _CONST;
+	static const smartptr_type getInstance();
+
+	static inline typename smartptr_type::element_pointer getInstancePtr() {
+		return getInstance();
+	}
+
+protected:
+	SmartSingleton() {}
 
 private:
-	NullCardCountObserver();
+	static smartptr_type m_instance;
 };
+
+template<class T>
+typename SmartSingleton<T>::smartptr_type SmartSingleton<T>::m_instance;
+
+template<class T>
+const typename SmartSingleton<T>::smartptr_type SmartSingleton<T>::getInstance() {
+
+	if(!m_instance) m_instance = smartptr_type(new T());
+
+	return m_instance;
+}
 
 }
 
-#endif /* NETMAUMAU_NULLCARDCOUNTOBSERVER_H */
+}
+
+#endif /* NETMAUMAU_COMMON_SMARTSINGLETON_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

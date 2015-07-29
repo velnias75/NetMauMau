@@ -27,7 +27,6 @@
 #include "iplayer.h"                    // for IPlayer
 #include "luafatalexception.h"          // for LuaFatalException
 #include "luastate.h"                   // for LuaState
-#include "smartptr.h"                   // for SmartPtr
 
 #ifndef _WIN32
 #define ELLIPSIS "…"
@@ -307,7 +306,7 @@ throw(NetMauMau::Lua::Exception::LuaException) : IRuleSet() {
 
 LuaRuleSet::~LuaRuleSet() {}
 
-bool LuaRuleSet::isNull() const {
+bool LuaRuleSet::isNull() const throw() {
 	return false;
 }
 

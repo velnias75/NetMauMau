@@ -75,7 +75,7 @@ AbstractConnection::~AbstractConnection() {
 	delete _pimpl;
 }
 
-bool AbstractConnection::isNull() const {
+bool AbstractConnection::isNull() const throw() {
 	return false;
 }
 

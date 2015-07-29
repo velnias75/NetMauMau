@@ -22,6 +22,7 @@
 
 #include "nextturn.h"
 
+#include "nullcardcountobserver.h"
 #include "luafatalexception.h"
 #include "abstractsocket.h"
 #include "ieventhandler.h"
@@ -418,7 +419,7 @@ void NextTurn::checkPlayersAlive() const throw(Common::Exception::SocketExceptio
 		Engine::PLAYERS::const_iterator::reference r(*i);
 
 		if(!r->isAlive()) {
-			r->setCardCountObserver(0L);
+			r->setCardCountObserver(NullCardCountObserver::getInstance());
 			throw Common::Exception::SocketException((*i)->getName() + " is dead");
 		}
 	}

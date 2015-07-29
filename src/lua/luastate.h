@@ -48,7 +48,7 @@ public:
 
 	void load(const std::string &luafile, bool dirChangePossible,
 			  std::size_t initialCardCount, const NetMauMau::IAceRoundListener *arl) const
-	throw(Exception::LuaException);
+	throw(Exception::LuaException) _NONNULL_ALL;
 	void call(const char *fname, int nargs, int nresults = 1) const throw(Exception::LuaException);
 
 	void pushCard(const Common::ICard *card) const throw();

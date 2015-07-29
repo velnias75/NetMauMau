@@ -23,7 +23,7 @@
 #include <stdbool.h>
 
 #include "cardtools.h"                  // for cardEqual, isRank
-#include "icardcountobserver.h"         // for ICardCountObserver
+#include "nullcardcountobserver.h"
 #include "iruleset.h"                   // for IRuleSet
 #include "random_gen.h"                 // for genRandom
 
@@ -84,7 +84,8 @@ AbstractPlayer::AbstractPlayer(const std::string &name, const NetMauMau::IPlayed
 	  m_lastPlayedRank(NetMauMau::Common::ICard::RANK_ILLEGAL), m_name(name), m_cards(),
 	  m_cardsTaken(false), m_ruleset(0L), m_playerHasFewCards(false), m_nineIsSuspend(false),
 	  m_neighbourCount(), m_dirChgEnabled(false), m_playerCount(0), m_engineCtx(0L),
-	  m_cardCountObserver(0L), m_poc(poc), m_avoidSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL),
+	  m_cardCountObserver(NetMauMau::NullCardCountObserver::getInstance()), m_poc(poc),
+	  m_avoidSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL),
 	  m_avoidRank(NetMauMau::Common::ICard::RANK_ILLEGAL), m_neighbourRankSuit() {
 	m_cards.reserve(32);
 }
@@ -184,7 +185,7 @@ void AbstractPlayer::receiveCardSet(const CARDS &cards) {
 }
 
 void AbstractPlayer::notifyCardCountChange() const throw() {
-	if(m_cardCountObserver) m_cardCountObserver->cardCountChanged(this);
+	m_cardCountObserver->cardCountChanged(this);
 }
 
 bool AbstractPlayer::cardAccepted(const NetMauMau::Common::ICard *playedCard) {

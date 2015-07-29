@@ -68,7 +68,7 @@ public:
 
 	virtual ~AbstractConnection();
 
-	virtual bool isNull() const _CONST;
+	virtual bool isNull() const throw() _CONST;
 
 	virtual NAMESOCKFD getPlayerInfo(SOCKET sockfd) const;
 	virtual PLAYERNAMES::value_type getPlayerName(SOCKET sockfd) const;

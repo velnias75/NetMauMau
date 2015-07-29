@@ -63,9 +63,9 @@ public:
 	virtual bool isAlive() const = 0;
 	virtual TYPE getType() const = 0;
 
-	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset) = 0;
+	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset) _NONNULL_ALL = 0;
 	virtual void setEngineContext(const EngineContext *engineCtx) = 0;
-	virtual void setCardCountObserver(const ICardCountObserver *cco) = 0;
+	virtual void setCardCountObserver(const ICardCountObserver *cco) _NONNULL_ALL = 0;
 
 	virtual void receiveCard(const Common::ICardPtr &card) = 0;
 	virtual void receiveCardSet(const CARDS &cards) = 0;

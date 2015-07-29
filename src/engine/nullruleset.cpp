@@ -34,7 +34,7 @@ NullRuleSet::NullRuleSetPtr NullRuleSet::getInstance() {
 	return m_instance;
 }
 
-bool NullRuleSet::isNull() const {
+bool NullRuleSet::isNull() const throw() {
 	return true;
 }
 

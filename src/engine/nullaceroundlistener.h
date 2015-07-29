@@ -17,39 +17,40 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "nullconnection.h"
+#ifndef NETMAUMAU_NULLACEROUNDLISTENER_H
+#define NETMAUMAU_NULLACEROUNDLISTENER_H
 
-using namespace NetMauMau;
+#include "iaceroundlistener.h"
 
-NullConnection::NullConnection() : Common::IConnection() {}
+#include <smartptr.h>
 
-NullConnection::~NullConnection() {}
+namespace NetMauMau {
 
-NullConnection &NullConnection::getInstance() {
-	static NullConnection instance;
-	return instance;
+class NullAceRoundListener : public IAceRoundListener {
+	DISALLOW_COPY_AND_ASSIGN(NullAceRoundListener)
+public:
+	typedef Common::SmartPtr<NullAceRoundListener> NullAceRoundListenerPtr;
+
+	virtual ~NullAceRoundListener();
+
+	virtual bool isNull() const throw() _CONST;
+
+	static NullAceRoundListenerPtr getInstance();
+
+	virtual Common::ICard::RANK getAceRoundRank() const _CONST;
+
+	virtual void aceRoundStarted(const Player::IPlayer *player) const _CONST;
+	virtual void aceRoundEnded(const Player::IPlayer *player) const _CONST;
+
+protected:
+	NullAceRoundListener();
+
+private:
+	static NullAceRoundListenerPtr m_instance;
+};
+
 }
 
-bool NullConnection::isNull() const throw() {
-	return true;
-}
-
-void NullConnection::addAIPlayers(const PLAYERNAMES &) {}
-
-Common::IConnection::NAMESOCKFD NullConnection::getPlayerInfo(SOCKET) const {
-	return Common::IConnection::NAMESOCKFD();
-}
-
-std::string NullConnection::getPlayerName(SOCKET) const {
-	return std::string();
-}
-
-bool NullConnection::hasHumanPlayers() const {
-	return false;
-}
-
-void NullConnection::removePlayer(SOCKET) {}
-
-void NullConnection::wait(long) throw(Common::Exception::SocketException) {}
+#endif /* NETMAUMAU_NULLACEROUNDLISTENER_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

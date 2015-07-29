@@ -17,39 +17,27 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "nullconnection.h"
+#include "nullcardcountobserver.h"
 
 using namespace NetMauMau;
 
-NullConnection::NullConnection() : Common::IConnection() {}
+NullCardCountObserver::NullCardCountObserverPtr NullCardCountObserver::m_instance;
 
-NullConnection::~NullConnection() {}
+NullCardCountObserver::NullCardCountObserver() : ICardCountObserver() {}
 
-NullConnection &NullConnection::getInstance() {
-	static NullConnection instance;
-	return instance;
-}
+NullCardCountObserver::~NullCardCountObserver() {}
 
-bool NullConnection::isNull() const throw() {
+bool NullCardCountObserver::isNull() const throw() {
 	return true;
 }
 
-void NullConnection::addAIPlayers(const PLAYERNAMES &) {}
+NullCardCountObserver::NullCardCountObserverPtr NullCardCountObserver::getInstance() {
 
-Common::IConnection::NAMESOCKFD NullConnection::getPlayerInfo(SOCKET) const {
-	return Common::IConnection::NAMESOCKFD();
+	if(!m_instance) m_instance = NullCardCountObserverPtr(new NullCardCountObserver());
+
+	return m_instance;
 }
 
-std::string NullConnection::getPlayerName(SOCKET) const {
-	return std::string();
-}
-
-bool NullConnection::hasHumanPlayers() const {
-	return false;
-}
-
-void NullConnection::removePlayer(SOCKET) {}
-
-void NullConnection::wait(long) throw(Common::Exception::SocketException) {}
+void NullCardCountObserver::cardCountChanged(const Player::IPlayer *) const throw() {}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

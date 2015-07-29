@@ -39,8 +39,8 @@ public:
 	virtual bool isAIPlayer() const = 0;
 	virtual bool isAlive() const = 0;
 
-	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset);
-	virtual void setCardCountObserver(const ICardCountObserver *cco);
+	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset) _NONNULL_ALL;
+	virtual void setCardCountObserver(const ICardCountObserver *cco) _NONNULL_ALL;
 	virtual void setEngineContext(const EngineContext *engineCtx);
 
 	virtual void receiveCard(const Common::ICardPtr &card) = 0;

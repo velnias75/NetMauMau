@@ -25,10 +25,9 @@
 
 #include "iruleset.h"                   // for IRuleSet
 #include "luaexception.h"               // for LuaException
+#include "nullaceroundlistener.h"
 
 namespace NetMauMau {
-
-class IAceRoundListener;
 
 namespace RuleSet {
 
@@ -36,11 +35,12 @@ class LuaRuleSet : public IRuleSet {
 	DISALLOW_COPY_AND_ASSIGN(LuaRuleSet)
 public:
 	explicit LuaRuleSet(const std::vector<std::string> &luafiles, bool dirChangePossible,
-						std::size_t initialCardCount = 5,
-						const IAceRoundListener *l = 0L) throw(Lua::Exception::LuaException);
+						std::size_t initialCardCount = 5, const IAceRoundListener *l =
+							NullAceRoundListener::getInstance())
+	throw(Lua::Exception::LuaException) _NONNULL_ALL;
 	virtual ~LuaRuleSet() _CONST;
 
-	virtual bool isNull() const _CONST;
+	virtual bool isNull() const throw() _CONST;
 
 	virtual void checkInitial(const Player::IPlayer *player,
 							  const Common::ICardPtr &playedCard) throw(Lua::Exception::LuaException);

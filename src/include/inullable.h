@@ -31,7 +31,7 @@ class INullable {
 public:
 	virtual ~INullable() {}
 
-	virtual bool isNull() const = 0;
+	virtual bool isNull() const throw() = 0;
 
 protected:
 	INullable() {}

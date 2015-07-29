@@ -57,6 +57,8 @@ public:
 
 	virtual ~Engine();
 
+	virtual bool isNull() const throw() _CONST;
+
 	inline const EngineContext &getContext() const {
 		return m_ctx;
 	}

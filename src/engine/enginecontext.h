@@ -25,10 +25,9 @@
 
 #include "cardtools.h"
 #include "luaexception.h"
+#include "nullaceroundlistener.h"
 
 namespace NetMauMau {
-
-class IAceRoundListener;
 
 namespace Event {
 class IEventHandler;
@@ -75,8 +74,9 @@ public:
 		return m_aceRoundRank;
 	}
 
-	RuleSet::IRuleSet *getRuleSet(const NetMauMau::IAceRoundListener *arl = 0L) const
-	throw(Lua::Exception::LuaException);
+	RuleSet::IRuleSet *getRuleSet(const NetMauMau::IAceRoundListener *arl =
+									  NullAceRoundListener::getInstance()) const
+	throw(Lua::Exception::LuaException) _NONNULL_ALL;
 
 	inline std::size_t getTalonFactor() const {
 		return m_talonFactor;

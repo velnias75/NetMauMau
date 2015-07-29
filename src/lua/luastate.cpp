@@ -28,10 +28,9 @@ extern "C" {
 
 #include "logger.h"                     // for logInfo
 #include "cardtools.h"                  // for getSuitSymbols, etc
-#include "iaceroundlistener.h"          // for IAceRoundListener
+#include "nullaceroundlistener.h"
 #include "iplayer.h"                    // for IPlayer
 #include "random_gen.h"                 // for genRandom
-#include "smartptr.h"                   // for SmartPtr
 #include "protocol.h"                   // for CARDCOUNT
 
 namespace {
@@ -40,7 +39,8 @@ const char *INTERFACE = "INTERFACE";
 
 using namespace NetMauMau::Lua;
 
-const NetMauMau::IAceRoundListener *NetMauMau::Lua::LuaState::m_arl = 0L;
+const NetMauMau::IAceRoundListener *NetMauMau::Lua::LuaState::m_arl =
+	NullAceRoundListener::getInstance();
 
 LuaState::LuaState() throw(Exception::LuaException) : m_state(luaL_newstate()) {
 
@@ -129,7 +129,7 @@ void LuaState::load(const std::string &luafile, bool dirChangePossible,
 	lua_setglobal(m_state, "nmm_initialCardCount");
 
 	lua_newtable(m_state);
-	lua_pushboolean(m_state, m_arl != 0L);
+	lua_pushboolean(m_state, !m_arl->isNull());
 	lua_setfield(m_state, -2, "ENABLED");
 
 	if(arl) {
@@ -280,8 +280,8 @@ int LuaState::playerAceRoundStarted(lua_State *l) {
 		return lua_error(l);
 	}
 
-	if(m_arl) m_arl->aceRoundStarted(*reinterpret_cast<const NetMauMau::Player::IPlayer **>
-										 (lua_touserdata(l, 1)));
+	m_arl->aceRoundStarted(*reinterpret_cast<const NetMauMau::Player::IPlayer **>
+						   (lua_touserdata(l, 1)));
 
 	return 0;
 }
@@ -293,8 +293,8 @@ int LuaState::playerAceRoundEnded(lua_State *l) {
 		return lua_error(l);
 	}
 
-	if(m_arl) m_arl->aceRoundEnded(*reinterpret_cast<const NetMauMau::Player::IPlayer **>
-									   (lua_touserdata(l, 1)));
+	m_arl->aceRoundEnded(*reinterpret_cast<const NetMauMau::Player::IPlayer **>
+						 (lua_touserdata(l, 1)));
 
 	return 0;
 }

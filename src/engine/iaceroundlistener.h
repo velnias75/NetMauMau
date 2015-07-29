@@ -20,6 +20,7 @@
 #ifndef NETMAUMAU_ENGINE_IACEROUNDLISTENER_H
 #define NETMAUMAU_ENGINE_IACEROUNDLISTENER_H
 
+#include "inullable.h"
 #include "icard.h"
 
 namespace NetMauMau {
@@ -28,7 +29,7 @@ namespace Player {
 class IPlayer;
 }
 
-class IAceRoundListener {
+class IAceRoundListener : public Common::INullable {
 	DISALLOW_COPY_AND_ASSIGN(IAceRoundListener)
 public:
 	virtual ~IAceRoundListener() {}
@@ -38,7 +39,7 @@ public:
 	virtual void aceRoundEnded(const Player::IPlayer *player) const = 0;
 
 protected:
-	explicit IAceRoundListener() {}
+	explicit IAceRoundListener() : INullable() {}
 };
 
 }

@@ -107,6 +107,10 @@ Engine::~Engine() {
 	delete m_nextTurn;
 }
 
+bool Engine::isNull() const throw() {
+	return false;
+}
+
 const Event::IEventHandler &Engine::getEventHandler() const {
 	return m_ctx.getEventHandler();
 }

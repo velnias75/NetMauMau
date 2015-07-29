@@ -66,6 +66,7 @@ Connection::~Connection() {
 }
 
 void Connection::init() {
+
 	if(_pimpl->m_pName.length() > MAX_PNAME - 1) {
 		_pimpl->m_pName.substr(0, MAX_PNAME - 1).swap(_pimpl->m_pName);
 	}

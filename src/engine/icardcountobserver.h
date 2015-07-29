@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_ICARDCOUNTOBSERVER_H
 #define NETMAUMAU_ICARDCOUNTOBSERVER_H
 
-#include "linkercontrol.h"
+#include "inullable.h"
 
 namespace NetMauMau {
 
@@ -28,7 +28,7 @@ namespace Player {
 class IPlayer;
 }
 
-class ICardCountObserver {
+class ICardCountObserver : public Common::INullable {
 	DISALLOW_COPY_AND_ASSIGN(ICardCountObserver)
 public:
 	virtual ~ICardCountObserver() {}
@@ -36,7 +36,7 @@ public:
 	virtual void cardCountChanged(const Player::IPlayer *player) const throw() = 0;
 
 protected:
-	explicit ICardCountObserver() {}
+	explicit ICardCountObserver() : INullable() {}
 };
 
 }

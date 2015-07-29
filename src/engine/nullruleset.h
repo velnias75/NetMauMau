@@ -36,7 +36,7 @@ public:
 
 	static NullRuleSetPtr getInstance();
 
-	virtual bool isNull() const _CONST;
+	virtual bool isNull() const throw() _CONST;
 
 	virtual void checkInitial(const Player::IPlayer *player,
 							  const Common::ICardPtr &playedCard) _CONST;

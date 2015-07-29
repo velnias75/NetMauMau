@@ -17,39 +17,33 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "nullconnection.h"
+#include  "nullaceroundlistener.h"
 
 using namespace NetMauMau;
 
-NullConnection::NullConnection() : Common::IConnection() {}
+NullAceRoundListener::NullAceRoundListenerPtr NullAceRoundListener::m_instance;
 
-NullConnection::~NullConnection() {}
+NullAceRoundListener::NullAceRoundListener() : IAceRoundListener() {}
 
-NullConnection &NullConnection::getInstance() {
-	static NullConnection instance;
-	return instance;
-}
+NullAceRoundListener::~NullAceRoundListener() {}
 
-bool NullConnection::isNull() const throw() {
+bool NullAceRoundListener::isNull() const throw() {
 	return true;
 }
 
-void NullConnection::addAIPlayers(const PLAYERNAMES &) {}
+NullAceRoundListener::NullAceRoundListenerPtr NullAceRoundListener::getInstance() {
 
-Common::IConnection::NAMESOCKFD NullConnection::getPlayerInfo(SOCKET) const {
-	return Common::IConnection::NAMESOCKFD();
+	if(!m_instance) m_instance = NullAceRoundListenerPtr(new NullAceRoundListener());
+
+	return m_instance;
 }
 
-std::string NullConnection::getPlayerName(SOCKET) const {
-	return std::string();
+Common::ICard::RANK NullAceRoundListener::getAceRoundRank() const {
+	return Common::ICard::RANK_ILLEGAL;
 }
 
-bool NullConnection::hasHumanPlayers() const {
-	return false;
-}
+void NullAceRoundListener::aceRoundStarted(const Player::IPlayer *) const {}
 
-void NullConnection::removePlayer(SOCKET) {}
-
-void NullConnection::wait(long) throw(Common::Exception::SocketException) {}
+void NullAceRoundListener::aceRoundEnded(const Player::IPlayer *) const {}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

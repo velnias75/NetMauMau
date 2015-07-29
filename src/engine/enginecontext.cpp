@@ -64,7 +64,8 @@ EngineContext::~EngineContext() {
 RuleSet::IRuleSet *EngineContext::getRuleSet(const NetMauMau::IAceRoundListener *arl) const
 throw(Lua::Exception::LuaException) {
 	return m_ruleset ? m_ruleset : (m_ruleset = new RuleSet::LuaRuleSet(getLuaScriptPaths(),
-			m_dirChange, m_initialCardCount, m_aceRound ? arl : 0L));
+			m_dirChange, m_initialCardCount, m_aceRound ? arl :
+			NullAceRoundListener::getInstance()));
 }
 
 std::vector<std::string> EngineContext::getLuaScriptPaths() {

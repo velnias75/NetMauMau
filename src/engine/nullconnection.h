@@ -31,7 +31,7 @@ public:
 
 	static NullConnection &getInstance();
 
-	virtual bool isNull() const _CONST;
+	virtual bool isNull() const throw() _CONST;
 
 	virtual NAMESOCKFD getPlayerInfo(SOCKET sockfd) const;
 	virtual std::string getPlayerName(SOCKET sockfd) const;

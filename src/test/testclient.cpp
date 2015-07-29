@@ -102,7 +102,7 @@ void TestClient::stats(const STATS &s) const {
 
 #ifdef HAVE_UNISTD_H
 
-	if(m_autoPlay && m_delay > 0) sleep(m_delay);
+	if(m_autoPlay && m_delay > 0) sleep(static_cast<const unsigned int>(m_delay));
 
 #endif
 }

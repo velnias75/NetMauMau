@@ -113,6 +113,33 @@ private:
 };
 #pragma GCC diagnostic pop
 
+#if MHD_VERSION <= 0x00000200
+char *unquoteUrl(const char *url) {
+
+	char *myUrl = strdup(url);
+	char *p = myUrl;
+
+	while(*p) {
+
+		if(*p == '%' && *(p + 1) && *(p + 2)) {
+
+			char hex[3] = { *(p + 1), *(p + 2), 0 };
+			char c = static_cast<char>(std::strtol(hex, (char **) NULL, 16));
+
+			if(c) {
+				*p = c;
+				std::strcpy(p + 1, p + 3);
+			}
+		}
+
+		++p;
+
+	}
+
+	return myUrl;
+}
+#endif
+
 int answer_to_connection(void *cls, struct MHD_Connection *connection, const char *url,
 						 const char */*method*/, const char */*version*/,
 						 const char */*upload_data*/,
@@ -138,7 +165,12 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 		binary = true;
 
+#if MHD_VERSION > 0x00000200
 		const char *name = std::strrchr(url, '/');
+#else
+		char *myUrl = unquoteUrl(url);
+		const char *name = std::strrchr(myUrl, '/');
+#endif
 
 		if(name && *(name + 1)) {
 
@@ -163,6 +195,10 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 		contentType = !mime.empty() ? strdup((mime + "; charset=binary").c_str()) :
 					  strdup("image/png; charset=binary");
+
+#if MHD_VERSION <= 0x00000200
+		free(myUrl);
+#endif
 
 	} else if(!std::strncmp("/favicon.ico", url, 8)) {
 

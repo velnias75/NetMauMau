@@ -45,7 +45,7 @@ class SQLite : public Common::SmartSingleton<SQLite> {
 	friend class Common::SmartSingleton<SQLite>;
 public:
 	typedef smartptr_type SQLitePtr;
-	
+
 	typedef struct {
 		GAMEIDX id;
 		std::string name;
@@ -55,7 +55,7 @@ public:
 	typedef std::vector<SCORE> SCORES;
 	typedef enum { NORM, ABS } SCORE_TYPE;
 
-	~SQLite();
+	virtual ~SQLite();
 
 	static std::string getDBFilename();
 
@@ -72,8 +72,8 @@ public:
 	bool addPlayerToGame(GAMEIDX gid, const Common::IConnection::NAMESOCKFD &nsf) const;
 	bool turn(GAMEIDX gameIndex, std::size_t turn) const;
 	bool gamePlayStarted(GAMEIDX gameIndex) const;
-	bool playerLost(GAMEIDX gameIndex, const Common::IConnection::NAMESOCKFD &nsf, std::time_t time,
-					std::size_t points) const;
+	bool playerLost(GAMEIDX gameIndex, const Common::IConnection::NAMESOCKFD &nsf,
+					std::time_t time, std::size_t points) const;
 	bool playerWins(GAMEIDX gameIndex, const Common::IConnection::NAMESOCKFD &nsf) const;
 
 private:

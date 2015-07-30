@@ -42,8 +42,12 @@ public:
 	~SmartPtr();
 
 	SmartPtr &operator=(const element_pointer p) {
-		release();
-		m_constRawPtr = p;
+
+		if(this != p) {
+			release();
+			m_constRawPtr = p;
+		}
+
 		return *this;
 	}
 

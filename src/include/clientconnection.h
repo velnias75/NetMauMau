@@ -123,11 +123,12 @@ public:
 
 	void setClientVersion(uint32_t clientVersion);
 
-	virtual void connect(const IPlayerPicListener *l, const unsigned char *pngData,
-						 std::size_t pngDataLen) throw(Common::Exception::SocketException);
+	virtual void connect(const IPlayerPicListener *hdl, const unsigned char *pngData,
+						 std::size_t pngDataLen)
+	throw(Common::Exception::SocketException) _NONNULL(2);
 	CAPABILITIES capabilities() throw(NetMauMau::Common::Exception::SocketException);
-	PLAYERINFOS playerList(const IPlayerPicListener *hdl,
-						   bool playerPNG) throw(Common::Exception::SocketException);
+	PLAYERINFOS playerList(const IPlayerPicListener *hdl, bool playerPNG)
+	throw(Common::Exception::SocketException) _NONNULL(2);
 	SCORES getScores(SCORE_TYPE::_scoreType type, std::size_t limit)
 	throw(Common::Exception::SocketException);
 

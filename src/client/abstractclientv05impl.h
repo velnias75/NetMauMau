@@ -42,7 +42,7 @@ struct _LOCAL _playInternalParams {
 	const Common::ICard **lastPlayedCard;
 };
 
-class AbstractClientV05Impl {
+class _LOCAL AbstractClientV05Impl {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV05Impl)
 	friend class AbstractClientV05;
 	typedef std::vector<unsigned char> PNGDATA;
@@ -75,24 +75,25 @@ public:
 };
 
 template<class T>
-class MappedMessageProcessor {
+class _LOCAL MappedMessageProcessor {
 	DISALLOW_COPY_AND_ASSIGN(MappedMessageProcessor)
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-	typedef struct _LOCAL : std::binary_function<const std::string *, const std::string *, bool> {
-		inline result_type operator()(first_argument_type x, second_argument_type y) const {
-			return (x && y) ? (*x < *y) : true;
+	struct _LOCAL _protoCmp : std::binary_function<const std::string *, const std::string *, bool> {
+		inline result_type operator()(first_argument_type x,
+									  second_argument_type y) const _NONNULL_ALL {
+			return *x < *y;
 		}
-	} PROTOCMP;
+	};
 #pragma GCC diagnostic pop
 
 	typedef AbstractClientV05::PIRET(T::*PROTOFN)(const _playInternalParams &) const;
-	typedef std::map<const std::string *const, PROTOFN, PROTOCMP> PROTOMAP;
+	typedef std::map<const std::string *const, PROTOFN, _protoCmp> PROTOMAP;
 
 public:
-	MappedMessageProcessor(T *t, AbstractClientV05Impl *pimpl) : _t(t), _pimpl(pimpl),
-		m_protoMap() {}
+	MappedMessageProcessor(const T *const t, const AbstractClientV05Impl *const pimpl)
+		: _t(t), _pimpl(pimpl), m_protoMap() {}
 
 	~MappedMessageProcessor() {}
 
@@ -103,16 +104,14 @@ public:
 
 		const typename PROTOMAP::const_iterator &f(m_protoMap.find(&p.msg));
 
-		if(!_pimpl->m_disconnectNow && f != m_protoMap.end()) {
-			return (_t->*f->second)(p);
-		}
+		if(!_pimpl->m_disconnectNow && f != m_protoMap.end()) return (_t->*f->second)(p);
 
 		return !_pimpl->m_disconnectNow ? AbstractClient::NOT_UNDERSTOOD : AbstractClient::OK;
 	}
 
 private:
-	T *_t;
-	AbstractClientV05Impl *const _pimpl;
+	const T *const _t;
+	const AbstractClientV05Impl *const _pimpl;
 	PROTOMAP m_protoMap;
 };
 

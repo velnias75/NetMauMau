@@ -27,7 +27,7 @@ Homepage: http://sourceforge.net/projects/netmaumau/
 Package: netmaumau-client
 Architecture: any
 Pre-Depends: dpkg (>= 1.15.6~)
-Depends: libnetmaumauclient5 (>= 0.23.4~),
+Depends: libnetmaumauclient5 (>= 0.23.5~),
          libnetmaumaucommon6 (>= 0.23.4~),
          ${misc:Depends},
          ${shlibs:Depends}

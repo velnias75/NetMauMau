@@ -50,6 +50,7 @@ namespace NetMauMau {
 /// @brief Classes and functions used by clients only
 namespace Client {
 
+struct _playInternalParams;
 class AbstractClientV05Impl;
 class IBase64;
 
@@ -558,9 +559,7 @@ private:
 	void checkedError(const std::string &msg) const
 	throw(NetMauMau::Common::Exception::SocketException);
 
-	virtual PIRET playInternal(std::string &msg, std::size_t *cturn, bool *initCardShown,
-							   std::string &cjackSuit,
-							   const NetMauMau::Common::ICard **lastPlayedCard)
+	virtual PIRET playInternal(const _playInternalParams &p)
 	throw(NetMauMau::Common::Exception::SocketException);
 
 private:
@@ -648,8 +647,7 @@ public:
 private:
 	using AbstractClientV05::playInternal;
 
-	virtual AbstractClientV05::PIRET playInternal(std::string &msg, std::size_t *cturn,
-			bool *initCardShown, std::string &cjackSuit, const Common::ICard **lastPlayedCard)
+	virtual AbstractClientV05::PIRET playInternal(const _playInternalParams &p)
 	throw(NetMauMau::Common::Exception::SocketException);
 };
 
@@ -717,9 +715,9 @@ protected:
 	virtual ~AbstractClientV08();
 
 private:
-	virtual PIRET playInternal(std::string &msg, std::size_t *cturn, bool *initCardShown,
-							   std::string &cjackSuit,
-							   const NetMauMau::Common::ICard **lastPlayedCard)
+	using AbstractClientV07::playInternal;
+
+	virtual PIRET playInternal(const _playInternalParams &p)
 	throw(NetMauMau::Common::Exception::SocketException);
 };
 
@@ -982,9 +980,9 @@ protected:
 	/// @}
 
 private:
-	virtual PIRET playInternal(std::string &msg, std::size_t *cturn, bool *initCardShown,
-							   std::string &cjackSuit,
-							   const NetMauMau::Common::ICard **lastPlayedCard)
+	using AbstractClientV11::playInternal;
+
+	virtual PIRET playInternal(const _playInternalParams &p)
 	throw(NetMauMau::Common::Exception::SocketException);
 };
 

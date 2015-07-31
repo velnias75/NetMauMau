@@ -30,6 +30,18 @@ namespace Client {
 
 class IBase64;
 
+struct _LOCAL _playInternalParams {
+	inline _playInternalParams(std::string &m, std::size_t *t, bool *ics, std::string &js,
+							   const Common::ICard **lpc) : msg(m), cturn(t), initCardShown(ics),
+		cjackSuit(js), lastPlayedCard(lpc) {}
+
+	std::string &msg;
+	std::size_t *cturn;
+	bool *initCardShown;
+	std::string &cjackSuit;
+	const Common::ICard **lastPlayedCard;
+};
+
 class AbstractClientV05Impl {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV05Impl)
 	friend class AbstractClientV05;
@@ -38,7 +50,6 @@ public:
 	explicit AbstractClientV05Impl(const std::string &pName, const std::string &server,
 								   uint16_t port, const unsigned char *pngData,
 								   std::size_t pngDataLen);
-
 	~AbstractClientV05Impl();
 
 	AbstractClient::CARDS getCards(const AbstractClient::CARDS &mCards,
@@ -62,6 +73,53 @@ public:
 	bool m_disconnectNow;
 	bool m_playing;
 };
+
+template<class T>
+class MappedMessageProcessor {
+	DISALLOW_COPY_AND_ASSIGN(MappedMessageProcessor)
+
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+	typedef struct _LOCAL : std::binary_function<const std::string *, const std::string *, bool> {
+		inline result_type operator()(first_argument_type x, second_argument_type y) const {
+			return (x && y) ? (*x < *y) : true;
+		}
+	} PROTOCMP;
+#pragma GCC diagnostic pop
+
+	typedef AbstractClientV05::PIRET(T::*PROTOFN)(const _playInternalParams &) const;
+	typedef std::map<const std::string *const, PROTOFN, PROTOCMP> PROTOMAP;
+
+public:
+	MappedMessageProcessor(T *t, AbstractClientV05Impl *pimpl) : _t(t), _pimpl(pimpl),
+		m_protoMap() {}
+
+	~MappedMessageProcessor() {}
+
+	void map(const std::string &key, const PROTOFN &fn);
+
+	AbstractClient::PIRET process(const _playInternalParams &p) const
+	throw(NetMauMau::Common::Exception::SocketException) {
+
+		const typename PROTOMAP::const_iterator &f(m_protoMap.find(&p.msg));
+
+		if(!_pimpl->m_disconnectNow && f != m_protoMap.end()) {
+			return (_t->*f->second)(p);
+		}
+
+		return !_pimpl->m_disconnectNow ? AbstractClient::NOT_UNDERSTOOD : AbstractClient::OK;
+	}
+
+private:
+	T *_t;
+	AbstractClientV05Impl *const _pimpl;
+	PROTOMAP m_protoMap;
+};
+
+template<class T>
+void MappedMessageProcessor<T>::map(const std::string &key, const PROTOFN &fn) {
+	m_protoMap.insert(std::make_pair(&key, fn));
+}
 
 }
 

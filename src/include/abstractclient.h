@@ -50,6 +50,8 @@ namespace NetMauMau {
 /// @brief Classes and functions used by clients only
 namespace Client {
 
+template<class> class MappedMessageProcessor;
+
 struct _playInternalParams;
 class AbstractClientV05Impl;
 class IBase64;
@@ -62,12 +64,16 @@ class IBase64;
 class _EXPORT AbstractClientV05 : protected IPlayerPicListener {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV05)
 
+	template<class> friend class MappedMessageProcessor;
+
 	friend class AbstractClientV05Impl;
 	friend class AbstractClientV07;
 	friend class AbstractClientV08;
 	friend class AbstractClientV09;
 	friend class AbstractClientV11;
 	friend class AbstractClientV13;
+
+	typedef enum { OK, NOT_UNDERSTOOD, BREAK } PIRET;
 
 public:
 	/// @copydoc Connection::CAPABILITIES
@@ -551,10 +557,10 @@ protected:
 	virtual void unknownServerMessage(const std::string &msg) const = 0;
 
 private:
-	typedef enum { OK, NOT_UNDERSTOOD, BREAK } PIRET;
-
 	static bool isShutdownMsg(const std::string &msg);
 	static bool isLostConnMsg(const std::string &msg);
+
+	void init();
 
 	void checkedError(const std::string &msg) const
 	throw(NetMauMau::Common::Exception::SocketException);
@@ -562,8 +568,35 @@ private:
 	virtual PIRET playInternal(const _playInternalParams &p)
 	throw(NetMauMau::Common::Exception::SocketException);
 
+	PIRET performMessage(const _playInternalParams &) const;
+	PIRET performError(const _playInternalParams &) const
+	throw(NetMauMau::Common::Exception::SocketException);
+	PIRET performTurn(const _playInternalParams &) const;
+	PIRET performNextPlayer(const _playInternalParams &) const;
+	PIRET performStats(const _playInternalParams &) const;
+	PIRET performPlayerJoined(const _playInternalParams &) const;
+	PIRET performPlayerRejected(const _playInternalParams &) const;
+	PIRET performGetCards(const _playInternalParams &) const;
+	PIRET performInitialCard(const _playInternalParams &) const;
+	PIRET performTalonShuffled(const _playInternalParams &) const;
+	PIRET performOpenCard(const _playInternalParams &) const;
+	PIRET performPlayCard(const _playInternalParams &) const
+	throw(NetMauMau::Common::Exception::SocketException);
+	PIRET performSuspends(const _playInternalParams &) const;
+	PIRET performCardAccepted(const _playInternalParams &) const;
+	PIRET performCardRejected(const _playInternalParams &) const;
+	PIRET performCardCount(const _playInternalParams &) const;
+	PIRET performPlayedCard(const _playInternalParams &) const;
+	PIRET performJackSuit(const _playInternalParams &) const;
+	PIRET performJackModeOff(const _playInternalParams &) const;
+	PIRET performJackChoice(const _playInternalParams &) const;
+	PIRET performPlayerPicksCard(const _playInternalParams &) const;
+	PIRET performPlayerPicksCards(const _playInternalParams &) const;
+	PIRET performBye(const _playInternalParams &) const;
+
 private:
 	AbstractClientV05Impl *const _pimpl;
+	MappedMessageProcessor<AbstractClientV05> *m_mmp;
 };
 
 /**
@@ -647,8 +680,17 @@ public:
 private:
 	using AbstractClientV05::playInternal;
 
+	void init();
+
 	virtual AbstractClientV05::PIRET playInternal(const _playInternalParams &p)
 	throw(NetMauMau::Common::Exception::SocketException);
+
+	PIRET performAceround(const _playInternalParams &) const;
+	PIRET performAceroundStarted(const _playInternalParams &) const;
+	PIRET performAceroundEnded(const _playInternalParams &) const;
+
+private:
+	MappedMessageProcessor<AbstractClientV07> *m_mmp;
 };
 
 /**
@@ -717,8 +759,16 @@ protected:
 private:
 	using AbstractClientV07::playInternal;
 
+	void init();
+
 	virtual PIRET playInternal(const _playInternalParams &p)
 	throw(NetMauMau::Common::Exception::SocketException);
+
+	PIRET performPlayCard(const _playInternalParams &) const
+	throw(NetMauMau::Common::Exception::SocketException);
+
+private:
+	MappedMessageProcessor<AbstractClientV08> *const m_mmp;
 };
 
 /**
@@ -982,8 +1032,15 @@ protected:
 private:
 	using AbstractClientV11::playInternal;
 
+	void init();
+
 	virtual PIRET playInternal(const _playInternalParams &p)
 	throw(NetMauMau::Common::Exception::SocketException);
+
+	PIRET performDirChange(const _playInternalParams &) const;
+
+private:
+	MappedMessageProcessor<AbstractClientV13> *m_mmp;
 };
 
 /**

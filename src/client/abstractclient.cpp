@@ -38,47 +38,41 @@
 #include "lostconnectionexception.h"
 #include "protocol.h"                   // for PLAYCARD, ACEROUND, etc
 
-namespace NetMauMau {
-
-namespace Client {
-
-struct _LOCAL _playInternalParams {
-	inline _playInternalParams(std::string &m, std::size_t *t, bool *ics, std::string &js,
-							   const Common::ICard **lpc) : msg(m), cturn(t), initCardShown(ics),
-		cjackSuit(js), lastPlayedCard(lpc) {}
-
-	std::string &msg;
-	std::size_t *cturn;
-	bool *initCardShown;
-	std::string &cjackSuit;
-	const Common::ICard **lastPlayedCard;
-};
-
-}
-
-}
-
 using namespace NetMauMau::Client;
 
 AbstractClientV13::AbstractClientV13(const std::string &player, const unsigned char *pngData,
 									 std::size_t pngDataLen, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
-	: AbstractClientV11(player, pngData, pngDataLen, server, port, clientVersion) {}
+	: AbstractClientV11(player, pngData, pngDataLen, server, port, clientVersion),
+	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(this, _pimpl)) {
+	init();
+}
 
 AbstractClientV13::AbstractClientV13(const std::string &player, const unsigned char *pngData,
 									 std::size_t pngDataLen, const std::string &server,
 									 uint16_t port, uint32_t clientVersion, const IBase64 *)
-	: AbstractClientV11(player, pngData, pngDataLen, server, port, clientVersion, 0L) {}
+	: AbstractClientV11(player, pngData, pngDataLen, server, port, clientVersion, 0L),
+	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(this, _pimpl)) {
+	init();
+}
 
 AbstractClientV13::AbstractClientV13(const std::string &player, const std::string &server,
 									 uint16_t port, uint32_t clientVersion, const IBase64 *)
-	: AbstractClientV11(player, server, port, clientVersion, 0L) {}
+	: AbstractClientV11(player, server, port, clientVersion, 0L),
+	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(this, _pimpl)) {
+	init();
+}
 
 AbstractClientV13::AbstractClientV13(const std::string &player, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
-	: AbstractClientV11(player, server, port, clientVersion) {}
+	: AbstractClientV11(player, server, port, clientVersion),
+	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(this, _pimpl)) {
+	init();
+}
 
-AbstractClientV13::~AbstractClientV13() {}
+AbstractClientV13::~AbstractClientV13() {
+	delete m_mmp;
+}
 
 AbstractClientV11::AbstractClientV11(const std::string &player, const unsigned char *pngData,
 									 std::size_t pngDataLen, const std::string &server,
@@ -113,42 +107,61 @@ AbstractClientV09::~AbstractClientV09() {}
 
 AbstractClientV08::AbstractClientV08(const std::string &player, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
-	: AbstractClientV07(player, server, port) {
+	: AbstractClientV07(player, server, port),
+	  m_mmp(new MappedMessageProcessor<AbstractClientV08>(this, _pimpl)) {
 	_pimpl->m_connection.setClientVersion(clientVersion);
+	init();
 }
 
 AbstractClientV08::AbstractClientV08(const std::string &player, const unsigned char *pngData,
 									 std::size_t pngDataLen, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
-	: AbstractClientV07(player, pngData, pngDataLen, server, port) {
+	: AbstractClientV07(player, pngData, pngDataLen, server, port),
+	  m_mmp(new MappedMessageProcessor<AbstractClientV08>(this, _pimpl)) {
 	_pimpl->m_connection.setClientVersion(clientVersion);
+	init();
 }
 
-AbstractClientV08::~AbstractClientV08() {}
+AbstractClientV08::~AbstractClientV08() {
+	delete m_mmp;
+}
 
 AbstractClientV07::AbstractClientV07(const std::string &player, const std::string &server,
-									 uint16_t port) : AbstractClientV05(player, server, port) {
+									 uint16_t port) : AbstractClientV05(player, server, port),
+	m_mmp(new MappedMessageProcessor<AbstractClientV07>(this, _pimpl)) {
 	_pimpl->m_connection.setClientVersion(7);
+	init();
 }
 
 AbstractClientV07::AbstractClientV07(const std::string &player, const unsigned char *pngData,
 									 std::size_t pngDataLen, const std::string &server,
 									 uint16_t port) : AbstractClientV05(player, pngData, pngDataLen,
-												 server, port) {
+												 server, port),
+	m_mmp(new MappedMessageProcessor<AbstractClientV07>(this, _pimpl)) {
 	_pimpl->m_connection.setClientVersion(7);
+	init();
 }
 
-AbstractClientV07::~AbstractClientV07() {}
+AbstractClientV07::~AbstractClientV07() {
+	delete m_mmp;
+}
 
 AbstractClientV05::AbstractClientV05(const std::string &pName, const unsigned char *data,
 									 std::size_t len, const std::string &server, uint16_t port)
-	: IPlayerPicListener(), _pimpl(new AbstractClientV05Impl(pName, server, port, data, len)) {}
+	: IPlayerPicListener(), _pimpl(new AbstractClientV05Impl(pName, server, port, data, len)),
+	  m_mmp(new MappedMessageProcessor<AbstractClientV05>(this, _pimpl)) {
+	init();
+}
 
 AbstractClientV05::AbstractClientV05(const std::string &pName, const std::string &server,
 									 uint16_t port) : IPlayerPicListener(),
-	_pimpl(new AbstractClientV05Impl(pName, server, port, 0L, 0)) {}
+	_pimpl(new AbstractClientV05Impl(pName, server, port, 0L, 0)),
+	m_mmp(new MappedMessageProcessor<AbstractClientV05>(this, _pimpl)) {
+	init();
+}
 
 AbstractClientV05::~AbstractClientV05() {
+	delete m_mmp;
 	delete _pimpl;
 }
 
@@ -255,308 +268,447 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	_pimpl->m_disconnectNow = false;
 }
 
+void AbstractClientV13::init() {
+	m_mmp->map(NetMauMau::Common::Protocol::V15::DIRCHANGE, &AbstractClientV13::performDirChange);
+}
+
+AbstractClient::PIRET AbstractClientV13::performDirChange(const _playInternalParams &) const {
+	directionChanged();
+	return OK;
+}
+
 AbstractClientV05::PIRET AbstractClientV13::playInternal(const _playInternalParams &p)
 throw(NetMauMau::Common::Exception::SocketException) {
+	PIRET  ret = AbstractClientV11::playInternal(p);
+	return ret == NOT_UNDERSTOOD ? m_mmp->process(p) : ret;
+}
 
-	PIRET ret = AbstractClientV11::playInternal(p);
+void AbstractClientV07::init() {
+	m_mmp->map(NetMauMau::Common::Protocol::V15::ACEROUND, &AbstractClientV07::performAceround);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::ACEROUNDENDED,
+			   &AbstractClientV07::performAceroundEnded);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::ACEROUNDSTARTED,
+			   &AbstractClientV07::performAceroundStarted);
+}
 
-	if(ret == NOT_UNDERSTOOD) {
-		if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::DIRCHANGE) {
-			directionChanged();
-		} else {
-			return NOT_UNDERSTOOD;
-		}
+AbstractClient::PIRET AbstractClientV07::performAceround(const _playInternalParams &) const {
 
-		return OK;
-	}
+	_pimpl->m_connection << (getAceRoundChoice() ? NetMauMau::Common::Protocol::V15::TRUE :
+							 NetMauMau::Common::Protocol::V15::FALSE);
 
-	return ret;
+	return OK;
+}
+
+AbstractClient::PIRET
+AbstractClientV07::performAceroundStarted(const _playInternalParams &p) const {
+
+	_pimpl->m_connection >> p.msg;
+	aceRoundStarted(p.msg);
+
+	return OK;
+}
+
+AbstractClient::PIRET AbstractClientV07::performAceroundEnded(const _playInternalParams &p) const {
+
+	_pimpl->m_connection >> p.msg;
+	aceRoundEnded(p.msg);
+
+	return OK;
 }
 
 AbstractClientV05::PIRET AbstractClientV07::playInternal(const _playInternalParams &p)
 throw(NetMauMau::Common::Exception::SocketException) {
+	PIRET  ret = AbstractClientV05::playInternal(p);
+	return ret == NOT_UNDERSTOOD ? m_mmp->process(p) : ret;
+}
 
-	PIRET ret = AbstractClientV05::playInternal(p);
+void AbstractClientV05::init() {
+	m_mmp->map(NetMauMau::Common::Protocol::V15::BYE, &AbstractClientV05::performBye);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::CARDACCEPTED,
+			   &AbstractClientV05::performCardAccepted);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::CARDCOUNT, &AbstractClientV05::performCardCount);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::CARDREJECTED,
+			   &AbstractClientV05::performCardRejected);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::ERROR, &AbstractClientV05::performError);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::GETCARDS, &AbstractClientV05::performGetCards);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::INITIALCARD,
+			   &AbstractClientV05::performInitialCard);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::JACKCHOICE, &AbstractClientV05::performJackChoice);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::JACKMODEOFF,
+			   &AbstractClientV05::performJackModeOff);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::JACKSUIT, &AbstractClientV05::performJackSuit);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::MESSAGE, &AbstractClientV05::performMessage);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::NEXTPLAYER, &AbstractClientV05::performNextPlayer);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::OPENCARD, &AbstractClientV05::performOpenCard);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::PLAYCARD, &AbstractClientV05::performPlayCard);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::PLAYEDCARD, &AbstractClientV05::performPlayedCard);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::PLAYERJOINED,
+			   &AbstractClientV05::performPlayerJoined);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::PLAYERPICKSCARD,
+			   &AbstractClientV05::performPlayerPicksCard);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::PLAYERPICKSCARDS,
+			   &AbstractClientV05::performPlayerPicksCards);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::PLAYERREJECTED,
+			   &AbstractClientV05::performPlayerRejected);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::STATS, &AbstractClientV05::performStats);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::SUSPENDS, &AbstractClientV05::performSuspends);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::TALONSHUFFLED,
+			   &AbstractClientV05::performTalonShuffled);
+	m_mmp->map(NetMauMau::Common::Protocol::V15::TURN, &AbstractClientV05::performTurn);
+}
 
-	if(ret == NOT_UNDERSTOOD) {
-		if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::ACEROUND) {
-			_pimpl->m_connection << (getAceRoundChoice() ? NetMauMau::Common::Protocol::V15::TRUE :
-									 NetMauMau::Common::Protocol::V15::FALSE);
-		} else if(!_pimpl->m_disconnectNow && p.msg ==
-				  NetMauMau::Common::Protocol::V15::ACEROUNDSTARTED) {
-			_pimpl->m_connection >> p.msg;
-			aceRoundStarted(p.msg);
-		} else if(!_pimpl->m_disconnectNow && p.msg ==
-				  NetMauMau::Common::Protocol::V15::ACEROUNDENDED) {
-			_pimpl->m_connection >> p.msg;
-			aceRoundEnded(p.msg);
-		} else {
-			return NOT_UNDERSTOOD;
-		}
+AbstractClientV05::PIRET AbstractClientV05::performMessage(const _playInternalParams &p) const {
 
-		return OK;
+	_pimpl->m_connection >> p.msg;
+	message(p.msg);
+
+	return OK;
+}
+
+AbstractClientV05::PIRET AbstractClientV05::performError(const _playInternalParams &p) const
+throw(NetMauMau::Common::Exception::SocketException) {
+
+	_pimpl->m_connection >> p.msg;
+	checkedError(p.msg);
+
+	return BREAK;
+}
+
+AbstractClientV05::PIRET AbstractClientV05::performTurn(const _playInternalParams &p) const {
+
+	_pimpl->m_connection >> p.msg;
+	*p.cturn = std::strtoul(p.msg.c_str(), NULL, 10);
+	turn(*p.cturn);
+
+	return OK;
+}
+
+AbstractClientV05::PIRET AbstractClientV05::performNextPlayer(const _playInternalParams &p) const {
+
+	_pimpl->m_connection >> p.msg;
+	nextPlayer(p.msg);
+
+	return OK;
+}
+
+AbstractClientV05::PIRET AbstractClientV05::performStats(const _playInternalParams &p) const {
+
+	_pimpl->m_connection >> p.msg;
+
+	STATS cstats;
+
+	while(p.msg != NetMauMau::Common::Protocol::V15::ENDSTATS) {
+
+		std::string cntS;
+		_pimpl->m_connection >> cntS;
+
+		const STAT stat = { p.msg, std::strtoul(cntS.c_str(), NULL, 10) };
+		cstats.push_back(stat);
+
+		_pimpl->m_connection >> p.msg;
 	}
 
-	return ret;
+	stats(cstats);
+
+	return OK;
+}
+
+AbstractClientV05::PIRET
+AbstractClientV05::performPlayerJoined(const _playInternalParams &p) const {
+
+	std::string plPic;
+
+	_pimpl->m_connection >> p.msg;
+
+	beginReceivePlayerPicture(p.msg);
+
+	_pimpl->m_connection >> plPic;
+
+	const std::vector<unsigned char> &plPicPng(NetMauMau::Common::base64_decode(plPic));
+
+	endReceivePlayerPicture(p.msg);
+
+	const bool hasPlPic = (!plPicPng.empty() && plPic != '-');
+
+	playerJoined(p.msg, hasPlPic ? plPicPng.data() : 0L,  hasPlPic ? plPicPng.size() : 0);
+
+	return OK;
+}
+
+AbstractClientV05::PIRET
+AbstractClientV05::performPlayerRejected(const _playInternalParams &p) const {
+
+	_pimpl->m_connection >> p.msg;
+	playerRejected(p.msg);
+
+	return BREAK;
+}
+
+AbstractClientV05::PIRET AbstractClientV05::performGetCards(const _playInternalParams &p) const {
+
+	_pimpl->m_connection >> p.msg;
+
+	const CARDS::size_type cnt = _pimpl->m_cards.empty() ? 0 : _pimpl->m_cards.size();
+
+	while(p.msg != NetMauMau::Common::Protocol::V15::CARDSGOT) {
+		_pimpl->m_cards.push_back((NetMauMau::Client::CardFactory(p.msg)).create());
+		_pimpl->m_connection >> p.msg;
+	}
+
+	cardSet(_pimpl->getCards(_pimpl->m_cards, cnt));
+
+	return OK;
+}
+
+AbstractClientV05::PIRET AbstractClientV05::performInitialCard(const _playInternalParams &p) const {
+
+	_pimpl->m_connection >> p.msg;
+
+	const NetMauMau::Common::ICard *ic = (NetMauMau::Client::CardFactory(p.msg)).create();
+
+	if(ic == NetMauMau::Common::ICard::JACK || ic == NetMauMau::Common::ICard::EIGHT) {
+		initialCard(ic);
+		*p.initCardShown = true;
+	}
+
+	delete ic;
+
+	return OK;
+}
+
+AbstractClientV05::PIRET
+AbstractClientV05::performTalonShuffled(const _playInternalParams &) const {
+	talonShuffled();
+	return OK;
+}
+
+AbstractClientV05::PIRET AbstractClientV05::performOpenCard(const _playInternalParams &p) const {
+
+	_pimpl->m_connection >> p.msg;
+
+	delete _pimpl->m_openCard;
+
+	_pimpl->m_openCard = (NetMauMau::Client::CardFactory(p.msg)).create();
+
+	if(!*p.initCardShown) {
+
+		assert(NetMauMau::Common::symbolToSuit(p.cjackSuit)
+			   != NetMauMau::Common::ICard::SUIT_ILLEGAL);
+
+		openCard(_pimpl->m_openCard, p.cjackSuit);
+
+	} else {
+		*p.initCardShown = false;
+	}
+
+	return OK;
+}
+
+AbstractClientV05::PIRET AbstractClientV05::performPlayCard(const _playInternalParams &p) const
+throw(NetMauMau::Common::Exception::SocketException) {
+
+	*p.lastPlayedCard = playCard(_pimpl->recvPossibleCards(p.msg));
+
+	_pimpl->sendPlayedCard(p.lastPlayedCard);
+
+	return OK;
+}
+
+AbstractClientV05::PIRET AbstractClientV05::performSuspends(const _playInternalParams &p) const {
+
+	_pimpl->m_connection >> p.msg;
+	playerSuspends(p.msg);
+
+	return OK;
+}
+
+AbstractClientV05::PIRET
+AbstractClientV05::performCardAccepted(const _playInternalParams &p) const {
+
+	_pimpl->m_connection >> p.msg;
+
+	if(*p.lastPlayedCard) {
+		const CARDS::iterator &f(std::find_if(_pimpl->m_cards.begin(), _pimpl->m_cards.end(),
+											  std::bind2nd(NetMauMau::Common::equalTo
+													  <CARDS::iterator::value_type>(),
+													  *p.lastPlayedCard)));
+
+		if(f != _pimpl->m_cards.end()) {
+			cardAccepted(*f);
+			delete *f;
+			_pimpl->m_cards.erase(f);
+		}
+	}
+
+	return OK;
+}
+
+AbstractClientV05::PIRET
+AbstractClientV05::performCardRejected(const _playInternalParams &p) const {
+
+	std::string player;
+	_pimpl->m_connection >> player >> p.msg;
+
+	const NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(p.msg)).create();
+	cardRejected(player, c);
+	delete c;
+
+	return OK;
+}
+
+AbstractClientV05::PIRET AbstractClientV05::performCardCount(const _playInternalParams &) const {
+
+	char cc[256];
+#ifndef _WIN32
+	std::snprintf(cc, 255, "%zu", _pimpl->m_cards.size());
+#else
+	std::snprintf(cc, 255, "%lu", (unsigned long)_pimpl->m_cards.size());
+#endif
+
+	_pimpl->m_connection << cc;
+
+	return OK;
+}
+
+AbstractClientV05::PIRET AbstractClientV05::performPlayedCard(const _playInternalParams &p) const {
+
+	std::string player;
+	_pimpl->m_connection >> player >> p.msg;
+
+	const NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(p.msg)).create();
+	playedCard(player, c);
+	delete c;
+
+	p.cjackSuit.clear();
+
+	return OK;
+}
+
+AbstractClientV05::PIRET AbstractClientV05::performJackSuit(const _playInternalParams &p) const {
+
+	_pimpl->m_connection >> p.msg;
+	p.cjackSuit = p.msg;
+
+	assert(NetMauMau::Common::symbolToSuit(p.cjackSuit)
+		   != NetMauMau::Common::ICard::SUIT_ILLEGAL);
+
+	jackSuit(NetMauMau::Common::symbolToSuit(p.cjackSuit));
+
+	return OK;
+}
+
+AbstractClientV05::PIRET AbstractClientV05::performJackModeOff(const _playInternalParams &) const {
+	jackSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL);
+	return OK;
+}
+
+AbstractClientV05::PIRET AbstractClientV05::performJackChoice(const _playInternalParams &) const {
+
+	const NetMauMau::Common::ICard::SUIT s = getJackSuitChoice();
+
+	assert(s != NetMauMau::Common::ICard::SUIT_ILLEGAL);
+
+	_pimpl->m_connection << NetMauMau::Common::suitToSymbol(s, false);
+
+	return OK;
+
+}
+
+AbstractClientV05::PIRET
+AbstractClientV05::performPlayerPicksCard(const _playInternalParams &p) const {
+
+	std::string player, extra;
+	_pimpl->m_connection >> player >> extra;
+
+	if(extra == NetMauMau::Common::Protocol::V15::CARDTAKEN) {
+		_pimpl->m_connection >> p.msg;
+		const NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(p.msg)).create();
+		playerPicksCard(player, c);
+		delete c;
+	} else {
+		playerPicksCard(player, static_cast<NetMauMau::Common::ICard *>(0L));
+	}
+
+	return OK;
+}
+
+AbstractClientV05::PIRET
+AbstractClientV05::performPlayerPicksCards(const _playInternalParams &p) const {
+
+	std::string player;
+	_pimpl->m_connection >> player >> p.msg;
+	_pimpl->m_connection >> p.msg;
+
+	playerPicksCard(player, std::strtoul(p.msg.c_str(), NULL, 10));
+
+	return OK;
+}
+
+AbstractClientV05::PIRET AbstractClientV05::performBye(const _playInternalParams &) const {
+	gameOver();
+	return BREAK;
 }
 
 AbstractClientV05::PIRET AbstractClientV05::playInternal(const _playInternalParams &p)
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::MESSAGE) {
-		_pimpl->m_connection >> p.msg;
-		message(p.msg);
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::ERROR) {
-		_pimpl->m_connection >> p.msg;
-		checkedError(p.msg);
-		return BREAK;
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::TURN) {
+	PIRET ret = m_mmp->process(p);
 
-		_pimpl->m_connection >> p.msg;
+	if(ret == NOT_UNDERSTOOD) {
 
-		*p.cturn = std::strtoul(p.msg.c_str(), NULL, 10);
+		if(!_pimpl->m_disconnectNow && p.msg.substr(0, 10) ==
+				NetMauMau::Common::Protocol::V15::PLAYERWINS) {
 
-		turn(*p.cturn);
-
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::NEXTPLAYER) {
-		_pimpl->m_connection >> p.msg;
-		nextPlayer(p.msg);
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::STATS) {
-
-		_pimpl->m_connection >> p.msg;
-
-		STATS cstats;
-
-		while(p.msg != NetMauMau::Common::Protocol::V15::ENDSTATS) {
-
-			std::string cntS;
-			_pimpl->m_connection >> cntS;
-
-			const STAT stat = { p.msg, std::strtoul(cntS.c_str(), NULL, 10) };
-			cstats.push_back(stat);
+			const bool ultimate = p.msg.length() > 10 && p.msg[10] == '+';
 
 			_pimpl->m_connection >> p.msg;
+			playerWins(p.msg, *p.cturn);
+
+			if(!ultimate) return performBye(p);
+
+		} else if(!_pimpl->m_disconnectNow && p.msg.substr(0, 10) ==
+				  NetMauMau::Common::Protocol::V15::PLAYERLOST) {
+			std::string pl, pc;
+			_pimpl->m_connection >> pl >> pc;
+			playerLost(pl, *p.cturn, std::strtoul(pc.c_str(), NULL, 10));
+
+		} else if(!_pimpl->m_disconnectNow && !p.msg.compare(0, 8,
+				  std::string(NetMauMau::Common::Protocol::V15::SUSPEND).append(1, ' '))) {
+			enableSuspend(!p.msg.compare(8, std::string::npos,
+										 NetMauMau::Common::Protocol::V15::ON));
+
+		} else if(!_pimpl->m_disconnectNow) {
+			return NOT_UNDERSTOOD;
 		}
 
-		stats(cstats);
-
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::PLAYERJOINED) {
-
-		std::string plPic;
-
-		_pimpl->m_connection >> p.msg;
-
-		beginReceivePlayerPicture(p.msg);
-
-		_pimpl->m_connection >> plPic;
-
-		const std::vector<unsigned char> &plPicPng(NetMauMau::Common::base64_decode(plPic));
-
-		endReceivePlayerPicture(p.msg);
-
-		const bool hasPlPic = (!plPicPng.empty() && plPic != '-');
-
-		playerJoined(p.msg, hasPlPic ? plPicPng.data() : 0L,
-					 hasPlPic ? plPicPng.size() : 0);
-
-	} else if(!_pimpl->m_disconnectNow && p.msg ==
-			  NetMauMau::Common::Protocol::V15::PLAYERREJECTED) {
-		_pimpl->m_connection >> p.msg;
-		playerRejected(p.msg);
-		return BREAK;
-	} else if(!_pimpl->m_disconnectNow && p.msg.substr(0, 10) ==
-			  NetMauMau::Common::Protocol::V15::PLAYERWINS) {
-
-		const bool ultimate = p.msg.length() > 10 && p.msg[10] == '+';
-
-		_pimpl->m_connection >> p.msg;
-		playerWins(p.msg, *p.cturn);
-
-		if(!ultimate) {
-			gameOver();
-			return BREAK;
-		}
-
-	} else if(!_pimpl->m_disconnectNow && p.msg.substr(0, 10) ==
-			  NetMauMau::Common::Protocol::V15::PLAYERLOST) {
-		std::string pl, pc;
-		_pimpl->m_connection >> pl >> pc;
-		playerLost(pl, *p.cturn, std::strtoul(pc.c_str(), NULL, 10));
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::GETCARDS) {
-
-		_pimpl->m_connection >> p.msg;
-
-		const CARDS::size_type cnt = _pimpl->m_cards.empty() ? 0 : _pimpl->m_cards.size();
-
-		while(p.msg != NetMauMau::Common::Protocol::V15::CARDSGOT) {
-			_pimpl->m_cards.push_back((NetMauMau::Client::CardFactory(p.msg)).create());
-			_pimpl->m_connection >> p.msg;
-		}
-
-		cardSet(_pimpl->getCards(_pimpl->m_cards, cnt));
-
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::INITIALCARD) {
-
-		_pimpl->m_connection >> p.msg;
-
-		const NetMauMau::Common::ICard *ic = (NetMauMau::Client::CardFactory(p.msg)).create();
-
-		if(ic == NetMauMau::Common::ICard::JACK || ic == NetMauMau::Common::ICard::EIGHT) {
-			initialCard(ic);
-			*p.initCardShown = true;
-		}
-
-		delete ic;
-
-	} else if(!_pimpl->m_disconnectNow && p.msg ==
-			  NetMauMau::Common::Protocol::V15::TALONSHUFFLED) {
-		talonShuffled();
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::OPENCARD) {
-
-		_pimpl->m_connection >> p.msg;
-		delete _pimpl->m_openCard;
-		_pimpl->m_openCard = (NetMauMau::Client::CardFactory(p.msg)).create();
-
-		if(!*p.initCardShown) {
-
-			assert(NetMauMau::Common::symbolToSuit(p.cjackSuit)
-				   != NetMauMau::Common::ICard::SUIT_ILLEGAL);
-
-			openCard(_pimpl->m_openCard, p.cjackSuit);
-
-		} else {
-			*p.initCardShown = false;
-		}
-
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::PLAYCARD) {
-		*p.lastPlayedCard = playCard(_pimpl->recvPossibleCards(p.msg));
-		_pimpl->sendPlayedCard(p.lastPlayedCard);
-	} else if(!_pimpl->m_disconnectNow && !p.msg.compare(0, 8,
-			  std::string(NetMauMau::Common::Protocol::V15::SUSPEND).append(1, ' '))) {
-		enableSuspend(!p.msg.compare(8, std::string::npos, NetMauMau::Common::Protocol::V15::ON));
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::SUSPENDS) {
-		_pimpl->m_connection >> p.msg;
-		playerSuspends(p.msg);
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::CARDACCEPTED) {
-
-		_pimpl->m_connection >> p.msg;
-
-		if(*p.lastPlayedCard) {
-			const CARDS::iterator &f(std::find_if(_pimpl->m_cards.begin(), _pimpl->m_cards.end(),
-												  std::bind2nd(NetMauMau::Common::equalTo
-														  <CARDS::iterator::value_type>(),
-														  *p.lastPlayedCard)));
-
-			if(f != _pimpl->m_cards.end()) {
-				cardAccepted(*f);
-				delete *f;
-				_pimpl->m_cards.erase(f);
-			}
-		}
-
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::CARDREJECTED) {
-
-		std::string player;
-		_pimpl->m_connection >> player >> p.msg;
-
-		const NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(p.msg)).create();
-		cardRejected(player, c);
-		delete c;
-
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::CARDCOUNT) {
-
-		char cc[256];
-#ifndef _WIN32
-		std::snprintf(cc, 255, "%zu", _pimpl->m_cards.size());
-#else
-		std::snprintf(cc, 255, "%lu", (unsigned long)_pimpl->m_cards.size());
-#endif
-
-		_pimpl->m_connection << cc;
-
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::PLAYEDCARD) {
-
-		std::string player;
-		_pimpl->m_connection >> player >> p.msg;
-
-		const NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(p.msg)).create();
-		playedCard(player, c);
-		delete c;
-
-		p.cjackSuit.clear();
-
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::JACKSUIT) {
-
-		_pimpl->m_connection >> p.msg;
-		p.cjackSuit = p.msg;
-
-		assert(NetMauMau::Common::symbolToSuit(p.cjackSuit)
-			   != NetMauMau::Common::ICard::SUIT_ILLEGAL);
-
-		jackSuit(NetMauMau::Common::symbolToSuit(p.cjackSuit));
-
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::JACKMODEOFF) {
-		jackSuit(NetMauMau::Common::ICard::SUIT_ILLEGAL);
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::JACKCHOICE) {
-
-		const NetMauMau::Common::ICard::SUIT s = getJackSuitChoice();
-
-		assert(s != NetMauMau::Common::ICard::SUIT_ILLEGAL);
-
-		_pimpl->m_connection << NetMauMau::Common::suitToSymbol(s, false);
-
-	} else if(!_pimpl->m_disconnectNow && p.msg ==
-			  NetMauMau::Common::Protocol::V15::PLAYERPICKSCARD) {
-
-		std::string player, extra;
-		_pimpl->m_connection >> player >> extra;
-
-		if(extra == NetMauMau::Common::Protocol::V15::CARDTAKEN) {
-			_pimpl->m_connection >> p.msg;
-			const NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(p.msg)).create();
-			playerPicksCard(player, c);
-			delete c;
-		} else {
-			playerPicksCard(player, static_cast<NetMauMau::Common::ICard *>(0L));
-		}
-
-	} else if(!_pimpl->m_disconnectNow && p.msg ==
-			  NetMauMau::Common::Protocol::V15::PLAYERPICKSCARDS) {
-
-		std::string player;
-		_pimpl->m_connection >> player >> p.msg;
-		_pimpl->m_connection >> p.msg;
-
-		playerPicksCard(player, std::strtoul(p.msg.c_str(), NULL, 10));
-
-	} else if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::BYE) {
-		gameOver();
-		return BREAK;
-	} else {
-		return NOT_UNDERSTOOD;
+		return OK;
 	}
+
+	return ret;
+}
+
+void AbstractClientV08::init() {
+	m_mmp->map(NetMauMau::Common::Protocol::V15::PLAYCARD, &AbstractClientV08::performPlayCard);
+}
+
+AbstractClientV05::PIRET AbstractClientV08::performPlayCard(const _playInternalParams &p) const
+throw(NetMauMau::Common::Exception::SocketException) {
+
+	const NetMauMau::Client::AbstractClient::CARDS &possCards(_pimpl->recvPossibleCards(p.msg));
+
+	std::string tc;
+	_pimpl->m_connection >> tc;
+
+	*p.lastPlayedCard = playCard(possCards, std::strtoul(tc.c_str(), NULL, 10));
+
+	_pimpl->sendPlayedCard(p.lastPlayedCard);
 
 	return OK;
 }
 
 AbstractClientV05::PIRET AbstractClientV08::playInternal(const _playInternalParams &p)
 throw(NetMauMau::Common::Exception::SocketException) {
-
-	if(!_pimpl->m_disconnectNow && p.msg == NetMauMau::Common::Protocol::V15::PLAYCARD) {
-
-		const NetMauMau::Client::AbstractClient::CARDS &possCards(_pimpl->recvPossibleCards(p.msg));
-
-		std::string tc;
-		_pimpl->m_connection >> tc;
-
-		*p.lastPlayedCard = playCard(possCards, std::strtoul(tc.c_str(), NULL, 10));
-		_pimpl->sendPlayedCard(p.lastPlayedCard);
-
-	} else {
-		return NetMauMau::Client::AbstractClientV07::playInternal(p);
-	}
-
-	return OK;
+	return m_mmp->process(p) == NOT_UNDERSTOOD ? AbstractClientV07::playInternal(p) : OK;
 }
 
 bool AbstractClientV05::isLostConnMsg(const std::string &msg) {
@@ -647,4 +799,4 @@ AbstractClientV09::SCORES AbstractClientV09::getScores(SCORE_TYPE::_scoreType ty
 	return _pimpl->m_connection.getScores(type, limit);
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

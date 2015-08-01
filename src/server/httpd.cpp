@@ -52,6 +52,7 @@
 #include "iplayer.h"
 #include "mimemagic.h"
 #include "pathtools.h"
+#include "cachepolicyfactory.h"
 #include "defaultplayerimage.h"
 #include "abstractsocketimpl.h"
 
@@ -153,15 +154,19 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 	const NetMauMau::Server::Httpd *httpd = reinterpret_cast<NetMauMau::Server::Httpd *>(cls);
 	const bool havePlayers = !httpd->getPlayers().empty();
 
+	NetMauMau::Server::CachePolicyFactory::ICachePolicyPtr
+	cp(NetMauMau::Server::CachePolicyFactory::getInstance()->createNoCachePolicy());
+
 	std::vector<std::string::traits_type::char_type> bin;
 	std::ostringstream os;
 	os.unsetf(std::ios_base::skipws);
 
 	char *contentType = 0L;
 	bool binary = false;
-	bool nocache = true;
 
 	if(!std::strncmp("/images/", url, 8)) {
+
+		cp = NetMauMau::Server::CachePolicyFactory::getInstance()->createPrivateCachePolicy(1800L);
 
 		binary = true;
 
@@ -202,6 +207,8 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 	} else if(!std::strncmp("/favicon.ico", url, 8)) {
 
+		cp = NetMauMau::Server::CachePolicyFactory::getInstance()->createPublicCachePolicy();
+
 		binary = true;
 		LKFIM = contentType = strdup("image/vnd.microsoft.icon; charset=binary");
 
@@ -209,8 +216,6 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 						  "netmaumau", "ico").c_str(), std::ios::binary);
 
 		if(!fav.fail()) {
-
-			nocache = false;
 
 			bin.assign(std::istreambuf_iterator<std::string::traits_type::char_type>(fav),
 					   std::istreambuf_iterator<std::string::traits_type::char_type>());
@@ -330,11 +335,11 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 	MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, contentType);
 
-	if(nocache) MHD_add_response_header(response, MHD_HTTP_HEADER_EXPIRES,
-											"Thu, 01 Dec 1994 16:00:00 GMT");
+	if(cp->expires()) MHD_add_response_header(response, MHD_HTTP_HEADER_EXPIRES,
+				cp->getExpiryDate());
 
-	MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL,
-							nocache ? "no-cache" : "public");
+	MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL, cp->getCacheControl());
+// 							nocache ? "no-cache" : "public");
 
 	const int ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
 

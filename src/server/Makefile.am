@@ -22,8 +22,8 @@ MAINTAINERCLEANFILES = $(bin_PROGRAMS).1
 
 DISTCLEANFILES = $(man1_MANS) netmaumau.h2m
 
-noinst_HEADERS = gamecontext.h game.h helpers.h httpd.h serverconnection.h servereventhandler.h \
-	serverplayerexception.h serverplayer.h ttynamecheckdir.h
+noinst_HEADERS = cachepolicyfactory.h gamecontext.h game.h helpers.h httpd.h serverconnection.h \
+	servereventhandler.h serverplayerexception.h serverplayer.h ttynamecheckdir.h
 	
 libnmm_server_private_la_CPPFLAGS = -UDISABLE_ANSI -DDISABLE_ANSI=1
 libnmm_server_private_la_CXXFLAGS = -I$(top_srcdir)/src/engine -I$(top_srcdir)/src/include \
@@ -47,7 +47,7 @@ dist_pkgdata_DATA = $(top_srcdir)/netmaumau.ico
 libhttpd_la_CPPFLAGS = -DPKGDATADIR="\"$(pkgdatadir)\""	
 libhttpd_la_CXXFLAGS = $(NO_EXCEPTIONS) $(LIBMICROHTTPD_CFLAGS) -I$(top_srcdir)/src/include \
 	-I$(top_srcdir)/src/common -I$(top_srcdir)/src/sqlite -I$(top_srcdir)/src/engine
-libhttpd_la_SOURCES  = httpd.cpp
+libhttpd_la_SOURCES  = cachepolicyfactory.cpp httpd.cpp
 libhttpd_la_LIBADD   = $(LIBMICROHTTPD_LIBS)
 endif
 

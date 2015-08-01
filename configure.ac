@@ -119,6 +119,7 @@ if test x$enable_console_client = xyes; then
 fi
 
 # Checks for libraries.
+CHECK_ZLIB
 PKG_CHECK_MODULES([POPT], [popt >= 1.10])
 AC_CHECK_LIB([magic], [magic_open],
   [ AC_SUBST(DOCMAGIC, "libmagic")

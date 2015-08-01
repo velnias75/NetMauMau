@@ -20,7 +20,8 @@ Build-Depends: bash-completion,
                libsqlite3-dev (>= 3.4.2),
                lsb-release,
                pkg-config,
-               vim-common
+               vim-common,
+			   zlib1g-dev
 Standards-Version: 3.9.4
 Homepage: http://sourceforge.net/projects/netmaumau/
 

@@ -52,6 +52,8 @@
 #include "iplayer.h"
 #include "mimemagic.h"
 #include "pathtools.h"
+#include "zstreambuf.h"
+#include "zlibexception.h"
 #include "cachepolicyfactory.h"
 #include "defaultplayerimage.h"
 #include "abstractsocketimpl.h"
@@ -70,7 +72,7 @@ const char *B2TOP = "<a href=\"#top\">Back to top</a>";
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
 struct scoresTable : std::unary_function<NetMauMau::DB::SQLite::SCORES::value_type, void> {
-	inline explicit scoresTable(std::ostringstream &o) : os(o), pos(0) {}
+	inline explicit scoresTable(std::ostream &o) : os(o), pos(0) {}
 	inline result_type operator()(const argument_type &s) const {
 		os << "<tr><td align=\"right\">" << ++pos << "&nbsp;</td><td>&nbsp;" << s.name
 		   << "</td><td align=\"center\">" << (s.score < 0 ? "<font color=\"red\">" : "") << s.score
@@ -78,13 +80,13 @@ struct scoresTable : std::unary_function<NetMauMau::DB::SQLite::SCORES::value_ty
 	}
 
 private:
-	std::ostringstream &os;
+	std::ostream &os;
 	mutable std::size_t pos;
 };
 
 struct capaTable :
 		std::unary_function<NetMauMau::Common::AbstractConnection::CAPABILITIES::value_type, void> {
-	inline explicit capaTable(std::ostringstream &o) : os(o) {}
+	inline explicit capaTable(std::ostream &o) : os(o) {}
 	inline result_type operator()(const argument_type &p) const {
 		const bool isWurl = p.first == "WEBSERVER_URL";
 		os << "<tr><td>&nbsp;" << p.first << "</td><td>&nbsp;" << (isWurl ? "<a href=\"" : "")
@@ -93,11 +95,11 @@ struct capaTable :
 	}
 
 private:
-	std::ostringstream &os;
+	std::ostream &os;
 };
 
 struct listPlayers : std::unary_function<NetMauMau::Server::Httpd::PLAYERS::value_type, void> {
-	inline explicit listPlayers(std::ostringstream &o) : os(o), pos(0u) {}
+	inline explicit listPlayers(std::ostream &o) : os(o), pos(0u) {}
 	inline result_type operator()(const argument_type &p) const {
 		os << "<tr><td align=\"right\">&nbsp;" << ++pos
 		   << ".&nbsp;</td><td align=\"center\">&nbsp;<a href=\"/images/" << p->getName()
@@ -109,7 +111,7 @@ struct listPlayers : std::unary_function<NetMauMau::Server::Httpd::PLAYERS::valu
 	}
 
 private:
-	std::ostringstream &os;
+	std::ostream &os;
 	mutable std::size_t pos;
 };
 #pragma GCC diagnostic pop
@@ -141,6 +143,12 @@ char *unquoteUrl(const char *url) {
 }
 #endif
 
+int processRequestHeader(void *cls, enum MHD_ValueKind /*kind*/,
+						 const char *key, const char *value) {
+	reinterpret_cast<NetMauMau::Server::Httpd *>(cls)->insertReqHdrPair(key, value);
+	return MHD_YES;
+}
+
 int answer_to_connection(void *cls, struct MHD_Connection *connection, const char *url,
 						 const char */*method*/, const char */*version*/,
 						 const char */*upload_data*/,
@@ -151,166 +159,198 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 #endif
 						 void **/*con_cls*/) {
 
-	const NetMauMau::Server::Httpd *httpd = reinterpret_cast<NetMauMau::Server::Httpd *>(cls);
+	NetMauMau::Server::Httpd *httpd = reinterpret_cast<NetMauMau::Server::Httpd *>(cls);
 	const bool havePlayers = !httpd->getPlayers().empty();
 
-	NetMauMau::Server::CachePolicyFactory::ICachePolicyPtr
-	cp(NetMauMau::Server::CachePolicyFactory::getInstance()->createNoCachePolicy());
+	httpd->clearReqHdrMap();
+	MHD_get_connection_values(connection, MHD_HEADER_KIND, processRequestHeader, cls);
 
+	NetMauMau::Server::CachePolicyFactory::ICachePolicyPtr cp;
 	std::vector<std::string::traits_type::char_type> bin;
-	std::ostringstream os;
-	os.unsetf(std::ios_base::skipws);
+
+	const NetMauMau::Server::Httpd::REQHEADERMAP::const_iterator
+	&accEnc(httpd->getReqHdrMap().find("Accept-Encoding"));
+
+	bool gzipReq = accEnc != httpd->getReqHdrMap().end() && accEnc->second.find("deflate") !=
+				   NetMauMau::Server::Httpd::REQHEADERMAP::mapped_type::npos;
 
 	char *contentType = 0L;
 	bool binary = false;
 
-	if(!std::strncmp("/images/", url, 8)) {
+	std::ostringstream oss;
+	oss.unsetf(std::ios_base::skipws);
 
-		cp = NetMauMau::Server::CachePolicyFactory::getInstance()->createPrivateCachePolicy(1800L);
+	std::streambuf *sb = 0L;
 
-		binary = true;
+	try {
+
+		sb = gzipReq ? new NetMauMau::Common::Zstreambuf(oss, Z_BEST_COMPRESSION, true) : 0L;
+
+		std::ostream os(sb ? sb : oss.rdbuf());
+
+		if(!std::strncmp("/images/", url, 8)) {
+
+			cp = NetMauMau::Server::CachePolicyFactory::getInstance()->
+				 createPrivateCachePolicy(1800L);
+
+			binary = true;
 
 #if MHD_VERSION > 0x00000200
-		const char *name = std::strrchr(url, '/');
+			const char *name = std::strrchr(url, '/');
 #else
-		char *myUrl = unquoteUrl(url);
-		const char *name = std::strrchr(myUrl, '/');
+			char *myUrl = unquoteUrl(url);
+			const char *name = std::strrchr(myUrl, '/');
 #endif
 
-		if(name && *(name + 1)) {
+			if(name && *(name + 1)) {
 
-			const NetMauMau::Server::Httpd::IMAGES::const_iterator
-			&f(httpd->getImages().find(name + 1));
+				const NetMauMau::Server::Httpd::IMAGES::const_iterator
+				&f(httpd->getImages().find(name + 1));
 
-			if(f != httpd->getImages().end()) {
-				bin.assign(f->second.begin(), f->second.end());
+				if(f != httpd->getImages().end()) {
+					bin.assign(f->second.begin(), f->second.end());
+				} else {
+					bin.assign(NetMauMau::Common::DefaultPlayerImage.begin(),
+							   NetMauMau::Common::DefaultPlayerImage.end());
+				}
+
 			} else {
 				bin.assign(NetMauMau::Common::DefaultPlayerImage.begin(),
 						   NetMauMau::Common::DefaultPlayerImage.end());
 			}
 
-		} else {
-			bin.assign(NetMauMau::Common::DefaultPlayerImage.begin(),
-					   NetMauMau::Common::DefaultPlayerImage.end());
-		}
-
-		const std::string &mime(NetMauMau::Common::MimeMagic::getInstance()->
-								getMime(reinterpret_cast<const unsigned char *>(bin.data()),
-										bin.size()));
-
-		contentType = !mime.empty() ? strdup((mime + "; charset=binary").c_str()) :
-					  strdup("image/png; charset=binary");
-
-#if MHD_VERSION <= 0x00000200
-		free(myUrl);
-#endif
-
-	} else if(!std::strncmp("/favicon.ico", url, 8)) {
-
-		cp = NetMauMau::Server::CachePolicyFactory::getInstance()->createPublicCachePolicy();
-
-		binary = true;
-		LKFIM = contentType = strdup("image/vnd.microsoft.icon; charset=binary");
-
-		std::ifstream fav(NetMauMau::Common::getModulePath(NetMauMau::Common::PKGDATA,
-						  "netmaumau", "ico").c_str(), std::ios::binary);
-
-		if(!fav.fail()) {
-
-			bin.assign(std::istreambuf_iterator<std::string::traits_type::char_type>(fav),
-					   std::istreambuf_iterator<std::string::traits_type::char_type>());
-
 			const std::string &mime(NetMauMau::Common::MimeMagic::getInstance()->
 									getMime(reinterpret_cast<const unsigned char *>(bin.data()),
 											bin.size()));
 
-			if(!mime.empty()) LKFIM = contentType = strdup((mime + "; charset=binary").c_str());
+			contentType = !mime.empty() ? strdup((mime + "; charset=binary").c_str()) :
+						  strdup("image/png; charset=binary");
+
+#if MHD_VERSION <= 0x00000200
+			free(myUrl);
+#endif
+
+		} else if(!std::strncmp("/favicon.ico", url, 8)) {
+
+			cp = NetMauMau::Server::CachePolicyFactory::getInstance()->createPublicCachePolicy();
+
+			binary = true;
+			LKFIM = contentType = strdup("image/vnd.microsoft.icon; charset=binary");
+
+			std::ifstream fav(NetMauMau::Common::getModulePath(NetMauMau::Common::PKGDATA,
+							  "netmaumau", "ico").c_str(), std::ios::binary);
+
+			if(!fav.fail()) {
+
+				bin.assign(std::istreambuf_iterator<std::string::traits_type::char_type>(fav),
+						   std::istreambuf_iterator<std::string::traits_type::char_type>());
+
+				const std::string &mime(NetMauMau::Common::MimeMagic::getInstance()->
+										getMime(reinterpret_cast<const unsigned char *>(bin.data()),
+												bin.size()));
+
+				if(!mime.empty()) LKFIM = contentType = strdup((mime + "; charset=binary").c_str());
+
+			} else {
+				logWarning("Failed to open favicon file: \"" <<
+						   NetMauMau::Common::getModulePath(NetMauMau::Common::PKGDATA, "netmaumau",
+								   "ico") << "\"");
+			}
 
 		} else {
-			logWarning("Failed to open favicon file: \"" <<
-					   NetMauMau::Common::getModulePath(NetMauMau::Common::PKGDATA, "netmaumau",
-							   "ico") << "\"");
-		}
 
-	} else {
+			cp = NetMauMau::Server::CachePolicyFactory::getInstance()->createNoCachePolicy();
 
-		contentType = strdup("text/html; charset=utf-8");
+			contentType = strdup("text/html; charset=utf-8");
 
-		const NetMauMau::DB::SQLite::SCORES &sc(httpd->getCapabilities().find("HAVE_SCORES") !=
-												httpd->getCapabilities().end() ?
-												NetMauMau::DB::SQLite::getInstance()->
-												getScores(NetMauMau::DB::SQLite::NORM) :
-												NetMauMau::DB::SQLite::SCORES());
+			const NetMauMau::DB::SQLite::SCORES &sc(httpd->getCapabilities().find("HAVE_SCORES") !=
+													httpd->getCapabilities().end() ?
+													NetMauMau::DB::SQLite::getInstance()->
+													getScores(NetMauMau::DB::SQLite::NORM) :
+													NetMauMau::DB::SQLite::SCORES());
 
-		os << "<html><head>"
-		   << "<link rel=\"shortcut icon\" type=\""
-		   << (!LKFIM.empty() ? LKFIM.c_str() : "image/vnd.microsoft.icon")
-		   << "\" href=\"/favicon.ico\" />"
-		   << "<link rel=\"icon\" type=\""
-		   << (!LKFIM.empty() ? LKFIM.c_str() : "image/vnd.microsoft.icon")
-		   << "\" href=\"/favicon.ico\" />"
-		   << "<title>" << PACKAGE_STRING << " ("
+			os << "<html><head>"
+			   << "<link rel=\"shortcut icon\" type=\""
+			   << (!LKFIM.empty() ? LKFIM.c_str() : "image/vnd.microsoft.icon")
+			   << "\" href=\"/favicon.ico\" />"
+			   << "<link rel=\"icon\" type=\""
+			   << (!LKFIM.empty() ? LKFIM.c_str() : "image/vnd.microsoft.icon")
+			   << "\" href=\"/favicon.ico\" />"
+			   << "<title>" << PACKAGE_STRING << " ("
 #ifndef _WIN32
-		   << BUILD_TARGET
+			   << BUILD_TARGET
 #else
-		   << "Windows [" << BUILD_TARGET << "]"
+			   << "Windows [" << BUILD_TARGET << "]"
 #endif
-		   << ")</title>";
+			   << ")</title>";
 
-		os << "<style>"
-		   << "table, td, th { background-color:white; border: thin solid black; "
-		   << "border-spacing: 0; border-collapse: collapse; }"
-		   << "pre { background-color:white; }"
-		   << "a { text-decoration:none; }"
-		   << "img { border:none; }"
-		   << "</style></head>";
+			os << "<style>"
+			   << "table, td, th { background-color:white; border: thin solid black; "
+			   << "border-spacing: 0; border-collapse: collapse; }"
+			   << "pre { background-color:white; }"
+			   << "a { text-decoration:none; }"
+			   << "img { border:none; }"
+			   << "</style></head>";
 
-		os << "<body bgcolor=\"#eeeeee\"><a name=\"top\"><font face=\"Sans-Serif\">"
-		   << "<h1 align=\"center\">" << PACKAGE_STRING << "</h1></a><hr />";
+			os << "<body bgcolor=\"#eeeeee\"><a name=\"top\"><font face=\"Sans-Serif\">"
+			   << "<h1 align=\"center\">" << PACKAGE_STRING << "</h1></a><hr />";
 
-		os << "<p><ul>";
+			os << "<p><ul>";
 
-		if(havePlayers) os << "<li><a href=\"#players\">Players online</a></li>";
+			if(havePlayers) os << "<li><a href=\"#players\">Players online</a></li>";
 
-		if(!sc.empty()) os << "<li><a href=\"#scores\">Hall of Fame</a></li>";
+			if(!sc.empty()) os << "<li><a href=\"#scores\">Hall of Fame</a></li>";
 
-		os << "<li><a href=\"#capa\">Server capabilities</a></li>";
-		os << "<li><a href=\"#dump\">Server dump</a></li>";
+			os << "<li><a href=\"#capa\">Server capabilities</a></li>";
+			os << "<li><a href=\"#dump\">Server dump</a></li>";
 
-		os << "</ul></p><hr />";
+			os << "</ul></p><hr />";
 
-		if(havePlayers) {
-			os << "<a name=\"players\"><h2 align=\"center\">Players online <i>("
-			   << (httpd->isWaiting() ?  "waiting" : "running") << ")</i></h2><p align=\"center\">"
-			   << "<table>";
+			if(havePlayers) {
+				os << "<a name=\"players\"><h2 align=\"center\">Players online <i>("
+				   << (httpd->isWaiting() ?  "waiting" : "running")
+				   << ")</i></h2><p align=\"center\"><table>";
 
-			std::for_each(httpd->getPlayers().begin(), httpd->getPlayers().end(), listPlayers(os));
+				std::for_each(httpd->getPlayers().begin(), httpd->getPlayers().end(),
+							  listPlayers(os));
 
-			os << "</table></p></a>" << B2TOP << "<hr />";
+				os << "</table></p></a>" << B2TOP << "<hr />";
+			}
+
+			if(!sc.empty()) {
+				os << "<a name=\"scores\"><center><h2>Hall of Fame</h2><table width=\"50%\">"
+				   << "<tr><th>&nbsp;</th><th>PLAYER</th><th>SCORE</th></tr>";
+
+				std::for_each(sc.begin(), sc.end(), scoresTable(os));
+
+				os << "</table></center></a>" << B2TOP << "<hr />";
+			}
+
+			os << "<a name=\"capa\"><center><h2>Server capabilities</h2><table width=\"50%\">"
+			   << "<tr><th>NAME</th><th>VALUE</th></tr>";
+
+			std::for_each(httpd->getCapabilities().begin(), httpd->getCapabilities().end(),
+						  capaTable(os));
+
+			os << "</table></center></a>" << B2TOP << "<hr /><a name=\"dump\">"
+			   << "<h2 align=\"center\">Server dump</h2><tt><pre>";
+
+			NetMauMau::dump(os);
+
+			os << "</pre></a></tt><hr />" << B2TOP << "</font></body></html>";
 		}
 
-		if(!sc.empty()) {
-			os << "<a name=\"scores\"><center><h2>Hall of Fame</h2><table width=\"50%\">"
-			   << "<tr><th>&nbsp;</th><th>PLAYER</th><th>SCORE</th></tr>";
+		os.flush();
 
-			std::for_each(sc.begin(), sc.end(), scoresTable(os));
+	} catch(const NetMauMau::Common::Exception::ZLibException &e) {
 
-			os << "</table></center></a>" << B2TOP << "<hr />";
-		}
+		oss << e.what();
+		gzipReq = false;
 
-		os << "<a name=\"capa\"><center><h2>Server capabilities</h2><table width=\"50%\">"
-		   << "<tr><th>NAME</th><th>VALUE</th></tr>";
-
-		std::for_each(httpd->getCapabilities().begin(), httpd->getCapabilities().end(),
-					  capaTable(os));
-
-		os << "</table></center></a>" << B2TOP << "<hr /><a name=\"dump\">"
-		   << "<h2 align=\"center\">Server dump</h2><tt><pre>";
-
-		NetMauMau::dump(os);
-
-		os << "</pre></a></tt><hr />" << B2TOP << "</font></body></html>";
+		if(!cp) cp = NetMauMau::Server::CachePolicyFactory::getInstance()->createNoCachePolicy();
 	}
+
+	delete sb;
 
 	void *data = 0L;
 
@@ -320,26 +360,34 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 			std::memcpy(data, bin.data(), bin.size());
 		}
 
+	} else if(gzipReq) {
+
+		if((data = std::malloc(oss.str().size()))) {
+			std::memcpy(data, oss.str().data(), oss.str().size());
+		}
+
 	} else {
 #ifdef HAVE_STRNDUP
-		data = static_cast<void *>(const_cast<char *>(strndup(os.str().c_str(),
-								   os.str().length())));
+		data = static_cast<void *>(const_cast<char *>(strndup(oss.str().c_str(),
+								   oss.str().length())));
 #else
-		data = static_cast<void *>(const_cast<char *>(strdup(os.str().c_str())));
+		data = static_cast<void *>(const_cast<char *>(strdup(oss.str().c_str())));
 #endif
 	}
 
-	const std::size_t len = binary ? (data ? bin.size() : 0u) : os.str().length();
+	const std::size_t len = binary ? (data ? bin.size() : 0u) : gzipReq ? oss.str().size() :
+								oss.str().length();
 
 	MHD_Response *response = MHD_create_response_from_data(len, data, true, false);
-
 	MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, contentType);
+
+	if(gzipReq && !binary) MHD_add_response_header(response,
+				MHD_HTTP_HEADER_CONTENT_ENCODING, "deflate");
 
 	if(cp->expires()) MHD_add_response_header(response, MHD_HTTP_HEADER_EXPIRES,
 				cp->getExpiryDate());
 
 	MHD_add_response_header(response, MHD_HTTP_HEADER_CACHE_CONTROL, cp->getCacheControl());
-// 							nocache ? "no-cache" : "public");
 
 	const int ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
 
@@ -355,7 +403,7 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 using namespace NetMauMau::Server;
 
 Httpd::Httpd() : Common::IObserver<Game>(), Common::IObserver<Engine>(),
-	Common::IObserver<Connection>(), Common::SmartSingleton<Httpd>(), m_daemon(0L),
+	Common::IObserver<Connection>(), Common::SmartSingleton<Httpd>(), m_daemon(0L), m_reqHdrMap(),
 	m_gameSource(0L), m_engineSource(0L), m_connectionSource(0L), m_players(), m_images(), m_caps(),
 	m_gameRunning(false), m_waiting(true), m_url() {
 

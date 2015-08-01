@@ -41,6 +41,7 @@ public:
 	typedef NetMauMau::Common::IObserver<NetMauMau::Engine>::what_type PLAYERS;
 	typedef std::map < NetMauMau::Common::IObserver<Connection>::what_type::first_type,
 			NetMauMau::Common::IObserver<Connection>::what_type::second_type > IMAGES;
+	typedef std::map<std::string, std::string> REQHEADERMAP;
 
 	virtual ~Httpd();
 
@@ -76,11 +77,24 @@ public:
 		return m_caps;
 	}
 
+	inline const REQHEADERMAP &getReqHdrMap() const {
+		return m_reqHdrMap;
+	}
+
+	inline void clearReqHdrMap() {
+		m_reqHdrMap.clear();
+	}
+
+	inline void insertReqHdrPair(const char *key, const char *value) {
+		m_reqHdrMap.insert(std::make_pair(key, value));
+	}
+
 private:
 	Httpd();
 
 private:
 	MHD_Daemon *m_daemon;
+	REQHEADERMAP m_reqHdrMap;
 	const Common::IObserver<Game>::source_type *m_gameSource;
 	const Common::IObserver<Engine>::source_type *m_engineSource;
 	const Common::IObserver<Connection>::source_type *m_connectionSource;

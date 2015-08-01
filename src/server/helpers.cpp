@@ -346,7 +346,15 @@ void dump(std::ostream &out) {
 	out << "AI-delay: " << static_cast<float>(aiDelay) << " sec" << std::endl;
 	out << "A/K/Q rounds: " << aceRound << std::endl;
 
-	if(aceRound) out << "A/K/Q rank: " << ((arRank != 0L) ? arRank : "ACE") << std::endl;
+	std::string arRankStr;
+
+	if(arRank) {
+		const std::size_t al = std::strlen(arRank);
+		arRankStr.reserve(al);
+		std::transform(arRank, arRank + al, std::back_inserter(arRankStr), ::toupper);
+	}
+
+	if(aceRound) out << "A/K/Q rank: " << ((arRank != 0L) ? arRankStr.c_str() : "ACE") << std::endl;
 
 	out << "Decks: " << decks << std::endl;
 	out << "Direction change: " << dirChange << std::endl;

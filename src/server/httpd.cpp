@@ -52,11 +52,14 @@
 #include "iplayer.h"
 #include "mimemagic.h"
 #include "pathtools.h"
-#include "zstreambuf.h"
-#include "zlibexception.h"
 #include "cachepolicyfactory.h"
 #include "defaultplayerimage.h"
 #include "abstractsocketimpl.h"
+
+#ifdef HAVE_ZLIB_H
+#include "zstreambuf.h"
+#include "zlibexception.h"
+#endif
 
 #ifndef _WIN32
 #define TIMEFORMAT "%T - "
@@ -168,11 +171,15 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 	NetMauMau::Server::CachePolicyFactory::ICachePolicyPtr cp;
 	std::vector<std::string::traits_type::char_type> bin;
 
+#ifdef HAVE_ZLIB_H
 	const NetMauMau::Server::Httpd::REQHEADERMAP::const_iterator
 	&accEnc(httpd->getReqHdrMap().find("Accept-Encoding"));
 
 	bool gzipReq = accEnc != httpd->getReqHdrMap().end() && accEnc->second.find("deflate") !=
 				   NetMauMau::Server::Httpd::REQHEADERMAP::mapped_type::npos;
+#else
+	const bool gzipReq = false;
+#endif
 
 	char *contentType = 0L;
 	bool binary = false;
@@ -182,9 +189,12 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 	std::streambuf *sb = 0L;
 
+#ifdef HAVE_ZLIB_H
+
 	try {
 
 		sb = gzipReq ? new NetMauMau::Common::Zstreambuf(oss, Z_BEST_COMPRESSION, true) : 0L;
+#endif
 
 		std::ostream os(sb ? sb : oss.rdbuf());
 
@@ -342,6 +352,7 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 		os.flush();
 
+#ifdef HAVE_ZLIB_H
 	} catch(const NetMauMau::Common::Exception::ZLibException &e) {
 
 		oss << e.what();
@@ -349,6 +360,8 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 		if(!cp) cp = NetMauMau::Server::CachePolicyFactory::getInstance()->createNoCachePolicy();
 	}
+
+#endif
 
 	delete sb;
 
@@ -360,12 +373,14 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 			std::memcpy(data, bin.data(), bin.size());
 		}
 
+#ifdef HAVE_ZLIB_H
 	} else if(gzipReq) {
 
 		if((data = std::malloc(oss.str().size()))) {
 			std::memcpy(data, oss.str().data(), oss.str().size());
 		}
 
+#endif
 	} else {
 #ifdef HAVE_STRNDUP
 		data = static_cast<void *>(const_cast<char *>(strndup(oss.str().c_str(),
@@ -381,8 +396,12 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 	MHD_Response *response = MHD_create_response_from_data(len, data, true, false);
 	MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, contentType);
 
+#ifdef HAVE_ZLIB_H
+
 	if(gzipReq && !binary) MHD_add_response_header(response,
 				MHD_HTTP_HEADER_CONTENT_ENCODING, "deflate");
+
+#endif
 
 	if(cp->expires()) MHD_add_response_header(response, MHD_HTTP_HEADER_EXPIRES,
 				cp->getExpiryDate());

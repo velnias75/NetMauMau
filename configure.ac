@@ -120,6 +120,9 @@ fi
 
 # Checks for libraries.
 CHECK_ZLIB
+
+AM_CONDITIONAL([WITHZLIB], [ test "${WANT_ZLIB}" != no -a -n "${ZLIB_HOME}" ])
+
 PKG_CHECK_MODULES([POPT], [popt >= 1.10])
 AC_CHECK_LIB([magic], [magic_open],
   [ AC_SUBST(DOCMAGIC, "libmagic")

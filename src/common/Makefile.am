@@ -32,8 +32,12 @@ libnetmaumaucommon_private_la_LIBADD = $(MAGIC_LIBS)
 libnetmaumaucommon_la_CPPFLAGS = $(GSL)
 libnetmaumaucommon_la_CXXFLAGS = -I$(top_srcdir)/src/include 
 libnetmaumaucommon_la_SOURCES = abstractconnection.cpp abstractconnectionimpl.cpp \
-	abstractsocket.cpp abstractsocketimpl.cpp base64.cpp logger.cpp socketexception.cpp \
-	zlibexception.cpp zstreambuf.cpp
+	abstractsocket.cpp abstractsocketimpl.cpp base64.cpp logger.cpp socketexception.cpp
+
+if WITHZLIB
+libnetmaumaucommon_la_SOURCES += zlibexception.cpp zstreambuf.cpp
+endif
+
 libnetmaumaucommon_la_LIBADD = libnetmaumaucommon_private.la $(ZLIB_LIBS)
 libnetmaumaucommon_la_LDFLAGS = -nodefaultlibs -nostartfiles \
 	-version-info 6:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)

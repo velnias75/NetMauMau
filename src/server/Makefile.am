@@ -47,6 +47,11 @@ dist_pkgdata_DATA = $(top_srcdir)/netmaumau.ico
 libhttpd_la_CPPFLAGS = -DPKGDATADIR="\"$(pkgdatadir)\""	
 libhttpd_la_CXXFLAGS = $(LIBMICROHTTPD_CFLAGS) -I$(top_srcdir)/src/include \
 	-I$(top_srcdir)/src/common -I$(top_srcdir)/src/sqlite -I$(top_srcdir)/src/engine
+	
+if !WITHZLIB
+libhttpd_la_CXXFLAGS += $(NO_EXCEPTIONS)
+endif
+
 libhttpd_la_SOURCES  = cachepolicyfactory.cpp httpd.cpp
 libhttpd_la_LIBADD   = $(LIBMICROHTTPD_LIBS)
 endif

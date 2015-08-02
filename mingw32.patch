@@ -1,6 +1,6 @@
 diff -uNr netmaumau-0.23.5.orig/configure.ac netmaumau-0.23.5/configure.ac
---- netmaumau-0.23.5.orig/configure.ac	2015-08-01 19:57:18.000000000 +0200
-+++ netmaumau-0.23.5/configure.ac	2015-08-02 01:58:45.776786606 +0200
+--- netmaumau-0.23.5.orig/configure.ac	2015-08-02 08:12:04.000000000 +0200
++++ netmaumau-0.23.5/configure.ac	2015-08-02 10:11:17.847072233 +0200
 @@ -7,7 +7,7 @@
  AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip tar-pax no-installinfo no-texinfo.tex])
  AM_MAINTAINER_MODE
@@ -10,7 +10,7 @@ diff -uNr netmaumau-0.23.5.orig/configure.ac netmaumau-0.23.5/configure.ac
  LT_LANG([Windows Resource])
  
  AC_SUBST([BUILD_YEAR], [`date +%Y`])
-@@ -144,6 +144,7 @@
+@@ -147,6 +147,7 @@
  .mso www.tmac
  .URL \"http://www.gnu.org/software/gsl/manual/html_node/Random-number-environment-variables.html\" \"GSL Manual\" \" for more information\"" > gsl.h2m ],
    [ AM_CONDITIONAL([GSL], [ false ])] )
@@ -18,7 +18,7 @@ diff -uNr netmaumau-0.23.5.orig/configure.ac netmaumau-0.23.5/configure.ac
  PKG_CHECK_MODULES([LIBSQLITE], [sqlite3 >= 3.4.2])
  PKG_CHECK_MODULES([LIBLUA], [lua5.1 >= 5.1.2], [ AC_SUBST([PKGC_LUA], [lua5.1]) ],
    [ PKG_CHECK_MODULES([LIBLUA], [lua51 >= 5.1.2], [ AC_SUBST([PKGC_LUA], [lua51]) ],
-@@ -254,7 +255,7 @@
+@@ -257,7 +258,7 @@
  
  NMM_CLIENTVERSION([0],[15])
  
@@ -27,9 +27,301 @@ diff -uNr netmaumau-0.23.5.orig/configure.ac netmaumau-0.23.5/configure.ac
  
  AC_DEFINE_UNQUOTED([SERVER_VERSION_MAJOR], [${SERVER_VERSION_MAJOR}], [server version major])
  AC_DEFINE_UNQUOTED([SERVER_VERSION_MINOR], [${SERVER_VERSION_MINOR}], [server version minor])
+diff -uNr netmaumau-0.23.5.orig/configure.ac.orig netmaumau-0.23.5/configure.ac.orig
+--- netmaumau-0.23.5.orig/configure.ac.orig	1970-01-01 01:00:00.000000000 +0100
++++ netmaumau-0.23.5/configure.ac.orig	2015-08-02 08:12:04.000000000 +0200
+@@ -0,0 +1,288 @@
++#                                               -*- Autoconf -*-
++# Process this file with autoconf to produce a configure script.
++
++AC_PREREQ([2.61])
++AC_INIT([NetMauMau], [0.23.5], [heiko@rangun.de], [netmaumau], [https://github.com/velnias75/NetMauMau])
++m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
++AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip tar-pax no-installinfo no-texinfo.tex])
++AM_MAINTAINER_MODE
++AC_CONFIG_HEADERS([config.h])
++LT_INIT
++LT_LANG([Windows Resource])
++
++AC_SUBST([BUILD_YEAR], [`date +%Y`])
++AC_DEFINE_UNQUOTED([BUILD_DATE], [`date +%s`], [the build date in Unix time])
++AC_DEFINE_UNQUOTED([BUILD_NODE], ["`uname -n`"], [the build node])
++AC_DEFINE_UNQUOTED([BUILD_HOST], ["$build_cpu-$build_vendor-$build_os"], [the build host])
++AC_DEFINE_UNQUOTED([BUILD_TARGET], ["$host_cpu-$host_vendor-$host_os"], [the build target])
++
++AC_DEFINE([SERVER_PORT], [8899], [the default server port])
++AC_DEFINE([HTTPD_PORT], [9000], [the default httpd port])
++
++AC_ARG_ENABLE([ansi], [AS_HELP_STRING([--disable-ansi], [disables ANSI support])],
++  [ if test x$enable_ansi = xno; then
++      CPPFLAGS="${CPPFLAGS} -DDISABLE_ANSI"
++    fi
++  ])
++
++AC_ARG_ENABLE([client], [AS_HELP_STRING([--disable-client], [disables build of client library])],
++  [ AM_CONDITIONAL([ENABLE_CLIENT], [ test x$enable_client = xyes ]) ],
++  [ AM_CONDITIONAL([ENABLE_CLIENT], [ true ]) ])
++
++AC_ARG_ENABLE([console-client], [AS_HELP_STRING([--enable-console-client],
++  [enables build of console client])],
++  [ AM_CONDITIONAL([ENABLE_CLI_CLIENT], [ test x$enable_console_client = xyes ]) ],
++  [ AM_CONDITIONAL([ENABLE_CLI_CLIENT], [ false ]) ])
++
++AC_ARG_ENABLE([apidoc], [AS_HELP_STRING([--disable-apidoc], [disables generation of API docs])],
++  [ AM_CONDITIONAL([GENDOX], [ test x$enable_apidoc = xyes ]) ],
++  [ AM_CONDITIONAL([GENDOX], [ true ]) ])
++
++AC_ARG_ENABLE([ai-name], [AS_HELP_STRING([--enable-ai-name], [default name of AI player])])
++
++if test ! -z "$enable_ai_name" -a "x$enable_ai_name" != "xno"; then
++  AC_DEFINE_UNQUOTED([AI_NAME], ["$enable_ai_name"], [default name of AI player])
++else
++  AC_DEFINE([AI_NAME], ["Computer"], [default name of AI player])
++fi
++
++AC_ARG_ENABLE([ai-image], [AS_HELP_STRING([--enable-ai-image], [path to image of AI player])],
++  [ AM_CONDITIONAL([BRANDING], [ test x$enable_ai_image != xno ]) ],
++  [ AM_CONDITIONAL([BRANDING], [ false ]) ])
++
++AC_ARG_ENABLE([ai-tracing], [AS_HELP_STRING([--enable-ai-tracing],
++  [enables tracing of AI decisions (useful for developers only, needs NDEBUG undefined)])],
++  [  if test x$enable_ai_tracing = xyes; then
++       AC_DEFINE([TRACE_AI], [1], [Define to 1 to enable tracing of AI decisions])
++     fi
++  ])
++
++if test ! -z "$enable_ai_image" -a "x$enable_ai_image" != "xno"; then
++  AC_SUBST([AI_IMAGE], [$enable_ai_image])
++else
++  AC_SUBST([AI_IMAGE], [\$\(top_srcdir\)/src/images/KS.PNG])
++fi
++
++AC_ARG_ENABLE([pidfile], [AS_HELP_STRING([--enable-pidfile], [enables creation of pid file])],
++  [ AM_CONDITIONAL([PIDFILE], [ test x$enable_pidfile = xyes ]) ],
++  [ AM_CONDITIONAL([PIDFILE], [ false ]) ])
++
++AC_ARG_ENABLE([xinetd], [AS_HELP_STRING([--disable-xinetd], [disables creation and installation of the xinetd service])],
++  [ AM_CONDITIONAL([XINETD], [ test x$enable_xinetd = xyes ]) ],
++  [ AM_CONDITIONAL([XINETD], [ true ]) ])
++
++AC_ARG_ENABLE([webserver], [AS_HELP_STRING([--disable-webserver], [disables the integrated webserver])],
++  [ if test x$enable_webserver = xyes; then NOHTTPD=0; else NOHTTPD=1; fi ], [ NOHTTPD=0 ])
++
++PKG_PROG_PKG_CONFIG([0.22])
++
++# Checks for programs.
++AC_PROG_CXX
++AX_CHECK_CLANG
++AC_PROG_LN_S
++AX_CHECK_BASE64
++AC_CHECK_PROGS([HELP2MAN], [help2man])
++AC_CHECK_PROGS([DOXYGEN],  [doxygen])
++AC_CHECK_PROGS([CPPCHECK], [cppcheck])
++AC_CHECK_PROGS([DEHEADER], [deheader])
++
++if test -z "$ac_cv_prog_HELP2MAN"; then
++  AM_CONDITIONAL([GENMAN], [ false ])
++else
++  AM_CONDITIONAL([GENMAN], [ true ])
++fi
++
++if test -z "$ac_cv_prog_DOXYGEN"; then
++  AM_CONDITIONAL([GENDOX], [ false ])
++fi
++
++if test -z "$ac_cv_prog_CPPCHECK"; then
++  AM_CONDITIONAL([CHECKCPP], [ false ])
++else
++  AM_CONDITIONAL([CHECKCPP], [ true ])
++fi
++
++if test -z "$ac_cv_prog_DEHEADER"; then
++  AM_CONDITIONAL([ENABLE_DEHEADER], [ false ])
++else
++  AM_CONDITIONAL([ENABLE_DEHEADER], [ true ])
++fi
++
++if test -z "$ac_cv_prog_RC"; then
++  AM_CONDITIONAL([RC], [ false ])
++else
++  AM_CONDITIONAL([RC], [ true ])
++fi
++
++if test x$enable_console_client = xyes; then
++  AM_CONDITIONAL([ENABLE_CLIENT], [ true ])
++fi
++
++# Checks for libraries.
++CHECK_ZLIB
++
++AM_CONDITIONAL([WITHZLIB], [ test "${WANT_ZLIB}" != no -a -n "${ZLIB_HOME}" ])
++
++PKG_CHECK_MODULES([POPT], [popt >= 1.10])
++AC_CHECK_LIB([magic], [magic_open],
++  [ AC_SUBST(DOCMAGIC, "libmagic")
++	AC_DEFINE([HAVE_LIBMAGIC], [1], [Define to 1 if you have the `magic' library (-lmagic).])
++	AC_SUBST([MAGIC_LIBS], [-lmagic]) ],
++  [ AC_SUBST(DOCMAGIC, "") ])
++AC_CHECK_LIB([rt], [timer_create],
++  [ AC_DEFINE([HAVE_LIBRT], [1], [Define to 1 if you have the `rt' library (-lrt).])
++	AC_SUBST([RT_LIBS], [-lrt]) ])
++PKG_CHECK_MODULES([GSL], [gsl >= 1.9],
++  [ AM_CONDITIONAL([GSL], [ true ])
++    AC_SUBST(DOCGSL, "gsl")
++	echo "[[ENVIRONMENT]]
++.TP
++\fBGSL_RNG_TYPE\fR
++the name of a generator, such as ranlxs2, taus or mt19937
++.TP
++\fBGSL_RNG_SEED\fR
++the desired seed value
++.PP
++See the
++.mso www.tmac
++.URL \"http://www.gnu.org/software/gsl/manual/html_node/Random-number-environment-variables.html\" \"GSL Manual\" \" for more information\"" > gsl.h2m ],
++  [ AM_CONDITIONAL([GSL], [ false ])] )
++PKG_CHECK_MODULES([LIBSQLITE], [sqlite3 >= 3.4.2])
++PKG_CHECK_MODULES([LIBLUA], [lua5.1 >= 5.1.2], [ AC_SUBST([PKGC_LUA], [lua5.1]) ],
++  [ PKG_CHECK_MODULES([LIBLUA], [lua51 >= 5.1.2], [ AC_SUBST([PKGC_LUA], [lua51]) ],
++  [ PKG_CHECK_MODULES([LIBLUA], [lua >= 5.1.2 lua < 5.2], [AC_SUBST([PKGC_LUA], [lua])] ) ] ) ])
++PKG_CHECK_MODULES([LIBMICROHTTPD], [libmicrohttpd >= 0.4.6],
++				  [ if test $NOHTTPD -eq 0; then
++				      AM_CONDITIONAL([MICROHTTPD], [ true ])
++					  AC_DEFINE([HAVE_LIBMICROHTTPD], [1], [Define to 1 if you have libmicrohttpd.])
++					else
++					  AM_CONDITIONAL([MICROHTTPD], [ false ])
++					fi ], [ AM_CONDITIONAL([MICROHTTPD], [ false ]) ])
++
++# Checks for header files.
++AC_HEADER_STDBOOL
++AC_CHECK_HEADERS([sys/wait.h])
++AC_CHECK_HEADERS([sys/time.h])
++AC_CHECK_HEADERS([magic.h])
++AC_CHECK_HEADERS([poll.h])
++AC_CHECK_HEADERS([netdb.h])
++AC_CHECK_HEADERS([syslog.h])
++AC_CHECK_HEADERS([sys/socket.h])
++
++# Checks for typedefs, structures, and compiler characteristics.
++AX_CXX_GCC_ABI_DEMANGLE
++AX_CHECK_COMPILE_FLAG([-fvisibility=internal],
++  [ VISIBILITY="internal" ], [ VISIBILITY="hidden" ])
++AX_CHECK_COMPILE_FLAG([-Wa,--noexecstack],
++  [ NOEXECSTACK_AS="-Wa,--noexecstack" ])
++AX_CHECK_LINK_FLAG([-Wl,-z,noexecstack],
++  [ NOEXECSTACK_LD="-Wl,-z,noexecstack" ])
++AX_CHECK_LINK_FLAG([-funsafe-math-optimizations],
++  [ FASTMATH_LD="-funsafe-math-optimizations" ])
++AC_CHECK_TYPES([ptrdiff_t])
++AC_CHECK_MEMBERS([struct stat.st_rdev])
++AC_TYPE_SIZE_T
++AC_TYPE_SSIZE_T
++AC_TYPE_UINT16_T
++AC_TYPE_UINT32_T
++AC_TYPE_UID_T
++AC_TYPE_PID_T
++AC_C_INLINE
++
++# Checks for library functions.
++AC_LANG_PUSH([C++])
++AS_IF([test "x$cross_compiling" != "xyes"], [
++  AC_FUNC_MALLOC
++  AC_FUNC_REALLOC
++])
++AC_CHECK_FUNCS([floor])
++AC_CHECK_FUNCS([strncasecmp])
++AC_CHECK_FUNCS([mkdir])
++AC_CHECK_FUNCS([initstate])
++AC_CHECK_FUNCS([strdup])
++AC_CHECK_FUNCS([strndup])
++AC_CHECK_FUNCS([strtoul])
++AC_CHECK_FUNCS([memset])
++AC_CHECK_FUNCS([socket])
++AC_CHECK_FUNCS([select])
++AC_CHECK_FUNCS([atexit])
++AC_CHECK_FUNCS([strerror])
++AC_CHECK_FUNC([arc4random_uniform],
++  [ AC_DEFINE([HAVE_ARC4RANDOM_UNIFORM], [1], [we have arc4random_uniform])
++])
++AC_FUNC_ERROR_AT_LINE
++AC_FUNC_CHOWN
++AC_LANG_POP([C++])
++
++# backwards compat with older pkg-config
++# - pull in AC_DEFUN from pkg.m4
++m4_ifndef([PKG_CHECK_VAR], [
++# PKG_CHECK_VAR(VARIABLE, MODULE, CONFIG-VARIABLE,
++# [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
++# -------------------------------------------
++# Retrieves the value of the pkg-config variable for the given module.
++AC_DEFUN([PKG_CHECK_VAR],
++[AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
++AC_ARG_VAR([$1], [value of $3 for $2, overriding pkg-config])dnl
++
++_PKG_CONFIG([$1], [variable="][$3]["], [$2])
++AS_VAR_COPY([$1], [pkg_cv_][$1])
++
++AS_VAR_IF([$1], [""], [$5], [$4])dnl
++])# PKG_CHECK_VAR
++])
++
++AM_CONDITIONAL([INSTALL_BASHCOMP], [ false ])
++
++AC_ARG_WITH([bashcompletiondir], [AS_HELP_STRING([--with-bashcompletiondir=DIR],
++  [directory to install bash completion files into])],
++  [ if test "x$with_bashcompletiondir" != "xno"; then
++      AM_CONDITIONAL([INSTALL_BASHCOMP], [ true ])
++      bashcompdir="$with_bashcompletiondir"
++	fi ],
++  [  AM_CONDITIONAL([INSTALL_BASHCOMP], [ true ])
++     PKG_CHECK_VAR(bashcompdir, [bash-completion], [completionsdir], ,
++      bashcompdir="${sysconfdir}/bash_completion.d")
++  ])
++
++AC_SUBST([bashcompdir])
++
++SERVER_VERSION_MAJOR="`echo ${PACKAGE_VERSION} | tr -s '~.' '\t' | cut -f1`"
++SERVER_VERSION_MINOR="`echo ${PACKAGE_VERSION} | tr -s '~.' '\t' | cut -f2`"
++SERVER_VERSION_RELEASE="`echo ${PACKAGE_VERSION} | tr -s '~.' '\t' | cut -f3`"
++
++AC_SUBST([SERVER_VERSION_MAJOR])
++AC_SUBST([SERVER_VERSION_MINOR])
++AC_SUBST([SERVER_VERSION_RELEASE])
++
++NMM_CLIENTVERSION([0],[15])
++
++AC_DEFINE([MAXPICBYTES], [1048576], [maximum size of player image in bytes (base64 encoded)])
++
++AC_DEFINE_UNQUOTED([SERVER_VERSION_MAJOR], [${SERVER_VERSION_MAJOR}], [server version major])
++AC_DEFINE_UNQUOTED([SERVER_VERSION_MINOR], [${SERVER_VERSION_MINOR}], [server version minor])
++AC_DEFINE_UNQUOTED([SERVER_VERSION_RELEASE], [${SERVER_VERSION_RELEASE}], [server version release])
++
++LDFLAGS="${NOEXECSTACK_LD} ${FASTMATH_LD} -Wl,--as-needed ${LDFLAGS}"
++CFLAGS="${CFLAGS} ${NOEXECSTACK_AS} -std=gnu99 -ffast-math -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
++CXXFLAGS="${CXXFLAGS} ${NOEXECSTACK_AS} -std=gnu++98 -ffast-math -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
++CPPFLAGS="${CPPFLAGS} -DBASICLOGGER_NO_PTHREADS -D_GLIBCXX_VISIBILITY=0"
++NO_EXCEPTIONS="-fno-exceptions"
++
++if test x$CLANG = xyes; then CXXFLAGS="-fexceptions -frtti ${CXXFLAGS}" ; fi
++
++AC_SUBST([LDFLAGS])
++AC_SUBST([CFLAGS])
++AC_SUBST([CXXFLAGS])
++AC_SUBST([CPPFLAGS])
++AC_SUBST([NO_EXCEPTIONS])
++
++AC_CONFIG_MACRO_DIR([m4])
++
++AC_CONFIG_FILES([src/server/netmaumau.rc doc/client.dox doc/engine.dox])
++
++AC_MSG_RESULT([You may want to install a client too: https://github.com/velnias75/NetMauMau-Qt-Client])
++
++AC_OUTPUT([Makefile doc/Makefile src/Makefile src/ai/Makefile src/client/Makefile
++  src/common/Makefile src/engine/Makefile src/images/Makefile src/include/Makefile
++  src/lua/Makefile src/server/Makefile src/sqlite/Makefile src/test/Makefile])
 diff -uNr netmaumau-0.23.5.orig/src/client/Makefile.am netmaumau-0.23.5/src/client/Makefile.am
 --- netmaumau-0.23.5.orig/src/client/Makefile.am	2015-07-24 10:49:02.000000000 +0200
-+++ netmaumau-0.23.5/src/client/Makefile.am	2015-08-02 01:58:45.786785066 +0200
++++ netmaumau-0.23.5/src/client/Makefile.am	2015-08-02 10:11:17.847072233 +0200
 @@ -17,7 +17,7 @@
  	lostconnectionexception.cpp nonetmaumauserverexception.cpp playerlistexception.cpp \
  	protocolerrorexception.cpp scoresexception.cpp shutdownexception.cpp timeoutexception.cpp \
@@ -40,21 +332,68 @@ diff -uNr netmaumau-0.23.5.orig/src/client/Makefile.am netmaumau-0.23.5/src/clie
  libnetmaumauclient_la_LIBADD = libnetmaumauclient_private.la ../common/libnetmaumaucommon.la
  
 diff -uNr netmaumau-0.23.5.orig/src/common/Makefile.am netmaumau-0.23.5/src/common/Makefile.am
---- netmaumau-0.23.5.orig/src/common/Makefile.am	2015-08-01 19:57:18.000000000 +0200
-+++ netmaumau-0.23.5/src/common/Makefile.am	2015-08-02 02:00:52.815936731 +0200
-@@ -34,6 +34,7 @@
- libnetmaumaucommon_la_SOURCES = abstractconnection.cpp abstractconnectionimpl.cpp \
- 	abstractsocket.cpp abstractsocketimpl.cpp base64.cpp logger.cpp socketexception.cpp \
- 	zlibexception.cpp zstreambuf.cpp
+--- netmaumau-0.23.5.orig/src/common/Makefile.am	2015-08-02 08:12:04.000000000 +0200
++++ netmaumau-0.23.5/src/common/Makefile.am	2015-08-02 10:11:17.847072233 +0200
+@@ -38,6 +38,7 @@
+ libnetmaumaucommon_la_SOURCES += zlibexception.cpp zstreambuf.cpp
+ endif
+ 
 -libnetmaumaucommon_la_LIBADD = libnetmaumaucommon_private.la $(ZLIB_LIBS)
 -libnetmaumaucommon_la_LDFLAGS = -nodefaultlibs -nostartfiles \
 +libnetmaumaucommon_la_LIBADD = libnetmaumaucommon_private.la $(ZLIB_LIBS) -lws2_32
 +libnetmaumaucommon_la_LDFLAGS = -mconsole -static-libgcc -static-libstdc++ -no-undefined \
  	-version-info 6:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
 +
+diff -uNr netmaumau-0.23.5.orig/src/common/Makefile.am.orig netmaumau-0.23.5/src/common/Makefile.am.orig
+--- netmaumau-0.23.5.orig/src/common/Makefile.am.orig	1970-01-01 01:00:00.000000000 +0100
++++ netmaumau-0.23.5/src/common/Makefile.am.orig	2015-08-02 08:12:04.000000000 +0200
+@@ -0,0 +1,43 @@
++lib_LTLIBRARIES = libnetmaumaucommon.la
++noinst_LTLIBRARIES = libnetmaumaucommon_private.la
++
++BUILT_SOURCES = ai-icon.h
++
++noinst_HEADERS = abstractconnectionimpl.h abstractsocketimpl.h base64.h basiclogger.h \
++	ci_char_traits.h errorstring.h icardfactory.h iobserver.h iplayer.h logger.h \
++	mimemagic.h observable.h pathtools.h pngcheck.h protocol.h smartptr.h smartsingleton.h \
++	zlibexception.h zstreambuf.h
++
++DISTCLEANFILES = ai-icon.h
++
++.DELETE_ON_ERROR:
++ai-icon.h: $(AI_IMAGE)
++	$(AM_V_GEN) cat $(AI_IMAGE) | $(SHELL) $(top_srcdir)/src/images/create_ai_icon.sh \
++	'ai_icon_data' > $(builddir)/$(@F)
++
++if GSL
++GSL=-DHAVE_GSL
++else
++GSL=
++endif
++
++libnetmaumaucommon_private_la_CPPFLAGS = $(GSL) -DNMM_EXE_PATH=\"$(bindir)\" \
++	-DNMM_EXE_NAME=\"nmm-server\" -DNMM_EXE_EXT=\"$(EXEEXT)\" -DPKGDATADIR="\"$(pkgdatadir)\"" \
++	$(NO_EXCEPTIONS)
++libnetmaumaucommon_private_la_CXXFLAGS = -I$(top_srcdir)/src/include
++libnetmaumaucommon_private_la_SOURCES = cardtools.cpp ci_char_traits.cpp defaultplayerimage.cpp \
++	errorstring.cpp mimemagic.cpp pathtools.cpp pngcheck.cpp protocol.cpp
++libnetmaumaucommon_private_la_LIBADD = $(MAGIC_LIBS)
++
++libnetmaumaucommon_la_CPPFLAGS = $(GSL)
++libnetmaumaucommon_la_CXXFLAGS = -I$(top_srcdir)/src/include 
++libnetmaumaucommon_la_SOURCES = abstractconnection.cpp abstractconnectionimpl.cpp \
++	abstractsocket.cpp abstractsocketimpl.cpp base64.cpp logger.cpp socketexception.cpp
++
++if WITHZLIB
++libnetmaumaucommon_la_SOURCES += zlibexception.cpp zstreambuf.cpp
++endif
++
++libnetmaumaucommon_la_LIBADD = libnetmaumaucommon_private.la $(ZLIB_LIBS)
++libnetmaumaucommon_la_LDFLAGS = -nodefaultlibs -nostartfiles \
++	-version-info 6:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
 diff -uNr netmaumau-0.23.5.orig/src/lua/Makefile.am netmaumau-0.23.5/src/lua/Makefile.am
 --- netmaumau-0.23.5.orig/src/lua/Makefile.am	2015-04-29 13:02:05.000000000 +0200
-+++ netmaumau-0.23.5/src/lua/Makefile.am	2015-08-02 01:58:45.786785066 +0200
++++ netmaumau-0.23.5/src/lua/Makefile.am	2015-08-02 10:11:17.847072233 +0200
 @@ -16,4 +16,5 @@
  libluaruleset_la_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
  	-I$(top_srcdir)/src/engine $(LIBLUA_CFLAGS)
@@ -62,11 +401,11 @@ diff -uNr netmaumau-0.23.5.orig/src/lua/Makefile.am netmaumau-0.23.5/src/lua/Mak
 +libluaruleset_la_LDFLAGS = -static-libgcc -static-libstdc++ -no-undefined
  libluaruleset_la_LIBADD = $(LIBLUA_LIBS)
 diff -uNr netmaumau-0.23.5.orig/src/server/Makefile.am netmaumau-0.23.5/src/server/Makefile.am
---- netmaumau-0.23.5.orig/src/server/Makefile.am	2015-08-01 19:57:18.000000000 +0200
-+++ netmaumau-0.23.5/src/server/Makefile.am	2015-08-02 02:29:46.499696604 +0200
-@@ -48,7 +48,8 @@
- libhttpd_la_CXXFLAGS = $(LIBMICROHTTPD_CFLAGS) -I$(top_srcdir)/src/include \
- 	-I$(top_srcdir)/src/common -I$(top_srcdir)/src/sqlite -I$(top_srcdir)/src/engine
+--- netmaumau-0.23.5.orig/src/server/Makefile.am	2015-08-02 08:12:04.000000000 +0200
++++ netmaumau-0.23.5/src/server/Makefile.am	2015-08-02 10:11:17.857072423 +0200
+@@ -53,7 +53,8 @@
+ endif
+ 
  libhttpd_la_SOURCES  = cachepolicyfactory.cpp httpd.cpp
 -libhttpd_la_LIBADD   = $(LIBMICROHTTPD_LIBS)
 +libhttpd_la_LIBADD   = ../common/libnetmaumaucommon.la
@@ -74,7 +413,7 @@ diff -uNr netmaumau-0.23.5.orig/src/server/Makefile.am netmaumau-0.23.5/src/serv
  endif
  
  nmm_server_CPPFLAGS += -DPKGDATADIR="\"$(pkgdatadir)\""
-@@ -57,8 +58,10 @@
+@@ -62,8 +63,10 @@
  	-I$(top_srcdir)/src/lua $(POPT_CFLAGS)
  nmm_server_SOURCES = game.cpp main.cpp serverconnection.cpp servereventhandler.cpp \
  	serverplayer.cpp serverplayerexception.cpp
@@ -86,9 +425,108 @@ diff -uNr netmaumau-0.23.5.orig/src/server/Makefile.am netmaumau-0.23.5/src/serv
  
  if RC
  nmm_server_LDADD += netmaumau.rc.lo
+diff -uNr netmaumau-0.23.5.orig/src/server/Makefile.am.orig netmaumau-0.23.5/src/server/Makefile.am.orig
+--- netmaumau-0.23.5.orig/src/server/Makefile.am.orig	1970-01-01 01:00:00.000000000 +0100
++++ netmaumau-0.23.5/src/server/Makefile.am.orig	2015-08-02 08:12:04.000000000 +0200
+@@ -0,0 +1,95 @@
++bin_PROGRAMS = nmm-server
++noinst_LTLIBRARIES = libnmm_server_private.la
++
++if MICROHTTPD
++LMHL = libhttpd.la
++noinst_LTLIBRARIES += $(LMHL)
++endif
++
++man1_MANS =
++
++if GENMAN
++man1_MANS += $(bin_PROGRAMS).1
++endif
++
++if GSL
++GSL=-DHAVE_GSL
++else
++GSL=
++endif
++
++MAINTAINERCLEANFILES = $(bin_PROGRAMS).1
++
++DISTCLEANFILES = $(man1_MANS) netmaumau.h2m
++
++noinst_HEADERS = cachepolicyfactory.h gamecontext.h game.h helpers.h httpd.h serverconnection.h \
++	servereventhandler.h serverplayerexception.h serverplayer.h ttynamecheckdir.h
++	
++libnmm_server_private_la_CPPFLAGS = -UDISABLE_ANSI -DDISABLE_ANSI=1
++libnmm_server_private_la_CXXFLAGS = -I$(top_srcdir)/src/engine -I$(top_srcdir)/src/include \
++	-I$(top_srcdir)/src/lua -I$(top_srcdir)/src/sqlite -I$(top_srcdir)/src/common \
++	$(NO_EXCEPTIONS)
++libnmm_server_private_la_SOURCES = gamecontext.cpp helpers.cpp ttynamecheckdir.cpp
++
++nmm_server_CPPFLAGS = $(GSL) -UDISABLE_ANSI -DDISABLE_ANSI=1
++
++if PIDFILE
++nmm_server_CPPFLAGS += -DPIDFILE="\"$(localstatedir)/run/$(PACKAGE).pid\""
++endif
++
++if !GENMAN
++nmm_server_CPPFLAGS += -DNOH2M
++endif
++
++if MICROHTTPD
++dist_pkgdata_DATA = $(top_srcdir)/netmaumau.ico
++
++libhttpd_la_CPPFLAGS = -DPKGDATADIR="\"$(pkgdatadir)\""	
++libhttpd_la_CXXFLAGS = $(LIBMICROHTTPD_CFLAGS) -I$(top_srcdir)/src/include \
++	-I$(top_srcdir)/src/common -I$(top_srcdir)/src/sqlite -I$(top_srcdir)/src/engine
++	
++if !WITHZLIB
++libhttpd_la_CXXFLAGS += $(NO_EXCEPTIONS)
++endif
++
++libhttpd_la_SOURCES  = cachepolicyfactory.cpp httpd.cpp
++libhttpd_la_LIBADD   = $(LIBMICROHTTPD_LIBS)
++endif
++
++nmm_server_CPPFLAGS += -DPKGDATADIR="\"$(pkgdatadir)\""
++nmm_server_CXXFLAGS =  -I$(top_srcdir)/src/engine -I$(top_srcdir)/src/include \
++	-I$(top_srcdir)/src/sqlite -I$(top_srcdir)/src/common -I$(top_srcdir)/src/ai \
++	-I$(top_srcdir)/src/lua $(POPT_CFLAGS)
++nmm_server_SOURCES = game.cpp main.cpp serverconnection.cpp servereventhandler.cpp \
++	serverplayer.cpp serverplayerexception.cpp
++nmm_server_LDADD = ../common/libnetmaumaucommon.la libnmm_server_private.la \
++	../engine/libengine.la $(LMHL) $(POPT_LIBS) $(RT_LIBS)
++
++if RC
++nmm_server_LDADD += netmaumau.rc.lo
++endif
++
++.DELETE_ON_ERROR:
++%.rc.lo: %.rc
++	$(LIBTOOL) --tag=RC --mode=compile $(RC) $< -o $@
++
++if GENMAN
++netmaumau.h2m: $(top_srcdir)/netmaumau.h2m.in
++	$(AM_V_GEN)$(SED) \
++	-e 's|@PACKAGE_BUGREPORT[@]|$(PACKAGE_BUGREPORT)|g' \
++	-e 's|@BUILD_YEAR[@]|$(BUILD_YEAR)|g' \
++	-e 's|@pkgdatadir[@]|$(pkgdatadir)|g' \
++	-e 's|@sysconfdir[@]|$(sysconfdir)|g' \
++	-e 's|@PACKAGE_NAME[@]|$(PACKAGE_NAME)|g' \
++	-e 's|@PACKAGE[@]|$(PACKAGE)|g' < $< > $@
++	@chmod +x $@
++
++export HELP2MAN_OUTPUT := 1
++$(bin_PROGRAMS).1: $(bin_PROGRAMS) $(builddir)/netmaumau.h2m
++	$(HELP2MAN) -l --no-discard-stderr -N -n"Server for the popular card game Mau Mau" \
++		-i $(builddir)/netmaumau.h2m -I $(top_builddir)/gsl.h2m -S "$(PACKAGE_STRING)" \
++		$(builddir)/$(bin_PROGRAMS) > $@
++endif
++
++distclean-local:
++	-rm -f $(top_builddir)/gsl.h2m
 diff -uNr netmaumau-0.23.5.orig/src/sqlite/Makefile.am netmaumau-0.23.5/src/sqlite/Makefile.am
 --- netmaumau-0.23.5.orig/src/sqlite/Makefile.am	2015-04-30 21:32:58.000000000 +0200
-+++ netmaumau-0.23.5/src/sqlite/Makefile.am	2015-08-02 01:58:45.786785066 +0200
++++ netmaumau-0.23.5/src/sqlite/Makefile.am	2015-08-02 10:11:17.857072423 +0200
 @@ -6,6 +6,7 @@
  	-DDBDIR=\"$(localstatedir)/$(PACKAGE)\" -DBUILDDIR=\"$(abs_top_builddir)\"
  libsqlite_la_CXXFLAGS = $(LIBSQLITE_CFLAGS) $(NO_EXCEPTIONS)
@@ -99,7 +537,7 @@ diff -uNr netmaumau-0.23.5.orig/src/sqlite/Makefile.am netmaumau-0.23.5/src/sqli
  install-data-local:
 diff -uNr netmaumau-0.23.5.orig/src/test/Makefile.am netmaumau-0.23.5/src/test/Makefile.am
 --- netmaumau-0.23.5.orig/src/test/Makefile.am	2015-07-24 18:57:55.000000000 +0200
-+++ netmaumau-0.23.5/src/test/Makefile.am	2015-08-02 01:58:45.786785066 +0200
++++ netmaumau-0.23.5/src/test/Makefile.am	2015-08-02 10:11:17.857072423 +0200
 @@ -33,7 +33,7 @@
  	-I$(top_srcdir)/src/sqlite
  test_netmaumau_SOURCES = test_netmaumau.cpp testeventhandler.cpp

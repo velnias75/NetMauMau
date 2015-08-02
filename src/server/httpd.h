@@ -23,6 +23,7 @@
 #include "smartsingleton.h"
 
 #include "game.h"
+#include "ci_char_traits.h"
 #include "serverconnection.h"
 
 struct MHD_Daemon;
@@ -41,7 +42,7 @@ public:
 	typedef NetMauMau::Common::IObserver<NetMauMau::Engine>::what_type PLAYERS;
 	typedef std::map < NetMauMau::Common::IObserver<Connection>::what_type::first_type,
 			NetMauMau::Common::IObserver<Connection>::what_type::second_type > IMAGES;
-	typedef std::map<std::string, std::string> REQHEADERMAP;
+	typedef std::map<std::string, NetMauMau::Common::ci_string> REQHEADERMAP;
 
 	virtual ~Httpd();
 

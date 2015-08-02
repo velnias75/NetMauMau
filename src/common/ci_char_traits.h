@@ -44,6 +44,8 @@ typedef std::basic_string<char, ci_char_traits> ci_string;
 
 }
 
+extern template class std::basic_string<char, NetMauMau::Common::ci_char_traits>;
+
 #endif /* NETMAUMAU_COMMON_CI_CHAR_TRAITS_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

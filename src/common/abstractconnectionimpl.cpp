@@ -112,4 +112,6 @@ void AbstractConnectionImpl::removePlayer(const IConnection::INFO &info) {
 				 m_registeredPlayers.end(), std::bind2nd(_isInfo(), info)));
 }
 
+template class std::basic_string<char, NetMauMau::Common::ci_char_traits>;
+
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

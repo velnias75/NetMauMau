@@ -10,6 +10,7 @@ Prerequisites
 * libmagic (*optional, but recommended*)
 * [GNU Scientific Library](http://www.gnu.org/software/gsl/) >= 1.9 (*optional*, for better random number generator)
 * [libmicrohttpd](http://www.gnu.org/software/libmicrohttpd) (*optional, for the integrated webserver*)
+* [zlib](http://www.zlib.net/) (*optional, for compressed webserver responses*)
 * [sqlite3](https://www.sqlite.org/)
 * [libtool](http://www.gnu.org/software/libtool/)
 * [Lua](http://www.lua.org/) 5.1

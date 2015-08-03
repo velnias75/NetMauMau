@@ -63,7 +63,8 @@ nmm_server_CXXFLAGS =  -I$(top_srcdir)/src/engine -I$(top_srcdir)/src/include \
 nmm_server_SOURCES = game.cpp main.cpp serverconnection.cpp servereventhandler.cpp \
 	serverplayer.cpp serverplayerexception.cpp
 nmm_server_LDADD = ../common/libnetmaumaucommon.la libnmm_server_private.la \
-	../engine/libengine.la $(LMHL) $(POPT_LIBS) $(RT_LIBS)
+	../engine/libengine.la $(LMHL) $(POPT_LIBS) 
+# $(RT_LIBS)
 
 if RC
 nmm_server_LDADD += netmaumau.rc.lo

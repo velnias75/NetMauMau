@@ -327,6 +327,7 @@ int main(int argc, const char **argv) {
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGTERM, &sa, NULL);
 
+#if 0
 #ifdef HAVE_LIBRT
 
 	timer_t timerid = 0;
@@ -349,6 +350,7 @@ int main(int argc, const char **argv) {
 		}
 	}
 
+#endif
 #endif
 
 	std::memset(&sa, 0, sizeof(struct sigaction));
@@ -511,7 +513,7 @@ int main(int argc, const char **argv) {
 									refuse = true;
 #ifdef HAVE_LIBRT
 
-									if(inetd) NetMauMau::disarmIdleTimer(timerid, its);
+// 									if(inetd) NetMauMau::disarmIdleTimer(timerid, its);
 
 #endif
 
@@ -521,7 +523,7 @@ int main(int argc, const char **argv) {
 
 #ifdef HAVE_LIBRT
 
-										if(inetd) NetMauMau::armIdleTimer(timerid, its);
+// 										if(inetd) NetMauMau::armIdleTimer(timerid, its);
 
 #endif
 										refuse = false;

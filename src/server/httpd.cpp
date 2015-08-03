@@ -168,6 +168,8 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 	httpd->clearReqHdrMap();
 	MHD_get_connection_values(connection, MHD_HEADER_KIND, processRequestHeader, cls);
 
+#if MHD_VERSION > 0x00000200
+	// logging disabled for older MHD, maybe we should use the AcceptPolicy callback?
 	const MHD_ConnectionInfo *info =
 		MHD_get_connection_info(connection, MHD_CONNECTION_INFO_CLIENT_ADDRESS);
 
@@ -178,6 +180,7 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "webserver: request from \'"
 			<< hbuf << "\' to resource \'" << url << "\'");
+#endif
 
 	NetMauMau::Server::CachePolicyFactory::ICachePolicyPtr cp;
 	std::vector<std::string::traits_type::char_type> bin;

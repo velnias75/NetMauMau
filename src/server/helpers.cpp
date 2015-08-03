@@ -441,6 +441,7 @@ void dump(std::ostream &out) {
 	}
 }
 
+#if 0
 #ifdef HAVE_LIBRT
 void armIdleTimer(timer_t timerid, struct itimerspec &its) {
 
@@ -485,6 +486,7 @@ void disarmIdleTimer(timer_t timerid, struct itimerspec &its) {
 		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Idle timer disarmed");
 	}
 }
+#endif
 #endif
 
 }

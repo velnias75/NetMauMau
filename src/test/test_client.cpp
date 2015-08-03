@@ -50,7 +50,7 @@ poptOption poptOptions[] = {
 		"name", 'n', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &pName,
 		0, "Set the name of the player", "NAME"
 	},
-	{ "player-image", 'i', POPT_ARG_VAL, &noImg, 0, "Send a test player image", NULL },
+	{ "player-image", 'i', POPT_ARG_NONE, NULL, 'i', "Send a test player image", NULL },
 	{
 		"autoplay", 'a', POPT_ARG_NONE, NULL,
 		'A', "Automatically plays the first possible choice", NULL
@@ -61,7 +61,7 @@ poptOption poptOptions[] = {
 		0, "In auoplay mode delay before turn", "SECONDS"
 	},
 #endif
-	{ "caps", 'c', POPT_ARG_VAL, &showCaps, 1, "Display the server capabilities", NULL },
+	{ "caps", 'c', POPT_ARG_NONE, NULL, 'c', "Display the server capabilities", NULL },
 	POPT_AUTOHELP
 	POPT_TABLEEND
 };
@@ -82,6 +82,14 @@ int main(int argc, const char **argv) {
 		switch(c) {
 		case 'A':
 			autoPlay = true;
+			break;
+
+		case 'i':
+			noImg = false;
+			break;
+
+		case 'c':
+			showCaps = true;
 			break;
 		}
 	}

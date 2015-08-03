@@ -200,10 +200,13 @@ int main(int argc, const char **argv) {
 #if !(defined(_WIN32) || defined(NOH2M))
 
 			if(!getenv("HELP2MAN_OUTPUT")) {
-
+#endif
 				std::ostringstream os;
 				NetMauMau::version(os);
+
 				logger(os.str());
+
+#if !(defined(_WIN32) || defined(NOH2M))
 
 			} else {
 

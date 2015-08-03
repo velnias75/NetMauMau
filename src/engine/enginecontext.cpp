@@ -115,7 +115,8 @@ std::vector<std::string> EngineContext::getLuaScriptPaths() {
 
 	luaDir = getenv("HOME");
 
-	logDebug("Searching \"" << luaDir << "/." << PACKAGE_NAME << "\" for user Lua rules file…");
+	if(luaDir) logDebug("Searching \"" << luaDir << "/." << PACKAGE_NAME
+							<< "\" for user Lua rules file…");
 
 	if(luaDir && !stat((std::string(luaDir) + "/." + PACKAGE_NAME + STDRULESLUA).c_str(), &ls)) {
 		logDebug(" found \"" << (std::string(luaDir) + "/." + PACKAGE_NAME + STDRULESLUA) << "\"");

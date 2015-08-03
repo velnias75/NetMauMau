@@ -39,6 +39,7 @@
 #include <unistd.h>                     // for getuid, setegid, seteuid
 #endif
 
+#include <ctime>
 #include <cerrno>                       // for errno
 #include <climits>                      // for PATH_MAX
 #include <cstring>                      // for strerror, strcmp, strlen, etc
@@ -439,6 +440,52 @@ void dump(std::ostream &out) {
 			<< DB::SQLite::getInstance()->getServedGames() << "\n";
 	}
 }
+
+#ifdef HAVE_LIBRT
+void armIdleTimer(timer_t timerid, struct itimerspec &its) {
+
+	its.it_value.tv_sec = 900;
+	its.it_value.tv_nsec = 0;
+	its.it_interval.tv_sec = 0;
+	its.it_interval.tv_nsec = 0;
+
+	if(timer_settime(timerid, 0, &its, NULL) == -1) {
+		logWarning("Could not arm idle timer");
+	} else {
+
+		struct itimerspec itc;
+		char *sdStr = 0L;
+
+		if(!timer_gettime(timerid, &itc) &&
+				!(itc.it_value.tv_sec == 0 &&
+				  itc.it_value.tv_nsec == 0)) {
+
+			time_t now;
+			time(&now);
+			now += itc.it_value.tv_sec;
+			sdStr = std::asctime(std::localtime(&now));
+
+		}
+
+		if(sdStr) logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Idle timer armed to "
+							  << sdStr);
+	}
+}
+
+void disarmIdleTimer(timer_t timerid, struct itimerspec &its) {
+
+	its.it_value.tv_sec = 0;
+	its.it_value.tv_nsec = 0;
+	its.it_interval.tv_sec = 0;
+	its.it_interval.tv_nsec = 0;
+
+	if(timer_settime(timerid, 0, &its, NULL) == -1) {
+		logWarning("Could not disarm idle timer");
+	} else {
+		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Idle timer disarmed");
+	}
+}
+#endif
 
 }
 

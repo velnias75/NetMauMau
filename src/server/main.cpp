@@ -54,7 +54,6 @@
 #ifdef HAVE_LIBRT
 #include <sys/time.h>
 #include <csignal>
-#include <ctime>
 #endif
 
 #include "logger.h"                     // for BasicLogger, logger, etc
@@ -328,11 +327,6 @@ int main(int argc, const char **argv) {
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGTERM, &sa, NULL);
 
-	std::memset(&sa, 0, sizeof(struct sigaction));
-	sa.sa_sigaction = sh_dump;
-	sa.sa_flags = static_cast<int>(SA_SIGINFO);
-	sigaction(SIGUSR1, &sa, NULL);
-
 #ifdef HAVE_LIBRT
 
 	timer_t timerid = 0;
@@ -346,13 +340,21 @@ int main(int argc, const char **argv) {
 		sev.sigev_value.sival_ptr = &timerid;
 
 		if(timer_create(CLOCK_REALTIME, &sev, &timerid) != -1) {
+
 			sigaction(SIGRTMIN, &sa, NULL);
+			NetMauMau::armIdleTimer(timerid, its);
+
 		} else {
 			logWarning("Could not create timer for idle shutdown");
 		}
 	}
 
 #endif
+
+	std::memset(&sa, 0, sizeof(struct sigaction));
+	sa.sa_sigaction = sh_dump;
+	sa.sa_flags = static_cast<int>(SA_SIGINFO);
+	sigaction(SIGUSR1, &sa, NULL);
 
 	NetMauMau::DB::SQLite::getInstance();
 
@@ -509,46 +511,17 @@ int main(int argc, const char **argv) {
 									refuse = true;
 #ifdef HAVE_LIBRT
 
-									if(inetd) {
-
-										its.it_value.tv_sec = 0;
-										its.it_value.tv_nsec = 0;
-										its.it_interval.tv_sec = 0;
-										its.it_interval.tv_nsec = 0;
-
-										if(timer_settime(timerid, 0, &its, NULL) == -1) {
-											logWarning("Could not disarm idle timer");
-										} else {
-											logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) <<
-													"Idle timer disarmed");
-										}
-									}
+									if(inetd) NetMauMau::disarmIdleTimer(timerid, its);
 
 #endif
 
 									try {
 										game.start(ultimate);
+										updatePlayerCap(caps, game.getPlayerCount(), con);
 
 #ifdef HAVE_LIBRT
 
-										if(!inetd) {
-#endif
-											updatePlayerCap(caps, game.getPlayerCount(), con);
-#ifdef HAVE_LIBRT
-										} else {
-
-											its.it_value.tv_sec = 60;
-											its.it_value.tv_nsec = 0;
-											its.it_interval.tv_sec = 0;
-											its.it_interval.tv_nsec = 0;
-
-											if(timer_settime(timerid, 0, &its, NULL) == -1) {
-												logWarning("Could not arm idle timer");
-											} else {
-												logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT)
-														<< "Idle timer armed");
-											}
-										}
+										if(inetd) NetMauMau::armIdleTimer(timerid, its);
 
 #endif
 										refuse = false;

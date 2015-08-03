@@ -168,6 +168,17 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 	httpd->clearReqHdrMap();
 	MHD_get_connection_values(connection, MHD_HEADER_KIND, processRequestHeader, cls);
 
+	const MHD_ConnectionInfo *info =
+		MHD_get_connection_info(connection, MHD_CONNECTION_INFO_CLIENT_ADDRESS);
+
+	char hbuf[NI_MAXHOST];
+
+	if(getnameinfo(reinterpret_cast<sockaddr *>(info->client_addr), sizeof(sockaddr_in), hbuf,
+				   sizeof(hbuf), NULL, 0, NI_NUMERICSERV)) std::strncpy(hbuf, "<unknown>", 9);
+
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "webserver: request from \'"
+			<< hbuf << "\' to resource \'" << url << "\'");
+
 	NetMauMau::Server::CachePolicyFactory::ICachePolicyPtr cp;
 	std::vector<std::string::traits_type::char_type> bin;
 

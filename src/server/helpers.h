@@ -80,6 +80,11 @@ void conLog(const NetMauMau::Common::IConnection::INFO &info);
 void dump(std::ostream &out);
 void version(std::ostream &out, bool utf8 = false);
 
+#ifdef HAVE_LIBRT
+void armIdleTimer(timer_t timerid, struct itimerspec &its);
+void disarmIdleTimer(timer_t timerid, struct itimerspec &its);
+#endif
+
 }
 
 #endif /* NETMAUMAU_HELPERS_H */

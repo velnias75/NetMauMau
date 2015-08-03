@@ -285,7 +285,7 @@ throw(NetMauMau::Lua::Exception::LuaException) : IRuleSet() {
 	if(luafiles.empty()) throw NetMauMau::Lua::Exception::LuaException("no Lua rule files given");
 
 	for(std::vector<std::string>::const_iterator i(luafiles.begin()); i != luafiles.end(); ++i) {
-		logInfo("Loading Lua rules file \"" << *i << ELLIPSIS);
+		logInfo("Loading Lua rules file \"" << *i << " " << ELLIPSIS);
 		l.load(*i, dirChangePossible, icc, arl);
 	}
 

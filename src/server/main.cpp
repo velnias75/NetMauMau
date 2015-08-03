@@ -24,14 +24,6 @@
 #define NMM_VERSION_STRING(maj,min) NMMSTR(maj) "." NMMSTR(min)
 #define NMMSTR(s) #s
 
-#ifdef _WIN32
-#define COPY "\270"
-#define AUML "\204"
-#else
-#define COPY "\u00a9"
-#define AUML "\u00e4"
-#endif
-
 #include <popt.h>                       // for poptFreeContext, etc
 
 #include <limits>
@@ -71,7 +63,6 @@
 #include "servereventhandler.h"         // for EventHandler
 #include "serverplayer.h"               // for Player
 #include "iruleset.h"
-#include "ci_char_traits.h"
 
 #ifdef HAVE_LIBMICROHTTPD
 #include "httpd.h"
@@ -209,52 +200,11 @@ int main(int argc, const char **argv) {
 #if !(defined(_WIN32) || defined(NOH2M))
 
 			if(!getenv("HELP2MAN_OUTPUT")) {
-#endif
-				logger(PACKAGE_STRING << " " << BUILD_TARGET);
-				logger("");
 
-				std::ostringstream node;
+				std::ostringstream os;
+				NetMauMau::version(os);
+				logger(os.str());
 
-				if(std::string("(none)") != BUILD_NODE) {
-					node << " on " << BUILD_NODE;
-				} else {
-					node << "";
-				}
-
-				std::ostringstream cppversion;
-#if defined(__GNUC__) && defined(__VERSION__)
-				cppversion << " with g++ " << __VERSION__;
-#else
-				cppversion << "";
-#endif
-
-				char dateOut[1024];
-				std::time_t t = BUILD_DATE;
-				// cppcheck-suppress nonreentrantFunctionslocaltime
-				std::strftime(dateOut, sizeof(dateOut), "%x", std::localtime(&t));
-
-				logger("Built " << dateOut << node.str() << " (" << BUILD_HOST << ")"
-					   << cppversion.str());
-
-				logger("");
-				// cppcheck-suppress nonreentrantFunctionslocaltime
-				std::strftime(dateOut, sizeof(dateOut), "%Y", std::localtime(&t));
-				logger("Copyright " COPY " " << dateOut << " Heiko Sch" AUML "fer <"
-					   << PACKAGE_BUGREPORT << ">");
-
-#ifdef PACKAGE_URL
-
-				if(*PACKAGE_URL) {
-					logger("");
-					logger("WWW: " << PACKAGE_URL);
-				}
-
-#endif
-				logger("");
-				logger("There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A "
-					   "PARTICULAR PURPOSE.");
-
-#if !(defined(_WIN32) || defined(NOH2M))
 			} else {
 
 				char dateOut[1024];

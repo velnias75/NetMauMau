@@ -182,7 +182,7 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 #endif
 
 	char *contentType = 0L;
-	bool binary = false;
+	bool binGzip = false, binary = false;
 
 	std::ostringstream oss;
 	oss.unsetf(std::ios_base::skipws);
@@ -240,6 +240,12 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 			free(myUrl);
 #endif
 
+		} else if(!std::strncmp("/robots.txt", url, 11)) {
+
+			cp = NetMauMau::Server::CachePolicyFactory::getInstance()->createNoCachePolicy();
+			contentType = strdup("text/plain");
+			os << "User-agent: *\nDisallow: /\n";
+
 		} else if(!std::strncmp("/favicon.ico", url, 8)) {
 
 			cp = NetMauMau::Server::CachePolicyFactory::getInstance()->createPublicCachePolicy();
@@ -252,14 +258,57 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 			if(!fav.fail()) {
 
-				bin.assign(std::istreambuf_iterator<std::string::traits_type::char_type>(fav),
-						   std::istreambuf_iterator<std::string::traits_type::char_type>());
+#ifdef HAVE_ZLIB_H
 
-				const std::string &mime(NetMauMau::Common::MimeMagic::getInstance()->
-										getMime(reinterpret_cast<const unsigned char *>(bin.data()),
-												bin.size()));
+				if(gzipReq) {
 
-				if(!mime.empty()) LKFIM = contentType = strdup((mime + "; charset=binary").c_str());
+					std::streambuf *fisb = 0L;
+
+					try {
+
+						binGzip = true;
+
+						std::ostringstream fioss;
+						fioss.unsetf(std::ios_base::skipws);
+
+						fisb = new NetMauMau::Common::Zstreambuf(fioss, Z_BEST_COMPRESSION, true);
+
+						std::ostream foss(fisb);
+
+						std::copy
+						(std::istreambuf_iterator<std::string::traits_type::char_type>(fav),
+						 std::istreambuf_iterator<std::string::traits_type::char_type>(),
+						 std::ostreambuf_iterator<std::string::traits_type::char_type>(foss));
+
+						foss.flush();
+						delete fisb;
+
+						const std::string &v(fioss.str());
+						bin.assign(v.begin(), v.end());
+
+					} catch(const NetMauMau::Common::Exception::ZLibException &) {
+						binGzip = false;
+						delete fisb;
+					}
+
+				} else {
+#endif
+					bin.assign(std::istreambuf_iterator<std::string::traits_type::char_type>(fav),
+							   std::istreambuf_iterator<std::string::traits_type::char_type>());
+#ifdef HAVE_ZLIB_H
+				}
+
+#endif
+
+				if(!gzipReq) {
+					const std::string &mime(NetMauMau::Common::MimeMagic::getInstance()->
+											getMime(reinterpret_cast<const unsigned char *>
+													(bin.data()), bin.size()));
+
+					if(!mime.empty()) {
+						LKFIM = contentType = strdup((mime + "; charset=binary").c_str());
+					}
+				}
 
 			} else {
 				logWarning("Failed to open favicon file: \"" <<
@@ -347,6 +396,10 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 			NetMauMau::dump(os);
 
+			os << "== Version ==\n";
+
+			NetMauMau::version(os);
+
 			os << "</pre></a></tt><hr />" << B2TOP << "</font></body></html>";
 		}
 
@@ -398,7 +451,7 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 #ifdef HAVE_ZLIB_H
 
-	if(gzipReq && !binary) MHD_add_response_header(response,
+	if(gzipReq && (!binary || binGzip)) MHD_add_response_header(response,
 				MHD_HTTP_HEADER_CONTENT_ENCODING, "deflate");
 
 #endif

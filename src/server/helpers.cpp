@@ -66,6 +66,14 @@
 #define DP_GROUP "tty"
 #endif
 
+#ifdef _WIN32
+#define COPY "\270"
+#define AUML "\204"
+#else
+#define COPY "\u00a9"
+#define AUML "\u00e4"
+#endif
+
 namespace NetMauMau {
 
 volatile bool interrupt = false;
@@ -341,6 +349,47 @@ void conLog(const Common::IConnection::INFO &info) {
 	logInfo(Common::Logger::time(TIMEFORMAT) << "Connection from " << info.host << ":" << info.port
 			<< " as \"" << info.name << "\" (" << info.maj << "." << info.min << ") "
 			<< Common::Logger::nonl());
+}
+
+void version(std::ostream &out) {
+
+	out << PACKAGE_STRING << " " << BUILD_TARGET << "\n\n";
+
+	std::ostringstream node;
+
+	if(std::string("(none)") != BUILD_NODE) {
+		node << " on " << BUILD_NODE;
+	} else {
+		node << "";
+	}
+
+	std::ostringstream cppversion;
+#if defined(__GNUC__) && defined(__VERSION__)
+	cppversion << " with g++ " << __VERSION__;
+#else
+	cppversion << "";
+#endif
+
+	char dateOut[1024];
+	std::time_t t = BUILD_DATE;
+	// cppcheck-suppress nonreentrantFunctionslocaltime
+	std::strftime(dateOut, sizeof(dateOut), "%x", std::localtime(&t));
+
+	out << "Built " << dateOut << node.str() << " (" << BUILD_HOST << ")"
+		<< cppversion.str() << "\n\n";
+
+	// cppcheck-suppress nonreentrantFunctionslocaltime
+	std::strftime(dateOut, sizeof(dateOut), "%Y", std::localtime(&t));
+	out << "Copyright " COPY " " << dateOut << " Heiko Sch" AUML "fer <"
+		<< PACKAGE_BUGREPORT << ">\n";
+
+#ifdef PACKAGE_URL
+
+	if(*PACKAGE_URL) out << "\nWWW: " << PACKAGE_URL << "\n";
+
+#endif
+	out << "\nThere is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A "
+		"PARTICULAR PURPOSE.";
 }
 
 void dump(std::ostream &out) {

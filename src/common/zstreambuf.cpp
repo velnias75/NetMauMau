@@ -18,7 +18,6 @@
  */
 
 #include <ostream>
-#include <cstring>
 
 #include "zstreambuf.h"
 

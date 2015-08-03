@@ -78,7 +78,7 @@ void exit_hdlr();
 
 void conLog(const NetMauMau::Common::IConnection::INFO &info);
 void dump(std::ostream &out);
-void version(std::ostream &out);
+void version(std::ostream &out, bool utf8 = false);
 
 }
 

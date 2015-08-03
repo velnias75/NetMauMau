@@ -398,7 +398,7 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 			os << "== Version ==\n";
 
-			NetMauMau::version(os);
+			NetMauMau::version(os, true);
 
 			os << "</pre></a></tt><hr />" << B2TOP << "</font></body></html>";
 		}

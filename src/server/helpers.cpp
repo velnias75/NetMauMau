@@ -351,7 +351,7 @@ void conLog(const Common::IConnection::INFO &info) {
 			<< Common::Logger::nonl());
 }
 
-void version(std::ostream &out) {
+void version(std::ostream &out, bool utf8) {
 
 	out << PACKAGE_STRING << " " << BUILD_TARGET << "\n\n";
 
@@ -380,8 +380,8 @@ void version(std::ostream &out) {
 
 	// cppcheck-suppress nonreentrantFunctionslocaltime
 	std::strftime(dateOut, sizeof(dateOut), "%Y", std::localtime(&t));
-	out << "Copyright " COPY " " << dateOut << " Heiko Sch" AUML "fer <"
-		<< PACKAGE_BUGREPORT << ">\n";
+	out << "Copyright " << (utf8 ? "\u00a9" : COPY) << " " << dateOut
+		<< " Heiko Sch" << (utf8 ? "\u00e4" : AUML) << "fer <" << PACKAGE_BUGREPORT << ">\n";
 
 #ifdef PACKAGE_URL
 

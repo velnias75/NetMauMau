@@ -195,6 +195,7 @@ AS_IF([test "x$cross_compiling" != "xyes"], [
   AC_FUNC_MALLOC
   AC_FUNC_REALLOC
 ])
+AC_CHECK_FUNCS([raise])
 AC_CHECK_FUNCS([floor])
 AC_CHECK_FUNCS([strncasecmp])
 AC_CHECK_FUNCS([mkdir])
@@ -207,6 +208,8 @@ AC_CHECK_FUNCS([socket])
 AC_CHECK_FUNCS([select])
 AC_CHECK_FUNCS([atexit])
 AC_CHECK_FUNCS([strerror])
+AC_CHECK_FUNCS([strrchr])
+AC_CHECK_FUNCS([strtol])
 AC_CHECK_FUNC([arc4random_uniform],
   [ AC_DEFINE([HAVE_ARC4RANDOM_UNIFORM], [1], [we have arc4random_uniform])
 ])

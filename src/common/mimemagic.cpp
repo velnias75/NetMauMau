@@ -61,4 +61,6 @@ bool MimeMagic::checkMime(const unsigned char *data, std::size_t dataLen,
 #endif
 }
 
+template class NetMauMau::Common::SmartSingleton<NetMauMau::Common::MimeMagic>;
+
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

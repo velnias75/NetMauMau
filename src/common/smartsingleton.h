@@ -23,6 +23,12 @@
 #include "linkercontrol.h"
 #include "smartptr.h"
 
+#ifdef EXPORT_SMARTSINGLETON
+#define _EXPORT_SS _EXPORT
+#else
+#define _EXPORT_SS
+#endif
+
 namespace NetMauMau {
 
 namespace Common {
@@ -35,7 +41,7 @@ public:
 
 	virtual ~SmartSingleton() {}
 
-	static const smartptr_type &getInstance();
+	_EXPORT_SS static const smartptr_type &getInstance();
 
 	static inline typename smartptr_type::element_pointer getInstancePtr() {
 		return getInstance();

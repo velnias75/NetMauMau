@@ -25,10 +25,6 @@
 #include <netdb.h>                      // for addrinfo, freeaddrinfo, etc
 #endif
 
-#ifndef _WIN32
-#include <sys/select.h>                 // for FD_ISSET, FD_SET, select, etc
-#endif
-
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
@@ -48,6 +44,7 @@
 #include "abstractsocketimpl.h"         // for AbstractSocketImpl
 #include "errorstring.h"                // for errorString
 #include "logger.h"                     // for logWarning
+#include "select.h"
 
 #ifdef _WIN32
 #define MSG_NOSIGNAL 0x0000000
@@ -176,8 +173,8 @@ again:
 	FD_SET(fd, &rfds);
 	FD_SET(getSocketFD(), &rfds);
 
-	if(!m_interrupt && (sret = ::select(std::max(fd, getSocketFD()) + 1, &rfds, NULL, NULL,
-										NULL)) > 0) {
+	if(!m_interrupt && (sret = NetMauMau::Common::Select::getInstance()->perform(std::max(fd,
+							   getSocketFD()) + 1, &rfds, NULL, NULL, NULL)) > 0) {
 
 		if(FD_ISSET(getSocketFD(), &rfds)) {
 

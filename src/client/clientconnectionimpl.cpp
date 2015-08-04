@@ -23,10 +23,6 @@
 
 #include "clientconnectionimpl.h"
 
-#ifndef _WIN32
-#include <sys/select.h>                 // for select, FD_SET, FD_ZERO, etc
-#endif
-
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -34,6 +30,8 @@
 #include <sys/time.h>                   // for timeval
 #include <cerrno>                       // for errno, EINTR
 
+#include "select.h"
+#include "signalmask.h"
 #include "errorstring.h"                // for errorString
 #include "shutdownexception.h"          // for ShutdownException
 #include "timeoutexception.h"           // for TimeoutException
@@ -54,9 +52,13 @@ ConnectionImpl::~ConnectionImpl() {}
 #endif
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wreturn-type"
 #pragma GCC diagnostic push
 bool ConnectionImpl::hello(uint16_t *maj, uint16_t *min)
 throw(NetMauMau::Common::Exception::SocketException) {
+
+	NetMauMau::Common::SignalMask sm;
+	(void)sm;
 
 	_piface->NetMauMau::Common::AbstractConnection::connect();
 
@@ -66,9 +68,11 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	FD_ZERO(&rfds);
 	FD_SET(_piface->getSocketFD(), &rfds);
 
-	timeval tv = { m_timeout ? m_timeout->tv_sec : 0, m_timeout ? m_timeout->tv_usec : 0 };
+	struct timeval tv = { m_timeout ? m_timeout->tv_sec : 0, m_timeout ? m_timeout->tv_usec : 0 };
 
-	if(!m_timeout || (pret = ::select(_piface->getSocketFD() + 1, &rfds, NULL, NULL, &tv)) > 0) {
+	if(!m_timeout ||
+			(pret = NetMauMau::Common::Select::getInstance()->perform(_piface->getSocketFD() + 1,
+					&rfds, NULL, NULL, &tv, true)) >  0) {
 
 		const std::string rHello(_piface->read(_piface->getSocketFD()));
 		const std::string::size_type spc = rHello.find(' ');

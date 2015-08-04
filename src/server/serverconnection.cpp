@@ -27,10 +27,6 @@
 #include <netdb.h>                      // for NI_MAXHOST, NI_MAXSERV, etc
 #endif
 
-#ifndef _WIN32
-#include <sys/select.h>                 // for select, FD_SET, FD_ZERO, etc
-#endif
-
 #include <sys/stat.h>                   // for stat
 #include <cerrno>                       // for errno, ENOENT, ENOMEM
 #include <cstdio>                       // for NULL, fclose, feof, fopen, etc
@@ -42,6 +38,7 @@
 #include "errorstring.h"                // for errorString
 #include "pngcheck.h"                   // for checkPNG
 #include "sqlite.h"                     // for SQLite, SQLite::SCORES, etc
+#include "select.h"
 #include "protocol.h"                   // for BYE, VM_ADDPIC
 
 namespace {
@@ -221,7 +218,8 @@ int Connection::wait(timeval *tv) {
 			int nRet, err = 0;
 			timeval tv = { 0, 0 };
 
-			if((nRet = select(0, &rfds, NULL, NULL, &tv)) == SOCKET_ERROR) {
+			if((nRet = NetMauMau::Common::Select::getInstance()->perform(0, &rfds, NULL, NULL,
+					   &tv)) == SOCKET_ERROR) {
 				err = WAIT_ERROR;
 			}
 
@@ -254,7 +252,8 @@ int Connection::wait(timeval *tv) {
 	FD_ZERO(&rfds);
 	FD_SET(getSocketFD(), &rfds);
 
-	return ::select(getSocketFD() + 1, &rfds, NULL, NULL, tv);
+	return NetMauMau::Common::Select::getInstance()->perform(getSocketFD() + 1, &rfds, NULL, NULL,
+			tv);
 }
 #pragma GCC diagnostic pop
 

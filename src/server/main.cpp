@@ -67,9 +67,12 @@
 #include "httpd.h"
 #else
 #include "game.h"
+#include "ci_char_traits.h"
 #endif
 
 namespace {
+
+const char *REFUSED = "refused";
 
 bool inetd = false;
 
@@ -497,7 +500,7 @@ int main(int argc, const char **argv) {
 
 						if(state == Server::Connection::PLAY) {
 
-							conLog(info);
+							const bool cl = conLog(info);
 
 							Server::Game::COLLECT_STATE cs =
 								game.collectPlayers(minPlayers, new Server::Player(info.name,
@@ -505,37 +508,34 @@ int main(int argc, const char **argv) {
 
 							if(cs == Server::Game::ACCEPTED || cs == Server::Game::ACCEPTED_READY) {
 
-								logger("accepted");
+								if(cl) logger("accepted");
+
 								updatePlayerCap(caps, game.getPlayerCount(), con);
 
 								if(cs == Server::Game::ACCEPTED_READY) {
-
-									refuse = true;
 #ifdef HAVE_LIBRT
-
 // 									if(inetd) NetMauMau::disarmIdleTimer(timerid, its);
-
 #endif
 
 									try {
+
+										refuse = true;
 										game.start(ultimate);
 										updatePlayerCap(caps, game.getPlayerCount(), con);
-
 #ifdef HAVE_LIBRT
-
 // 										if(inetd) NetMauMau::armIdleTimer(timerid, its);
-
 #endif
-										refuse = false;
-
 									} catch(const Common::Exception::SocketException &e) {
 										game.shutdown(e.what());
 										game.reset(false);
 									}
+
+									refuse = false;
 								}
 
 							} else {
-								logger("refused");
+
+								if(cl) logger(REFUSED);
 
 								con.removePlayer(info);
 								game.removePlayer(info.name);
@@ -546,8 +546,7 @@ int main(int argc, const char **argv) {
 							}
 
 						} else if(state == Server::Connection::REFUSED) {
-							conLog(info);
-							logger("refused");
+							if(conLog(info)) logger(REFUSED);
 						}
 					}
 

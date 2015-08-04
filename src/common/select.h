@@ -17,59 +17,43 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_COMMON_MAGIC_H
-#define NETMAUMAU_COMMON_MAGIC_H
+#ifndef NETMAUMAU_COMMON_SELECT_H
+#define NETMAUMAU_COMMON_SELECT_H
 
 #if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
 #include "config.h"
 #endif
 
-#include <string>
-#include <cstddef>                      // for size_t
-
-#if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
-#include <magic.h>
-
-#define _MM_CONST
-
-#ifndef MAGIC_MIME_TYPE
-#define MAGIC_MIME_TYPE MAGIC_MIME
-#endif
-#else
-#define _MM_CONST _CONST
+#ifndef _WIN32
+#include <sys/select.h>
 #endif
 
 #include "smartsingleton.h"
 
-#ifdef HAVE_LIBMICROHTTPD
-#define _EXPORT_MIMEMAGIC _EXPORT
-#else
-#define _EXPORT_MIMEMAGIC
-#endif
+#include "socketexception.h"
 
 namespace NetMauMau {
 
 namespace Common {
 
-class _EXPORT_MIMEMAGIC MimeMagic : public Common::SmartSingleton<MimeMagic> {
-	DISALLOW_COPY_AND_ASSIGN(MimeMagic)
-	friend class Common::SmartSingleton<MimeMagic>;
+class _EXPORT Select : public SmartSingleton<Select> {
+	DISALLOW_COPY_AND_ASSIGN(Select)
+	friend class SmartSingleton<Select>;
 public:
-	virtual ~MimeMagic();
+	virtual ~Select();
 
 	// cppcheck-suppress functionStatic
-	std::string getMime(const unsigned char *data, std::size_t dataLen) const;
-
-	// cppcheck-suppress functionStatic
-	bool checkMime(const unsigned char *data, std::size_t dataLen,
-				   const char *mime) const _MM_CONST;
+	int perform(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
+				struct timeval *timeout, bool blockall = false) const throw();
 
 private:
-	explicit MimeMagic();
+	Select() throw(Exception::SocketException);
 
 private:
-#if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
-	magic_t m_magic;
+#if _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600
+	mutable sigset_t m_sigSet;
+#else
+	int m_sigSet;
 #endif
 };
 
@@ -77,8 +61,8 @@ private:
 
 }
 
-extern template class NetMauMau::Common::SmartSingleton<NetMauMau::Common::MimeMagic>;
+extern template class NetMauMau::Common::SmartSingleton<NetMauMau::Common::Select>;
 
-#endif /* NETMAUMAU_COMMON_MAGIC_H */
+#endif /* NETMAUMAU_COMMON_SELECT_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

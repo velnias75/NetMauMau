@@ -21,10 +21,6 @@
 #include "config.h"                     // for HAVE_UNISTD_H, PACKAGE_NAME
 #endif
 
-#ifndef _WIN32
-#include <sys/select.h>                 // for select, FD_SET, FD_ZERO, etc
-#endif
-
 #include <sys/time.h>                   // for timeval
 
 #ifdef HAVE_UNISTD_H
@@ -37,6 +33,7 @@
 
 #include "abstractconnectionimpl.h"     // for AbstractConnectionImpl
 #include "errorstring.h"                // for errorString
+#include "select.h"
 
 #ifndef TEMP_FAILURE_RETRY
 #define TEMP_FAILURE_RETRY
@@ -115,14 +112,15 @@ void AbstractConnection::wait(long ms) throw(Exception::SocketException) {
 
 	fd_set rfds;
 	int sret = 1;
-	timeval tv = { ms / 0xF4240L, ms % 0xF4240L };
+	struct timeval tv = { ms / 0xF4240L, ms % 0xF4240L };
 
 	while(sret > 0) {
 
 		FD_ZERO(&rfds);
 		FD_SET(getSocketFD(), &rfds);
 
-		if((sret = TEMP_FAILURE_RETRY(::select(getSocketFD() + 1, &rfds, NULL, NULL, &tv))) < 0) {
+		if((sret = TEMP_FAILURE_RETRY(NetMauMau::Common::Select::getInstance()->
+									  perform(getSocketFD() + 1, &rfds, NULL, NULL, &tv))) < 0) {
 			throw Exception::SocketException(NetMauMau::Common::errorString(), getSocketFD(),
 											 errno);
 		} else if(sret > 0) {

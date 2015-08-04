@@ -346,10 +346,18 @@ void exit_hdlr() {
 }
 #endif
 
-void conLog(const Common::IConnection::INFO &info) {
-	logInfo(Common::Logger::time(TIMEFORMAT) << "Connection from " << info.host << ":" << info.port
-			<< " as \"" << info.name << "\" (" << info.maj << "." << info.min << ") "
-			<< Common::Logger::nonl());
+bool conLog(const Common::IConnection::INFO &info) {
+
+	if(info.maj || info.min) {
+		logInfo(Common::Logger::time(TIMEFORMAT) << "Connection from " << info.host << ":"
+				<< info.port << (!info.name.empty() ? " as \"" : "") <<
+				(!info.name.empty() ? info.name : "") << (!info.name.empty() ? "\" (" : " (")
+				<< info.maj << "." << info.min << ") " << Common::Logger::nonl());
+
+		return true;
+	}
+
+	return false;
 }
 
 void version(std::ostream &out, bool utf8) {

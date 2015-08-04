@@ -146,6 +146,20 @@ char *unquoteUrl(const char *url) {
 }
 #endif
 
+#if MHD_VERSION > 0x00000200
+void panic(void */*cls*/, const char *file, unsigned int line, const char *reason) {
+
+	logFatal(NetMauMau::Common::Logger::time(TIMEFORMAT) << "webserver: PANIC: "
+			 << file << ":" << line << (reason ? ": " : "") << (reason ? reason : ""));
+
+#ifdef HAVE_RAISE
+	std::raise(SIGTERM);
+#else
+	std::abort();
+#endif
+}
+#endif
+
 int processRequestHeader(void *cls, enum MHD_ValueKind /*kind*/,
 						 const char *key, const char *value) {
 	reinterpret_cast<NetMauMau::Server::Httpd *>(cls)->insertReqHdrPair(key, value);
@@ -492,6 +506,10 @@ Httpd::Httpd() : Common::IObserver<Game>(), Common::IObserver<Engine>(),
 	Common::IObserver<Connection>(), Common::SmartSingleton<Httpd>(), m_daemon(0L), m_reqHdrMap(),
 	m_gameSource(0L), m_engineSource(0L), m_connectionSource(0L), m_players(), m_images(), m_caps(),
 	m_gameRunning(false), m_waiting(true), m_url() {
+
+#if MHD_VERSION > 0x00000200
+	MHD_set_panic_func(panic, this);
+#endif
 
 	struct addrinfo *ai = NULL;
 

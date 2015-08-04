@@ -76,7 +76,7 @@ int dropPrivileges(const char *usr, const char *group);
 void exit_hdlr();
 #endif
 
-void conLog(const NetMauMau::Common::IConnection::INFO &info);
+bool conLog(const NetMauMau::Common::IConnection::INFO &info);
 void dump(std::ostream &out);
 void version(std::ostream &out, bool utf8 = false);
 

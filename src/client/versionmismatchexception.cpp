@@ -24,8 +24,8 @@
 using namespace NetMauMau::Client::Exception;
 
 VersionMismatchException::VersionMismatchException(uint32_t serverVersion, uint32_t clientVersion,
-		SOCKET sfd) throw() : SocketException("", sfd), m_vMsg(), m_serverVersion(serverVersion),
-	m_clientVersion(clientVersion) {
+		SOCKET sfd) throw() : SocketException(std::string(), sfd), m_vMsg(),
+	m_serverVersion(serverVersion), m_clientVersion(clientVersion) {
 
 	std::ostringstream os;
 
@@ -42,7 +42,7 @@ VersionMismatchException::VersionMismatchException(uint32_t serverVersion, uint3
 VersionMismatchException::~VersionMismatchException() throw() {}
 
 const char *VersionMismatchException::what() const throw() {
-	return m_vMsg.c_str();
+	return !m_vMsg.empty() ? m_vMsg.c_str() : SocketException::what();
 }
 
 uint32_t VersionMismatchException::getClientVersion() const throw() {

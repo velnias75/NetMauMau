@@ -25,7 +25,7 @@ DEB_CFLAGS_MAINT_APPEND := -fomit-frame-pointer $(GRAPHITE) $(LTO)
 DEB_CXXFLAGS_MAINT_APPEND := -fomit-frame-pointer $(GRAPHITE) $(LTO)
 DEB_LDFLAGS_MAINT_APPEND := $(CXXFLAGS) $(GRAPHITE) $(LTO)
 
-# uncomment next 5 lines for Precise/Wheezy builds
+# uncomment next 3 lines for Precise/Wheezy builds
 #export NM=gcc-nm
 #export AR=gcc-ar
 #export RANLIB=gcc-ranlib

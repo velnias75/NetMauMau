@@ -19,6 +19,8 @@
 
 #include "socketexception.h"
 
+#include "protocol.h"
+
 using namespace NetMauMau::Common::Exception;
 
 SocketException::SocketException(const std::string &msg, SOCKET sfd, int err) throw() :
@@ -30,7 +32,8 @@ SocketException::SocketException(const SocketException &o) throw() : m_msg(o.m_m
 SocketException::~SocketException() throw() {}
 
 const char *SocketException::what() const throw() {
-	return m_msg.c_str();
+	return !m_msg.empty() ? m_msg.c_str() :
+		   NetMauMau::Common::Protocol::V15::ERR_TO_EXC_UNKNOWN.c_str();
 }
 
 SOCKET SocketException::sockfd() const throw() {

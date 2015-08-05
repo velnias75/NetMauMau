@@ -21,7 +21,7 @@ Build-Depends: bash-completion,
                lsb-release,
                pkg-config,
                vim-common,
-			   zlib1g-dev
+               zlib1g-dev
 Standards-Version: 3.9.4
 Homepage: http://sourceforge.net/projects/netmaumau/
 

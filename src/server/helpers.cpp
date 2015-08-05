@@ -75,6 +75,16 @@
 #define AUML "\u00e4"
 #endif
 
+namespace {
+
+void unknownSignal(int sig) {
+#if _XOPEN_SOURCE >= 700 || _POSIX_C_SOURCE >= 200809L || GNU_SOURCE
+	logWarning("Received unhandled signal \"" << strsignal(sig) << "\" (" << sig << ")");
+#endif
+}
+
+}
+
 namespace NetMauMau {
 
 volatile bool interrupt = false;
@@ -150,75 +160,85 @@ char *inetdParsedString(char *str) {
 	return str;
 }
 
-void sh_interrupt(int) {
-	logWarning(Common::Logger::time(TIMEFORMAT) << "Server is about to shut down");
-	Server::Game::setInterrupted();
-	Server::EventHandler::setInterrupted();
-	interrupt = true;
+void sh_interrupt(int sig) {
+
+	if(sig == SIGINT || sig == SIGTERM) {
+		logWarning(Common::Logger::time(TIMEFORMAT) << "Server is about to shut down");
+		Server::Game::setInterrupted();
+		Server::EventHandler::setInterrupted();
+		interrupt = true;
+	} else {
+		unknownSignal(sig);
+	}
 }
 
 #ifndef _WIN32
 
-void sh_dump(int, siginfo_t *info, void *) {
+void sh_dump(int sig, siginfo_t *info, void *) {
 
-	char *p = NULL;
+	if(sig == SIGUSR1) {
 
-	if(info) {
+		char *p = NULL;
 
-		char sp[PATH_MAX] = "";
+		if(info) {
+
+			char sp[PATH_MAX] = "";
 
 #ifndef __OpenBSD__
-		std::snprintf(sp, PATH_MAX, "/proc/%d/stat", info->si_pid);
+			std::snprintf(sp, PATH_MAX, "/proc/%d/stat", info->si_pid);
 #else
-		std::snprintf(sp, PATH_MAX, "/proc/%d/status", info->si_pid);
+			std::snprintf(sp, PATH_MAX, "/proc/%d/status", info->si_pid);
 #endif
 
-		int tty_nr = 0;
+			int tty_nr = 0;
 
-		FILE *spf;
+			FILE *spf;
 
-		if((spf = std::fopen(sp, "r"))) {
+			if((spf = std::fopen(sp, "r"))) {
 
-			int  iDummy;
+				int  iDummy;
 
 #ifndef __OpenBSD__
 
-			char cDummy, *sDummy;
+				char cDummy, *sDummy;
 
-			// cppcheck-suppress invalidscanf_libc
-			// cppcheck-suppress invalidscanf
-			if(std::fscanf(spf, "%d %ms %c %d %d %d %d", &iDummy, &sDummy, &cDummy, &iDummy,
-						   &iDummy, &iDummy, &tty_nr)) {}
+				// cppcheck-suppress invalidscanf_libc
+				// cppcheck-suppress invalidscanf
+				if(std::fscanf(spf, "%d %ms %c %d %d %d %d", &iDummy, &sDummy, &cDummy, &iDummy,
+							   &iDummy, &iDummy, &tty_nr)) {}
 
-			std::free(sDummy);
+				std::free(sDummy);
 #else
-			char sDevice[20], sCmd[256];
+				char sDevice[20], sCmd[256];
 
-			// cppcheck-suppress invalidscanf_libc
-			// cppcheck-suppress invalidscanf
-			if(std::fscanf(spf, "%255s %d %d %d %d %19s", sCmd, &iDummy, &iDummy, &iDummy,
-						   &iDummy, sDevice)) {
-				logDebug("BSD emitter: " << sCmd); // why (swapper) and not (kill)?
-				logDebug("BSD tty device: " << sDevice); // why (-1,-1)?
+				// cppcheck-suppress invalidscanf_libc
+				// cppcheck-suppress invalidscanf
+				if(std::fscanf(spf, "%255s %d %d %d %d %19s", sCmd, &iDummy, &iDummy, &iDummy,
+							   &iDummy, sDevice)) {
+					logDebug("BSD emitter: " << sCmd); // why (swapper) and not (kill)?
+					logDebug("BSD tty device: " << sDevice); // why (-1,-1)?
+				}
+
+#endif
+
+				std::fclose(spf);
 			}
 
-#endif
-
-			std::fclose(spf);
+			if(!(p = Server::ttynameCheckDir(static_cast<dev_t>(tty_nr), "/dev/pts"))) {
+				p = Server::ttynameCheckDir(static_cast<dev_t>(tty_nr), "/dev");
+			}
 		}
 
-		if(!(p = Server::ttynameCheckDir(static_cast<dev_t>(tty_nr), "/dev/pts"))) {
-			p = Server::ttynameCheckDir(static_cast<dev_t>(tty_nr), "/dev");
+		std::ofstream out(p ? p : "/dev/null");
+
+		free(p);
+
+		if(out.is_open()) {
+			dump(out);
+			out.flush();
 		}
-	}
-
-	std::ofstream out(p ? p : "/dev/null");
-
-	free(p);
-
-	if(out.is_open()) {
-		dump(out);
-		out.flush();
+	} else {
+		unknownSignal(sig);
 	}
 }
 

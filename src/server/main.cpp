@@ -321,14 +321,21 @@ int main(int argc, const char **argv) {
 	logInfo("Welcome to " << PACKAGE_STRING);
 
 #ifndef _WIN32
-	struct sigaction sa;
+	static struct sigaction sa_pipe;
+	std::memset(&sa_pipe, 0, sizeof(struct sigaction));
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic push
+	sa_pipe.sa_handler = SIG_IGN;
+#pragma GCC diagnostic pop
+	sa_pipe.sa_flags = static_cast<int>(SA_RESETHAND | SA_RESTART);
+	sigaction(SIGPIPE, &sa_pipe, NULL);
 
-	std::memset(&sa, 0, sizeof(struct sigaction));
-
-	sa.sa_handler = sh_interrupt;
-	sa.sa_flags = static_cast<int>(SA_RESETHAND);
-	sigaction(SIGINT, &sa, NULL);
-	sigaction(SIGTERM, &sa, NULL);
+	static struct sigaction sa_intr;
+	std::memset(&sa_intr, 0, sizeof(struct sigaction));
+	sa_intr.sa_handler = sh_interrupt;
+	sa_intr.sa_flags = static_cast<int>(SA_RESETHAND | SA_RESTART);
+	sigaction(SIGINT, &sa_intr, NULL);
+	sigaction(SIGTERM, &sa_intr, NULL);
 
 #if 0
 #ifdef HAVE_LIBRT
@@ -345,7 +352,8 @@ int main(int argc, const char **argv) {
 
 		if(timer_create(CLOCK_REALTIME, &sev, &timerid) != -1) {
 
-			sigaction(SIGRTMIN, &sa, NULL);
+			static struct sigaction sa_idle;
+			sigaction(SIGRTMIN, &sa_idle, NULL);
 			NetMauMau::armIdleTimer(timerid, its);
 
 		} else {
@@ -356,10 +364,11 @@ int main(int argc, const char **argv) {
 #endif
 #endif
 
-	std::memset(&sa, 0, sizeof(struct sigaction));
-	sa.sa_sigaction = sh_dump;
-	sa.sa_flags = static_cast<int>(SA_SIGINFO);
-	sigaction(SIGUSR1, &sa, NULL);
+	static struct sigaction sa_dump;
+	std::memset(&sa_dump, 0, sizeof(struct sigaction));
+	sa_dump.sa_sigaction = sh_dump;
+	sa_dump.sa_flags = static_cast<int>(SA_SIGINFO);
+	sigaction(SIGUSR1, &sa_dump, NULL);
 
 	NetMauMau::DB::SQLite::getInstance();
 

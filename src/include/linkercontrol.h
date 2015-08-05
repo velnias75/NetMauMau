@@ -1,7 +1,7 @@
 /*
  * linkercontrol.h - a common header for controlling visibility of functions and methods
  *
- * $Revision: 4202 $ $Author: heiko $
+ * $Revision: 4377 $ $Author: heiko $
  *
  * (c) 2012-2015 Heiko Schäfer <heiko@hgl.rangun.de>
  *
@@ -163,6 +163,10 @@ namespace Commons {
 #else
 #define likely(x)   __builtin_expect(!!(x), 1)
 #define unlikely(x) __builtin_expect(!!(x), 0)
+#endif
+
+#ifndef _UNUSED
+#define _UNUSED(x) (void)(x)
 #endif
 
 }

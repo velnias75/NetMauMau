@@ -87,7 +87,7 @@ private:
 
 private:
 	static long m_gameServed;
-	static bool m_interrupted;
+	static volatile bool m_interrupted;
 
 	const GameContext &m_ctx;
 	Engine m_engine;

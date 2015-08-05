@@ -170,7 +170,12 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	for(Connection::PLAYERINFOS::const_iterator i(m_connection.getPlayers().begin());
 			i != m_connection.getPlayers().end(); ++i) {
 
-		m_connection.write(i->sockfd, NetMauMau::Common::Protocol::V15::STATS);
+		try {
+			m_connection.write(i->sockfd, NetMauMau::Common::Protocol::V15::STATS);
+		} catch(const NetMauMau::Common::Exception::SocketException &) {
+			logError("Could send stats to \"" << i->name << "\"");
+			break;
+		}
 
 		for(NetMauMau::Engine::PLAYERS::const_iterator j(m_players.begin()); j != m_players.end();
 				++j) {
@@ -190,7 +195,9 @@ throw(NetMauMau::Common::Exception::SocketException) {
 					m_connection.write(i->sockfd, p->getName());
 					m_connection.write(i->sockfd, cc);
 				} catch(const NetMauMau::Common::Exception::SocketException &) {
-					m_connection.write(i->sockfd, "0");
+					try {
+						m_connection.write(i->sockfd, "0");
+					} catch(const NetMauMau::Common::Exception::SocketException &) {}
 				}
 			}
 		}

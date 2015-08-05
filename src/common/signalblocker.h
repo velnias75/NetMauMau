@@ -17,34 +17,44 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <algorithm>
+#ifndef NETMAUMAU_COMMON_SIGNALBLOCKER_H
+#define NETMAUMAU_COMMON_SIGNALBLOCKER_H
 
-#include "signalmask.h"
+#include <csignal>
+#include <vector>
 
-#include "logger.h"
+#include "linkercontrol.h"
 
-using namespace NetMauMau::Common;
+namespace NetMauMau {
 
-SignalMask::SignalMask(const SignalMask::SIGVECTOR &delsv) : m_sigVec(delsv), m_sigSet(),
-	m_oldSet(), m_ok(false) {
+namespace Common {
+
+class _EXPORT SignalBlocker {
+	DISALLOW_COPY_AND_ASSIGN(SignalBlocker)
+public:
+	typedef std::vector<int> SIGVECTOR;
+
+	explicit SignalBlocker(const SIGVECTOR &delsv = SIGVECTOR());
+	~SignalBlocker();
+
+private:
+	const SIGVECTOR &m_sigVec;
 
 #if _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _POSIX_SOURCE
-
-	if(!sigemptyset(&m_sigSet) && !sigfillset(&m_sigSet)) {
-		std::for_each(m_sigVec.begin(), m_sigVec.end(),
-					  std::bind1st(std::ptr_fun(sigdelset), &m_sigSet));
-		m_ok = sigprocmask(SIG_BLOCK, &m_sigSet, &m_oldSet) == 0;
-	}
-
+	sigset_t m_sigSet;
+	sigset_t m_oldSet;
+#else
+	int m_sigSet;
+	int m_oldSet;
 #endif
+
+	bool m_ok;
+};
+
 }
 
-SignalMask::~SignalMask() {
-#if _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _POSIX_SOURCE
-
-	if(m_ok) sigprocmask(SIG_SETMASK, &m_oldSet, NULL);
-
-#endif
 }
+
+#endif /* NETMAUMAU_COMMON_SIGNALBLOCKER_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

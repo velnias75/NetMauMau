@@ -31,6 +31,7 @@
 
 #include "testclient.h"                 // for TestClient
 #include "testimg.h"                    // for test_client_img
+#include "logger.h"
 
 namespace {
 bool noImg = true;
@@ -161,7 +162,8 @@ int main(int argc, const char **argv) {
 		}
 
 	} catch(const Common::Exception::SocketException &e) {
-		std::cerr << RED_ON << BOLD_ON << "ERROR: " << e.what() << BOLD_OFF << RED_OFF << std::endl;
+		logger(RED_ON << BOLD_ON << "ERROR: " << typeid(e) << ": " << e.what() << BOLD_OFF
+			   << RED_OFF);
 		return EXIT_FAILURE;
 	}
 

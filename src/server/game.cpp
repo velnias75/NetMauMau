@@ -39,7 +39,7 @@
 using namespace NetMauMau::Server;
 
 long Game::m_gameServed = 0L;
-bool Game::m_interrupted = false;
+volatile bool Game::m_interrupted = false;
 
 Game::Game(GameContext &ctx) throw(NetMauMau::Common::Exception::SocketException) :
 	Common::Observable<Game, NOTIFYWHAT>(), m_ctx(ctx), m_engine(ctx.getEngineContext()),
@@ -267,6 +267,8 @@ void Game::reset(bool playerLost) throw() {
 
 	NetMauMau::Common::AbstractSocket::resetReceivedBytes();
 	NetMauMau::Common::AbstractSocket::resetSentBytes();
+
+	m_interrupted = false;
 
 	notify(GAMEENDED);
 	gameReady();

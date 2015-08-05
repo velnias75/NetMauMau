@@ -31,10 +31,15 @@
 #include <cerrno>                       // for errno, EINTR
 
 #include "select.h"
-#include "signalmask.h"
+#include "logger.h"
+#include "signalblocker.h"
 #include "errorstring.h"                // for errorString
 #include "shutdownexception.h"          // for ShutdownException
 #include "timeoutexception.h"           // for TimeoutException
+
+#ifndef TEMP_FAILURE_RETRY
+#define TEMP_FAILURE_RETRY
+#endif
 
 using namespace NetMauMau::Client;
 
@@ -57,20 +62,22 @@ ConnectionImpl::~ConnectionImpl() {}
 bool ConnectionImpl::hello(uint16_t *maj, uint16_t *min)
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	NetMauMau::Common::SignalMask sm;
-	(void)sm;
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
 
 	_piface->NetMauMau::Common::AbstractConnection::connect();
 
 	fd_set rfds;
 	int pret = -1;
 
+	struct timeval tv = { m_timeout ? m_timeout->tv_sec : 0, m_timeout ? m_timeout->tv_usec : 0 };
+
+retry:
+
 	FD_ZERO(&rfds);
 	FD_SET(_piface->getSocketFD(), &rfds);
 
-	struct timeval tv = { m_timeout ? m_timeout->tv_sec : 0, m_timeout ? m_timeout->tv_usec : 0 };
-
-	if(!m_timeout ||
+	if(!m_timeout || /*TEMP_FAILURE_RETRY*/
 			(pret = NetMauMau::Common::Select::getInstance()->perform(_piface->getSocketFD() + 1,
 					&rfds, NULL, NULL, &tv, true)) >  0) {
 
@@ -90,7 +97,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		throw NetMauMau::Common::Exception::SocketException(NetMauMau::Common::errorString(),
 				_piface->getSocketFD(), errno);
 	} else if(pret == -1 && errno == EINTR) {
-		throw Exception::ShutdownException("Server is shutting down", _piface->getSocketFD());
+		logDebug(__PRETTY_FUNCTION__ << ": " << NetMauMau::Common::errorString(errno));
+		goto retry;
 	} else {
 		throw Exception::TimeoutException("Timeout while connecting to server",
 										  _piface->getSocketFD());

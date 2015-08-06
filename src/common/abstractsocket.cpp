@@ -46,6 +46,10 @@
 #include "logger.h"                     // for logWarning
 #include "select.h"
 
+#ifndef TEMP_FAILURE_RETRY
+#define TEMP_FAILURE_RETRY
+#endif
+
 #ifdef _WIN32
 #define MSG_NOSIGNAL 0x0000000
 #define MSG_DONTWAIT 0x0000000
@@ -190,7 +194,7 @@ again:
 
 		while(len > 0) {
 
-			ssize_t i = ::recv(fd, reinterpret_cast<char *>(ptr), len, 0);
+			ssize_t i = TEMP_FAILURE_RETRY(::recv(fd, reinterpret_cast<char *>(ptr), len, 0));
 
 			if(i < 0) throw Exception::SocketException(NetMauMau::Common::errorString(), fd, errno);
 
@@ -255,7 +259,7 @@ void AbstractSocket::send(const void *buf, std::size_t len,
 
 	while(len > 0) {
 
-		ssize_t i = ::send(fd, ptr, len, MSG_NOSIGNAL);
+		ssize_t i = TEMP_FAILURE_RETRY(::send(fd, ptr, len, MSG_NOSIGNAL));
 
 #ifdef _WIN32
 

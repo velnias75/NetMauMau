@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -21,9 +21,16 @@
 
 using namespace NetMauMau::Server::Exception;
 
-ServerPlayerException::ServerPlayerException(const std::string &msg, SOCKET sfd) throw()
-	: SocketException(msg, sfd) {}
+ServerPlayerException::ServerPlayerException(const std::string &p, const std::string &msg,
+		SOCKET sfd) throw() : SocketException(msg, sfd), m_player(p) {}
+
+ServerPlayerException::ServerPlayerException(const ServerPlayerException &o) throw()
+	: SocketException(o), m_player(o.m_player) {}
 
 ServerPlayerException::~ServerPlayerException() throw() {}
+
+std::string ServerPlayerException::player() const throw() {
+	return m_player;
+}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

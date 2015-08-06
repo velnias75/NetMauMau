@@ -38,6 +38,7 @@ namespace Protocol {
 
 namespace V15 _EXPORT {
 
+extern const std::string ERR_TO_EXC_PLAYER;
 extern const std::string ERR_TO_EXC_UNKNOWN;
 extern const std::string ERR_TO_EXC_LOSTCONN;
 extern const std::string ERR_TO_EXC_SHUTDOWNMSG;

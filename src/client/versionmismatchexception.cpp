@@ -39,6 +39,10 @@ VersionMismatchException::VersionMismatchException(uint32_t serverVersion, uint3
 	os.str().swap(m_vMsg);
 }
 
+VersionMismatchException::VersionMismatchException(const VersionMismatchException &o) throw()
+	: SocketException(o), m_vMsg(o.m_vMsg), m_serverVersion(o.m_serverVersion),
+	  m_clientVersion(o.m_clientVersion) {}
+
 VersionMismatchException::~VersionMismatchException() throw() {}
 
 const char *VersionMismatchException::what() const throw() {

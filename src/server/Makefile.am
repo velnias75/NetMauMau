@@ -23,7 +23,7 @@ MAINTAINERCLEANFILES = $(bin_PROGRAMS).1
 DISTCLEANFILES = $(man1_MANS) netmaumau.h2m
 
 noinst_HEADERS = cachepolicyfactory.h gamecontext.h game.h helpers.h httpd.h serverconnection.h \
-	servereventhandler.h serverplayerexception.h serverplayer.h ttynamecheckdir.h
+	servereventhandler.h serverplayer.h ttynamecheckdir.h
 	
 libnmm_server_private_la_CPPFLAGS = -UDISABLE_ANSI -DDISABLE_ANSI=1
 libnmm_server_private_la_CXXFLAGS = -I$(top_srcdir)/src/engine -I$(top_srcdir)/src/include \
@@ -61,7 +61,7 @@ nmm_server_CXXFLAGS =  -I$(top_srcdir)/src/engine -I$(top_srcdir)/src/include \
 	-I$(top_srcdir)/src/sqlite -I$(top_srcdir)/src/common -I$(top_srcdir)/src/ai \
 	-I$(top_srcdir)/src/lua $(POPT_CFLAGS)
 nmm_server_SOURCES = game.cpp main.cpp serverconnection.cpp servereventhandler.cpp \
-	serverplayer.cpp serverplayerexception.cpp
+	serverplayer.cpp
 nmm_server_LDADD = ../common/libnetmaumaucommon.la libnmm_server_private.la \
 	../engine/libengine.la $(LMHL) $(POPT_LIBS) 
 # $(RT_LIBS)

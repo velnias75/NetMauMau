@@ -31,6 +31,7 @@ extern "C" {
 #include "nullaceroundlistener.h"
 #include "iplayer.h"                    // for IPlayer
 #include "random_gen.h"                 // for genRandom
+#include "serverplayerexception.h"
 #include "protocol.h"                   // for CARDCOUNT
 
 namespace {
@@ -189,6 +190,9 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		try {
 			lua_pushinteger(m_state, static_cast<lua_Integer>(player->getCardCount()));
 			lua_setfield(m_state, -2, NetMauMau::Common::Protocol::V15::CARDCOUNT.c_str());
+		} catch(const NetMauMau::Server::Exception::ServerPlayerException &) {
+			lua_pop(m_state, 1);
+			throw;
 		} catch(const NetMauMau::Common::Exception::SocketException &) {
 			lua_pop(m_state, 1);
 			throw;

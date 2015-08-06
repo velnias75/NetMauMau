@@ -26,6 +26,7 @@
 #include "logger.h"                     // for BasicLogger, logWarning
 #include "iplayer.h"                    // for IPlayer
 #include "luafatalexception.h"          // for LuaFatalException
+#include "serverplayerexception.h"
 #include "luastate.h"                   // for LuaState
 
 #ifndef _WIN32
@@ -337,6 +338,9 @@ bool LuaRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 		l.pushPlayer(player);
 		l.call(fname, 3);
 
+	} catch(const NetMauMau::Server::Exception::ServerPlayerException &) {
+		lua_pop(l, 3);
+		throw;
 	} catch(const NetMauMau::Common::Exception::SocketException &e) {
 		lua_pop(l, 3);
 		throw NetMauMau::Lua::Exception::LuaException(std::string("Internal error: ") + e.what(),

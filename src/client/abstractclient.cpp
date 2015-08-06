@@ -35,6 +35,7 @@
 #include "pngcheck.h"                   // for checkPNG
 #include "scoresexception.h"            // for ScoresException
 #include "shutdownexception.h"
+#include "remoteplayerexception.h"
 #include "lostconnectionexception.h"
 #include "protocol.h"                   // for PLAYCARD, ACEROUND, etc
 
@@ -718,15 +719,30 @@ bool AbstractClientV05::isLostConnMsg(const std::string &msg) {
 }
 
 bool AbstractClientV05::isShutdownMsg(const std::string &msg) {
-	return (msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_SHUTDOWNMSG) != std::string::npos)
-		   || (msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_MISCONFIGURED) !=
-			   std::string::npos);
+	return msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_SHUTDOWNMSG) != std::string::npos;
+}
+
+bool AbstractClientV05::isMisconfgMsg(const std::string &msg) {
+	return msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_MISCONFIGURED) !=
+		   std::string::npos;
+}
+
+bool AbstractClientV05::isRemotePlMsg(const std::string &msg) {
+	return msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_PLAYER) != std::string::npos;
 }
 
 void AbstractClientV05::checkedError(const std::string &msg) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	logDebug("Client library: " << __PRETTY_FUNCTION__ << ": " << msg);
+
+	if(isRemotePlMsg(msg)) {
+		throw NetMauMau::Client::Exception::RemotePlayerException(msg.substr(
+					NetMauMau::Common::Protocol::V15::ERR_TO_EXC_PLAYER.length(), msg.find(": ")),
+				msg.substr(msg.find(": ") + 2));
+	}
+
+	if(isMisconfgMsg(msg)) throw NetMauMau::Common::Exception::SocketException(msg);
 
 	if(isShutdownMsg(msg)) throw NetMauMau::Client::Exception::ShutdownException(msg);
 
@@ -799,4 +815,4 @@ AbstractClientV09::SCORES AbstractClientV09::getScores(SCORE_TYPE::_scoreType ty
 	return _pimpl->m_connection.getScores(type, limit);
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

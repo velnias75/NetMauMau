@@ -557,8 +557,10 @@ protected:
 	virtual void unknownServerMessage(const std::string &msg) const = 0;
 
 private:
+	static bool isMisconfgMsg(const std::string &msg);
 	static bool isShutdownMsg(const std::string &msg);
 	static bool isLostConnMsg(const std::string &msg);
+	static bool isRemotePlMsg(const std::string &msg);
 
 	void init();
 

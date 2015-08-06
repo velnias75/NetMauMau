@@ -68,8 +68,9 @@ void Player::receiveCard(const NetMauMau::Common::ICardPtr &card) {
 
 	try {
 		if(card) receiveCardSet(CARDS(1, card));
-	} catch(const NetMauMau::Common::Exception::SocketException &) {
-		throw Exception::ServerPlayerException(__FUNCTION__);
+	} catch(const NetMauMau::Common::Exception::SocketException &e) {
+		throw Exception::ServerPlayerException(getName(), std::string(__FUNCTION__).append(": ").
+											   append(e.what()));
 	}
 }
 
@@ -87,8 +88,9 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::CARDSGOT);
 
-	} catch(const NetMauMau::Common::Exception::SocketException &) {
-		throw Exception::ServerPlayerException(__FUNCTION__);
+	} catch(const NetMauMau::Common::Exception::SocketException &e) {
+		throw Exception::ServerPlayerException(getName(), std::string(__FUNCTION__).append(": ").
+											   append(e.what()));
 	}
 }
 
@@ -135,8 +137,9 @@ NetMauMau::Common::ICardPtr Player::requestCard(const NetMauMau::Common::ICardPt
 
 		return findCard(offeredCard);
 
-	} catch(const NetMauMau::Common::Exception::SocketException &) {
-		throw Exception::ServerPlayerException(__FUNCTION__);
+	} catch(const NetMauMau::Common::Exception::SocketException &e) {
+		throw Exception::ServerPlayerException(getName(), std::string(__FUNCTION__).append(": ").
+											   append(e.what()));
 	}
 }
 
@@ -169,8 +172,9 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		return !getCardCount();
 
-	} catch(const NetMauMau::Common::Exception::SocketException &) {
-		throw Exception::ServerPlayerException(__FUNCTION__);
+	} catch(const NetMauMau::Common::Exception::SocketException &e) {
+		throw Exception::ServerPlayerException(getName(), std::string(__FUNCTION__).append(": ").
+											   append(e.what()));
 	}
 }
 
@@ -197,8 +201,13 @@ std::size_t Player::getCardCount() const throw(NetMauMau::Common::Exception::Soc
 	try {
 		m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::CARDCOUNT);
 		cc = std::strtoul(m_connection.read(m_sockfd).c_str(), NULL, 10);
-	} catch(const NetMauMau::Common::Exception::SocketException &) {
-		throw Exception::ServerPlayerException(__FUNCTION__);
+	} catch(const NetMauMau::Common::Exception::SocketException &e) {
+
+		const std::string err(std::string("Error in getting card count of \"").append(getName()).
+							  append("\""));
+
+		logError(err << " (" << e.what() << ")");
+		throw Exception::ServerPlayerException(getName(), err);
 	}
 
 	return cc;
@@ -211,8 +220,9 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	try {
 		m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::JACKCHOICE);
 		return NetMauMau::Common::symbolToSuit(m_connection.read(m_sockfd));
-	} catch(const NetMauMau::Common::Exception::SocketException &) {
-		throw Exception::ServerPlayerException(__FUNCTION__);
+	} catch(const NetMauMau::Common::Exception::SocketException &e) {
+		throw Exception::ServerPlayerException(getName(), std::string(__FUNCTION__).append(": ").
+											   append(e.what()));
 	}
 }
 
@@ -222,8 +232,9 @@ bool Player::getAceRoundChoice() const throw(NetMauMau::Common::Exception::Socke
 		try {
 			m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::ACEROUND);
 			return m_connection.read(m_sockfd) == NetMauMau::Common::Protocol::V15::TRUE;
-		} catch(const NetMauMau::Common::Exception::SocketException &) {
-			throw Exception::ServerPlayerException(__FUNCTION__);
+		} catch(const NetMauMau::Common::Exception::SocketException &e) {
+			throw Exception::ServerPlayerException(getName(), std::string(__FUNCTION__).append(": ").
+												   append(e.what()));
 		}
 	}
 

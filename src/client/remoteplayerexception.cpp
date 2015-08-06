@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -17,31 +17,20 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_SERVERPLAYEREXCEPTION_H
-#define NETMAUMAU_SERVERPLAYEREXCEPTION_H
+#include "remoteplayerexception.h"
 
-#include "socketexception.h"            // for INVALID_SOCKET, SOCKET, etc
+using namespace NetMauMau::Client::Exception;
 
-namespace NetMauMau {
+RemotePlayerException::RemotePlayerException(const std::string &p, const std::string &msg) throw()
+	: SocketException(msg), m_player(p) {}
 
-namespace Server {
+RemotePlayerException::RemotePlayerException(const RemotePlayerException &o) throw()
+	: SocketException(o), m_player(o.m_player) {}
 
-namespace Exception {
+RemotePlayerException::~RemotePlayerException() throw() {}
 
-class ServerPlayerException : public Common::Exception::SocketException {
-	ServerPlayerException &operator=(const ServerPlayerException &);
-public:
-	ServerPlayerException(const ServerPlayerException &o) throw();
-	explicit ServerPlayerException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();
-	virtual ~ServerPlayerException() throw();
-};
-
+std::string RemotePlayerException::player() const throw() {
+	return m_player;
 }
-
-}
-
-}
-
-#endif /* NETMAUMAU_SERVERPLAYEREXCEPTION_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

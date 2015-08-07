@@ -34,7 +34,6 @@
 #include "logger.h"
 #include "signalblocker.h"
 #include "errorstring.h"                // for errorString
-#include "shutdownexception.h"          // for ShutdownException
 #include "timeoutexception.h"           // for TimeoutException
 
 #ifndef TEMP_FAILURE_RETRY

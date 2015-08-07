@@ -10,11 +10,21 @@ AC_CONFIG_HEADERS([config.h])
 LT_INIT
 LT_LANG([Windows Resource])
 
+build_host="$build_cpu-$build_vendor-$build_os"
+if test "$build_host" = "--" ; then
+  build_host=`uname -m`-`uname -s`
+fi
+
+build_target="$host_cpu-$host_vendor-$host_os"
+if test "$build_target" = "--" ; then
+  build_target=`$(CC) -dumpmachine`
+fi
+
 AC_SUBST([BUILD_YEAR], [`date +%Y`])
 AC_DEFINE_UNQUOTED([BUILD_DATE], [`date +%s`], [the build date in Unix time])
 AC_DEFINE_UNQUOTED([BUILD_NODE], ["`uname -n`"], [the build node])
-AC_DEFINE_UNQUOTED([BUILD_HOST], ["$build_cpu-$build_vendor-$build_os"], [the build host])
-AC_DEFINE_UNQUOTED([BUILD_TARGET], ["$host_cpu-$host_vendor-$host_os"], [the build target])
+AC_DEFINE_UNQUOTED([BUILD_HOST], ["$build_host"], [the build host])
+AC_DEFINE_UNQUOTED([BUILD_TARGET], ["$build_target"], [the build target])
 
 AC_DEFINE([SERVER_PORT], [8899], [the default server port])
 AC_DEFINE([HTTPD_PORT], [9000], [the default httpd port])

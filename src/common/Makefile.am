@@ -4,9 +4,9 @@ noinst_LTLIBRARIES = libnetmaumaucommon_private.la
 BUILT_SOURCES = ai-icon.h
 
 noinst_HEADERS = abstractconnectionimpl.h abstractsocketimpl.h base64.h basiclogger.h \
-	ci_char_traits.h errorstring.h icardfactory.h iobserver.h iplayer.h logger.h \
-	mimemagic.h observable.h pathtools.h pngcheck.h protocol.h select.h signalblocker.h \
-	smartptr.h smartsingleton.h zlibexception.h zstreambuf.h
+	ci_string.h errorstring.h icardfactory.h iobserver.h iplayer.h logger.h mimemagic.h \
+	observable.h pathtools.h pngcheck.h protocol.h select.h signalblocker.h smartptr.h \
+	smartsingleton.h zlibexception.h zstreambuf.h
 
 DISTCLEANFILES = ai-icon.h
 
@@ -25,7 +25,7 @@ libnetmaumaucommon_private_la_CPPFLAGS = $(GSL) -DNMM_EXE_PATH=\"$(bindir)\" \
 	-DNMM_EXE_NAME=\"nmm-server\" -DNMM_EXE_EXT=\"$(EXEEXT)\" -DPKGDATADIR="\"$(pkgdatadir)\"" \
 	$(NO_EXCEPTIONS) -DEXPORT_SMARTSINGLETON
 libnetmaumaucommon_private_la_CXXFLAGS = -I$(top_srcdir)/src/include
-libnetmaumaucommon_private_la_SOURCES = cardtools.cpp ci_char_traits.cpp defaultplayerimage.cpp \
+libnetmaumaucommon_private_la_SOURCES = cardtools.cpp ci_string.cpp defaultplayerimage.cpp \
 	errorstring.cpp mimemagic.cpp pathtools.cpp pngcheck.cpp protocol.cpp signalblocker.cpp
 libnetmaumaucommon_private_la_LIBADD = $(MAGIC_LIBS)
 

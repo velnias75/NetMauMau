@@ -28,6 +28,7 @@
 #include "cardtools.h"                  // for getIllegalCard, etc
 #include "serverconnection.h"           // for Connection
 #include "serverplayerexception.h"      // for ServerPlayerException
+#include "signalblocker.h"
 #include "protocol.h"                   // for ACEROUND, CARDACCEPTED, etc
 
 namespace {
@@ -77,6 +78,9 @@ void Player::receiveCard(const NetMauMau::Common::ICardPtr &card) {
 void Player::receiveCardSet(const CARDS &cards)
 throw(NetMauMau::Common::Exception::SocketException) {
 
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
+
 	NetMauMau::Player::AbstractPlayer::receiveCardSet(cards);
 
 	try {
@@ -98,6 +102,9 @@ void Player::shuffleCards() {}
 
 NetMauMau::Common::ICardPtr Player::requestCard(const NetMauMau::Common::ICardPtr &uncoveredCard,
 		const NetMauMau::Common::ICard::SUIT *s, std::size_t takeCount, bool) const {
+
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
 
 	try {
 
@@ -163,6 +170,9 @@ NetMauMau::Common::ICardPtr Player::findCard(const std::string &offeredCard) con
 bool Player::cardAccepted(const NetMauMau::Common::ICard *playedCard)
 throw(NetMauMau::Common::Exception::SocketException) {
 
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
+
 	NetMauMau::Player::AbstractPlayer::cardAccepted(playedCard);
 
 	try {
@@ -179,6 +189,10 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 
 void Player::talonShuffled() throw(NetMauMau::Common::Exception::SocketException) {
+
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
+
 	NetMauMau::Player::AbstractPlayer::talonShuffled();
 	m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::TALONSHUFFLED);
 }
@@ -195,6 +209,9 @@ Player::IPlayer::REASON Player::getNoCardReason(const NetMauMau::Common::ICardPt
 }
 
 std::size_t Player::getCardCount() const throw(NetMauMau::Common::Exception::SocketException) {
+
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
 
 	std::size_t cc = 0;
 
@@ -217,6 +234,9 @@ NetMauMau::Common::ICard::SUIT Player::getJackChoice(const NetMauMau::Common::IC
 		const NetMauMau::Common::ICardPtr &) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
+
 	try {
 		m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::JACKCHOICE);
 		return NetMauMau::Common::symbolToSuit(m_connection.read(m_sockfd));
@@ -227,6 +247,9 @@ throw(NetMauMau::Common::Exception::SocketException) {
 }
 
 bool Player::getAceRoundChoice() const throw(NetMauMau::Common::Exception::SocketException) {
+
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
 
 	if(isAceRoundAllowed()) {
 		try {

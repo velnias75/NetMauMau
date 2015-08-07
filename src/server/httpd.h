@@ -23,7 +23,7 @@
 #include "smartsingleton.h"
 
 #include "game.h"
-#include "ci_char_traits.h"
+#include "ci_string.h"
 #include "serverconnection.h"
 
 struct MHD_Daemon;

@@ -25,7 +25,7 @@
 #include <strings.h>
 #endif
 
-#include "ci_char_traits.h"
+#include "ci_string.h"
 
 using namespace NetMauMau::Common;
 

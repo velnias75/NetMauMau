@@ -25,13 +25,18 @@
 #include <cstring>                      // for strncmp, memcpy
 #include <sstream>                      // for operator<<, ostringstream, etc
 #include <cstdio>
+#include <cerrno>
 
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #include "base64.h"
-#include "ci_char_traits.h"
+#include "ci_string.h"
 #include "abstractclient.h"             // for AbstractClient
 #include "capabilitiesexception.h"      // for CapabilitiesException
 #include "clientconnectionimpl.h"       // for ConnectionImpl
@@ -43,9 +48,14 @@
 #include "protocolerrorexception.h"     // for ProtocolErrorException
 #include "scoresexception.h"            // for ScoresException
 #include "versionmismatchexception.h"   // for VersionMismatchException
+#include "signalblocker.h"
 #include "protocol.h"                   // for ERROR
 
 #define MAX_PNAME 1024
+
+#ifndef TEMP_FAILURE_RETRY
+#define TEMP_FAILURE_RETRY
+#endif
 
 using namespace NetMauMau::Client;
 
@@ -82,6 +92,9 @@ void Connection::setTimeout(struct timeval *timeout) {
 
 Connection::PLAYERINFOS Connection::playerList(const IPlayerPicListener *hdl, bool playerPNG)
 throw(NetMauMau::Common::Exception::SocketException) {
+
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
 
 	PLAYERINFOS plv;
 
@@ -154,6 +167,9 @@ throw(NetMauMau::Common::Exception::SocketException) {
 Connection::CAPABILITIES Connection::capabilities()
 throw(NetMauMau::Common::Exception::SocketException) {
 
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
+
 	Connection::CAPABILITIES caps;
 
 	if(_pimpl->hello()) {
@@ -184,6 +200,9 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 Connection::SCORES Connection::getScores(SCORE_TYPE::_scoreType type, std::size_t limit)
 throw(NetMauMau::Common::Exception::SocketException) {
+
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
 
 	try {
 
@@ -252,6 +271,9 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 void Connection::connect(const IPlayerPicListener *l, const unsigned char *data, std::size_t len)
 throw(NetMauMau::Common::Exception::SocketException) {
+
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
 
 	uint16_t maj = 0, min = 0;
 
@@ -352,14 +374,20 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 }
 
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic push
 bool Connection::wire(SOCKET sockfd, const struct sockaddr *addr, socklen_t addrlen) const {
+
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
 
 	int ret = -1;
 
-	if((ret = ::connect(sockfd, addr, addrlen)) == -1) shutdown(sockfd);
+	if((ret = TEMP_FAILURE_RETRY(::connect(sockfd, addr, addrlen))) == -1) shutdown(sockfd);
 
 	return ret != -1;
 }
+#pragma GCC diagnostic pop
 
 std::string Connection::wireError(const std::string &err) const {
 	return std::string(!err.empty() ? err : "could not connect");
@@ -367,6 +395,9 @@ std::string Connection::wireError(const std::string &err) const {
 
 Connection &Connection::operator>>(std::string &msg)
 throw(NetMauMau::Common::Exception::SocketException) {
+
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
 
 	std::string str;
 	char  buf[1024] = { 0 };
@@ -403,7 +434,12 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 Connection &Connection::operator<<(const std::string &msg)
 throw(NetMauMau::Common::Exception::SocketException) {
+
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
+
 	send(msg.c_str(), msg.length(), getSocketFD());
+
 	return *this;
 }
 

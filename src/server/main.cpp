@@ -367,7 +367,7 @@ int main(int argc, const char **argv) {
 	static struct sigaction sa_dump;
 	std::memset(&sa_dump, 0, sizeof(struct sigaction));
 	sa_dump.sa_sigaction = sh_dump;
-	sa_dump.sa_flags = static_cast<int>(SA_SIGINFO);
+	sa_dump.sa_flags = static_cast<int>(SA_SIGINFO|SA_RESTART);
 	sigaction(SIGUSR1, &sa_dump, NULL);
 
 	NetMauMau::DB::SQLite::getInstance();

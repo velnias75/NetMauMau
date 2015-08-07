@@ -52,7 +52,7 @@
 #include "ieventhandler.h"              // for IEventHandler
 #include "nullruleset.h"
 #include "talon.h"                      // for Talon
-#include "ci_char_traits.h"
+#include "ci_string.h"
 
 namespace {
 const std::string TALONUNDERFLOW("TALON-UNDERFLOW: attempt to take more cards from the talon " \

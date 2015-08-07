@@ -21,7 +21,7 @@
 
 #include "abstractconnectionimpl.h"
 
-#include "ci_char_traits.h"
+#include "ci_string.h"
 
 namespace {
 #pragma GCC diagnostic ignored "-Weffc++"

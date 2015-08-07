@@ -27,6 +27,10 @@
 #include <netdb.h>                      // for NI_MAXHOST, NI_MAXSERV, etc
 #endif
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #include <sys/stat.h>                   // for stat
 #include <cerrno>                       // for errno, ENOENT, ENOMEM
 #include <cstdio>                       // for NULL, fclose, feof, fopen, etc
@@ -39,7 +43,12 @@
 #include "pngcheck.h"                   // for checkPNG
 #include "sqlite.h"                     // for SQLite, SQLite::SCORES, etc
 #include "select.h"
+#include "signalblocker.h"
 #include "protocol.h"                   // for BYE, VM_ADDPIC
+
+#ifndef TEMP_FAILURE_RETRY
+#define TEMP_FAILURE_RETRY
+#endif
 
 namespace {
 const std::string aiBase64
@@ -149,6 +158,9 @@ Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *s
 }
 
 Connection::~Connection() {
+
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
 
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
@@ -260,6 +272,9 @@ int Connection::wait(timeval *tv) {
 Connection::ACCEPT_STATE Connection::accept(INFO &info,
 		bool gameRunning) throw(NetMauMau::Common::Exception::SocketException) {
 
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
+
 	bool refuse = gameRunning;
 
 	ACCEPT_STATE accepted = REFUSED;
@@ -267,8 +282,9 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 	struct sockaddr_storage peer_addr;
 	socklen_t peer_addr_len = sizeof(struct sockaddr_storage);
 
-	const SOCKET cfd = ::accept(getSocketFD(), reinterpret_cast<struct sockaddr *>(&peer_addr),
-								&peer_addr_len);
+	const SOCKET cfd = TEMP_FAILURE_RETRY(::accept(getSocketFD(),
+										  reinterpret_cast<struct sockaddr *>(&peer_addr),
+										  &peer_addr_len));
 
 	if(cfd != INVALID_SOCKET) {
 
@@ -638,6 +654,9 @@ Connection::getPlayerInfo(const std::string &name) const {
 void Connection::sendVersionedMessage(const Connection::VERSIONEDMESSAGE &vm) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
+
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
 
@@ -692,6 +711,9 @@ void Connection::clearPlayerPictures() const {
 Connection &Connection::operator<<(const std::string &msg)
 throw(NetMauMau::Common::Exception::SocketException) {
 
+	NetMauMau::Common::SignalBlocker sb;
+	_UNUSED(sb);
+
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
 		write(i->sockfd, msg);
@@ -715,4 +737,4 @@ void Connection::reset() throw() {
 	AbstractConnection::reset();
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;

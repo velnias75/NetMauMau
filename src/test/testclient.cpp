@@ -33,7 +33,7 @@
 
 #include "cardtools.h"                  // for ansiSuit, getSuitSymbols, etc
 #include "random_gen.h"
-#include "ci_char_traits.h"
+#include "ci_string.h"
 
 #ifndef DISABLE_ANSI
 const char *RED_ON = "\x1B[31m";

@@ -62,7 +62,13 @@ const std::string SUIT[] _INIT_PRIO(101) = { SUIT_DIAMONDS, SUIT_HEARTS, SUIT_SP
 #endif
 
 const std::string IC("ILLEGAL CARD");
+
+#ifndef _WIN32
 const std::string SE(NetMauMau::Common::getModulePath(NetMauMau::Common::BINDIR));
+#else
+const std::string SE(NetMauMau::Common::getModulePath(NetMauMau::Common::BINDIR, "nmm-server",
+					 "exe"));
+#endif
 
 class _ICARD : public NetMauMau::Common::ICard {
 	DISALLOW_COPY_AND_ASSIGN(_ICARD)

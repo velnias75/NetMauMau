@@ -38,7 +38,7 @@ namespace Exception {
  * @brief Error in communication wit a remote player
  * @since 0.23.6
  */
-class RemotePlayerException : public Common::Exception::SocketException {
+class _EXPORT RemotePlayerException : public Common::Exception::SocketException {
 	RemotePlayerException &operator=(const RemotePlayerException &);
 public:
 	RemotePlayerException(const RemotePlayerException &o) throw();

@@ -17,7 +17,7 @@ fi
 
 build_target="$host_cpu-$host_vendor-$host_os"
 if test "$build_target" = "--" ; then
-  build_target=`$(CC) -dumpmachine`
+  build_target=`${CC} -dumpmachine`
 fi
 
 AC_SUBST([BUILD_YEAR], [`date +%Y`])

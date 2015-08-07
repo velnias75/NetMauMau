@@ -21,9 +21,14 @@
 #define NETMAUMAU_COMMON_SIGNALBLOCKER_H
 
 #include <csignal>
-#include <vector>
 
 #include "linkercontrol.h"
+
+#define BLOCK_ALL_SIGNALS NetMauMau::Common::SignalBlocker __signal__blocker; \
+	_UNUSED(__signal__blocker)
+
+#define BLOCK_SIGNALS(n, p) NetMauMau::Common::SignalBlocker __signal__blocker((n), (p)); \
+	_UNUSED(__signal__blocker)
 
 namespace NetMauMau {
 
@@ -32,14 +37,15 @@ namespace Common {
 class _EXPORT SignalBlocker {
 	DISALLOW_COPY_AND_ASSIGN(SignalBlocker)
 public:
-	typedef std::vector<int> SIGVECTOR;
-
-	explicit SignalBlocker(const SIGVECTOR &delsv = SIGVECTOR());
+	SignalBlocker();
+	SignalBlocker(std::size_t numsv, int *ignsv);
 	~SignalBlocker();
 
 private:
-	const SIGVECTOR &m_sigVec;
+	// cppcheck-suppress functionStatic
+	bool init(std::size_t numsv, int *ignsv);
 
+private:
 #if _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _POSIX_SOURCE
 	sigset_t m_sigSet;
 	sigset_t m_oldSet;

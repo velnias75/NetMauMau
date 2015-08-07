@@ -159,8 +159,7 @@ Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *s
 
 Connection::~Connection() {
 
-	NetMauMau::Common::SignalBlocker sb;
-	_UNUSED(sb);
+	BLOCK_ALL_SIGNALS;
 
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
@@ -216,6 +215,8 @@ void Connection::connect(bool inetd) throw(NetMauMau::Common::Exception::SocketE
 #pragma GCC diagnostic push
 int Connection::wait(timeval *tv) {
 
+	BLOCK_ALL_SIGNALS;
+
 	if(tv) {
 
 		for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
@@ -249,7 +250,8 @@ int Connection::wait(timeval *tv) {
 
 			char buffer[32];
 
-			if(!::recv(i->sockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT)) {
+			if(!TEMP_FAILURE_RETRY(::recv(i->sockfd, buffer, sizeof(buffer), MSG_PEEK |
+										  MSG_DONTWAIT))) {
 				logDebug("Lost connection to player \"" << i->name << "\"");
 				removePlayer(i->sockfd);
 				return WAIT_ERROR;
@@ -272,8 +274,7 @@ int Connection::wait(timeval *tv) {
 Connection::ACCEPT_STATE Connection::accept(INFO &info,
 		bool gameRunning) throw(NetMauMau::Common::Exception::SocketException) {
 
-	NetMauMau::Common::SignalBlocker sb;
-	_UNUSED(sb);
+	BLOCK_ALL_SIGNALS;
 
 	bool refuse = gameRunning;
 
@@ -654,8 +655,7 @@ Connection::getPlayerInfo(const std::string &name) const {
 void Connection::sendVersionedMessage(const Connection::VERSIONEDMESSAGE &vm) const
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	NetMauMau::Common::SignalBlocker sb;
-	_UNUSED(sb);
+	BLOCK_ALL_SIGNALS;
 
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
@@ -711,8 +711,7 @@ void Connection::clearPlayerPictures() const {
 Connection &Connection::operator<<(const std::string &msg)
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	NetMauMau::Common::SignalBlocker sb;
-	_UNUSED(sb);
+	BLOCK_ALL_SIGNALS;
 
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
@@ -737,4 +736,4 @@ void Connection::reset() throw() {
 	AbstractConnection::reset();
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

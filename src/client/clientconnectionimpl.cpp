@@ -61,8 +61,7 @@ ConnectionImpl::~ConnectionImpl() {}
 bool ConnectionImpl::hello(uint16_t *maj, uint16_t *min)
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	NetMauMau::Common::SignalBlocker sb;
-	_UNUSED(sb);
+	BLOCK_ALL_SIGNALS;
 
 	_piface->NetMauMau::Common::AbstractConnection::connect();
 

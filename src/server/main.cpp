@@ -67,6 +67,7 @@
 #include "httpd.h"
 #else
 #include "game.h"
+#include "eff_map.h"
 #include "ci_char_traits.h"
 #endif
 
@@ -367,7 +368,7 @@ int main(int argc, const char **argv) {
 	static struct sigaction sa_dump;
 	std::memset(&sa_dump, 0, sizeof(struct sigaction));
 	sa_dump.sa_sigaction = sh_dump;
-	sa_dump.sa_flags = static_cast<int>(SA_SIGINFO|SA_RESTART);
+	sa_dump.sa_flags = static_cast<int>(SA_SIGINFO | SA_RESTART);
 	sigaction(SIGUSR1, &sa_dump, NULL);
 
 	NetMauMau::DB::SQLite::getInstance();
@@ -444,46 +445,48 @@ int main(int argc, const char **argv) {
 
 			Server::Connection::CAPABILITIES caps;
 
-			caps.insert(std::make_pair("SERVER_VERSION", NMM_VERSION_STRING(SERVER_VERSION_MAJOR,
-									   SERVER_VERSION_MINOR)));
-			caps.insert(std::make_pair("SERVER_VERSION_REL", PACKAGE_VERSION));
-			caps.insert(std::make_pair("AI_OPPONENT", aiOpponent ? "true" : "false"));
-			caps.insert(std::make_pair("ULTIMATE", ultimate ? "true" : "false"));
-			caps.insert(std::make_pair("ACEROUND", aceRound ? std::string(1, arRank ?
-									   ::toupper(arRank[0]) : 'A') : "false"));
-			caps.insert(std::make_pair("HAVE_SCORES",
-									   DB::SQLite::getInstance()->getDBFilename().empty() ? "false"
-									   : "true"));
-			caps.insert(std::make_pair("DIRCHANGE", dirChange ? "true" : "false"));
+			NetMauMau::Common::efficientAddOrUpdate(caps, "SERVER_VERSION",
+													NMM_VERSION_STRING(SERVER_VERSION_MAJOR,
+															SERVER_VERSION_MINOR));
+			NetMauMau::Common::efficientAddOrUpdate(caps, "SERVER_VERSION_REL", PACKAGE_VERSION);
+			NetMauMau::Common::efficientAddOrUpdate(caps, "AI_OPPONENT",
+													aiOpponent ? "true" : "false");
+			NetMauMau::Common::efficientAddOrUpdate(caps, "ULTIMATE", ultimate ? "true" : "false");
+			NetMauMau::Common::efficientAddOrUpdate(caps, "ACEROUND", aceRound ? std::string(1,
+													arRank ? ::toupper(arRank[0]) : 'A') : "false");
+			NetMauMau::Common::efficientAddOrUpdate(caps, "HAVE_SCORES", DB::SQLite::getInstance()->
+													getDBFilename().empty() ? "false" : "true");
+			NetMauMau::Common::efficientAddOrUpdate(caps, "DIRCHANGE",
+													dirChange ? "true" : "false");
 
 			if(decks > 1) {
 				char cc[20];
 				std::snprintf(cc, 19, "%d", 32 * decks);
-				caps.insert(std::make_pair("TALON", cc));
+				NetMauMau::Common::efficientAddOrUpdate(caps, "TALON", cc);
 			}
 
 			if(initialCardCount != 5) {
 				char cc[20];
 				std::snprintf(cc, 19, "%d", initialCardCount);
-				caps.insert(std::make_pair("INITIAL_CARDS", cc));
+				NetMauMau::Common::efficientAddOrUpdate(caps, "INITIAL_CARDS", cc);
 			}
 
-			if(aiOpponent) caps.insert(std::make_pair("AI_NAME", std::string(aiNames[0]).substr(0,
-										   std::string(aiNames[0]).rfind(':'))));
+			if(aiOpponent) NetMauMau::Common::efficientAddOrUpdate(caps, "AI_NAME",
+						std::string(aiNames[0]).substr(0, std::string(aiNames[0]).rfind(':')));
 
 			std::ostringstream mvos;
 			mvos << static_cast<uint16_t>(con.getMinClientVersion() >> 16)
 				 << '.' << static_cast<uint16_t>(con.getMinClientVersion());
 
-			caps.insert(std::make_pair("MIN_VERSION", mvos.str()));
+			NetMauMau::Common::efficientAddOrUpdate(caps, "MIN_VERSION", mvos.str());
 
 			std::ostringstream mpos;
 			mpos << (aiOpponent ? aiNames.size() + 1 : minPlayers);
-			caps.insert(std::make_pair("MAX_PLAYERS", mpos.str()));
+			NetMauMau::Common::efficientAddOrUpdate(caps, "MAX_PLAYERS", mpos.str());
 
 			std::ostringstream cpos;
 			cpos << game.getPlayerCount();
-			caps.insert(std::make_pair("CUR_PLAYERS", cpos.str()));
+			NetMauMau::Common::efficientAddOrUpdate(caps, "CUR_PLAYERS", cpos.str());
 
 			updatePlayerCap(caps, game.getPlayerCount(), con);
 

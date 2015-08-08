@@ -581,9 +581,11 @@ void Httpd::update(const NetMauMau::Common::IObserver<Connection>::what_type &wh
 	const std::vector<NetMauMau::Common::BYTE> &b64(NetMauMau::Common::base64_decode(what.second));
 
 	if(b64.empty()) {
-		m_images.insert(std::make_pair(what.first, NetMauMau::Common::DefaultPlayerImage));
+		NetMauMau::Common::efficientAddOrUpdate(m_images, what.first,
+												NetMauMau::Common::DefaultPlayerImage);
 	} else {
-		m_images.insert(std::make_pair(what.first, std::string(b64.begin(), b64.end())));
+		NetMauMau::Common::efficientAddOrUpdate(m_images, what.first,
+												std::string(b64.begin(), b64.end()));
 	}
 }
 

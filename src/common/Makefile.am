@@ -4,9 +4,9 @@ noinst_LTLIBRARIES = libnetmaumaucommon_private.la
 BUILT_SOURCES = ai-icon.h
 
 noinst_HEADERS = abstractconnectionimpl.h abstractsocketimpl.h base64.h basiclogger.h \
-	ci_string.h errorstring.h icardfactory.h iobserver.h iplayer.h logger.h mimemagic.h \
-	observable.h pathtools.h pngcheck.h protocol.h select.h signalblocker.h smartptr.h \
-	smartsingleton.h zlibexception.h zstreambuf.h
+	ci_string.h eff_map.h errorstring.h icardfactory.h iobserver.h iplayer.h logger.h \
+	mimemagic.h observable.h pathtools.h pngcheck.h protocol.h select.h signalblocker.h \
+	smartptr.h smartsingleton.h zlibexception.h zstreambuf.h
 
 DISTCLEANFILES = ai-icon.h
 

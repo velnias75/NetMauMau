@@ -23,6 +23,7 @@
 #include "smartsingleton.h"
 
 #include "game.h"
+#include "eff_map.h"
 #include "ci_string.h"
 #include "serverconnection.h"
 
@@ -87,7 +88,7 @@ public:
 	}
 
 	inline void insertReqHdrPair(const char *key, const char *value) {
-		m_reqHdrMap.insert(std::make_pair(key, value));
+		NetMauMau::Common::efficientAddOrUpdate(m_reqHdrMap, key, value);
 	}
 
 private:

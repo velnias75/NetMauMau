@@ -19,7 +19,6 @@
 
 #include <cerrno>
 #include <algorithm>
-#include <functional>
 
 #include "signalblocker.h"
 

@@ -24,6 +24,8 @@
 
 #include "abstractclient.h"             // for AbstractClient
 
+#include "eff_map.h"
+
 namespace NetMauMau {
 
 namespace Client {
@@ -92,6 +94,13 @@ class _LOCAL MappedMessageProcessor {
 	typedef std::map<const std::string *const, PROTOFN, _protoCmp> PROTOMAP;
 
 public:
+	typedef typename PROTOMAP::value_type value_type;
+
+	template<class Iter>
+	MappedMessageProcessor(const T *const t, const AbstractClientV05Impl *const pimpl,
+						   const Iter &first, const Iter &last) : _t(t), _pimpl(pimpl),
+		m_protoMap(first, last) {}
+
 	MappedMessageProcessor(const T *const t, const AbstractClientV05Impl *const pimpl)
 		: _t(t), _pimpl(pimpl), m_protoMap() {}
 
@@ -117,7 +126,7 @@ private:
 
 template<class T>
 void MappedMessageProcessor<T>::map(const std::string &key, const PROTOFN &fn) {
-	m_protoMap.insert(std::make_pair(&key, fn));
+	NetMauMau::Common::efficientAddOrUpdate(m_protoMap, &key, fn);
 }
 
 }

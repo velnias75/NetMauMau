@@ -94,8 +94,8 @@ public:
 
 } ILLEGAL_CARD;
 
-const std::map<const std::string, NetMauMau::Common::ICard::SUIT>::value_type
-SSP[] _INIT_PRIO(102) = {
+const
+std::map<const std::string, NetMauMau::Common::ICard::SUIT>::value_type SSP[] _INIT_PRIO(102) = {
 	std::make_pair(SUIT[2], NetMauMau::Common::ICard::SPADES),
 	std::make_pair(SUIT[3], NetMauMau::Common::ICard::CLUBS),
 	std::make_pair(SUIT[1], NetMauMau::Common::ICard::HEARTS),

@@ -125,13 +125,13 @@ void updatePlayerCap(Server::Connection::CAPABILITIES &caps, std::size_t count,
 	std::ostringstream os;
 
 	os << count;
-	caps["CUR_PLAYERS"] = os.str();
+	NetMauMau::Common::efficientAddOrUpdate(caps, "CUR_PLAYERS", os.str());
 
 #ifdef HAVE_LIBMICROHTTPD
 
 	const std::string &url(NetMauMau::Server::Httpd::getInstance()->getWebServerURL());
 
-	if(!url.empty()) caps["WEBSERVER_URL"] = url;
+	if(!url.empty()) NetMauMau::Common::efficientAddOrUpdate(caps, "WEBSERVER_URL", url);
 
 	NetMauMau::Server::Httpd::getInstancePtr()->setCapabilities(caps);
 

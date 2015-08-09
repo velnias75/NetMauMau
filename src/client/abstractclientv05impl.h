@@ -24,8 +24,6 @@
 
 #include "abstractclient.h"             // for AbstractClient
 
-#include "eff_map.h"
-
 namespace NetMauMau {
 
 namespace Client {
@@ -76,9 +74,13 @@ public:
 	bool m_playing;
 };
 
+template<class> class MappedMessageInitializer;
+
 template<class T>
 class _LOCAL MappedMessageProcessor {
 	DISALLOW_COPY_AND_ASSIGN(MappedMessageProcessor)
+
+	template<class> friend class MappedMessageInitializer;
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
@@ -96,38 +98,79 @@ class _LOCAL MappedMessageProcessor {
 public:
 	typedef typename PROTOMAP::value_type value_type;
 
-	template<class Iter>
-	MappedMessageProcessor(const T *const t, const AbstractClientV05Impl *const pimpl,
-						   const Iter &first, const Iter &last) : _t(t), _pimpl(pimpl),
-		m_protoMap(first, last) {}
-
-	MappedMessageProcessor(const T *const t, const AbstractClientV05Impl *const pimpl)
-		: _t(t), _pimpl(pimpl), m_protoMap() {}
+	MappedMessageProcessor(const T &t, const AbstractClientV05Impl &pimpl)
+		: _t(t), _pimpl(pimpl) {}
 
 	~MappedMessageProcessor() {}
-
-	void map(const std::string &key, const PROTOFN &fn);
 
 	AbstractClient::PIRET process(const _playInternalParams &p) const
 	throw(NetMauMau::Common::Exception::SocketException) {
 
-		const typename PROTOMAP::const_iterator &f(m_protoMap.find(&p.msg));
+		const typename PROTOMAP::const_iterator &f(m_messageMap.m_protoMap.find(&p.msg));
 
-		if(!_pimpl->m_disconnectNow && f != m_protoMap.end()) return (_t->*f->second)(p);
+		if(!_pimpl.m_disconnectNow && f != m_messageMap.m_protoMap.end()) return (_t.*f->second)(p);
 
-		return !_pimpl->m_disconnectNow ? AbstractClient::NOT_UNDERSTOOD : AbstractClient::OK;
+		return !_pimpl.m_disconnectNow ? AbstractClient::NOT_UNDERSTOOD : AbstractClient::OK;
 	}
 
 private:
-	const T *const _t;
-	const AbstractClientV05Impl *const _pimpl;
-	PROTOMAP m_protoMap;
+	static const MappedMessageInitializer<T> m_messageMap;
+
+	const T &_t;
+	const AbstractClientV05Impl &_pimpl;
 };
 
-template<class T>
-void MappedMessageProcessor<T>::map(const std::string &key, const PROTOFN &fn) {
-	NetMauMau::Common::efficientAddOrUpdate(m_protoMap, &key, fn);
-}
+template<class T> const MappedMessageInitializer<T> MappedMessageProcessor<T>::m_messageMap;
+
+template<class T> class MappedMessageInitializer;
+
+template<> class _LOCAL MappedMessageInitializer<AbstractClientV05> {
+	DISALLOW_COPY_AND_ASSIGN(MappedMessageInitializer<AbstractClientV05>)
+	friend class MappedMessageProcessor<AbstractClientV05>;
+public:
+	MappedMessageInitializer() : m_protoMap(m_data, m_data + 23u) {}
+	~MappedMessageInitializer() {}
+
+private:
+	static const MappedMessageProcessor<AbstractClientV05>::value_type m_data[];
+	const MappedMessageProcessor<AbstractClientV05>::PROTOMAP m_protoMap;
+};
+
+template<> class _LOCAL MappedMessageInitializer<AbstractClientV07> {
+	DISALLOW_COPY_AND_ASSIGN(MappedMessageInitializer<AbstractClientV07>)
+	friend class MappedMessageProcessor<AbstractClientV07>;
+public:
+	MappedMessageInitializer() : m_protoMap(m_data, m_data + 3u) {}
+	~MappedMessageInitializer() {}
+
+private:
+	static const MappedMessageProcessor<AbstractClientV07>::value_type m_data[];
+	const MappedMessageProcessor<AbstractClientV07>::PROTOMAP m_protoMap;
+};
+
+template<> class _LOCAL MappedMessageInitializer<AbstractClientV08> {
+	DISALLOW_COPY_AND_ASSIGN(MappedMessageInitializer<AbstractClientV08>)
+	friend class MappedMessageProcessor<AbstractClientV08>;
+public:
+	MappedMessageInitializer() : m_protoMap(m_data, m_data + 1u) {}
+	~MappedMessageInitializer() {}
+
+private:
+	static const MappedMessageProcessor<AbstractClientV08>::value_type m_data[];
+	const MappedMessageProcessor<AbstractClientV08>::PROTOMAP m_protoMap;
+};
+
+template<> class _LOCAL MappedMessageInitializer<AbstractClientV13> {
+	DISALLOW_COPY_AND_ASSIGN(MappedMessageInitializer<AbstractClientV13>)
+	friend class MappedMessageProcessor<AbstractClientV13>;
+public:
+	MappedMessageInitializer() : m_protoMap(m_data, m_data + 1u) {}
+	~MappedMessageInitializer() {}
+
+private:
+	static const MappedMessageProcessor<AbstractClientV13>::value_type m_data[];
+	const MappedMessageProcessor<AbstractClientV13>::PROTOMAP m_protoMap;
+};
 
 }
 

@@ -65,6 +65,7 @@ class _EXPORT AbstractClientV05 : protected IPlayerPicListener {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV05)
 
 	template<class> friend class MappedMessageProcessor;
+	template<class> friend class MappedMessageInitializer;
 
 	friend class AbstractClientV05Impl;
 	friend class AbstractClientV07;
@@ -562,8 +563,6 @@ private:
 	static bool isLostConnMsg(const std::string &msg);
 	static bool isRemotePlMsg(const std::string &msg);
 
-	void init();
-
 	void checkedError(const std::string &msg) const
 	throw(NetMauMau::Common::Exception::SocketException);
 
@@ -598,7 +597,7 @@ private:
 
 private:
 	AbstractClientV05Impl *const _pimpl;
-	MappedMessageProcessor<AbstractClientV05> *m_mmp;
+	const MappedMessageProcessor<AbstractClientV05> *const m_mmp;
 };
 
 /**
@@ -610,8 +609,12 @@ private:
  */
 class _EXPORT AbstractClientV07 : public AbstractClientV05 {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV07)
+
+	template<class> friend class MappedMessageInitializer;
+
 	friend class AbstractClientV08;
 	friend class AbstractClientV09;
+
 protected:
 	/**
 	 * @brief Creates an @c AbstractClientV07 instance
@@ -682,8 +685,6 @@ public:
 private:
 	using AbstractClientV05::playInternal;
 
-	void init();
-
 	virtual AbstractClientV05::PIRET playInternal(const _playInternalParams &p)
 	throw(NetMauMau::Common::Exception::SocketException);
 
@@ -692,7 +693,7 @@ private:
 	PIRET performAceroundEnded(const _playInternalParams &) const;
 
 private:
-	MappedMessageProcessor<AbstractClientV07> *m_mmp;
+	const MappedMessageProcessor<AbstractClientV07> *const m_mmp;
 };
 
 /**
@@ -704,8 +705,12 @@ private:
  */
 class _EXPORT AbstractClientV08 : public AbstractClientV07 {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV08)
+
+	template<class> friend class MappedMessageInitializer;
+
 	friend class AbstractClientV09;
 	friend class AbstractClientV13;
+
 protected:
 	using AbstractClientV07::playCard;
 
@@ -761,8 +766,6 @@ protected:
 private:
 	using AbstractClientV07::playInternal;
 
-	void init();
-
 	virtual PIRET playInternal(const _playInternalParams &p)
 	throw(NetMauMau::Common::Exception::SocketException);
 
@@ -770,7 +773,7 @@ private:
 	throw(NetMauMau::Common::Exception::SocketException);
 
 private:
-	MappedMessageProcessor<AbstractClientV08> *const m_mmp;
+	const MappedMessageProcessor<AbstractClientV08> *const m_mmp;
 };
 
 /**
@@ -963,6 +966,7 @@ protected:
  */
 class _EXPORT AbstractClientV13 : public AbstractClientV11 {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV13)
+	template<class> friend class MappedMessageInitializer;
 protected:
 	/**
 	 * @brief Creates an @c AbstractClientV13 instance
@@ -1034,15 +1038,13 @@ protected:
 private:
 	using AbstractClientV11::playInternal;
 
-	void init();
-
 	virtual PIRET playInternal(const _playInternalParams &p)
 	throw(NetMauMau::Common::Exception::SocketException);
 
 	PIRET performDirChange(const _playInternalParams &) const;
 
 private:
-	MappedMessageProcessor<AbstractClientV13> *m_mmp;
+	const MappedMessageProcessor<AbstractClientV13> *const m_mmp;
 };
 
 /**

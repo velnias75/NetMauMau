@@ -45,31 +45,23 @@ AbstractClientV13::AbstractClientV13(const std::string &player, const unsigned c
 									 std::size_t pngDataLen, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
 	: AbstractClientV11(player, pngData, pngDataLen, server, port, clientVersion),
-	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(this, _pimpl)) {
-	init();
-}
+	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(*this, *_pimpl)) {}
 
 AbstractClientV13::AbstractClientV13(const std::string &player, const unsigned char *pngData,
 									 std::size_t pngDataLen, const std::string &server,
 									 uint16_t port, uint32_t clientVersion, const IBase64 *)
 	: AbstractClientV11(player, pngData, pngDataLen, server, port, clientVersion, 0L),
-	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(this, _pimpl)) {
-	init();
-}
+	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(*this, *_pimpl)) {}
 
 AbstractClientV13::AbstractClientV13(const std::string &player, const std::string &server,
 									 uint16_t port, uint32_t clientVersion, const IBase64 *)
 	: AbstractClientV11(player, server, port, clientVersion, 0L),
-	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(this, _pimpl)) {
-	init();
-}
+	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(*this, *_pimpl)) {}
 
 AbstractClientV13::AbstractClientV13(const std::string &player, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
 	: AbstractClientV11(player, server, port, clientVersion),
-	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(this, _pimpl)) {
-	init();
-}
+	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(*this, *_pimpl)) {}
 
 AbstractClientV13::~AbstractClientV13() {
 	delete m_mmp;
@@ -109,18 +101,16 @@ AbstractClientV09::~AbstractClientV09() {}
 AbstractClientV08::AbstractClientV08(const std::string &player, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
 	: AbstractClientV07(player, server, port),
-	  m_mmp(new MappedMessageProcessor<AbstractClientV08>(this, _pimpl)) {
+	  m_mmp(new MappedMessageProcessor<AbstractClientV08>(*this, *_pimpl)) {
 	_pimpl->m_connection.setClientVersion(clientVersion);
-	init();
 }
 
 AbstractClientV08::AbstractClientV08(const std::string &player, const unsigned char *pngData,
 									 std::size_t pngDataLen, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
 	: AbstractClientV07(player, pngData, pngDataLen, server, port),
-	  m_mmp(new MappedMessageProcessor<AbstractClientV08>(this, _pimpl)) {
+	  m_mmp(new MappedMessageProcessor<AbstractClientV08>(*this, *_pimpl)) {
 	_pimpl->m_connection.setClientVersion(clientVersion);
-	init();
 }
 
 AbstractClientV08::~AbstractClientV08() {
@@ -129,18 +119,16 @@ AbstractClientV08::~AbstractClientV08() {
 
 AbstractClientV07::AbstractClientV07(const std::string &player, const std::string &server,
 									 uint16_t port) : AbstractClientV05(player, server, port),
-	m_mmp(new MappedMessageProcessor<AbstractClientV07>(this, _pimpl)) {
+	m_mmp(new MappedMessageProcessor<AbstractClientV07>(*this, *_pimpl)) {
 	_pimpl->m_connection.setClientVersion(7);
-	init();
 }
 
 AbstractClientV07::AbstractClientV07(const std::string &player, const unsigned char *pngData,
 									 std::size_t pngDataLen, const std::string &server,
 									 uint16_t port) : AbstractClientV05(player, pngData, pngDataLen,
 												 server, port),
-	m_mmp(new MappedMessageProcessor<AbstractClientV07>(this, _pimpl)) {
+	m_mmp(new MappedMessageProcessor<AbstractClientV07>(*this, *_pimpl)) {
 	_pimpl->m_connection.setClientVersion(7);
-	init();
 }
 
 AbstractClientV07::~AbstractClientV07() {
@@ -150,16 +138,12 @@ AbstractClientV07::~AbstractClientV07() {
 AbstractClientV05::AbstractClientV05(const std::string &pName, const unsigned char *data,
 									 std::size_t len, const std::string &server, uint16_t port)
 	: IPlayerPicListener(), _pimpl(new AbstractClientV05Impl(pName, server, port, data, len)),
-	  m_mmp(new MappedMessageProcessor<AbstractClientV05>(this, _pimpl)) {
-	init();
-}
+	  m_mmp(new MappedMessageProcessor<AbstractClientV05>(*this, *_pimpl)) {}
 
 AbstractClientV05::AbstractClientV05(const std::string &pName, const std::string &server,
 									 uint16_t port) : IPlayerPicListener(),
 	_pimpl(new AbstractClientV05Impl(pName, server, port, 0L, 0)),
-	m_mmp(new MappedMessageProcessor<AbstractClientV05>(this, _pimpl)) {
-	init();
-}
+	m_mmp(new MappedMessageProcessor<AbstractClientV05>(*this, *_pimpl)) {}
 
 AbstractClientV05::~AbstractClientV05() {
 	delete m_mmp;
@@ -269,10 +253,6 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	_pimpl->m_disconnectNow = false;
 }
 
-void AbstractClientV13::init() {
-	m_mmp->map(NetMauMau::Common::Protocol::V15::DIRCHANGE, &AbstractClientV13::performDirChange);
-}
-
 AbstractClient::PIRET AbstractClientV13::performDirChange(const _playInternalParams &) const {
 	directionChanged();
 	return OK;
@@ -282,14 +262,6 @@ AbstractClientV05::PIRET AbstractClientV13::playInternal(const _playInternalPara
 throw(NetMauMau::Common::Exception::SocketException) {
 	PIRET  ret = AbstractClientV11::playInternal(p);
 	return ret == NOT_UNDERSTOOD ? m_mmp->process(p) : ret;
-}
-
-void AbstractClientV07::init() {
-	m_mmp->map(NetMauMau::Common::Protocol::V15::ACEROUND, &AbstractClientV07::performAceround);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::ACEROUNDENDED,
-			   &AbstractClientV07::performAceroundEnded);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::ACEROUNDSTARTED,
-			   &AbstractClientV07::performAceroundStarted);
 }
 
 AbstractClient::PIRET AbstractClientV07::performAceround(const _playInternalParams &) const {
@@ -321,41 +293,6 @@ AbstractClientV05::PIRET AbstractClientV07::playInternal(const _playInternalPara
 throw(NetMauMau::Common::Exception::SocketException) {
 	PIRET  ret = AbstractClientV05::playInternal(p);
 	return ret == NOT_UNDERSTOOD ? m_mmp->process(p) : ret;
-}
-
-void AbstractClientV05::init() {
-	m_mmp->map(NetMauMau::Common::Protocol::V15::BYE, &AbstractClientV05::performBye);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::CARDACCEPTED,
-			   &AbstractClientV05::performCardAccepted);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::CARDCOUNT, &AbstractClientV05::performCardCount);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::CARDREJECTED,
-			   &AbstractClientV05::performCardRejected);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::ERROR, &AbstractClientV05::performError);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::GETCARDS, &AbstractClientV05::performGetCards);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::INITIALCARD,
-			   &AbstractClientV05::performInitialCard);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::JACKCHOICE, &AbstractClientV05::performJackChoice);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::JACKMODEOFF,
-			   &AbstractClientV05::performJackModeOff);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::JACKSUIT, &AbstractClientV05::performJackSuit);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::MESSAGE, &AbstractClientV05::performMessage);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::NEXTPLAYER, &AbstractClientV05::performNextPlayer);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::OPENCARD, &AbstractClientV05::performOpenCard);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::PLAYCARD, &AbstractClientV05::performPlayCard);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::PLAYEDCARD, &AbstractClientV05::performPlayedCard);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::PLAYERJOINED,
-			   &AbstractClientV05::performPlayerJoined);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::PLAYERPICKSCARD,
-			   &AbstractClientV05::performPlayerPicksCard);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::PLAYERPICKSCARDS,
-			   &AbstractClientV05::performPlayerPicksCards);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::PLAYERREJECTED,
-			   &AbstractClientV05::performPlayerRejected);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::STATS, &AbstractClientV05::performStats);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::SUSPENDS, &AbstractClientV05::performSuspends);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::TALONSHUFFLED,
-			   &AbstractClientV05::performTalonShuffled);
-	m_mmp->map(NetMauMau::Common::Protocol::V15::TURN, &AbstractClientV05::performTurn);
 }
 
 AbstractClientV05::PIRET AbstractClientV05::performMessage(const _playInternalParams &p) const {
@@ -686,10 +623,6 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 
 	return ret;
-}
-
-void AbstractClientV08::init() {
-	m_mmp->map(NetMauMau::Common::Protocol::V15::PLAYCARD, &AbstractClientV08::performPlayCard);
 }
 
 AbstractClientV05::PIRET AbstractClientV08::performPlayCard(const _playInternalParams &p) const

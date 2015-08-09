@@ -56,6 +56,7 @@
 #ifdef HAVE_LIBMICROHTTPD
 #include "httpd.h"
 #else
+#include "eff_map.h"
 #include "game.h"
 #endif
 

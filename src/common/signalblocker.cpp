@@ -27,25 +27,35 @@
 
 namespace {
 const char *FAIL = "Failed to temporary block signals: ";
+
+#ifdef __BSD_VISIBLE
+const int SIGNOS[] = { SIGINT, SIGTERM };
+#endif
+
 }
 
 using namespace NetMauMau::Common;
 
-SignalBlocker::SignalBlocker() : m_sigSet(), m_oldSet(), m_ok(init(0u, 0L)) {}
+SignalBlocker::SignalBlocker() : m_sigSet(), m_oldSet(),
+#ifndef __BSD_VISIBLE
+	m_ok(init(0u, 0L)) {}
+#else
+	m_ok(init(2u, SIGNOS)) {}
+#endif
 
-SignalBlocker::SignalBlocker(std::size_t numsv, int *ignsv) : m_sigSet(), m_oldSet(),
+SignalBlocker::SignalBlocker(std::size_t numsv, const int *ignsv) : m_sigSet(), m_oldSet(),
 	m_ok(init(numsv, ignsv)) {}
 
 SignalBlocker::~SignalBlocker() {
-#if _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _POSIX_SOURCE
+#if _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _POSIX_SOURCE || __BSD_VISIBLE
 
 	if(m_ok) sigprocmask(SIG_SETMASK, &m_oldSet, NULL);
 
 #endif
 }
 
-bool SignalBlocker::init(std::size_t numsv, int *ignsv) {
-#if _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _POSIX_SOURCE
+bool SignalBlocker::init(std::size_t numsv, const int *ignsv) {
+#if _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _POSIX_SOURCE || __BSD_VISIBLE
 
 	if(!sigemptyset(&m_sigSet) && !sigfillset(&m_sigSet)) {
 

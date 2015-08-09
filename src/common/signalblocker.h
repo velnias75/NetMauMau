@@ -38,15 +38,15 @@ class _EXPORT SignalBlocker {
 	DISALLOW_COPY_AND_ASSIGN(SignalBlocker)
 public:
 	SignalBlocker();
-	SignalBlocker(std::size_t numsv, int *ignsv);
+	SignalBlocker(std::size_t numsv, const int *ignsv);
 	~SignalBlocker();
 
 private:
 	// cppcheck-suppress functionStatic
-	bool init(std::size_t numsv, int *ignsv);
+	bool init(std::size_t numsv, const int *ignsv);
 
 private:
-#if _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _POSIX_SOURCE
+#if _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _POSIX_SOURCE || __BSD_VISIBLE
 	sigset_t m_sigSet;
 	sigset_t m_oldSet;
 #else

@@ -68,7 +68,7 @@
 #else
 #include "game.h"
 #include "eff_map.h"
-#include "ci_char_traits.h"
+#include "ci_string.h"
 #endif
 
 namespace {

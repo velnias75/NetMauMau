@@ -85,6 +85,8 @@ public:
 
 protected:
 	explicit AbstractConnection(const char *server, uint16_t port);
+	explicit AbstractConnection(const char *server, uint16_t port, bool sockenv);
+	explicit AbstractConnection(const char *server, uint16_t port, unsigned char sockopt);
 
 	bool registerPlayer(const NAMESOCKFD &nfd, const PLAYERNAMES &ai = PLAYERNAMES());
 

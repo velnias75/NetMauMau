@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -27,7 +27,7 @@ namespace NetMauMau {
 namespace Common {
 
 _EXPORT const char *errorString();
-_EXPORT const char *errorString(int errnum);
+_EXPORT const char *errorString(int errnum, bool gai = false);
 
 }
 

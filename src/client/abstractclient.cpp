@@ -49,18 +49,30 @@ AbstractClientV13::AbstractClientV13(const std::string &player, const unsigned c
 
 AbstractClientV13::AbstractClientV13(const std::string &player, const unsigned char *pngData,
 									 std::size_t pngDataLen, const std::string &server,
-									 uint16_t port, uint32_t clientVersion, const IBase64 *)
-	: AbstractClientV11(player, pngData, pngDataLen, server, port, clientVersion, 0L),
-	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(*this, *_pimpl)) {}
-
-AbstractClientV13::AbstractClientV13(const std::string &player, const std::string &server,
-									 uint16_t port, uint32_t clientVersion, const IBase64 *)
-	: AbstractClientV11(player, server, port, clientVersion, 0L),
+									 uint16_t port, uint32_t clientVersion, unsigned char sockopts)
+	: AbstractClientV11(player, pngData, pngDataLen, server, port, clientVersion, sockopts),
 	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(*this, *_pimpl)) {}
 
 AbstractClientV13::AbstractClientV13(const std::string &player, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
 	: AbstractClientV11(player, server, port, clientVersion),
+	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(*this, *_pimpl)) {}
+
+AbstractClientV13::AbstractClientV13(const std::string &player, const std::string &server,
+									 uint16_t port, uint32_t clientVersion, unsigned char sockopts)
+	: AbstractClientV11(player, server, port, clientVersion, sockopts),
+	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(*this, *_pimpl)) {}
+
+AbstractClientV13::AbstractClientV13(const std::string &player, const unsigned char *pngData,
+									 std::size_t pngDataLen, const std::string &server,
+									 uint16_t port, uint32_t clientVersion, const IBase64 *)
+	: AbstractClientV11(player, pngData, pngDataLen, server, port, clientVersion,
+						static_cast<const IBase64 *>(0L)),
+	m_mmp(new MappedMessageProcessor<AbstractClientV13>(*this, *_pimpl)) {}
+
+AbstractClientV13::AbstractClientV13(const std::string &player, const std::string &server,
+									 uint16_t port, uint32_t clientVersion, const IBase64 *)
+	: AbstractClientV11(player, server, port, clientVersion, static_cast<const IBase64 *>(0L)),
 	  m_mmp(new MappedMessageProcessor<AbstractClientV13>(*this, *_pimpl)) {}
 
 AbstractClientV13::~AbstractClientV13() {
@@ -74,6 +86,11 @@ AbstractClientV11::AbstractClientV11(const std::string &player, const unsigned c
 
 AbstractClientV11::AbstractClientV11(const std::string &player, const unsigned char *pngData,
 									 std::size_t pngDataLen, const std::string &server,
+									 uint16_t port, uint32_t clientVersion, unsigned char sockopts)
+	: AbstractClientV09(player, pngData, pngDataLen, server, port, clientVersion, sockopts) {}
+
+AbstractClientV11::AbstractClientV11(const std::string &player, const unsigned char *pngData,
+									 std::size_t pngDataLen, const std::string &server,
 									 uint16_t port, uint32_t clientVersion, const IBase64 *)
 	: AbstractClientV09(player, pngData, pngDataLen, server, port, clientVersion) {}
 
@@ -85,16 +102,29 @@ AbstractClientV11::AbstractClientV11(const std::string &player, const std::strin
 									 uint16_t port, uint32_t clientVersion)
 	: AbstractClientV09(player, server, port, clientVersion) {}
 
+AbstractClientV11::AbstractClientV11(const std::string &player, const std::string &server,
+									 uint16_t port, uint32_t clientVersion, unsigned char sockopts)
+	: AbstractClientV09(player, server, port, clientVersion, sockopts) {}
+
 AbstractClientV11::~AbstractClientV11() {}
 
 AbstractClientV09::AbstractClientV09(const std::string &player, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
 	: AbstractClientV08(player, server, port, clientVersion) {}
 
+AbstractClientV09::AbstractClientV09(const std::string &player, const std::string &server,
+									 uint16_t port, uint32_t clientVersion, unsigned char sockopts)
+	: AbstractClientV08(player, server, port, clientVersion, sockopts) {}
+
 AbstractClientV09::AbstractClientV09(const std::string &player, const unsigned char *pngData,
 									 std::size_t pngDataLen, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
 	: AbstractClientV08(player, pngData, pngDataLen, server, port, clientVersion) {}
+
+AbstractClientV09::AbstractClientV09(const std::string &player, const unsigned char *pngData,
+									 std::size_t pngDataLen, const std::string &server,
+									 uint16_t port, uint32_t clientVersion, unsigned char sockopts)
+	: AbstractClientV08(player, pngData, pngDataLen, server, port, clientVersion, sockopts) {}
 
 AbstractClientV09::~AbstractClientV09() {}
 
@@ -105,10 +135,25 @@ AbstractClientV08::AbstractClientV08(const std::string &player, const std::strin
 	_pimpl->m_connection.setClientVersion(clientVersion);
 }
 
+AbstractClientV08::AbstractClientV08(const std::string &player, const std::string &server,
+									 uint16_t port, uint32_t clientVersion, unsigned char sockopts)
+	: AbstractClientV07(player, server, port, sockopts),
+	  m_mmp(new MappedMessageProcessor<AbstractClientV08>(*this, *_pimpl)) {
+	_pimpl->m_connection.setClientVersion(clientVersion);
+}
+
 AbstractClientV08::AbstractClientV08(const std::string &player, const unsigned char *pngData,
 									 std::size_t pngDataLen, const std::string &server,
 									 uint16_t port, uint32_t clientVersion)
 	: AbstractClientV07(player, pngData, pngDataLen, server, port),
+	  m_mmp(new MappedMessageProcessor<AbstractClientV08>(*this, *_pimpl)) {
+	_pimpl->m_connection.setClientVersion(clientVersion);
+}
+
+AbstractClientV08::AbstractClientV08(const std::string &player, const unsigned char *pngData,
+									 std::size_t pngDataLen, const std::string &server,
+									 uint16_t port, uint32_t clientVersion, unsigned char sockopts)
+	: AbstractClientV07(player, pngData, pngDataLen, server, port, sockopts),
 	  m_mmp(new MappedMessageProcessor<AbstractClientV08>(*this, *_pimpl)) {
 	_pimpl->m_connection.setClientVersion(clientVersion);
 }
@@ -123,11 +168,26 @@ AbstractClientV07::AbstractClientV07(const std::string &player, const std::strin
 	_pimpl->m_connection.setClientVersion(7);
 }
 
+AbstractClientV07::AbstractClientV07(const std::string &player, const std::string &server,
+									 uint16_t port, unsigned char sockopts)
+	: AbstractClientV05(player, server, port, sockopts),
+	  m_mmp(new MappedMessageProcessor<AbstractClientV07>(*this, *_pimpl)) {
+	_pimpl->m_connection.setClientVersion(7);
+}
+
 AbstractClientV07::AbstractClientV07(const std::string &player, const unsigned char *pngData,
 									 std::size_t pngDataLen, const std::string &server,
 									 uint16_t port) : AbstractClientV05(player, pngData, pngDataLen,
 												 server, port),
 	m_mmp(new MappedMessageProcessor<AbstractClientV07>(*this, *_pimpl)) {
+	_pimpl->m_connection.setClientVersion(7);
+}
+
+AbstractClientV07::AbstractClientV07(const std::string &player, const unsigned char *pngData,
+									 std::size_t pngDataLen, const std::string &server,
+									 uint16_t port, unsigned char sockopts)
+	: AbstractClientV05(player, pngData, pngDataLen, server, port, sockopts),
+	  m_mmp(new MappedMessageProcessor<AbstractClientV07>(*this, *_pimpl)) {
 	_pimpl->m_connection.setClientVersion(7);
 }
 
@@ -137,12 +197,25 @@ AbstractClientV07::~AbstractClientV07() {
 
 AbstractClientV05::AbstractClientV05(const std::string &pName, const unsigned char *data,
 									 std::size_t len, const std::string &server, uint16_t port)
-	: IPlayerPicListener(), _pimpl(new AbstractClientV05Impl(pName, server, port, data, len)),
-	  m_mmp(new MappedMessageProcessor<AbstractClientV05>(*this, *_pimpl)) {}
+	: IPlayerPicListener(), _pimpl(new AbstractClientV05Impl(pName, server, port, data, len,
+								   SOCKOPT_ALL)),
+	m_mmp(new MappedMessageProcessor<AbstractClientV05>(*this, *_pimpl)) {}
+
+AbstractClientV05::AbstractClientV05(const std::string &pName, const unsigned char *data,
+									 std::size_t len, const std::string &server, uint16_t port,
+									 unsigned char sockopts) : IPlayerPicListener(),
+	_pimpl(new AbstractClientV05Impl(pName, server, port, data, len, sockopts)),
+	m_mmp(new MappedMessageProcessor<AbstractClientV05>(*this, *_pimpl)) {}
+
 
 AbstractClientV05::AbstractClientV05(const std::string &pName, const std::string &server,
 									 uint16_t port) : IPlayerPicListener(),
-	_pimpl(new AbstractClientV05Impl(pName, server, port, 0L, 0)),
+	_pimpl(new AbstractClientV05Impl(pName, server, port, 0L, 0, SOCKOPT_ALL)),
+	m_mmp(new MappedMessageProcessor<AbstractClientV05>(*this, *_pimpl)) {}
+
+AbstractClientV05::AbstractClientV05(const std::string &pName, const std::string &server,
+									 uint16_t port, unsigned char sockopts) : IPlayerPicListener(),
+	_pimpl(new AbstractClientV05Impl(pName, server, port, 0L, 0, sockopts)),
 	m_mmp(new MappedMessageProcessor<AbstractClientV05>(*this, *_pimpl)) {}
 
 AbstractClientV05::~AbstractClientV05() {
@@ -660,8 +733,8 @@ bool AbstractClientV05::isMisconfgMsg(const std::string &msg) {
 		   std::string::npos;
 }
 
-bool AbstractClientV05::isRemotePlMsg(const std::string &msg) {
-	return msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_PLAYER) != std::string::npos;
+std::string::size_type AbstractClientV05::isRemotePlMsg(const std::string &msg) {
+	return msg.find(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_PLAYER);
 }
 
 void AbstractClientV05::checkedError(const std::string &msg) const
@@ -669,10 +742,15 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	logDebug("Client library: " << __PRETTY_FUNCTION__ << ": " << msg);
 
-	if(isRemotePlMsg(msg)) {
-		throw NetMauMau::Client::Exception::RemotePlayerException(msg.substr(
-					NetMauMau::Common::Protocol::V15::ERR_TO_EXC_PLAYER.length(), msg.find(": ")),
-				msg.substr(msg.find(": ") + 2));
+	const std::string::size_type rplexc = isRemotePlMsg(msg);
+
+	if(rplexc != std::string::npos) {
+
+		const std::string::size_type msgLen =
+			NetMauMau::Common::Protocol::V15::ERR_TO_EXC_PLAYER.length();
+
+		throw NetMauMau::Client::Exception::RemotePlayerException(msg.substr(rplexc + msgLen,
+				msg.find(": ") - msgLen), msg.substr(msg.find(": ") + 2));
 	}
 
 	if(isMisconfgMsg(msg)) throw NetMauMau::Common::Exception::SocketException(msg);
@@ -706,7 +784,7 @@ uint32_t AbstractClientV05::parseProtocolVersion(const std::string &ver) {
 								std::strtoul(ver.substr(p2 + 1).c_str(), NULL, 10));
 	}
 
-	return 0;
+	return 0u;
 }
 
 uint16_t AbstractClientV05::getDefaultPort() {

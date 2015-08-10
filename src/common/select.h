@@ -50,7 +50,7 @@ private:
 	Select() throw(Exception::SocketException);
 
 private:
-#if _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600
+#ifdef HAVE_PSELECT
 	mutable sigset_t m_sigSet;
 #else
 	int m_sigSet;

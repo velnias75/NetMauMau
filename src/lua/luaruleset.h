@@ -26,6 +26,7 @@
 #include "iruleset.h"                   // for IRuleSet
 #include "luaexception.h"               // for LuaException
 #include "nullaceroundlistener.h"
+#include "serverplayerexception.h"
 
 namespace NetMauMau {
 
@@ -43,10 +44,12 @@ public:
 	virtual bool isNull() const throw() _CONST;
 
 	virtual void checkInitial(const Player::IPlayer *player,
-							  const Common::ICardPtr &playedCard) throw(Lua::Exception::LuaException);
+							  const Common::ICardPtr &playedCard)
+	throw(Lua::Exception::LuaException, Server::Exception::ServerPlayerException);
 	virtual bool checkCard(const Player::IPlayer *player, const Common::ICardPtr &uncoveredCard,
 						   const Common::ICardPtr &playedCard,
-						   bool ai) throw(Lua::Exception::LuaException);
+						   bool ai) throw(Lua::Exception::LuaException,
+										  Server::Exception::ServerPlayerException);
 	virtual bool checkCard(const Common::ICardPtr &uncoveredCard,
 						   const Common::ICardPtr &playedCard) const
 	throw(Lua::Exception::LuaException);

@@ -33,17 +33,31 @@ namespace Common {
 class AbstractSocketImpl {
 	DISALLOW_COPY_AND_ASSIGN(AbstractSocketImpl)
 public:
-	explicit AbstractSocketImpl(const char *server, uint16_t port);
+	explicit AbstractSocketImpl(const char *server, uint16_t port, bool sockopt_env = false);
+	explicit AbstractSocketImpl(const char *server, uint16_t port, unsigned char sockopts);
 	~AbstractSocketImpl();
 
 	_EXPORT static int getAddrInfo(const char *server, uint16_t port, struct addrinfo **result,
 								   bool ipv4 = false);
+	
+	static unsigned char setSocketOptions(SOCKET fd, unsigned char what) _NOUNUSED;
+	static void logErrSocketOptions(unsigned char what);
+	
+	inline bool getSockoptEnv() const {
+		return m_sockoptEnv;
+	}
+	
+	inline unsigned char getSockOpts() const {
+		return m_sopt;
+	}
 
 public:
 	const std::string m_server;
 	const uint16_t m_port;
 	SOCKET m_sfd;
 	std::string m_wireError;
+	const bool m_sockoptEnv;
+	const unsigned char m_sopt;
 };
 
 }

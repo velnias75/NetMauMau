@@ -26,7 +26,9 @@
 #include "logger.h"
 
 namespace {
+#if _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _POSIX_SOURCE || __BSD_VISIBLE
 const char *FAIL = "Failed to temporary block signals: ";
+#endif
 
 #ifdef __BSD_VISIBLE
 const int SIGNOS[] = { SIGINT, SIGTERM };

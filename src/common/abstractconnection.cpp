@@ -65,8 +65,14 @@ IConnection::_nameSockFD::_nameSockFD() : name(), playerPic(), sockfd(INVALID_SO
 
 IConnection::_nameSockFD::~_nameSockFD() {}
 
-AbstractConnection::AbstractConnection(const char *server, uint16_t port) :
-	AbstractSocket(server, port), _pimpl(new AbstractConnectionImpl()) {}
+AbstractConnection::AbstractConnection(const char *server, uint16_t port)
+	: AbstractSocket(server, port), _pimpl(new AbstractConnectionImpl()) {}
+
+AbstractConnection::AbstractConnection(const char *server, uint16_t port, unsigned char sockopts)
+	: AbstractSocket(server, port, sockopts), _pimpl(new AbstractConnectionImpl()) {}
+
+AbstractConnection::AbstractConnection(const char *server, uint16_t port, bool sockenv)
+	: AbstractSocket(server, port, sockenv), _pimpl(new AbstractConnectionImpl()) {}
 
 AbstractConnection::~AbstractConnection() {
 	delete _pimpl;

@@ -39,6 +39,17 @@
 
 #include "socketexception.h"
 
+#define SOCKOPT_NONE      0x00
+#define SOCKOPT_RCVTIMEO  0x01
+#define SOCKOPT_SNDTIMEO  0x02
+#define SOCKOPT_RCVBUF    0x04
+#define SOCKOPT_SNDBUF    0x08
+#define SOCKOPT_KEEPALIVE 0x10
+#define SOCKOPT_LINGER    0x20
+#define SOCKOPT_REUSEPORT 0x40
+#define SOCKOPT_ALL       SOCKOPT_RCVTIMEO|SOCKOPT_SNDTIMEO|SOCKOPT_RCVBUF|SOCKOPT_SNDBUF| \
+	SOCKOPT_KEEPALIVE|SOCKOPT_LINGER|SOCKOPT_REUSEPORT
+
 namespace NetMauMau {
 
 namespace Common {
@@ -79,12 +90,15 @@ public:
 
 protected:
 	explicit AbstractSocket(const char *server, uint16_t port);
+	explicit AbstractSocket(const char *server, uint16_t port, unsigned char sockopts);
+	explicit AbstractSocket(const char *server, uint16_t port, bool sockenv);
 
 	virtual bool wire(SOCKET sockfd, const sockaddr *addr, socklen_t addrlen) const = 0;
 	virtual std::string wireError(const std::string &err) const = 0;
 	virtual void intercept() _CONST;
 
-	std::size_t recv(void *buf, std::size_t len, SOCKET fd) throw(Exception::SocketException);
+	std::size_t recv(void *buf, std::size_t len,
+					 SOCKET fd) throw(Exception::SocketException) _NOUNUSED;
 	static void send(const void *buf, std::size_t len, SOCKET fd) throw(Exception::SocketException);
 
 	SOCKET getSocketFD() const _PURE;

@@ -49,7 +49,7 @@ class _LOCAL AbstractClientV05Impl {
 public:
 	explicit AbstractClientV05Impl(const std::string &pName, const std::string &server,
 								   uint16_t port, const unsigned char *pngData,
-								   std::size_t pngDataLen);
+								   std::size_t pngDataLen, unsigned char sockopts);
 	~AbstractClientV05Impl();
 
 	AbstractClient::CARDS getCards(const AbstractClient::CARDS &mCards,

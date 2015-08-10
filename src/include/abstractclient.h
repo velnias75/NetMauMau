@@ -265,6 +265,9 @@ protected:
 	 */
 	explicit AbstractClientV05(const std::string &player, const std::string &server, uint16_t port);
 
+	explicit AbstractClientV05(const std::string &player, const std::string &server, uint16_t port,
+							   unsigned char sockopts);
+
 	/**
 	 * @brief Creates an @c AbstractClientV05 instance
 	 *
@@ -283,6 +286,10 @@ protected:
 	 */
 	explicit AbstractClientV05(const std::string &player, const unsigned char *pngData,
 							   std::size_t pngDataLen, const std::string &server, uint16_t port);
+
+	explicit AbstractClientV05(const std::string &player, const unsigned char *pngData,
+							   std::size_t pngDataLen, const std::string &server, uint16_t port,
+							   unsigned char sockopts);
 
 	/**
 	 * @name Server requests
@@ -561,7 +568,7 @@ private:
 	static bool isMisconfgMsg(const std::string &msg);
 	static bool isShutdownMsg(const std::string &msg);
 	static bool isLostConnMsg(const std::string &msg);
-	static bool isRemotePlMsg(const std::string &msg);
+	static std::string::size_type isRemotePlMsg(const std::string &msg);
 
 	void checkedError(const std::string &msg) const
 	throw(NetMauMau::Common::Exception::SocketException);
@@ -623,6 +630,9 @@ protected:
 	 */
 	explicit AbstractClientV07(const std::string &player, const std::string &server, uint16_t port);
 
+	explicit AbstractClientV07(const std::string &player, const std::string &server, uint16_t port,
+							   unsigned char sockopts);
+
 	/**
 	 * @brief Creates an @c AbstractClientV07 instance
 	 *
@@ -631,6 +641,11 @@ protected:
 	 */
 	explicit AbstractClientV07(const std::string &player, const unsigned char *pngData,
 							   std::size_t pngDataLen, const std::string &server, uint16_t port);
+
+	explicit AbstractClientV07(const std::string &player, const unsigned char *pngData,
+							   std::size_t pngDataLen, const std::string &server, uint16_t port,
+							   unsigned char sockopts);
+
 
 	/**
 	 * @name Server requests
@@ -726,6 +741,9 @@ protected:
 	explicit AbstractClientV08(const std::string &player, const std::string &server, uint16_t port,
 							   uint32_t clientVersion);
 
+	explicit AbstractClientV08(const std::string &player, const std::string &server, uint16_t port,
+							   uint32_t clientVersion, unsigned char sockopts);
+
 	/**
 	 * @brief Creates an @c AbstractClientV08 instance
 	 *
@@ -739,6 +757,10 @@ protected:
 	explicit AbstractClientV08(const std::string &player, const unsigned char *pngData,
 							   std::size_t pngDataLen, const std::string &server, uint16_t port,
 							   uint32_t clientVersion);
+
+	explicit AbstractClientV08(const std::string &player, const unsigned char *pngData,
+							   std::size_t pngDataLen, const std::string &server, uint16_t port,
+							   uint32_t clientVersion, unsigned char sockopts);
 
 	virtual Common::ICard *playCard(const CARDS &cards) const;
 
@@ -850,6 +872,9 @@ protected:
 	explicit AbstractClientV09(const std::string &player, const std::string &server, uint16_t port,
 							   uint32_t clientVersion);
 
+	explicit AbstractClientV09(const std::string &player, const std::string &server, uint16_t port,
+							   uint32_t clientVersion, unsigned char sockopts);
+
 	/**
 	 * @brief Creates an @c AbstractClientV09 instance
 	 *
@@ -865,6 +890,10 @@ protected:
 	explicit AbstractClientV09(const std::string &player, const unsigned char *pngData,
 							   std::size_t pngDataLen, const std::string &server, uint16_t port,
 							   uint32_t clientVersion);
+
+	explicit AbstractClientV09(const std::string &player, const unsigned char *pngData,
+							   std::size_t pngDataLen, const std::string &server, uint16_t port,
+							   uint32_t clientVersion, unsigned char sockopts);
 
 	virtual ~AbstractClientV09();
 };
@@ -911,6 +940,9 @@ protected:
 	explicit AbstractClientV11(const std::string &player, const std::string &server, uint16_t port,
 							   uint32_t clientVersion);
 
+	explicit AbstractClientV11(const std::string &player, const std::string &server, uint16_t port,
+							   uint32_t clientVersion, unsigned char sockopts);
+
 	/**
 	 * @brief Creates an @c AbstractClientV11 instance
 	 *
@@ -954,6 +986,10 @@ protected:
 					  std::size_t pngDataLen, const std::string &server, uint16_t port,
 					  uint32_t clientVersion);
 
+	AbstractClientV11(const std::string &player, const unsigned char *pngData,
+					  std::size_t pngDataLen, const std::string &server, uint16_t port,
+					  uint32_t clientVersion, unsigned char sockopts);
+
 	virtual ~AbstractClientV11();
 };
 
@@ -975,6 +1011,9 @@ protected:
 	 */
 	explicit AbstractClientV13(const std::string &player, const std::string &server, uint16_t port,
 							   uint32_t clientVersion);
+
+	explicit AbstractClientV13(const std::string &player, const std::string &server, uint16_t port,
+							   uint32_t clientVersion, unsigned char sockopts);
 
 	/**
 	 * @brief Creates an @c AbstractClientV13 instance
@@ -1018,6 +1057,10 @@ protected:
 	explicit AbstractClientV13(const std::string &player, const unsigned char *pngData,
 							   std::size_t pngDataLen, const std::string &server, uint16_t port,
 							   uint32_t clientVersion);
+
+	explicit AbstractClientV13(const std::string &player, const unsigned char *pngData,
+							   std::size_t pngDataLen, const std::string &server, uint16_t port,
+							   uint32_t clientVersion, unsigned char sockopts);
 
 	virtual ~AbstractClientV13();
 

@@ -24,14 +24,22 @@
 #include <cerrno>
 #include <csignal>
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>                     // for TEMP_FAILURE_RETRY
+#endif
+
 #include "select.h"
 #include "errorstring.h"
+
+#ifndef TEMP_FAILURE_RETRY
+#define TEMP_FAILURE_RETRY
+#endif
 
 using namespace NetMauMau::Common;
 
 Select::Select() throw(Exception::SocketException) : SmartSingleton<Select>(), m_sigSet() {
 
-#if _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600
+#ifdef HAVE_PSELECT
 
 	if(sigemptyset(&m_sigSet) && sigfillset(&m_sigSet) && (sigdelset(&m_sigSet, SIGINT) ||
 			sigdelset(&m_sigSet, SIGTERM))) {
@@ -44,10 +52,12 @@ Select::Select() throw(Exception::SocketException) : SmartSingleton<Select>(), m
 
 Select::~Select() {}
 
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic push
 int Select::perform(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 					timeval *timeout, bool blockall) const throw() {
 
-#if _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600
+#ifdef HAVE_PSELECT
 
 	if(blockall) {
 		sigaddset(&m_sigSet, SIGINT);
@@ -69,10 +79,11 @@ int Select::perform(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptf
 	return ret;
 
 #else
+	_UNUSED(blockall);
 	return ::select(nfds, readfds, writefds, exceptfds, timeout);
-
 #endif
 }
+#pragma GCC diagnostic pop
 
 template class NetMauMau::Common::SmartSingleton<NetMauMau::Common::Select>;
 

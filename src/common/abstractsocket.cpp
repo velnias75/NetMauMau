@@ -42,6 +42,7 @@
 
 #include "abstractsocket.h"             // for AbstractSocket
 #include "abstractsocketimpl.h"         // for AbstractSocketImpl
+#include "signalblocker.h"
 #include "errorstring.h"                // for errorString
 #include "logger.h"                     // for logWarning
 #include "select.h"
@@ -86,14 +87,22 @@ unsigned long AbstractSocket::m_sent = 0L;
 AbstractSocket::AbstractSocket(const char *server, uint16_t port)
 	: _pimpl(new AbstractSocketImpl(server, port)) {}
 
-AbstractSocket::~AbstractSocket() {
-	if(_pimpl->m_sfd != INVALID_SOCKET) {
-		shutdown(_pimpl->m_sfd);
-	}
+AbstractSocket::AbstractSocket(const char *server, uint16_t port, unsigned char sockopt)
+	: _pimpl(new AbstractSocketImpl(server, port, sockopt)) {
 
+	logDebug("Socket options set via constructor to "
+			 << NetMauMau::Common::Logger::hex << static_cast<unsigned int>(sockopt) << ":");
+}
+
+AbstractSocket::AbstractSocket(const char *server, uint16_t port, bool sockenv)
+	: _pimpl(new AbstractSocketImpl(server, port, sockenv)) {}
+
+AbstractSocket::~AbstractSocket() {
 	delete _pimpl;
 }
 
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic push
 void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 
 #ifdef _WIN32
@@ -102,6 +111,25 @@ void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 
 #endif
 
+	unsigned char sopt = _pimpl->getSockOpts();
+	char *nmm_sockopts = std::getenv("NMM_SOCKOPTS");
+
+	if(_pimpl->getSockoptEnv() && nmm_sockopts && *nmm_sockopts) {
+
+		sopt = static_cast<unsigned char>(std::atoi(nmm_sockopts));
+
+		logInfo("Socket options set via env variable \"NMM_SOCKOPTS\" to "
+				<< NetMauMau::Common::Logger::hex << static_cast<unsigned int>(sopt) << ":");
+
+		logInfo("SOCKOPT_RCVTIMEO:  " << (sopt & SOCKOPT_RCVTIMEO  ? "enabled" : "disabled"));
+		logInfo("SOCKOPT_SNDTIMEO:  " << (sopt & SOCKOPT_SNDTIMEO  ? "enabled" : "disabled"));
+		logInfo("SOCKOPT_RCVBUF:    " << (sopt & SOCKOPT_RCVBUF    ? "enabled" : "disabled"));
+		logInfo("SOCKOPT_SNDBUF:    " << (sopt & SOCKOPT_SNDBUF    ? "enabled" : "disabled"));
+		logInfo("SOCKOPT_KEEPALIVE: " << (sopt & SOCKOPT_KEEPALIVE ? "enabled" : "disabled"));
+		logInfo("SOCKOPT_LINGER:    " << (sopt & SOCKOPT_LINGER    ? "enabled" : "disabled"));
+		logInfo("SOCKOPT_REUSEPORT: " << (sopt & SOCKOPT_REUSEPORT ? "enabled" : "disabled"));
+	}
+
 	if(!inetd) {
 
 		struct addrinfo *result, *rp = NULL;
@@ -109,7 +137,8 @@ void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 
 		if((s = _pimpl->getAddrInfo(_pimpl->m_server.empty() ? 0L : _pimpl->m_server.c_str(),
 									_pimpl->m_port, &result)) != 0) {
-			throw Exception::SocketException(gai_strerror(s), _pimpl->m_sfd, errno);
+			throw Exception::SocketException(NetMauMau::Common::errorString(s, true),
+											 _pimpl->m_sfd, errno);
 		}
 
 		for(rp = result; rp != NULL; rp = rp->ai_next) {
@@ -125,7 +154,7 @@ void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 			}
 
 #ifndef _WIN32
-			close(_pimpl->m_sfd);
+			TEMP_FAILURE_RETRY(close(_pimpl->m_sfd));
 #else
 			closesocket(_pimpl->m_sfd);
 #endif
@@ -133,30 +162,31 @@ void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 
 		freeaddrinfo(result);
 
+		unsigned char soErr = 0u;
+
 		if(rp == NULL) {
+
 			_pimpl->m_sfd = INVALID_SOCKET;
 			throw Exception::SocketException(wireError(_pimpl->m_wireError));
-		} else {
 
-			int bufSize = 0;
-			socklen_t slen = sizeof(int);
-
-			if(getsockopt(_pimpl->m_sfd, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char *>(&bufSize),
-						  &slen) != -1) {
-
-				bufSize *= 2;
-
-				if(setsockopt(_pimpl->m_sfd, SOL_SOCKET, SO_SNDBUF,
-							  reinterpret_cast<const char *>(&bufSize), sizeof(int)) == -1) {
-					logWarning("Couldn't increase send buffer");
-				}
-			}
+		} else if((soErr = _pimpl->setSocketOptions(_pimpl->m_sfd, sopt))) {
+			logWarning("Failed to set some socket options");
+			_pimpl->logErrSocketOptions(soErr);
 		}
 
 	} else {
+
 		_pimpl->m_sfd = fileno(stdin);
+
+		unsigned char soErr = 0u;
+
+		if((soErr = _pimpl->setSocketOptions(_pimpl->m_sfd, sopt))) {
+			logWarning("Failed to set some socket options [on (x)inetd socket]");
+			_pimpl->logErrSocketOptions(soErr);
+		}
 	}
 }
+#pragma GCC diagnostic pop
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic push
@@ -192,23 +222,31 @@ again:
 
 		std::size_t origLen = len;
 
+		bool peerClose = false;
+
 		while(len > 0) {
 
 			ssize_t i = TEMP_FAILURE_RETRY(::recv(fd, reinterpret_cast<char *>(ptr), len, 0));
 
 			if(i < 0) throw Exception::SocketException(NetMauMau::Common::errorString(), fd, errno);
 
-			ptr += i;
+			if(i > 0) {
 
-			if(static_cast<std::size_t>(i) < len) break;
+				ptr += i;
 
-			len -= static_cast<std::size_t>(i);
+				if(static_cast<std::size_t>(i) < len) break;
 
-			if(len > origLen) throw Exception::SocketException("BUG: internal recv overflow", fd,
-						errno);
+				len -= static_cast<std::size_t>(i);
+
+				if(len > origLen) throw Exception::SocketException("BUG: internal recv overflow",
+							fd, errno);
+			} else {
+				peerClose = true;
+				break;
+			}
 		}
 
-		total = static_cast<std::size_t>(ptr - static_cast<unsigned char *>(buf));
+		total = !peerClose ? static_cast<std::size_t>(ptr - static_cast<unsigned char *>(buf)) : 0u;
 	}
 
 	m_recvTotal += total;
@@ -227,7 +265,7 @@ std::string AbstractSocket::read(SOCKET fd, std::size_t len) throw(Exception::So
 		std::vector<char> rbuf = std::vector<char>(len);
 		const std::size_t rlen = recv(rbuf.data(), len, fd);
 
-		if(rlen <= ret.max_size()) {
+		if(rlen > 0 && rlen <= ret.max_size()) {
 
 			try {
 				ret.reserve(rlen);
@@ -235,6 +273,14 @@ std::string AbstractSocket::read(SOCKET fd, std::size_t len) throw(Exception::So
 				throw Exception::SocketException(NetMauMau::Common::errorString(ENOMEM), fd,
 												 ENOMEM);
 			}
+
+		} else if(rlen == 0) {
+#if defined(ESHUTDOWN)
+			throw Exception::SocketException(NetMauMau::Common::errorString(ESHUTDOWN), fd,
+											 ESHUTDOWN);
+#else
+			throw Exception::SocketException("Connection closed by peer", fd);
+#endif
 		}
 
 		ret.append(rbuf.data(), rlen);
@@ -263,17 +309,22 @@ void AbstractSocket::send(const void *buf, std::size_t len,
 
 #ifdef _WIN32
 
-		if(i == SOCKET_ERROR || i == 0)
+		if(i == SOCKET_ERROR /*|| i == 0*/)
 #else
-		if(i < 1)
+		if(i < 0)
 #endif
 			throw Exception::SocketException(NetMauMau::Common::errorString(), fd, errno);
 
-		ptr += i;
-		len -= static_cast<std::size_t>(i);
+		if(i != 0) {
 
-		if(len > origLen) throw Exception::SocketException("BUG: internal send overflow", fd,
-					errno);
+			ptr += i;
+			len -= static_cast<std::size_t>(i);
+
+			if(len > origLen) throw Exception::SocketException("BUG: internal send overflow", fd,
+						errno);
+		} else {
+			logDebug("::send return 0, check behaviour!");
+		}
 	}
 
 	m_sentTotal += origLen;
@@ -357,9 +408,12 @@ SOCKET AbstractSocket::getSocketFD() const {
 }
 
 void AbstractSocket::shutdown(SOCKET cfd) {
+
+	BLOCK_ALL_SIGNALS;
+
 	::shutdown(cfd, SHUT_RDWR);
 #ifndef _WIN32
-	close(cfd);
+	TEMP_FAILURE_RETRY(close(cfd));
 #else
 	closesocket(cfd);
 #endif

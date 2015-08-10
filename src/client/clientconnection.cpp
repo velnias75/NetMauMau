@@ -36,6 +36,7 @@
 #endif
 
 #include "base64.h"
+#include "errorstring.h"
 #include "ci_string.h"
 #include "abstractclient.h"             // for AbstractClient
 #include "capabilitiesexception.h"      // for CapabilitiesException
@@ -57,6 +58,14 @@
 #define TEMP_FAILURE_RETRY
 #endif
 
+namespace {
+#if defined(ESHUTDOWN)
+const std::string SRVCLOSE(NetMauMau::Common::errorString(ESHUTDOWN));
+#else
+const std::string SRVCLOSE("Connection closed by server");
+#endif
+}
+
 using namespace NetMauMau::Client;
 
 Connection::Connection(const std::string &pName, const std::string &server, uint16_t port)
@@ -70,8 +79,13 @@ Connection::Connection(const std::string &pName, const std::string &server, uint
 	init();
 }
 
+Connection::Connection(const std::string &pName, const std::string &server, uint16_t port,
+					   unsigned char sockopts) : AbstractConnection(server.c_str(), port, sockopts),
+	_pimpl(new ConnectionImpl(this, pName, 0L, 2)) {
+	init();
+}
+
 Connection::~Connection() {
-	shutdown(getSocketFD());
 	delete _pimpl;
 }
 
@@ -102,12 +116,12 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		if(playerPNG) {
 
 			char pl[30];
-			const std::size_t len =
-				static_cast<std::size_t>(std::snprintf(pl, 29, "%s %d.%d",
-										 NetMauMau::Common::Protocol::V15::PLAYERLIST.c_str(),
-										 SERVER_VERSION_MAJOR, SERVER_VERSION_MINOR));
+			const std::size_t len = static_cast<std::size_t>(std::snprintf(pl, 29, "%s %d.%d",
+									NetMauMau::Common::Protocol::V15::PLAYERLIST.c_str(),
+									SERVER_VERSION_MAJOR, SERVER_VERSION_MINOR));
 
 			send(pl, len, getSocketFD());
+
 		} else {
 			send(NetMauMau::Common::Protocol::V15::PLAYERLIST.c_str(),
 				 NetMauMau::Common::Protocol::V15::PLAYERLIST.length(), getSocketFD());
@@ -289,7 +303,15 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			send(helloStr, hlen, getSocketFD());
 
 			char name[4] = { 0 };
-			recv(name, 4, getSocketFD());
+
+			if(!recv(name, 4, getSocketFD())) {
+#if defined(ESHUTDOWN)
+				throw NetMauMau::Common::Exception::SocketException(SRVCLOSE, getSocketFD(),
+						ESHUTDOWN);
+#else
+				throw NetMauMau::Common::Exception::SocketException(SRVCLOSE, getSocketFD());
+#endif
+			}
 
 			if(!std::strncmp(name, "NAME", 4)) {
 				send(_pimpl->m_pName.c_str(), _pimpl->m_pName.length(), getSocketFD());
@@ -318,7 +340,15 @@ throw(NetMauMau::Common::Exception::SocketException) {
 						std::memset(ack, '0', 1023);
 						ack[1023] = 0;
 
-						recv(ack, 1023, getSocketFD());
+						if(!recv(ack, 1023, getSocketFD())) {
+#if defined(ESHUTDOWN)
+							throw NetMauMau::Common::Exception::SocketException(SRVCLOSE,
+									getSocketFD(), ESHUTDOWN);
+#else
+							throw NetMauMau::Common::Exception::SocketException(SRVCLOSE,
+									getSocketFD());
+#endif
+						}
 
 						if(std::strtoul(ack, NULL, 10) == base64png.length()) {
 							send("OK", 2, getSocketFD());
@@ -337,7 +367,15 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			}
 
 			char status[2];
-			recv(status, 2, getSocketFD());
+
+			if(!recv(status, 2, getSocketFD())) {
+#if defined(ESHUTDOWN)
+				throw NetMauMau::Common::Exception::SocketException(SRVCLOSE, getSocketFD(),
+						ESHUTDOWN);
+#else
+				throw NetMauMau::Common::Exception::SocketException(SRVCLOSE, getSocketFD());
+#endif
+			}
 
 			if(!(status[0] == 'O' && status[1] == 'K')) {
 
@@ -358,12 +396,10 @@ throw(NetMauMau::Common::Exception::SocketException) {
 							"to unknown reason", getSocketFD());
 				}
 			}
-
 		} else {
 			throw Exception::VersionMismatchException(
 				MAKE_VERSION(maj, min), _pimpl->m_clientVersion, getSocketFD());
 		}
-
 	} else {
 		throw Exception::NoNetMauMauServerException("Remote server seems not to be " \
 				"a " PACKAGE_NAME " server", getSocketFD());

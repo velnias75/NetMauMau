@@ -214,12 +214,9 @@ std::size_t Player::getCardCount() const throw(NetMauMau::Common::Exception::Soc
 		m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::CARDCOUNT);
 		cc = std::strtoul(m_connection.read(m_sockfd).c_str(), NULL, 10);
 	} catch(const NetMauMau::Common::Exception::SocketException &e) {
-
-		const std::string err(std::string("Error in getting card count of \"").append(getName()).
-							  append("\""));
-
-		logError(err << " (" << e.what() << ")");
-		throw Exception::ServerPlayerException(getName(), err);
+		throw Exception::ServerPlayerException(getName(),
+											   std::string("Error in getting card count: ").
+											   append(e.what()));
 	}
 
 	return cc;
@@ -245,6 +242,7 @@ bool Player::getAceRoundChoice() const throw(NetMauMau::Common::Exception::Socke
 	BLOCK_ALL_SIGNALS;
 
 	if(isAceRoundAllowed()) {
+
 		try {
 			m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::ACEROUND);
 			return m_connection.read(m_sockfd) == NetMauMau::Common::Protocol::V15::TRUE;

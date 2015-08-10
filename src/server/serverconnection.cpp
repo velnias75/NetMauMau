@@ -36,12 +36,12 @@
 #include <cstdio>                       // for NULL, fclose, feof, fopen, etc
 #include <cstring>                      // for strerror, strdup, strlen
 
+#include "game.h"
 #include "base64.h"                     // for BYTE, base64_encode, etc
 #include "logger.h"                     // for BasicLogger, logWarning, etc
 #include "defaultplayerimage.h"         // for DefaultPlayerImage
 #include "errorstring.h"                // for errorString
 #include "pngcheck.h"                   // for checkPNG
-#include "sqlite.h"                     // for SQLite, SQLite::SCORES, etc
 #include "select.h"
 #include "signalblocker.h"
 #include "protocol.h"                   // for BYE, VM_ADDPIC
@@ -51,10 +51,21 @@
 #endif
 
 namespace {
+
+_NORETURN void throwPlayerDisconnect(const NetMauMau::Common::IConnection::INFO &info)
+throw(NetMauMau::Common::Exception::SocketException) {
+	throw NetMauMau::Common::Exception::SocketException(std::string("Player \"").append(info.name).
+			append(" has disconnected"), info.sockfd);
+}
+
+const std::string HELLO(PACKAGE_NAME);
+
 const std::string aiBase64
 (NetMauMau::Common::base64_encode(reinterpret_cast<const NetMauMau::Common::BYTE *>
 								  (NetMauMau::Common::DefaultPlayerImage.c_str()),
 								  NetMauMau::Common::DefaultPlayerImage.length()));
+
+const char *TRANSMISSION = "Player picture transmission for \"";
 
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
 const char *NOPNG = " or no PNG image";
@@ -64,8 +75,8 @@ const char *NOPNG = "";
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-struct _isPlayer : std::binary_function < NetMauMau::Common::IConnection::NAMESOCKFD,
-		std::string, bool > {
+struct _isPlayer : std::binary_function < NetMauMau::Common::IConnection::NAMESOCKFD, std::string,
+		bool > {
 	inline result_type operator()(const first_argument_type &nsf,
 								  const second_argument_type &player) const {
 		return nsf.name == player;
@@ -84,14 +95,14 @@ struct _logOutPlayer : std::unary_function<NetMauMau::Common::IConnection::NAMES
 using namespace NetMauMau::Server;
 
 Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *server)
-	: AbstractConnection(server, port), m_caps(), m_clientMinVer(minVer), m_inetd(inetd),
+	: AbstractConnection(server, port, true), m_caps(), m_clientMinVer(minVer), m_inetd(inetd),
 	  m_aiPlayerImages(new(std::nothrow) const std::string*[4]()) {
 
 #if !defined(_WIN32) && (defined(HAVE_SYS_STAT_H) && defined(HAVE_SYS_TYPES_H))
 
 	struct stat s;
 
-	const std::string dataDir(PKGDATADIR"/ai_img");
+	const std::string dataDir(PKGDATADIR "/ai_img");
 
 	for(int i = 0; i < 4; ++i) {
 
@@ -169,8 +180,6 @@ Connection::~Connection() {
 		try {
 			send(NetMauMau::Common::Protocol::V15::BYE.c_str(), 3, i->sockfd);
 		} catch(const NetMauMau::Common::Exception::SocketException &) {}
-
-		shutdown(i->sockfd);
 	}
 
 	for(int i = 0; i < 4; ++i) delete m_aiPlayerImages[i];
@@ -194,7 +203,7 @@ bool Connection::wire(SOCKET sockfd, const struct sockaddr *addr, socklen_t addr
 		return false;
 	}
 
-	return bind(sockfd, addr, addrlen) == 0;
+	return ::bind(sockfd, addr, addrlen) == 0;
 }
 
 std::string Connection::wireError(const std::string &err) const {
@@ -203,9 +212,11 @@ std::string Connection::wireError(const std::string &err) const {
 
 void Connection::connect(bool inetd) throw(NetMauMau::Common::Exception::SocketException) {
 
+	BLOCK_ALL_SIGNALS;
+
 	AbstractConnection::connect(inetd);
 
-	if(listen(getSocketFD(), SOMAXCONN)) {
+	if(::listen(getSocketFD(), SOMAXCONN)) {
 		throw NetMauMau::Common::Exception::SocketException(NetMauMau::Common::errorString(),
 				getSocketFD(), errno);
 	}
@@ -266,8 +277,8 @@ int Connection::wait(timeval *tv) {
 	FD_ZERO(&rfds);
 	FD_SET(getSocketFD(), &rfds);
 
-	return NetMauMau::Common::Select::getInstance()->perform(getSocketFD() + 1, &rfds, NULL, NULL,
-			tv);
+	return NetMauMau::Common::Select::getInstance()->perform(getSocketFD() + 1, &rfds,
+			NULL, NULL, tv);
 }
 #pragma GCC diagnostic pop
 
@@ -299,15 +310,13 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 										peer_addr_len, host, NI_MAXHOST, service, NI_MAXSERV,
 										NI_NUMERICSERV);
 
-			info.port = (uint16_t)std::strtoul(service, NULL, 10);
+			info.port = static_cast<uint16_t>(std::strtoul(service, NULL, 10));
 			info.host = host;
 
 			if(!err) {
 
-				const std::string hello(PACKAGE_NAME);
-
 				std::ostringstream os;
-				os << hello << ' ' << MIN_MAJOR << '.' << MIN_MINOR;
+				os << HELLO << ' ' << MIN_MAJOR << '.' << MIN_MINOR;
 
 				send(os.str().c_str(), os.str().length(), cfd);
 
@@ -322,7 +331,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 					const std::string::size_type spc = rHello.find(' ');
 					const std::string::size_type dot = rHello.find('.');
 
-					if(isValidHello(dot, spc, rHello, hello)) {
+					if(isValidHello(dot, spc, rHello, HELLO)) {
 
 						info.maj = getMajorFromHello(rHello, dot, spc);
 						info.min = getMinorFromHello(rHello, dot);
@@ -345,6 +354,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						try {
 							namePic = read(cfd, cver >= 4 ? MAXPICBYTES : 1024);
 						} catch(const NetMauMau::Common::Exception::SocketException &e) {
+
 							if(e.error() == ENOMEM) {
 
 								try {
@@ -406,12 +416,19 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 										if(pl > MAXPICBYTES || !isPNG(playerPic)) {
 
-											send(cc, 20, cfd);
-											recv(cc, 2, cfd);
-
-											logInfo("Player picture for \"" << info.name
-													<< "\" rejected (too large" << NOPNG << ")");
 											std::string().swap(playerPic);
+
+											send(cc, 20, cfd);
+
+											if(recv(cc, 2, cfd)) {
+
+												logInfo("Player picture for \"" << info.name
+														<< "\" rejected (too large" << NOPNG
+														<< ")");
+
+											} else {
+												throwPlayerDisconnect(info);
+											}
 
 										} else {
 #ifndef _WIN32
@@ -421,36 +438,53 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 														  (unsigned long)playerPic.length());
 #endif
 											send(cc, 20, cfd);
-											recv(cc, 2, cfd);
+
+											if(!recv(cc, 2, cfd)) throwPlayerDisconnect(info);
 
 											if(!(cc[0] == 'O' && cc[1] == 'K')) {
-												logWarning("Player picture transmission for \""
+												logWarning(TRANSMISSION
 														   << info.name << "\" failed: got "
 														   << playerPic.length()
 														   << " bytes; expected " << pl
 														   << " bytes)");
 												std::string().swap(playerPic);
 											} else {
-												logInfo("Player picture transmission for \""
-														<< info.name << "\" successful ("
+												logInfo(TRANSMISSION << info.name
+														<< "\" successful ("
 														<< playerPic.length() << " bytes)");
 											}
 										}
 
 									} catch(const std::bad_alloc &) {
 
+										std::string().swap(playerPic);
+
 										char cc[20] = "0\0";
 
 										send(cc, 20, cfd);
-										recv(cc, 2, cfd);
-										logInfo("Player picture for \"" << info.name
-												<< "\" rejected (out of memory)");
 
-										std::string().swap(playerPic);
+										if(recv(cc, 2, cfd)) {
+											logInfo("Player picture for \"" << info.name
+													<< "\" rejected (out of memory)");
+										} else {
+											throwPlayerDisconnect(info);
+										}
 									}
 
-								} catch(const NetMauMau::Common::Exception::SocketException &) {
+								} catch(const NetMauMau::Common::Exception::SocketException &e) {
+
 									std::string().swap(playerPic);
+
+									char cc[20] = "0\0";
+
+									send(cc, 20, cfd);
+
+									if(recv(cc, 2, cfd)) {
+										logWarning(TRANSMISSION << info.name << "\" failed ("
+												   << e << ")");
+									} else {
+										throwPlayerDisconnect(info);
+									}
 								}
 
 							} else {
@@ -468,7 +502,8 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 								accepted = PLAY;
 								NetMauMau::DB::SQLite::getInstance()->addPlayer(info);
 							} else {
-								shutdown(cfd);
+								if(!gameRunning) shutdown(cfd);
+
 								accepted = REFUSED;
 							}
 
@@ -481,12 +516,15 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 										 << " to client failed: " << e.what());
 							}
 
-							shutdown(cfd);
+							if(!gameRunning) shutdown(cfd);
+
 							accepted = REFUSED;
 						}
+
 					} else {
+
 						logDebug("HELLO failed: " << rHello.substr(0, std::strlen(PACKAGE_NAME))
-								 << " != " << hello);
+								 << " != " << HELLO);
 
 						try {
 							send("NO", 2, cfd);
@@ -494,7 +532,7 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 							logDebug("Sending NO to client failed: " << e.what());
 						}
 
-						shutdown(cfd);
+						if(!gameRunning) shutdown(cfd);
 					}
 
 				} else if(rHello.substr(0, NetMauMau::Common::Protocol::V15::PLAYERLIST.length())
@@ -570,7 +608,8 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 					send(hdbvs.data(), hdbvs.size(), cfd);
 
-					shutdown(cfd);
+					if(!gameRunning) shutdown(cfd);
+
 					accepted = PLAYERLIST;
 
 				} else if(rHello.substr(0, NetMauMau::Common::Protocol::V15::SCORES.length()) ==
@@ -598,7 +637,8 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 					send(osscores.str().c_str(), osscores.str().length(), cfd);
 
-					shutdown(cfd);
+					if(!gameRunning) shutdown(cfd);
+
 					accepted = SCORES;
 
 				} else {
@@ -613,17 +653,21 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 					send(oscap.str().c_str(), oscap.str().length(), cfd);
 
-					shutdown(cfd);
+					if(!gameRunning) shutdown(cfd);
+
 					accepted = CAP;
 				}
 
 			} else {
-				shutdown(cfd);
-				throw NetMauMau::Common::Exception::SocketException(gai_strerror(err), -1, errno);
+				if(!gameRunning) shutdown(cfd);
+
+				throw NetMauMau::Common::Exception::SocketException
+				(NetMauMau::Common::errorString(err, true), INVALID_SOCKET, errno);
 			}
 
 		} catch(const NetMauMau::Common::Exception::SocketException &) {
-			shutdown(cfd);
+			if(!gameRunning) shutdown(cfd);
+
 			throw;
 		}
 	}
@@ -714,16 +758,64 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	BLOCK_ALL_SIGNALS;
 
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
-			i != getRegisteredPlayers().end(); ++i) {
-		write(i->sockfd, msg);
-	}
+			i != getRegisteredPlayers().end(); ++i) write(i->sockfd, msg);
 
 	return *this;
 }
 
 void Connection::intercept() throw(NetMauMau::Common::Exception::SocketException) {
+
 	INFO info;
-	accept(info, true);
+
+	info.sockfd = INVALID_SOCKET;
+
+	try {
+		switch(accept(info, true)) {
+		case NONE:
+			logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Connection from "
+					<< info.host << ":" << info.port);
+			break;
+
+		case PLAY:
+			logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Play request from "
+					<< info.host << ":" << info.port);
+			break;
+
+		case CAP:
+			logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Capabilities request from "
+					<< info.host << ":" << info.port);
+			break;
+
+		case REFUSED:
+			logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Refused join game request from "
+					<< info.host << ":" << info.port);
+			break;
+
+		case PLAYERLIST:
+			logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Player list request from "
+					<< info.host << ":" << info.port);
+			break;
+
+		case SCORES:
+			logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Scores request from "
+					<< info.host << ":" << info.port);
+			break;
+		}
+
+	} catch(const NetMauMau::Common::Exception::SocketException &e) {
+#ifndef _NDEBUG
+
+		if(info.sockfd != INVALID_SOCKET) {
+			logWarning("Error in intercepted connection from " << info.host << ":" << info.port
+					   << ": " << e);
+		} else {
+			logWarning("Error in intercepted connection: " << e);
+		}
+
+#endif
+	}
+
+	shutdown(info.sockfd);
 }
 
 bool Connection::isPNG(const std::string &pic) {

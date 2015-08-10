@@ -17,10 +17,18 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
+#include "config.h"                     // for MAXPICBYTES, etc
+#endif
+
 #include "errorstring.h"
 
 #include <cerrno>                       // for errno
 #include <cstring>                      // for strerror
+
+#ifdef HAVE_NETDB_H
+#include <netdb.h>                      // for NI_MAXHOST, NI_MAXSERV, etc
+#endif
 
 #ifdef _WIN32
 #include <windows.h>
@@ -41,9 +49,13 @@ const char *NetMauMau::Common::errorString() {
 #endif
 }
 
-const char *NetMauMau::Common::errorString(int errnum) {
+const char *NetMauMau::Common::errorString(int errnum, bool gai) {
 #ifndef _WIN32
+#ifdef HAVE_NETDB_H
+	return !gai ? std::strerror(errnum) : gai_strerror(errnum);
+#else
 	return std::strerror(errnum);
+#endif
 #else
 
 	if(!FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,

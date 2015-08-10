@@ -105,8 +105,8 @@ void EventHandler::directionChange() const throw(NetMauMau::Common::Exception::S
 	std::ostringstream vm_old;
 	vm_old << NetMauMau::Common::Protocol::V15::MESSAGE << '\0' << "Direction has changed";
 
-	NetMauMau::Common::efficientAddOrUpdate(versionedMessage, 0, vm_old.str());
-	NetMauMau::Common::efficientAddOrUpdate(versionedMessage, 13,
+	NetMauMau::Common::efficientAddOrUpdate(versionedMessage, 0u, vm_old.str());
+	NetMauMau::Common::efficientAddOrUpdate(versionedMessage, 13u,
 											NetMauMau::Common::Protocol::V15::DIRCHANGE);
 
 	m_connection.sendVersionedMessage(versionedMessage);
@@ -121,8 +121,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	vm_old << NetMauMau::Common::Protocol::V15::PLAYERJOINED << '\0' << player->getName();
 	vm_new << vm_old.str() << '\0' << NetMauMau::Common::Protocol::V15::VM_ADDPIC;
 
-	NetMauMau::Common::efficientAddOrUpdate(versionedMessage, 0, vm_old.str());
-	NetMauMau::Common::efficientAddOrUpdate(versionedMessage, 4, vm_new.str());
+	NetMauMau::Common::efficientAddOrUpdate(versionedMessage, 0u, vm_old.str());
+	NetMauMau::Common::efficientAddOrUpdate(versionedMessage, 4u, vm_new.str());
 
 	m_connection.sendVersionedMessage(versionedMessage);
 }
@@ -230,8 +230,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	vm_old << NetMauMau::Common::Protocol::V15::PLAYERLOST << '\0' << player->getName();
 	vm_new << vm_old.str() << '\0' << (player->getPoints() * pointFactor);
 
-	NetMauMau::Common::efficientAddOrUpdate(versionedMessage, 0, vm_old.str());
-	NetMauMau::Common::efficientAddOrUpdate(versionedMessage, 3, vm_new.str());
+	NetMauMau::Common::efficientAddOrUpdate(versionedMessage, 0u, vm_old.str());
+	NetMauMau::Common::efficientAddOrUpdate(versionedMessage, 3u, vm_new.str());
 
 	m_connection.sendVersionedMessage(versionedMessage);
 
@@ -315,8 +315,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	vm_new << NetMauMau::Common::Protocol::V15::JACKSUIT << '\0'
 		   << NetMauMau::Common::suitToSymbol(suit, false);
 
-	NetMauMau::Common::efficientAddOrUpdate(vm, 0, vm_old.str());
-	NetMauMau::Common::efficientAddOrUpdate(vm, 4, vm_new.str());
+	NetMauMau::Common::efficientAddOrUpdate(vm, 0u, vm_old.str());
+	NetMauMau::Common::efficientAddOrUpdate(vm, 4u, vm_new.str());
 
 	m_connection.sendVersionedMessage(vm);
 }
@@ -325,7 +325,7 @@ void EventHandler::setJackModeOff() const throw(NetMauMau::Common::Exception::So
 
 	Connection::VERSIONEDMESSAGE vm;
 
-	NetMauMau::Common::efficientAddOrUpdate(vm, 15, NetMauMau::Common::Protocol::V15::JACKMODEOFF);
+	NetMauMau::Common::efficientAddOrUpdate(vm, 15u, NetMauMau::Common::Protocol::V15::JACKMODEOFF);
 
 	m_connection.sendVersionedMessage(vm);
 }

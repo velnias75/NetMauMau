@@ -113,9 +113,9 @@ MappedMessageInitializer<AbstractClientV13>::m_data[1] _INIT_PRIO(102) = {
 };
 
 AbstractClientV05Impl::AbstractClientV05Impl(const std::string &pName, const std::string &server,
-		uint16_t port, const unsigned char *pngData, std::size_t pngDataLen) : m_connection(pName,
-					server, port), m_pName(pName), m_pngData(), m_cards(), m_openCard(0L),
-	m_disconnectNow(false), m_playing(false) {
+		uint16_t port, const unsigned char *pngData, std::size_t pngDataLen, unsigned char sockopts)
+	: m_connection(pName, server, port, sockopts), m_pName(pName), m_pngData(), m_cards(),
+	  m_openCard(0L), m_disconnectNow(false), m_playing(false) {
 
 	if(pngData && pngDataLen) {
 
@@ -133,8 +133,8 @@ AbstractClientV05Impl::~AbstractClientV05Impl() {
 
 	m_connection.setInterrupted(false);
 
-	for(AbstractClient::CARDS::const_iterator
-			i(m_cards.begin()); i != m_cards.end(); ++i) delete *i;
+	for(AbstractClient::CARDS::const_iterator i(m_cards.begin());
+			i != m_cards.end(); ++i) delete *i;
 
 	delete m_openCard;
 }

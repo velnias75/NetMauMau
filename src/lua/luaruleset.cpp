@@ -26,7 +26,6 @@
 #include "logger.h"                     // for BasicLogger, logWarning
 #include "iplayer.h"                    // for IPlayer
 #include "luafatalexception.h"          // for LuaFatalException
-#include "serverplayerexception.h"
 #include "luastate.h"                   // for LuaState
 
 #ifndef _WIN32
@@ -317,14 +316,16 @@ std::vector<const char *> LuaRuleSet::checkInterface() {
 
 void LuaRuleSet::checkInitial(const NetMauMau::Player::IPlayer *player,
 							  const NetMauMau::Common::ICardPtr &playedCard)
-throw(NetMauMau::Lua::Exception::LuaException) {
+throw(NetMauMau::Lua::Exception::LuaException,
+	  NetMauMau::Server::Exception::ServerPlayerException) {
 	checkCard(player, NetMauMau::Common::ICardPtr(), playedCard, player->isAIPlayer());
 }
 
 bool LuaRuleSet::checkCard(const NetMauMau::Player::IPlayer *player,
 						   const NetMauMau::Common::ICardPtr &uncoveredCard,
 						   const NetMauMau::Common::ICardPtr &playedCard,
-						   bool) throw(NetMauMau::Lua::Exception::LuaException) {
+						   bool) throw(NetMauMau::Lua::Exception::LuaException,
+									   NetMauMau::Server::Exception::ServerPlayerException) {
 
 	const char *fname = FUNCTIONS[CHECKCARD];
 

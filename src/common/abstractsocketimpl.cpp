@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2014-2015 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -37,15 +37,32 @@
 
 #include <cstring>
 #include <cstdio>
+#include <cerrno>
 
+#include "logger.h"
+#include "errorstring.h"
+#include "abstractsocket.h"
 #include "abstractsocketimpl.h"
+
+#define LINGER_TIMEOUT 2
+#define RECVSNDTIMEO 0L
+#define BUFMULT 2
 
 using namespace NetMauMau::Common;
 
-AbstractSocketImpl::AbstractSocketImpl(const char *server, uint16_t port)
-	: m_server(server ? server : ""), m_port(port), m_sfd(INVALID_SOCKET), m_wireError() {}
+AbstractSocketImpl::AbstractSocketImpl(const char *server, uint16_t port, bool sockopt_env)
+	: m_server(server ? server : ""), m_port(port), m_sfd(INVALID_SOCKET), m_wireError(),
+	  m_sockoptEnv(sockopt_env), m_sopt(SOCKOPT_ALL) {}
 
-AbstractSocketImpl::~AbstractSocketImpl() {}
+AbstractSocketImpl::AbstractSocketImpl(const char *server, uint16_t port, unsigned char sockopts)
+	: m_server(server ? server : ""), m_port(port), m_sfd(INVALID_SOCKET), m_wireError(),
+	  m_sockoptEnv(false), m_sopt(sockopts) {}
+
+AbstractSocketImpl::~AbstractSocketImpl() {
+	if(m_sfd != INVALID_SOCKET) {
+		AbstractSocket::shutdown(m_sfd);
+	}
+}
 
 int AbstractSocketImpl::getAddrInfo(const char *server, uint16_t port, struct addrinfo **result,
 									bool ipv4) {
@@ -81,6 +98,184 @@ int AbstractSocketImpl::getAddrInfo(const char *server, uint16_t port, struct ad
 	hints.ai_next = NULL;
 
 	return getaddrinfo(server, portS, &hints, result);
+}
+
+unsigned char AbstractSocketImpl::setSocketOptions(SOCKET fd, unsigned char what) {
+
+	unsigned char ret = 0u;
+
+	struct timeval timeout;
+	socklen_t slen = sizeof(struct timeval);
+
+	if((what & SOCKOPT_RCVTIMEO) &&  getsockopt(fd, SOL_SOCKET, SO_RCVTIMEO,
+			reinterpret_cast<char *>(&timeout), &slen) != -1) {
+
+		if(!(timeout.tv_sec != 0L && timeout.tv_usec == 0L) &&
+				timeout.tv_sec != RECVSNDTIMEO) {
+
+			logDebug("SO_RCVTIMEO: " << timeout.tv_sec << " sec; " << timeout.tv_usec
+					 << " \u00b5sec, adjusting to " << RECVSNDTIMEO << " sec");
+
+			timeout.tv_sec  = RECVSNDTIMEO;
+			timeout.tv_usec = 0L;
+
+			if(setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO,
+						  reinterpret_cast<const char *>(&timeout),
+						  sizeof(struct timeval)) == -1) {
+
+				ret |= SOCKOPT_RCVTIMEO;
+
+				logWarning("SOCKOPT_RCVTIMEO (" << static_cast<unsigned int>(SOCKOPT_RCVTIMEO)
+						   << "): " << NetMauMau::Common::errorString(errno));
+			}
+		}
+	}
+
+	if((what & SOCKOPT_SNDTIMEO) && getsockopt(fd, SOL_SOCKET, SO_SNDTIMEO,
+			reinterpret_cast<char *>(&timeout), &slen) != -1) {
+
+		if(!(timeout.tv_sec != 0L && timeout.tv_usec == 0L) &&
+				timeout.tv_sec != RECVSNDTIMEO) {
+
+			logDebug("SO_SNDTIMEO: " << timeout.tv_sec << " sec; " << timeout.tv_usec
+					 << " \u00b5sec, adjusting to " << RECVSNDTIMEO << " sec");
+
+			timeout.tv_sec  = RECVSNDTIMEO;
+			timeout.tv_usec = 0L;
+
+			if(setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO,
+						  reinterpret_cast<const char *>(&timeout),
+						  sizeof(struct timeval)) == -1) {
+
+				ret |= SOCKOPT_SNDTIMEO;
+
+				logWarning("SOCKOPT_SNDTIMEO (" << static_cast<unsigned int>(SOCKOPT_SNDTIMEO)
+						   << "): " << NetMauMau::Common::errorString(errno));
+			}
+		}
+	}
+
+	int bufSize = 0;
+	slen = sizeof(int);
+
+	if((what & SOCKOPT_SNDBUF) && getsockopt(fd, SOL_SOCKET, SO_SNDBUF,
+			reinterpret_cast<char *>(&bufSize), &slen) != -1) {
+
+		bufSize *= BUFMULT;
+
+		if(setsockopt(fd, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char *>(&bufSize),
+					  sizeof(int)) == -1) {
+
+			ret |= SOCKOPT_SNDBUF;
+
+			logWarning("SOCKOPT_SNDBUF (" << static_cast<unsigned int>(SOCKOPT_SNDBUF)
+					   << "): " << NetMauMau::Common::errorString(errno));
+		}
+	}
+
+	if((what & SOCKOPT_RCVBUF) && getsockopt(fd, SOL_SOCKET, SO_RCVBUF,
+			reinterpret_cast<char *>(&bufSize), &slen) != -1) {
+
+		bufSize *= BUFMULT;
+
+		if(setsockopt(fd, SOL_SOCKET, SO_RCVBUF,
+					  reinterpret_cast<const char *>(&bufSize), sizeof(int)) == -1) {
+
+			ret |= SOCKOPT_RCVBUF;
+
+			logWarning("SOCKOPT_RCVBUF (" << static_cast<unsigned int>(SOCKOPT_RCVBUF)
+					   << "): " << NetMauMau::Common::errorString(errno));
+		}
+	}
+
+	int keepAlive = 0;
+	slen = sizeof(int);
+
+	if((what & SOCKOPT_KEEPALIVE) &&  getsockopt(fd, SOL_SOCKET, SO_KEEPALIVE,
+			reinterpret_cast<char *>(&keepAlive), &slen) != -1) {
+
+		if(!keepAlive) {
+
+			keepAlive = 1;
+
+			if(setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, reinterpret_cast<const char *>(&keepAlive),
+						  sizeof(int)) == -1) {
+
+				ret |= SOCKOPT_KEEPALIVE;
+
+				logWarning("SOCKOPT_KEEPALIVE (" << static_cast<unsigned int>(SOCKOPT_KEEPALIVE)
+						   << "): " << NetMauMau::Common::errorString(errno));
+			}
+		}
+	}
+
+	struct linger linger;
+
+	slen = sizeof(struct linger);
+
+	if((what & SOCKOPT_LINGER) &&  getsockopt(fd, SOL_SOCKET, SO_LINGER,
+			reinterpret_cast<char *>(&linger), &slen) != -1) {
+
+		if(!linger.l_onoff) {
+
+			linger.l_onoff  = 1;
+			linger.l_linger = LINGER_TIMEOUT;
+
+			if(setsockopt(fd, SOL_SOCKET, SO_LINGER,
+						  reinterpret_cast<const char *>(&linger),
+						  sizeof(struct linger)) == -1) {
+
+				ret |= SOCKOPT_LINGER;
+
+				logWarning("SOCKOPT_LINGER (" << static_cast<unsigned int>(SOCKOPT_LINGER)
+						   << "): " << NetMauMau::Common::errorString(errno));
+			}
+		}
+	}
+
+#if defined(SO_REUSEPORT)
+
+	int reuseport = 0;
+	slen = sizeof(int);
+
+	if((what & SOCKOPT_REUSEPORT) &&  getsockopt(fd, SOL_SOCKET, SO_REUSEPORT,
+			reinterpret_cast<char *>(&reuseport), &slen) != -1) {
+
+		if(!reuseport) {
+
+			reuseport = 1;
+
+			if(setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, reinterpret_cast<const char *>(&reuseport),
+						  sizeof(int)) == -1) {
+
+				ret |= SOCKOPT_REUSEPORT;
+
+				logWarning("SOCKOPT_REUSEPORT (" << static_cast<unsigned int>(SOCKOPT_REUSEPORT)
+						   << "): " << NetMauMau::Common::errorString(errno));
+			}
+		}
+	}
+
+#endif
+
+	return ret;
+}
+
+void AbstractSocketImpl::logErrSocketOptions(unsigned char what) {
+
+	if(what & SOCKOPT_RCVTIMEO) logWarning("SOCKOPT_RCVTIMEO failed");
+
+	if(what & SOCKOPT_SNDTIMEO) logWarning("SOCKOPT_SNDTIMEO failed");
+
+	if(what & SOCKOPT_RCVBUF) logWarning("SOCKOPT_RCVBUF failed");
+
+	if(what & SOCKOPT_SNDBUF) logWarning(" failed");
+
+	if(what & SOCKOPT_KEEPALIVE) logWarning("SOCKOPT_KEEPALIVE failed");
+
+	if(what & SOCKOPT_LINGER) logWarning("SOCKOPT_LINGER failed");
+
+	if(what & SOCKOPT_REUSEPORT) logWarning("SOCKOPT_REUSEPORT failed");
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

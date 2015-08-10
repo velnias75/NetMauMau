@@ -119,6 +119,8 @@ public:
 	explicit Connection(const std::string &pName, const std::string &server, uint16_t port);
 	explicit Connection(const std::string &pName, const std::string &server, uint16_t port,
 						BASE64RAII &base64);
+	explicit Connection(const std::string &pName, const std::string &server, uint16_t port,
+						unsigned char sockopts);
 	virtual ~Connection();
 
 	void setClientVersion(uint32_t clientVersion);

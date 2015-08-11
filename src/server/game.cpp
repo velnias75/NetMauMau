@@ -59,7 +59,8 @@ Game::Game(GameContext &ctx) throw(NetMauMau::Common::Exception::SocketException
 
 		std::size_t aiAdded = 0;
 
-		if(cntAi != orgAI) logWarning("Limiting number of AI players to " << cntAi
+		if(cntAi != orgAI) logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
+										  << "Limiting number of AI players to " << cntAi
 										  << " (due to configuration limit).");
 
 		for(std::size_t i = 0; i < cntAi; ++i) {
@@ -89,7 +90,8 @@ Game::Game(GameContext &ctx) throw(NetMauMau::Common::Exception::SocketException
 										  (new NetMauMau::Player::EasyPlayer(aiSanName.
 												  substr(0, spos), m_engine.getPlayedOutCards())));
 
-					logInfo("Adding AI player \"" << m_aiPlayers.back()->getName() << "\" ("
+					logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Adding AI player \""
+							<< m_aiPlayers.back()->getName() << "\" ("
 							<< (m_aiPlayers.back()->getType() ==
 								NetMauMau::Player::IPlayer::HARD ? "hard" : "easy") << ")");
 
@@ -209,13 +211,13 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 		if(ultimate || m_ctx.hasAIPlayer()) m_engine.gameOver();
 
 	} catch(const Exception::ServerPlayerException &e) {
-		logFatal(e);
+		logFatal(NetMauMau::Common::Logger::time(TIMEFORMAT) << e);
 		m_running = false;
 		m_engine.error(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_PLAYER +
 					   std::string(e.player()) + ": " + e.what());
 		m_engine.gameOver();
 	} catch(const NetMauMau::Lua::Exception::LuaFatalException &e) {
-		logFatal(e);
+		logFatal(NetMauMau::Common::Logger::time(TIMEFORMAT) << e);
 		m_running = false;
 		m_engine.error(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_MISCONFIGURED + e.what());
 		m_engine.gameOver();
@@ -260,7 +262,8 @@ void Game::reset(bool playerLost) throw() {
 			m_engine.setAlwaysWait(m_aiPlayers.size() > 1);
 
 		} catch(const NetMauMau::Common::Exception::SocketException &e) {
-			logDebug(__PRETTY_FUNCTION__ << ": failed to add AI player: " << e.what());
+			logDebug(NetMauMau::Common::Logger::time(TIMEFORMAT) << __PRETTY_FUNCTION__
+					 << ": failed to add AI player: " << e.what());
 		}
 	}
 

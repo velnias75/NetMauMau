@@ -23,12 +23,6 @@
 #include "engine.h"                     // for Engine
 #include "observable.h"
 
-#ifndef _WIN32
-#define TIMEFORMAT "%T - "
-#else
-#define TIMEFORMAT "%H:%M:%S - "
-#endif
-
 namespace NetMauMau {
 
 namespace Player {

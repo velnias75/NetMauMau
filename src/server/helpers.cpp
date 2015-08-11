@@ -80,7 +80,8 @@ namespace {
 
 void unknownSignal(int sig) {
 #if _XOPEN_SOURCE >= 700 || _POSIX_C_SOURCE >= 200809L || GNU_SOURCE
-	logWarning("Received unhandled signal \"" << strsignal(sig) << "\" (" << sig << ")");
+	logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Received unhandled signal \""
+			   << strsignal(sig) << "\" (" << sig << ")");
 #endif
 }
 
@@ -164,7 +165,7 @@ char *inetdParsedString(char *str) {
 void sh_interrupt(int sig) {
 
 	if(sig == SIGINT || sig == SIGTERM) {
-		logWarning(Common::Logger::time(TIMEFORMAT) << "Server is about to shut down");
+		logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Server is about to shut down");
 		Server::Game::setInterrupted();
 		Server::EventHandler::setInterrupted();
 		interrupt = true;
@@ -216,8 +217,10 @@ void sh_dump(int sig, siginfo_t *info, void *) {
 				// cppcheck-suppress invalidscanf
 				if(std::fscanf(spf, "%255s %d %d %d %d %19s", sCmd, &iDummy, &iDummy, &iDummy,
 							   &iDummy, sDevice)) {
-					logDebug("BSD emitter: " << sCmd); // why (swapper) and not (kill)?
-					logDebug("BSD tty device: " << sDevice); // why (-1,-1)?
+					logDebug(NetMauMau::Common::Logger::time(TIMEFORMAT) << "BSD emitter: "
+							 << sCmd); // why (swapper) and not (kill)?
+					logDebug(NetMauMau::Common::Logger::time(TIMEFORMAT) << "BSD tty device: "
+							 << sDevice); // why (-1,-1)?
 				}
 
 #endif
@@ -291,9 +294,7 @@ int getIPForIF(char *addr, size_t len, const char *iface) {
 
 		if(listOnly) {
 			for(std::set<std::string>::const_iterator iter(ifaces.begin());
-					iter != ifaces.end(); ++iter) {
-				logger(*iter);
-			}
+					iter != ifaces.end(); ++iter) logger(*iter);
 		}
 
 		::freeifaddrs(ifas);
@@ -332,10 +333,13 @@ int dropPrivileges(const char *usr, const char *group) {
 
 #if !defined(_WIN32) && defined(PIDFILE) && defined(HAVE_ATEXIT) && defined(HAVE_CHOWN)
 
-			if(chown(PIDFILE, uid, gid)) logWarning("Couldn't change ownership of " << PIDFILE);
+			if(chown(PIDFILE, uid, gid)) logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
+														<< "Couldn't change ownership of "
+														<< PIDFILE);
 
 			if(chmod(PIDFILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH)) {
-				logWarning("Couldn't change mode of " << PIDFILE);
+				logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Couldn't change mode of "
+						   << PIDFILE);
 			}
 
 #endif
@@ -359,20 +363,21 @@ int dropPrivileges(const char *usr, const char *group) {
 void exit_hdlr() {
 #if !defined(_WIN32) && defined(PIDFILE) && defined(HAVE_CHOWN)
 
-	if(unlink(PIDFILE)) logWarning("Couldn't remove " << PIDFILE << ": " << std::strerror(errno));
+	if(unlink(PIDFILE)) logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Couldn't remove "
+									   << PIDFILE << ": " << std::strerror(errno));
 
 #endif
 
-	logInfo(Common::Logger::time(TIMEFORMAT) << "Server shut down normally");
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Server shut down normally");
 }
 #endif
 
 bool conLog(const Common::IConnection::INFO &info) {
 
 	if(info.maj || info.min) {
-		logInfo(Common::Logger::time(TIMEFORMAT) << "Connection from " << info.host << ":"
-				<< info.port << (!info.name.empty() ? " as \"" : "") <<
-				(!info.name.empty() ? info.name : "") << (!info.name.empty() ? "\" (" : " (")
+		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Connection from " << info.host
+				<< ":" << info.port << (!info.name.empty() ? " as \"" : "")
+				<< (!info.name.empty() ? info.name : "") << (!info.name.empty() ? "\" (" : " (")
 				<< info.maj << "." << info.min << ") " << Common::Logger::nonl());
 
 		return true;
@@ -480,7 +485,7 @@ void armIdleTimer(timer_t timerid, struct itimerspec &its) {
 	its.it_interval.tv_nsec = 0;
 
 	if(timer_settime(timerid, 0, &its, NULL) == -1) {
-		logWarning("Could not arm idle timer");
+		logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Could not arm idle timer");
 	} else {
 
 		struct itimerspec itc;
@@ -510,7 +515,7 @@ void disarmIdleTimer(timer_t timerid, struct itimerspec &its) {
 	its.it_interval.tv_nsec = 0;
 
 	if(timer_settime(timerid, 0, &its, NULL) == -1) {
-		logWarning("Could not disarm idle timer");
+		logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Could not disarm idle timer");
 	} else {
 		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Idle timer disarmed");
 	}

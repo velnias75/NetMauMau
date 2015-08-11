@@ -181,7 +181,8 @@ int main(int argc, const char **argv) {
 
 			if(std::count_if(aiNames.begin(), aiNames.end(), std::bind2nd(_AINameCmp(),
 							 inetdParsedString(aiName)))) {
-				logWarning("Duplicate AI player name: \"" << typeStripped << "\"");
+				logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
+						   << "Duplicate AI player name: \"" << typeStripped << "\"");
 			} else {
 				aiNames.push_back(aiName);
 			}
@@ -247,7 +248,8 @@ int main(int argc, const char **argv) {
 						   Common::ci_char_traits::eq(arRank[0], 'Q') ||
 						   Common::ci_char_traits::eq(arRank[0], 'K'))) {
 
-				logError("\'" << arRank << "\' is not a valid ace round rank. " \
+				logError(NetMauMau::Common::Logger::time(TIMEFORMAT) << "\'" << arRank
+						 << "\' is not a valid ace round rank. " \
 						 "Valid ranks are ACE, KING, or QUEEN.");
 				poptFreeContext(pctx);
 				return EXIT_FAILURE;
@@ -257,15 +259,21 @@ int main(int argc, const char **argv) {
 
 		case 'I':
 #ifndef WIN32
-			if(interface[0] == '?') {
-				getIPForIF();
-				poptFreeContext(pctx);
-				return EXIT_SUCCESS;
-			} else if(getIPForIF(host, HOST_NAME_MAX, interface)) {
-				if(getIPForIF(host, HOST_NAME_MAX, interface)) {
-					logError("Couldn't bind to interface" << interface)
+			{
+				int r;
+
+				if(interface[0] == '?') {
+					getIPForIF();
 					poptFreeContext(pctx);
-					return EXIT_FAILURE;
+					return EXIT_SUCCESS;
+				} else if((r = getIPForIF(host, HOST_NAME_MAX, interface))) {
+
+					if(r) {
+						logError(NetMauMau::Common::Logger::time(TIMEFORMAT)
+								 << "Couldn't bind to interface" << interface)
+						poptFreeContext(pctx);
+						return EXIT_FAILURE;
+					}
 				}
 			}
 
@@ -285,6 +293,7 @@ int main(int argc, const char **argv) {
 #ifndef _WIN32
 
 	if(inetd) {
+		NetMauMau::Common::Logger::_time::enabled = false;
 		NetMauMau::Common::Logger::setSilentMask(0xFF);
 		NetMauMau::Common::Logger::writeSyslog(true);
 	} else {
@@ -310,16 +319,17 @@ int main(int argc, const char **argv) {
 		pidFile << getpid();
 		pidFile.close();
 	} else {
-		logWarning("Couldn't create " << PIDFILE);
+		logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Couldn't create " << PIDFILE);
 	}
 
 #endif
 
-	if(std::atexit(exit_hdlr)) logWarning("Couldn't register atexit function");
+	if(std::atexit(exit_hdlr)) logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
+											  << "Couldn't register atexit function");
 
 #endif
 
-	logInfo("Welcome to " << PACKAGE_STRING);
+	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Welcome to " << PACKAGE_STRING);
 
 #ifndef _WIN32
 	static struct sigaction sa_pipe;
@@ -358,7 +368,8 @@ int main(int argc, const char **argv) {
 			NetMauMau::armIdleTimer(timerid, its);
 
 		} else {
-			logWarning("Could not create timer for idle shutdown");
+			logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
+					   << "Could not create timer for idle shutdown");
 		}
 	}
 
@@ -396,9 +407,10 @@ int main(int argc, const char **argv) {
 
 		ultimate = (!aiOpponent && minPlayers > 2) ? ultimate : true;
 
-		if(ultimate) logInfo("Running in ultimate mode");
+		if(ultimate) logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT)
+								 << "Running in ultimate mode");
 
-		logInfo("Server accepts clients >= "
+		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Server accepts clients >= "
 				<< static_cast<uint16_t>(con.getMinClientVersion() >> 16)
 				<< "." << static_cast<uint16_t>(con.getMinClientVersion()));
 
@@ -425,13 +437,16 @@ int main(int argc, const char **argv) {
 #endif
 
 			if(cconf.decks != static_cast<std::size_t>(decks)) {
-				logWarning("Adjusted amount of card decks from " << decks << " to " << cconf.decks);
+				logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
+						   << "Adjusted amount of card decks from " << decks << " to "
+						   << cconf.decks);
 				decks = static_cast<int>(cconf.decks);
 			}
 
 			if(cconf.initialCards != static_cast<std::size_t>(initialCardCount)) {
-				logWarning("Adjusted amount of initial cards from " << initialCardCount << " to "
-						   << cconf.initialCards);
+				logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
+						   << "Adjusted amount of initial cards from " << initialCardCount
+						   << " to " << cconf.initialCards);
 				initialCardCount = static_cast<int>(cconf.initialCards);
 			}
 
@@ -439,8 +454,9 @@ int main(int argc, const char **argv) {
 				minPlayers = game.getPlayerCount() + 1;
 			} else if(ctx.getEngineContext().getRuleSet()->getMaxPlayers() < minPlayers) {
 				minPlayers = ctx.getEngineContext().getRuleSet()->getMaxPlayers();
-				logWarning("Limiting amount of human players to " << minPlayers <<
-						   " (due to configuration limit).");
+				logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
+						   << "Limiting amount of human players to " << minPlayers
+						   << " (due to configuration limit).");
 			}
 
 			Server::Connection::CAPABILITIES caps;
@@ -506,7 +522,8 @@ int main(int argc, const char **argv) {
 						try {
 							state = con.accept(info, refuse);
 						} catch(const Common::Exception::SocketException &e) {
-							logDebug("Client accept failed: " << e.what());
+							logDebug(NetMauMau::Common::Logger::time(TIMEFORMAT)
+									 << "Client accept failed: " << e.what());
 							state = Server::Connection::NONE;
 						}
 
@@ -520,7 +537,8 @@ int main(int argc, const char **argv) {
 
 							if(cs == Server::Game::ACCEPTED || cs == Server::Game::ACCEPTED_READY) {
 
-								if(cl) logger("accepted");
+								if(cl) logger(NetMauMau::Common::Logger::time(TIMEFORMAT)
+												  << "accepted");
 
 								updatePlayerCap(caps, game.getPlayerCount(), con);
 
@@ -572,14 +590,15 @@ int main(int argc, const char **argv) {
 			NetMauMau::DB::SQLite::getInstance()->gameEnded(NOGAME_IDX);
 
 		} catch(const Common::Exception::SocketException &e) {
-			logError(e.what());
+			logError(NetMauMau::Common::Logger::time(TIMEFORMAT) << e.what());
 			con.reset();
 			return EXIT_FAILURE;
 		}
 
 #ifndef _WIN32
 	} else {
-		logError("Changing user/group failed" << (dpErr ? ": " : "") << (dpErr ? dpErr : ""));
+		logError(NetMauMau::Common::Logger::time(TIMEFORMAT)
+				 << "Changing user/group failed" << (dpErr ? ": " : "") << (dpErr ? dpErr : ""));
 	}
 
 #endif

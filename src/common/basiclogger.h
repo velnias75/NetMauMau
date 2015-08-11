@@ -1,7 +1,7 @@
 /**
  * basiclogger.h - template for basic logging functionality
  *
- * $Revision: 3997 $ $Author: heiko $
+ * $Revision: 4417 $ $Author: heiko $
  *
  * (c) 2012-2015 Heiko Schäfer <heiko@rangun.de>
  *
@@ -106,6 +106,7 @@ public:
 		_time(const char *f = "%a, %d %b %Y %T %z", const tm *t = NULL) : fmt(f), time(t) {}
 		const char *fmt;
 		const tm *time;
+		static bool enabled;
 	} time;
 
 	static const std::ios_base::fmtflags hex;
@@ -208,6 +209,9 @@ protected:
 
 template<class OIter>
 unsigned char BasicLogger<OIter>::m_silentMask = 0x00;
+
+template<class OIter>
+bool BasicLogger<OIter>::_time::enabled = true;
 
 template<class OIter>
 struct BasicLogger<OIter>::_logcount BasicLogger<OIter>::m_logCount = { 0, 0, 0, 0, 0, 0 };
@@ -397,13 +401,16 @@ BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const BasicLogger<OIter>::wid
 template<class OIter>
 BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const BasicLogger<OIter>::time &t) {
 
-	char outstr[200] = "";
-	time_t ti = t.time ? 0 : std::time(NULL);
-	// cppcheck-suppress nonreentrantFunctionslocaltime
-	const tm *tmp = t.time ? t.time : std::localtime(&ti);
+	if(t.enabled) {
 
-	if(tmp && std::strftime(outstr, sizeof(outstr), t.fmt, tmp)) {
-		getMessageStream() << outstr;
+		char outstr[200] = "";
+		time_t ti = t.time ? 0 : std::time(NULL);
+		// cppcheck-suppress nonreentrantFunctionslocaltime
+		const tm *tmp = t.time ? t.time : std::localtime(&ti);
+
+		if(tmp && std::strftime(outstr, sizeof(outstr), t.fmt, tmp)) {
+			getMessageStream() << outstr;
+		}
 	}
 
 	return *this;

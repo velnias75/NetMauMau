@@ -80,7 +80,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 				m_connection.write(i->sockfd, type);
 				m_connection.write(i->sockfd, msg);
 			} catch(const NetMauMau::Common::Exception::SocketException &) {
-				logError("Couldn't send \"" << type << "\" to \"" << i->name << "\"");
+				logError(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Couldn't send \""
+						 << type << "\" to \"" << i->name << "\"");
 			}
 		}
 	}
@@ -175,7 +176,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		try {
 			m_connection.write(i->sockfd, NetMauMau::Common::Protocol::V15::STATS);
 		} catch(const NetMauMau::Common::Exception::SocketException &) {
-			logError("Could send stats to \"" << i->name << "\"");
+			logError(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Could send stats to \""
+					 << i->name << "\"");
 			break;
 		}
 

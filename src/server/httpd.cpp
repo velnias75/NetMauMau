@@ -78,8 +78,8 @@ struct scoresTable : std::unary_function<NetMauMau::DB::SQLite::SCORES::value_ty
 	inline explicit scoresTable(std::ostream &o) : os(o), pos(0) {}
 	inline result_type operator()(const argument_type &s) const {
 		os << "<tr><td align=\"right\">" << ++pos << "&nbsp;</td><td>&nbsp;" << s.name
-		   << "</td><td align=\"center\">" << (s.score < 0 ? "<font color=\"red\">" : "") << s.score
-		   << (s.score < 0 ? "</font>" : "") << "</td></tr>";
+		   << "</td><td align=\"center\">" << (s.score < 0 ? "<font color=\"red\">" : "")
+		   << s.score << (s.score < 0 ? "</font>" : "") << "</td></tr>";
 	}
 
 private:
@@ -339,7 +339,8 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 				}
 
 			} else {
-				logWarning("Failed to open favicon file: \"" <<
+				logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
+						   << "Failed to open favicon file: \"" <<
 						   NetMauMau::Common::getModulePath(NetMauMau::Common::PKGDATA, "netmaumau",
 								   "ico") << "\"");
 			}

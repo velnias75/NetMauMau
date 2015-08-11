@@ -27,6 +27,12 @@
 
 #include "basiclogger.h"                // for BasicLogger, etc
 
+#ifndef _WIN32
+#define TIMEFORMAT "%T - "
+#else
+#define TIMEFORMAT "%H:%M:%S - "
+#endif
+
 namespace NetMauMau {
 
 namespace Common {

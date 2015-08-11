@@ -63,6 +63,7 @@ public:
 	 * SERVER_VERSION_REL | version of the server (including release)
 	 * TALON              | if played with more than 1 card deck contains the number of cards
 	 * ULTIMATE           | `true` if running in ultimate mode, `false` otherwise
+	 * WEBSERVER_URL      | if the webserver is started it contains the URL of it
 	 */
 	typedef std::map<std::string, std::string> CAPABILITIES;
 

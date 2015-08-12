@@ -27,12 +27,17 @@
 #define BLOCK_ALL_SIGNALS NetMauMau::Common::SignalBlocker __signal__blocker; \
 	_UNUSED(__signal__blocker)
 
+#define BLOCK_MOST_SIGNALS NetMauMau::Common::SignalBlocker __signal__blocker(2u, \
+		NetMauMau::Common::__SIGNOS); _UNUSED(__signal__blocker)
+
 #define BLOCK_SIGNALS(n, p) NetMauMau::Common::SignalBlocker __signal__blocker((n), (p)); \
 	_UNUSED(__signal__blocker)
 
 namespace NetMauMau {
 
 namespace Common {
+
+_EXPORT extern const int __SIGNOS[];
 
 class _EXPORT SignalBlocker {
 	DISALLOW_COPY_AND_ASSIGN(SignalBlocker)

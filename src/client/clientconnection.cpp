@@ -107,7 +107,7 @@ void Connection::setTimeout(struct timeval *timeout) {
 Connection::PLAYERINFOS Connection::playerList(const IPlayerPicListener *hdl, bool playerPNG)
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	BLOCK_ALL_SIGNALS;
+	BLOCK_MOST_SIGNALS;
 
 	PLAYERINFOS plv;
 

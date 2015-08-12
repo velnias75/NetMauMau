@@ -40,8 +40,9 @@ struct cardEqualsDescription : std::binary_function < NetMauMau::Common::ICard *
 
 using namespace NetMauMau::Client;
 
-const MappedMessageProcessor<AbstractClientV05>::value_type
-MappedMessageInitializer<AbstractClientV05>::m_data[23] _INIT_PRIO(102) = {
+template<> const MappedMessageProcessor<AbstractClientV05, MP_CNT_V05>::value_type
+MappedMessageAllocator < MappedMessageProcessor<AbstractClientV05, MP_CNT_V05>::value_type,
+AbstractClientV05, MP_CNT_V05 >::m_data[MP_CNT_V05] _INIT_PRIO(102) = {
 	std::make_pair(&NetMauMau::Common::Protocol::V15::BYE,
 	&AbstractClientV05::performBye),
 	std::make_pair(&NetMauMau::Common::Protocol::V15::CARDACCEPTED,
@@ -90,8 +91,9 @@ MappedMessageInitializer<AbstractClientV05>::m_data[23] _INIT_PRIO(102) = {
 	&AbstractClientV05::performTurn)
 };
 
-const MappedMessageProcessor<AbstractClientV07>::value_type
-MappedMessageInitializer<AbstractClientV07>::m_data[3] _INIT_PRIO(102) = {
+template<> const MappedMessageProcessor<AbstractClientV07, MP_CNT_V07>::value_type
+MappedMessageAllocator < MappedMessageProcessor<AbstractClientV07, MP_CNT_V07>::value_type,
+AbstractClientV07, MP_CNT_V07 >::m_data[MP_CNT_V07] _INIT_PRIO(102) = {
 	std::make_pair(&NetMauMau::Common::Protocol::V15::ACEROUND,
 	&AbstractClientV07::performAceround),
 	std::make_pair(&NetMauMau::Common::Protocol::V15::ACEROUNDENDED,
@@ -100,14 +102,16 @@ MappedMessageInitializer<AbstractClientV07>::m_data[3] _INIT_PRIO(102) = {
 	&AbstractClientV07::performAceroundStarted)
 };
 
-const MappedMessageProcessor<AbstractClientV08>::value_type
-MappedMessageInitializer<AbstractClientV08>::m_data[1] _INIT_PRIO(102) = {
+template<> const MappedMessageProcessor<AbstractClientV08, MP_CNT_V08>::value_type
+MappedMessageAllocator < MappedMessageProcessor<AbstractClientV08, MP_CNT_V08>::value_type,
+AbstractClientV08, MP_CNT_V08 >::m_data[MP_CNT_V08] _INIT_PRIO(102) = {
 	std::make_pair(&NetMauMau::Common::Protocol::V15::PLAYCARD,
 	&AbstractClientV08::performPlayCard)
 };
 
-const MappedMessageProcessor<AbstractClientV13>::value_type
-MappedMessageInitializer<AbstractClientV13>::m_data[1] _INIT_PRIO(102) = {
+template<> const MappedMessageProcessor<AbstractClientV13, MP_CNT_V13>::value_type
+MappedMessageAllocator < MappedMessageProcessor<AbstractClientV13, MP_CNT_V13>::value_type,
+AbstractClientV13, MP_CNT_V13 >::m_data[MP_CNT_V13] _INIT_PRIO(102) = {
 	std::make_pair(&NetMauMau::Common::Protocol::V15::DIRCHANGE,
 	&AbstractClientV13::performDirChange)
 };

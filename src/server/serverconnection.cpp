@@ -68,8 +68,6 @@ const std::string aiBase64
 const char *TRANSMISSION  = "Player picture transmission for \"";
 const char *LOSTCONPLAYER = "Lost connection to player \"";
 
-const int SIGNO[] = { SIGINT, SIGTERM };
-
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
 const char *NOPNG = " or no PNG image";
 #else
@@ -294,7 +292,7 @@ int Connection::wait(timeval *tv) {
 Connection::ACCEPT_STATE Connection::accept(INFO &info,
 		bool gameRunning) throw(NetMauMau::Common::Exception::SocketException) {
 
-	BLOCK_SIGNALS(2u, SIGNO);
+	BLOCK_MOST_SIGNALS;
 
 	bool refuse = gameRunning;
 

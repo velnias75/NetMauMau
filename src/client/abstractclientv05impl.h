@@ -21,6 +21,7 @@
 #define NETMAUMAU_ABSTRACTCLIENTV05IMPL_H
 
 #include <cstddef>                      // for size_t
+#include <algorithm>
 
 #include "abstractclient.h"             // for AbstractClient
 
@@ -44,8 +45,12 @@ struct _LOCAL _playInternalParams {
 
 class _LOCAL AbstractClientV05Impl {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV05Impl)
+
+	template<class, class, std::size_t> friend struct MappedMessageAllocator;
 	friend class AbstractClientV05;
+
 	typedef std::vector<unsigned char> PNGDATA;
+
 public:
 	explicit AbstractClientV05Impl(const std::string &pName, const std::string &server,
 								   uint16_t port, const unsigned char *pngData,
@@ -75,12 +80,14 @@ public:
 };
 
 template<class> class MappedMessageInitializer;
+template<class, class, std::size_t> struct MappedMessageAllocator;
 
-template<class T>
+template<class T, std::size_t N>
 class _LOCAL MappedMessageProcessor {
 	DISALLOW_COPY_AND_ASSIGN(MappedMessageProcessor)
 
 	template<class> friend class MappedMessageInitializer;
+	template<class, class, std::size_t> friend struct MappedMessageAllocator;
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
@@ -93,11 +100,11 @@ class _LOCAL MappedMessageProcessor {
 #pragma GCC diagnostic pop
 
 	typedef AbstractClientV05::PIRET(T::*PROTOFN)(const _playInternalParams &) const;
-	typedef std::map<const std::string *const, PROTOFN, _protoCmp> PROTOMAP;
+	typedef std::pair<const std::string *const, PROTOFN> value_type;
+	typedef MappedMessageAllocator<value_type, T, N> allocator_type;
+	typedef std::map<const std::string *const, PROTOFN, _protoCmp, allocator_type> PROTOMAP;
 
 public:
-	typedef typename PROTOMAP::value_type value_type;
-
 	MappedMessageProcessor(const T &t, const AbstractClientV05Impl &pimpl)
 		: _t(t), _pimpl(pimpl) {}
 
@@ -120,60 +127,161 @@ private:
 	const AbstractClientV05Impl &_pimpl;
 };
 
-template<class T> const MappedMessageInitializer<T> MappedMessageProcessor<T>::m_messageMap;
+template<class T, std::size_t N>
+const MappedMessageInitializer<T> MappedMessageProcessor<T, N>::m_messageMap;
+
+template<class, class, std::size_t> struct MappedMessageAllocator;
+
+template<class C, std::size_t N> struct MappedMessageAllocator<void, C, N> {
+
+	typedef void value_type;
+	typedef void *pointer;
+	typedef const void *const_pointer;
+
+	template <class U>
+	struct rebind {
+		typedef MappedMessageAllocator<U, C, N> other;
+	};
+};
+
+template<class T, class C, std::size_t N>
+struct MappedMessageAllocator {
+
+	typedef T value_type;
+	typedef T *pointer;
+	typedef const T *const_pointer;
+	typedef T &reference;
+	typedef const T &const_reference;
+	typedef std::size_t size_type;
+	typedef std::ptrdiff_t difference_type;
+
+	template<class U> struct rebind {
+		typedef MappedMessageAllocator<U, C, N> other;
+	};
+
+	MappedMessageAllocator() {}
+
+	template<class U>
+	MappedMessageAllocator(const MappedMessageAllocator<U, C, N> &) {}
+
+	~MappedMessageAllocator() {}
+
+	pointer allocate(size_type n, MappedMessageAllocator<void, C, N> * = 0) {
+		return reinterpret_cast<pointer>(::operator new(n * sizeof(value_type)));
+	}
+
+	static void deallocate(pointer p, size_type) {
+		::operator delete(p);
+	}
+
+	static void construct(pointer p, const_reference val) {
+
+		const const_pointer
+		&v(std::find(MappedMessageAllocator < typename MappedMessageProcessor<C, N>::value_type,
+					 C, N >::m_data,
+					 MappedMessageAllocator < typename MappedMessageProcessor<C, N>::value_type,
+					 C, N >::m_data + N, val));
+
+		std::uninitialized_copy(v, v + 1, p);
+	}
+
+	static void destroy(pointer) {}
+
+private:
+	template<class, class, std::size_t> friend struct MappedMessageAllocator;
+	template<class> friend class MappedMessageInitializer;
+
+	static const typename MappedMessageProcessor<C, N>::value_type m_data[];
+};
+
+template<> const MappedMessageProcessor<AbstractClientV05, MP_CNT_V05>::value_type
+MappedMessageAllocator < MappedMessageProcessor<AbstractClientV05, MP_CNT_V05>::value_type,
+					   AbstractClientV05, MP_CNT_V05 >::m_data[];
+
+template<> const MappedMessageProcessor<AbstractClientV07, MP_CNT_V07>::value_type
+MappedMessageAllocator < MappedMessageProcessor<AbstractClientV07, MP_CNT_V07>::value_type,
+					   AbstractClientV07, MP_CNT_V07 >::m_data[];
+
+template<> const MappedMessageProcessor<AbstractClientV08, MP_CNT_V08>::value_type
+MappedMessageAllocator < MappedMessageProcessor<AbstractClientV08, MP_CNT_V08>::value_type,
+					   AbstractClientV08, MP_CNT_V08 >::m_data[];
+
+template<> const MappedMessageProcessor<AbstractClientV13, MP_CNT_V13>::value_type
+MappedMessageAllocator < MappedMessageProcessor<AbstractClientV13, MP_CNT_V13>::value_type,
+					   AbstractClientV13, MP_CNT_V13 >::m_data[];
 
 template<class T> class MappedMessageInitializer;
 
 template<> class _LOCAL MappedMessageInitializer<AbstractClientV05> {
 	DISALLOW_COPY_AND_ASSIGN(MappedMessageInitializer<AbstractClientV05>)
-	friend class MappedMessageProcessor<AbstractClientV05>;
+	friend class MappedMessageProcessor<AbstractClientV05, MP_CNT_V05>;
 public:
-	MappedMessageInitializer() : m_protoMap(m_data, m_data + 23u) {}
+	MappedMessageInitializer() : m_protoMap(
+			MappedMessageProcessor<AbstractClientV05, MP_CNT_V05>::allocator_type::m_data,
+			MappedMessageProcessor<AbstractClientV05, MP_CNT_V05>::allocator_type::m_data
+			+ MP_CNT_V05) {}
 	~MappedMessageInitializer() {}
 
 private:
-	static const MappedMessageProcessor<AbstractClientV05>::value_type m_data[];
-	const MappedMessageProcessor<AbstractClientV05>::PROTOMAP m_protoMap;
+	const MappedMessageProcessor<AbstractClientV05, MP_CNT_V05>::PROTOMAP m_protoMap;
 };
 
 template<> class _LOCAL MappedMessageInitializer<AbstractClientV07> {
 	DISALLOW_COPY_AND_ASSIGN(MappedMessageInitializer<AbstractClientV07>)
-	friend class MappedMessageProcessor<AbstractClientV07>;
+	friend class MappedMessageProcessor<AbstractClientV07, MP_CNT_V07>;
 public:
-	MappedMessageInitializer() : m_protoMap(m_data, m_data + 3u) {}
+	MappedMessageInitializer() : m_protoMap(
+			MappedMessageProcessor<AbstractClientV07, MP_CNT_V07>::allocator_type::m_data,
+			MappedMessageProcessor<AbstractClientV07, MP_CNT_V07>::allocator_type::m_data
+			+ MP_CNT_V07) {}
 	~MappedMessageInitializer() {}
 
 private:
-	static const MappedMessageProcessor<AbstractClientV07>::value_type m_data[];
-	const MappedMessageProcessor<AbstractClientV07>::PROTOMAP m_protoMap;
+	const MappedMessageProcessor<AbstractClientV07, MP_CNT_V07>::PROTOMAP m_protoMap;
 };
 
 template<> class _LOCAL MappedMessageInitializer<AbstractClientV08> {
 	DISALLOW_COPY_AND_ASSIGN(MappedMessageInitializer<AbstractClientV08>)
-	friend class MappedMessageProcessor<AbstractClientV08>;
+	friend class MappedMessageProcessor<AbstractClientV08, MP_CNT_V08>;
 public:
-	MappedMessageInitializer() : m_protoMap(m_data, m_data + 1u) {}
+	MappedMessageInitializer() : m_protoMap(
+			MappedMessageProcessor<AbstractClientV08, MP_CNT_V08>::allocator_type::m_data,
+			MappedMessageProcessor<AbstractClientV08, MP_CNT_V08>::allocator_type::m_data
+			+ MP_CNT_V08) {}
 	~MappedMessageInitializer() {}
 
 private:
-	static const MappedMessageProcessor<AbstractClientV08>::value_type m_data[];
-	const MappedMessageProcessor<AbstractClientV08>::PROTOMAP m_protoMap;
+	const MappedMessageProcessor<AbstractClientV08, MP_CNT_V08>::PROTOMAP m_protoMap;
 };
 
 template<> class _LOCAL MappedMessageInitializer<AbstractClientV13> {
 	DISALLOW_COPY_AND_ASSIGN(MappedMessageInitializer<AbstractClientV13>)
-	friend class MappedMessageProcessor<AbstractClientV13>;
+	friend class MappedMessageProcessor<AbstractClientV13, MP_CNT_V13>;
 public:
-	MappedMessageInitializer() : m_protoMap(m_data, m_data + 1u) {}
+	MappedMessageInitializer()
+		: m_protoMap(MappedMessageProcessor<AbstractClientV13, MP_CNT_V13>::allocator_type::m_data,
+					 MappedMessageProcessor<AbstractClientV13, MP_CNT_V13>::allocator_type::m_data
+					 + MP_CNT_V13) {}
 	~MappedMessageInitializer() {}
 
 private:
-	static const MappedMessageProcessor<AbstractClientV13>::value_type m_data[];
-	const MappedMessageProcessor<AbstractClientV13>::PROTOMAP m_protoMap;
+	const MappedMessageProcessor<AbstractClientV13, MP_CNT_V13>::PROTOMAP m_protoMap;
 };
 
 }
 
+}
+
+template<class T1, class T2, class C, std::size_t N>
+bool operator==(const NetMauMau::Client::MappedMessageAllocator<T1, C, N> &,
+				const NetMauMau::Client::MappedMessageAllocator<T2, C, N> &) {
+	return true;
+}
+
+template<class T1, class T2, class C, std::size_t N>
+bool operator!=(const NetMauMau::Client::MappedMessageAllocator<T1, C, N> &,
+				const NetMauMau::Client::MappedMessageAllocator<T2, C, N> &) {
+	return false;
 }
 
 #endif /* NETMAUMAU_ABSTRACTCLIENTV05IMPL_H */

@@ -285,7 +285,8 @@ throw(NetMauMau::Lua::Exception::LuaException) : IRuleSet() {
 	if(luafiles.empty()) throw NetMauMau::Lua::Exception::LuaException("no Lua rule files given");
 
 	for(std::vector<std::string>::const_iterator i(luafiles.begin()); i != luafiles.end(); ++i) {
-		logInfo("Loading Lua rules file \"" << *i << " " << ELLIPSIS);
+		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) <<
+				"Loading Lua rules file \"" << *i << "\" " << ELLIPSIS);
 		l.load(*i, dirChangePossible, icc, arl);
 	}
 
@@ -295,7 +296,7 @@ throw(NetMauMau::Lua::Exception::LuaException) : IRuleSet() {
 
 		std::ostringstream os;
 		os << "Your Lua rules is missing following required functions: ";
-		std::ostream_iterator<std::string> out_it(os, ", ");
+		std::ostream_iterator<std::ostringstream::__string_type> out_it(os, ", ");
 		std::copy(missing.begin(), missing.end(), out_it);
 
 		throw NetMauMau::Lua::Exception::LuaException(os.str().substr(0, os.str().length() - 2));

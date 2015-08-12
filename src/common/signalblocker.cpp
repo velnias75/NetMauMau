@@ -29,12 +29,9 @@ namespace {
 #if _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _POSIX_SOURCE || __BSD_VISIBLE
 const char *FAIL = "Failed to temporary block signals: ";
 #endif
-
-#ifdef __BSD_VISIBLE
-const int SIGNOS[] = { SIGINT, SIGTERM };
-#endif
-
 }
+
+const int NetMauMau::Common::__SIGNOS[] = { SIGINT, SIGTERM };
 
 using namespace NetMauMau::Common;
 
@@ -42,7 +39,7 @@ SignalBlocker::SignalBlocker() : m_sigSet(), m_oldSet(),
 #ifndef __BSD_VISIBLE
 	m_ok(init(0u, 0L)) {}
 #else
-	m_ok(init(2u, SIGNOS)) {}
+	m_ok(init(2u, __SIGNOS)) {}
 #endif
 
 SignalBlocker::SignalBlocker(std::size_t numsv, const int *ignsv) : m_sigSet(), m_oldSet(),

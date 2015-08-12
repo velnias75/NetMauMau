@@ -45,12 +45,17 @@
 #include "clientconnection.h"
 #include "icard.h"
 
+#define MP_CNT_V05 23u
+#define MP_CNT_V07  3u
+#define MP_CNT_V08  1u
+#define MP_CNT_V13  1u
+
 namespace NetMauMau {
 
 /// @brief Classes and functions used by clients only
 namespace Client {
 
-template<class> class MappedMessageProcessor;
+template<class, std::size_t> class MappedMessageProcessor;
 
 struct _playInternalParams;
 class AbstractClientV05Impl;
@@ -64,8 +69,8 @@ class IBase64;
 class _EXPORT AbstractClientV05 : protected IPlayerPicListener {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV05)
 
-	template<class> friend class MappedMessageProcessor;
-	template<class> friend class MappedMessageInitializer;
+	template<class, std::size_t> friend class MappedMessageProcessor;
+	template<class, class, std::size_t> friend struct MappedMessageAllocator;
 
 	friend class AbstractClientV05Impl;
 	friend class AbstractClientV07;
@@ -604,7 +609,7 @@ private:
 
 private:
 	AbstractClientV05Impl *const _pimpl;
-	const MappedMessageProcessor<AbstractClientV05> *const m_mmp;
+	const MappedMessageProcessor<AbstractClientV05, MP_CNT_V05> *const m_mmp;
 };
 
 /**
@@ -617,7 +622,7 @@ private:
 class _EXPORT AbstractClientV07 : public AbstractClientV05 {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV07)
 
-	template<class> friend class MappedMessageInitializer;
+	template<class, class, std::size_t> friend struct MappedMessageAllocator;
 
 	friend class AbstractClientV08;
 	friend class AbstractClientV09;
@@ -708,7 +713,7 @@ private:
 	PIRET performAceroundEnded(const _playInternalParams &) const;
 
 private:
-	const MappedMessageProcessor<AbstractClientV07> *const m_mmp;
+	const MappedMessageProcessor<AbstractClientV07, MP_CNT_V07> *const m_mmp;
 };
 
 /**
@@ -721,7 +726,7 @@ private:
 class _EXPORT AbstractClientV08 : public AbstractClientV07 {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV08)
 
-	template<class> friend class MappedMessageInitializer;
+	template<class, class, std::size_t> friend struct MappedMessageAllocator;
 
 	friend class AbstractClientV09;
 	friend class AbstractClientV13;
@@ -795,7 +800,7 @@ private:
 	throw(NetMauMau::Common::Exception::SocketException);
 
 private:
-	const MappedMessageProcessor<AbstractClientV08> *const m_mmp;
+	const MappedMessageProcessor<AbstractClientV08, MP_CNT_V08> *const m_mmp;
 };
 
 /**
@@ -1002,7 +1007,7 @@ protected:
  */
 class _EXPORT AbstractClientV13 : public AbstractClientV11 {
 	DISALLOW_COPY_AND_ASSIGN(AbstractClientV13)
-	template<class> friend class MappedMessageInitializer;
+	template<class, class, std::size_t> friend struct MappedMessageAllocator;
 protected:
 	/**
 	 * @brief Creates an @c AbstractClientV13 instance
@@ -1087,7 +1092,7 @@ private:
 	PIRET performDirChange(const _playInternalParams &) const;
 
 private:
-	const MappedMessageProcessor<AbstractClientV13> *const m_mmp;
+	const MappedMessageProcessor<AbstractClientV13, MP_CNT_V13> *const m_mmp;
 };
 
 /**

@@ -140,8 +140,9 @@ int main(int argc, const char **argv) {
 
 			const std::time_t etime = std::time(0L) - stime;
 
-			std::cout << std::endl << "Playing time: " << (etime / 60) << ":" << (etime % 60)
-					  << std::endl;
+			std::cout << std::setfill('0') << std::endl << "Playing time: " << std::setw(2)
+					  << (etime / 60) << ":" << std::setw(2) << (etime % 60) << std::endl
+					  << std::setfill(' ');
 
 			const Client::Connection::SCORES &scores(client.getScores());
 

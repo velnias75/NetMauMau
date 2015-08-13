@@ -176,11 +176,10 @@ struct MappedMessageAllocator {
 
 	static void construct(pointer p, const_reference val) {
 
-		const const_pointer
-		&v(std::find(MappedMessageAllocator < typename MappedMessageProcessor<C, N>::value_type,
-					 C, N >::m_data,
-					 MappedMessageAllocator < typename MappedMessageProcessor<C, N>::value_type,
-					 C, N >::m_data + N, val));
+		typedef MappedMessageAllocator<typename MappedMessageProcessor<C, N>::value_type, C, N> sal;
+
+		const const_pointer &v(sal::m_data[sal::m_nxt] != val ? std::find(&sal::m_data[sal::m_nxt],
+							   sal::m_data + N, val) : &sal::m_data[sal::m_nxt++]);
 
 		std::uninitialized_copy(v, v + 1, p);
 	}
@@ -192,7 +191,11 @@ private:
 	template<class> friend class MappedMessageInitializer;
 
 	static const typename MappedMessageProcessor<C, N>::value_type m_data[];
+	static std::size_t m_nxt;
 };
+
+template<class T, class C, std::size_t N>
+std::size_t MappedMessageAllocator<T, C, N>::m_nxt = 0u;
 
 template<> const MappedMessageProcessor<AbstractClientV05, MP_CNT_V05>::value_type
 MappedMessageAllocator < MappedMessageProcessor<AbstractClientV05, MP_CNT_V05>::value_type,

@@ -20,17 +20,88 @@
 #ifndef NETMAUMAU_IPLAYEDOUTCARDS_H
 #define NETMAUMAU_IPLAYEDOUTCARDS_H
 
+#include <limits>
 #include <vector>
 
-#include "icard.h"
+#include "cardtools.h"
 #include "smartptr.h"
 
 namespace NetMauMau {
 
+template<class>	struct CardsAllocator;
+
+template<> struct CardsAllocator<void> {
+
+	typedef void value_type;
+	typedef void *pointer;
+	typedef const void *const_pointer;
+
+	template <class U>
+	struct rebind {
+		typedef CardsAllocator<U> other;
+	};
+};
+
+template<class T>
+struct CardsAllocator {
+
+	typedef T value_type;
+	typedef T *pointer;
+	typedef const T *const_pointer;
+	typedef T &reference;
+	typedef const T &const_reference;
+	typedef std::size_t size_type;
+	typedef std::ptrdiff_t difference_type;
+
+	template<class U> struct rebind {
+		typedef CardsAllocator<U> other;
+	};
+
+	CardsAllocator() {}
+
+	template<class U> CardsAllocator(const CardsAllocator<U> &) {}
+
+	~CardsAllocator() {}
+
+	pointer allocate(size_type n, CardsAllocator<void> * = 0) {
+		return reinterpret_cast<pointer>(::operator new(n * sizeof(value_type)));
+	}
+
+	static void deallocate(pointer p, size_type) {
+		::operator delete(p);
+	}
+
+	static void construct(pointer p, const_reference val) {
+
+		const value_type &v(NetMauMau::Common::find(val, m_deck, m_deck + 32));
+
+		if(&v != m_deck + 32) {
+			std::uninitialized_copy(&v, &v + 1, p);
+		} else {
+			new(static_cast<void *>(p)) value_type(val);
+		}
+	}
+
+	static void destroy(pointer p) {
+		(static_cast<pointer>(p))->~value_type();
+	}
+
+	static size_type max_size() {
+		return std::numeric_limits<size_type>::max();
+	}
+
+private:
+	friend class Talon;
+	static const value_type m_deck[];
+};
+
+template<>
+const CardsAllocator<Common::ICardPtr>::value_type CardsAllocator<Common::ICardPtr>::m_deck[32];
+
 class IPlayedOutCards {
 	DISALLOW_COPY_AND_ASSIGN(IPlayedOutCards)
 public:
-	typedef std::vector<Common::ICardPtr> CARDS;
+	typedef std::vector<Common::ICardPtr, CardsAllocator<Common::ICardPtr> > CARDS;
 
 	virtual ~IPlayedOutCards() {}
 
@@ -40,6 +111,16 @@ protected:
 	explicit IPlayedOutCards() {}
 };
 
+}
+
+template<class T1, class T2>
+bool operator==(const NetMauMau::CardsAllocator<T1> &, const NetMauMau::CardsAllocator<T2> &) {
+	return true;
+}
+
+template<class T1, class T2>
+bool operator!=(const NetMauMau::CardsAllocator<T1> &, const NetMauMau::CardsAllocator<T2> &) {
+	return false;
 }
 
 #endif /* NETMAUMAU_IPLAYEDOUTCARDS_H */

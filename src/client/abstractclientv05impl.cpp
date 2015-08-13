@@ -19,8 +19,6 @@
 
 #include "abstractclientv05impl.h"
 
-#include <algorithm>                    // for find_if
-
 #include "logger.h"
 #include "protocol.h"                   // for PLAYCARDEND, SUSPEND
 

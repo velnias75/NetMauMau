@@ -27,7 +27,6 @@ extern "C" {
 #include <cstring>                      // for strncmp
 
 #include "logger.h"                     // for logInfo
-#include "cardtools.h"                  // for getSuitSymbols, etc
 #include "nullaceroundlistener.h"
 #include "iplayer.h"                    // for IPlayer
 #include "random_gen.h"                 // for genRandom

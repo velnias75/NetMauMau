@@ -19,7 +19,6 @@
 
 #include "talon.h"
 
-#include <algorithm>                    // for random_shuffle, for_each
 #include <cassert>                      // for assert
 #include <stdbool.h>
 
@@ -44,7 +43,13 @@ private:
 };
 #pragma GCC diagnostic pop
 
-const NetMauMau::Common::ICardPtr _DECK[32] _INIT_PRIO(501) = {
+const NetMauMau::Common::ICardPtr NULLCARD;
+
+}
+
+template<> const NetMauMau::CardsAllocator<NetMauMau::Common::ICardPtr>::value_type
+NetMauMau::CardsAllocator<NetMauMau::Common::ICardPtr>::m_deck[32] _INIT_PRIO(501) = {
+
 	NetMauMau::Common::ICardPtr(CF().create(NetMauMau::Common::ICard::DIAMONDS,
 	NetMauMau::Common::ICard::SEVEN)),
 	NetMauMau::Common::ICardPtr(CF().create(NetMauMau::Common::ICard::DIAMONDS,
@@ -114,10 +119,6 @@ const NetMauMau::Common::ICardPtr _DECK[32] _INIT_PRIO(501) = {
 	NetMauMau::Common::ICard::ACE))
 };
 
-const NetMauMau::Common::ICardPtr NULLCARD;
-
-}
-
 using namespace NetMauMau;
 
 Talon::Talon(ITalonChange *tchg, std::size_t factor) throw() : m_talonChangeListener(tchg),
@@ -133,7 +134,9 @@ Talon::CARDSTACK::container_type Talon::createCards(std::size_t factor) throw() 
 
 	if(resCards <= cards.max_size()) cards.reserve(resCards);
 
-	for(std::size_t i = 0; i < factor; ++i) cards.insert(cards.end(), _DECK, _DECK + 32);
+	for(std::size_t i = 0; i < factor; ++i) cards.insert(cards.end(),
+				CardsAllocator<Common::ICardPtr>::m_deck,
+				CardsAllocator<Common::ICardPtr>::m_deck + 32);
 
 	std::random_shuffle(cards.begin(), cards.end(), Common::genRandom<CARDS::difference_type>);
 

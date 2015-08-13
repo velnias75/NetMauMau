@@ -26,7 +26,6 @@
 
 #include <popt.h>                       // for poptFreeContext, etc
 
-#include <limits>
 #include <climits>                      // IWYU pragma: keep
 #include <cstring>                      // for memset
 #include <cstdio>                       // for snprintf

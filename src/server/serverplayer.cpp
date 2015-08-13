@@ -25,7 +25,6 @@
 #include <unistd.h>
 #endif
 
-#include "cardtools.h"                  // for getIllegalCard, etc
 #include "serverconnection.h"           // for Connection
 #include "serverplayerexception.h"      // for ServerPlayerException
 #include "signalblocker.h"

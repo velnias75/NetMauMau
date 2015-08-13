@@ -22,7 +22,7 @@
 
 #include <vector>
 
-#include "icard.h"
+#include "iplayedoutcards.h"
 
 namespace NetMauMau {
 
@@ -38,7 +38,7 @@ namespace Player {
 class IPlayer {
 	DISALLOW_COPY_AND_ASSIGN(IPlayer)
 public:
-	typedef std::vector<NetMauMau::Common::ICardPtr> CARDS;
+	typedef NetMauMau::IPlayedOutCards::CARDS CARDS;
 	typedef enum { MAUMAU, NOMATCH, SUSPEND } REASON;
 	typedef enum { LEFT = 0, RIGHT = 1, NEXT = 2 } NEIGHBOUR;
 	typedef enum { HUMAN, EASY, HARD } TYPE;

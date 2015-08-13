@@ -19,9 +19,7 @@
 
 #include "luaruleset.h"
 
-#include <algorithm>                    // for max, copy, for_each
 #include <iterator>                     // for ostream_iterator
-#include <limits>                       // for numeric_limits
 
 #include "logger.h"                     // for BasicLogger, logWarning
 #include "iplayer.h"                    // for IPlayer

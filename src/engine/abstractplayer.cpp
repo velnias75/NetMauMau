@@ -22,7 +22,6 @@
 #include <numeric>                      // for accumulate
 #include <stdbool.h>
 
-#include "cardtools.h"                  // for cardEqual, isRank
 #include "nullcardcountobserver.h"
 #include "iruleset.h"                   // for IRuleSet
 #include "random_gen.h"                 // for genRandom

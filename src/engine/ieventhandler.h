@@ -21,6 +21,7 @@
 #define NETMAUMAU_IEVENTHANDLER_H
 
 #include "engine.h"
+#include "iplayedoutcards.h"
 
 namespace NetMauMau {
 
@@ -37,7 +38,7 @@ namespace Event {
 class IEventHandler {
 	DISALLOW_COPY_AND_ASSIGN(IEventHandler)
 public:
-	typedef std::vector<Common::ICardPtr> CARDS;
+	typedef NetMauMau::IPlayedOutCards::CARDS CARDS;
 	typedef std::vector<std::string> EXCEPTIONS;
 
 	virtual ~IEventHandler() {}

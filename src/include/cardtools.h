@@ -218,7 +218,7 @@ private:
 	typedef std::binary_function<CardType, Tp, bool> bf;
 public:
 	inline typename bf::result_type operator()(const typename bf::first_argument_type &lhs,
-			typename bf::second_argument_type rhs) const {
+			const typename bf::second_argument_type &rhs) const {
 		return *lhs == *rhs;
 	}
 };
@@ -353,13 +353,12 @@ public:
  * @since 0.21.0
  */
 template<typename Tp, typename Iterator>
-typename Iterator::value_type find(Tp arg, Iterator first, Iterator last) {
+typename std::iterator_traits<Iterator>::value_type find(Tp arg, Iterator first, Iterator last) {
 
-	const Iterator &f(std::find_if(first, last,
-								   std::bind2nd(equalTo<typename Iterator::value_type, Tp>(),
-										   arg)));
+	const Iterator &f(std::find_if(first, last, std::bind2nd(equalTo < typename
+								   std::iterator_traits<Iterator>::value_type, Tp > (), arg)));
 
-	return f != last ? *f : typename Iterator::value_type();
+	return f != last ? *f : typename std::iterator_traits<Iterator>::value_type();
 }
 
 /**
@@ -376,8 +375,8 @@ typename Iterator::value_type find(Tp arg, Iterator first, Iterator last) {
  * @return the card if found @c 0L otherwise
  */
 template<typename Iterator> _DEPRECATED
-inline typename Iterator::value_type findSuit(NetMauMau::Common::ICard::SUIT suit, Iterator first,
-		Iterator last) {
+inline typename std::iterator_traits<Iterator>::value_type
+findSuit(NetMauMau::Common::ICard::SUIT suit, Iterator first, Iterator last) {
 	return NetMauMau::Common::find(suit, first, last);
 }
 
@@ -395,8 +394,8 @@ inline typename Iterator::value_type findSuit(NetMauMau::Common::ICard::SUIT sui
  * @return the card if found @c 0L otherwise
  */
 template<typename Iterator> _DEPRECATED
-inline typename Iterator::value_type findRank(NetMauMau::Common::ICard::RANK rank, Iterator first,
-		Iterator last) {
+inline typename std::iterator_traits<Iterator>::value_type
+findRank(NetMauMau::Common::ICard::RANK rank, Iterator first, Iterator last) {
 	return NetMauMau::Common::find(rank, first, last);
 }
 
@@ -415,8 +414,8 @@ inline typename Iterator::value_type findRank(NetMauMau::Common::ICard::RANK ran
  * @return the card if found @c 0L otherwise
  */
 template<typename Iterator> _DEPRECATED
-inline typename Iterator::value_type findCard(typename Iterator::value_type card, Iterator first,
-		Iterator last) {
+inline typename std::iterator_traits<Iterator>::value_type
+findCard(typename Iterator::value_type card, Iterator first, Iterator last) {
 	return NetMauMau::Common::find(card, first, last);
 }
 

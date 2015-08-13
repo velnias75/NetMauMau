@@ -27,7 +27,6 @@
 #endif
 
 #include "logger.h"                     // for BasicLogger, logError
-#include "cardtools.h"                  // for suitToSymbol
 #include "iplayer.h"                    // for IPlayer
 #include "eff_map.h"
 #include "protocol.h"                   // for JACKSUIT, MESSAGE, etc

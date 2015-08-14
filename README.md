@@ -115,6 +115,10 @@ The package is available in the AUR at [https://aur.archlinux.org/packages/netma
 
 * run `yaourt -S netmaumau-server netmaumau-client` 
 
+openSUSE
+--------
+* http://software.opensuse.org/download.html?project=home%3Aecsos&package=NetMauMau-server
+
 Windows
 -------
 [![Download NetMauMau](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/netmaumau/files/latest/download)

@@ -19,6 +19,7 @@
 
 #include "luaruleset.h"
 
+#include <algorithm>
 #include <iterator>                     // for ostream_iterator
 
 #include "logger.h"                     // for BasicLogger, logWarning

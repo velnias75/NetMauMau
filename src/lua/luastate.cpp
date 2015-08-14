@@ -27,9 +27,10 @@ extern "C" {
 #include <cstring>                      // for strncmp
 
 #include "logger.h"                     // for logInfo
-#include "nullaceroundlistener.h"
 #include "iplayer.h"                    // for IPlayer
+#include "cardtools.h"
 #include "random_gen.h"                 // for genRandom
+#include "nullaceroundlistener.h"
 #include "serverplayerexception.h"
 #include "protocol.h"                   // for CARDCOUNT
 

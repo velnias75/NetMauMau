@@ -39,7 +39,7 @@ const NetMauMau::Common::ICard::SUIT SUIT[4] = {
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-struct _isSpecialRank : std::binary_function < NetMauMau::Common::ICardPtr,
+struct _isSpecialRank : std::binary_function < NetMauMau::Player::IPlayer::CARDS::value_type,
 		NetMauMau::Common::ICard::RANK, bool > {
 
 	inline explicit _isSpecialRank(bool nineIsSuspend) : m_nineIsSuspend(nineIsSuspend) {}

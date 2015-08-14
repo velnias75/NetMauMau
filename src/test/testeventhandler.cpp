@@ -33,6 +33,7 @@
 #include "testeventhandler.h"
 
 #include "iplayer.h"
+#include "cardtools.h"
 
 namespace {
 #ifndef DISABLE_ANSI

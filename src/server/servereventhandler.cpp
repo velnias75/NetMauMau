@@ -29,6 +29,7 @@
 #include "logger.h"                     // for BasicLogger, logError
 #include "iplayer.h"                    // for IPlayer
 #include "eff_map.h"
+#include "cardtools.h"
 #include "protocol.h"                   // for JACKSUIT, MESSAGE, etc
 
 using namespace NetMauMau::Server;

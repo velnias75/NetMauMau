@@ -30,8 +30,8 @@ const NetMauMau::AI::IConditionPtr ACEROUNDCOND(new NetMauMau::AI::AceRoundCondi
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-struct cardGreater : std::binary_function < NetMauMau::Common::ICardPtr,
-		NetMauMau::Common::ICardPtr, bool > {
+struct cardGreater : std::binary_function < NetMauMau::Player::IPlayer::CARDS::value_type,
+		NetMauMau::Player::IPlayer::CARDS::value_type, bool > {
 	inline result_type operator()(const first_argument_type &x,
 								  const second_argument_type &y) const {
 		return !(x->getPoints() < y->getPoints());

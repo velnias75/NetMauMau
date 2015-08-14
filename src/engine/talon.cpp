@@ -21,6 +21,7 @@
 
 #include <cassert>                      // for assert
 #include <stdbool.h>
+#include <algorithm>
 
 #include "italonchange.h"               // for ITalonChange
 #include "random_gen.h"                 // for genRandom
@@ -32,7 +33,7 @@ typedef NetMauMau::StdCardFactory CF;
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-struct cardPusher : std::unary_function<NetMauMau::Common::ICardPtr, void> {
+struct cardPusher : std::unary_function<NetMauMau::IPlayedOutCards::CARDS::value_type, void> {
 	inline explicit cardPusher(NetMauMau::Talon::CARDSTACK &cs) : m_cardStack(cs) {}
 	inline result_type operator()(const argument_type &c) const {
 		m_cardStack.push(c);
@@ -42,8 +43,6 @@ private:
 	NetMauMau::Talon::CARDSTACK &m_cardStack;
 };
 #pragma GCC diagnostic pop
-
-const NetMauMau::Common::ICardPtr NULLCARD;
 
 }
 
@@ -230,7 +229,7 @@ Common::ICardPtr Talon::takeCard() {
 	m_talonChangeListener->talonEmpty(true);
 	emitUnderFlow();
 
-	return NULLCARD;
+	return CardsAllocator<Common::ICardPtr>::m_nullCard;
 }
 
 void Talon::emitUnderFlow() const {

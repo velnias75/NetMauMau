@@ -28,6 +28,7 @@
 #include "serverconnection.h"           // for Connection
 #include "serverplayerexception.h"      // for ServerPlayerException
 #include "signalblocker.h"
+#include "cardtools.h"
 #include "protocol.h"                   // for ACEROUND, CARDACCEPTED, etc
 
 namespace {

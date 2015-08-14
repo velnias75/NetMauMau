@@ -22,9 +22,10 @@
 #include <numeric>                      // for accumulate
 #include <stdbool.h>
 
-#include "nullcardcountobserver.h"
 #include "iruleset.h"                   // for IRuleSet
+#include "cardtools.h"
 #include "random_gen.h"                 // for genRandom
+#include "nullcardcountobserver.h"
 
 namespace {
 
@@ -32,13 +33,14 @@ const NetMauMau::IPlayedOutCards::CARDS PLAYEDOUTCARDS;
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-struct pointSum : std::binary_function<std::size_t, NetMauMau::Common::ICardPtr, std::size_t> {
+struct pointSum : std::binary_function < std::size_t, NetMauMau::Player::IPlayer::CARDS::value_type,
+		std::size_t > {
 	inline result_type operator()(first_argument_type i, const second_argument_type &c) const {
 		return i + c->getPoints();
 	}
 };
 
-struct _pushIfPossible : std::unary_function<NetMauMau::Common::ICardPtr, void> {
+struct _pushIfPossible : std::unary_function<NetMauMau::Player::IPlayer::CARDS::value_type, void> {
 
 	inline explicit _pushIfPossible(NetMauMau::Player::IPlayer::CARDS &c,
 									const NetMauMau::Common::ICardPtr &uc,

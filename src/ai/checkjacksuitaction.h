@@ -45,7 +45,7 @@ public:
 private:
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
-	struct _hasRankPath : std::unary_function<Common::ICardPtr, bool> {
+	struct _hasRankPath : std::unary_function<Player::IPlayer::CARDS::value_type, bool> {
 
 		explicit _hasRankPath(const Player::IPlayer::CARDS &c, Common::ICard::RANK r, bool nie) :
 			mCards(c), rank(r), nineIsSuspend(nie) {}

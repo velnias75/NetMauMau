@@ -171,6 +171,13 @@ Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *s
 	for(int i = 0; i < 4; ++i) m_aiPlayerImages[i] = 0L;
 
 #endif
+
+	for(int i = 0; i < 4; ++i) {
+		if(m_aiPlayerImages[i]) {
+			std::string(*m_aiPlayerImages[i]->begin(), *m_aiPlayerImages[i]->end()).
+			swap(const_cast<std::string &>(*m_aiPlayerImages[i]));
+		}
+	}
 }
 
 Connection::~Connection() {
@@ -501,6 +508,8 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 							} else {
 								std::string().swap(playerPic);
 							}
+
+							std::string(playerPic.begin(), playerPic.end()).swap(playerPic);
 
 							const NAMESOCKFD nsf(info.name, playerPic, cfd, cver);
 							const bool isOk = registerPlayer(nsf, getAIPlayers());

@@ -163,6 +163,8 @@ std::string NetMauMau::Common::suitToSymbol(ICard::SUIT suit, bool ansi, bool en
 
 #endif
 
+	std::string(d.begin(), d.end()).swap(d);
+
 	return d;
 }
 
@@ -392,6 +394,8 @@ std::string NetMauMau::Common::createCardDesc(ICard::SUIT s, ICard::RANK r, bool
 	if(ansi) d.append(ANSI_DFT);
 
 #endif
+
+	std::string(d.begin(), d.end()).swap(d);
 
 	return d;
 

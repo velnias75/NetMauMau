@@ -131,11 +131,16 @@ Talon::CARDSTACK::container_type Talon::createCards(std::size_t factor) throw() 
 	Talon::CARDSTACK::container_type cards;
 	const Talon::CARDSTACK::size_type resCards = 32 * factor;
 
+	const CardsAllocator<Common::ICardPtr>::const_pointer beg =
+		CardsAllocator<Common::ICardPtr>::m_deck;
+	const CardsAllocator<Common::ICardPtr>::const_pointer end =
+		CardsAllocator<Common::ICardPtr>::m_deck + 32;
+
 	if(resCards <= cards.max_size()) cards.reserve(resCards);
 
-	for(std::size_t i = 0; i < factor; ++i) cards.insert(cards.end(),
-				CardsAllocator<Common::ICardPtr>::m_deck,
-				CardsAllocator<Common::ICardPtr>::m_deck + 32);
+	for(std::size_t i = 0; i < factor; ++i) cards.insert(cards.end(), beg, end);
+
+	Talon::CARDSTACK::container_type(cards.begin(), cards.end()).swap(cards);
 
 	std::random_shuffle(cards.begin(), cards.end(), Common::genRandom<CARDS::difference_type>);
 

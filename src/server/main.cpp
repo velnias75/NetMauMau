@@ -591,18 +591,26 @@ int main(int argc, const char **argv) {
 
 		} catch(const Common::Exception::SocketException &e) {
 
+#if defined(ENOTSOCK)
+
 			if(inetd && e.error() == ENOTSOCK) {
 				NetMauMau::Common::Logger::_time::enabled = true;
 				NetMauMau::Common::Logger::setSilentMask(0x00);
 				NetMauMau::Common::Logger::writeSyslog(false);
 			}
 
+#endif
+
 			logError(NetMauMau::Common::Logger::time(TIMEFORMAT) << e.what());
+
+#if defined(ENOTSOCK)
 
 			if(inetd && e.error() == ENOTSOCK) {
 				logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT)
 						<< "option \'--inetd\' is meaningful only if launched from (x)inetd");
 			}
+
+#endif
 
 			con.reset();
 			return EXIT_FAILURE;

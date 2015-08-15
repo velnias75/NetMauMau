@@ -26,6 +26,7 @@
 
 #include <popt.h>                       // for poptFreeContext, etc
 
+#include <cerrno>
 #include <climits>                      // IWYU pragma: keep
 #include <cstring>                      // for memset
 #include <cstdio>                       // for snprintf
@@ -589,7 +590,20 @@ int main(int argc, const char **argv) {
 			NetMauMau::DB::SQLite::getInstance()->gameEnded(NOGAME_IDX);
 
 		} catch(const Common::Exception::SocketException &e) {
+
+			if(inetd && e.error() == ENOTSOCK) {
+				NetMauMau::Common::Logger::_time::enabled = true;
+				NetMauMau::Common::Logger::setSilentMask(0x00);
+				NetMauMau::Common::Logger::writeSyslog(false);
+			}
+
 			logError(NetMauMau::Common::Logger::time(TIMEFORMAT) << e.what());
+
+			if(inetd && e.error() == ENOTSOCK) {
+				logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT)
+						<< "option \'--inetd\' is meaningful only if launched from (x)inetd");
+			}
+
 			con.reset();
 			return EXIT_FAILURE;
 		}

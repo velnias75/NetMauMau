@@ -351,12 +351,15 @@ bool NetMauMau::Common::parseCardDesc(const std::string &desc, ICard::SUIT *suit
 	return true;
 }
 
-std::string NetMauMau::Common::createCardDesc(ICard::SUIT s, ICard::RANK v, bool ansi) {
+std::string NetMauMau::Common::createCardDesc(ICard::SUIT s, ICard::RANK r, bool ansi) {
 
 	std::string d(suitToSymbol(s, ansi));
+
+	d.reserve(d.size() + 4u + (ansi ? ANSI_DFT.size() : 0u));
+
 	d.append(1, ' ');
 
-	switch(v) {
+	switch(r) {
 	case ICard::JACK:
 		d.append(1, 'J');
 		break;
@@ -379,7 +382,7 @@ std::string NetMauMau::Common::createCardDesc(ICard::SUIT s, ICard::RANK v, bool
 	case ICard::TEN:
 	default:
 		char n[256];
-		std::snprintf(n, 255, "%u", static_cast<unsigned int>(v));
+		std::snprintf(n, 255, "%u", static_cast<unsigned int>(r));
 		d.append(n);
 		break;
 	}

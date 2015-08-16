@@ -44,16 +44,16 @@ class IAIState;
 class ICondition {
 	DISALLOW_COPY_AND_ASSIGN(ICondition)
 public:
-	virtual ~ICondition() {}
+	virtual ~ICondition() throw() {}
 
-	virtual Common::SmartPtr<IAction> operator()(const IAIState &state) const = 0;
+	virtual Common::SmartPtr<IAction> operator()(const IAIState &state) const throw() = 0;
 
 #if defined(TRACE_AI) && !defined(NDEBUG)
-	virtual std::string traceLog() const = 0;
+	virtual std::string traceLog() const throw() = 0;
 #endif
 
 protected:
-	ICondition() {}
+	ICondition() throw() {}
 };
 
 typedef Common::SmartPtr<ICondition> IConditionPtr;

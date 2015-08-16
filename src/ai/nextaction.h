@@ -29,14 +29,14 @@ namespace AI {
 class NextAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(NextAction)
 public:
-	explicit NextAction(const IConditionPtr &cond);
-	virtual ~NextAction() _CONST;
+	explicit NextAction(const IConditionPtr &cond) throw();
+	virtual ~NextAction() throw() _CONST;
 
 	virtual const IConditionPtr &perform(IAIState &state,
-										 const Player::IPlayer::CARDS &cards) const _PURE;
+										 const Player::IPlayer::CARDS &cards) const throw() _PURE;
 #if defined(TRACE_AI) && !defined(NDEBUG)
 protected:
-	inline virtual std::string traceLog() const {
+	inline virtual std::string traceLog() const throw() {
 		return std::string("NextAction (-> ").append(m_condition->traceLog()).append(1, ')');
 	}
 #endif

@@ -28,12 +28,12 @@ const NetMauMau::AI::IConditionPtr BESTSUITCOND(new NetMauMau::AI::BestSuitCondi
 
 using namespace NetMauMau::AI;
 
-SkipPlayerCondition::SkipPlayerCondition() : AbstractCondition() {}
+SkipPlayerCondition::SkipPlayerCondition() throw() : AbstractCondition() {}
 
-SkipPlayerCondition::~SkipPlayerCondition() {}
+SkipPlayerCondition::~SkipPlayerCondition() throw() {}
 
 IActionPtr SkipPlayerCondition::perform(const IAIState &state,
-										const NetMauMau::Player::IPlayer::CARDS &) const {
+										const NetMauMau::Player::IPlayer::CARDS &) const throw() {
 	return state.getPlayerCount() > 2 && (state.getRightCount() < state.getCardCount() ||
 										  state.getRightCount() < state.getLeftCount()) &&
 		   DecisionBase::count(state.getPlayedOutCards(), NetMauMau::Common::ICard::SEVEN) ?

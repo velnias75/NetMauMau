@@ -32,12 +32,14 @@ HAVELESSTHANEIGHTCOND(new NetMauMau::AI::HaveLessThanCondition<8>(
 
 using namespace NetMauMau::AI;
 
-HaveJackCondition::HaveJackCondition() : AbstractCondition() {}
+HaveJackCondition::HaveJackCondition() throw() : AbstractCondition() {}
 
-HaveJackCondition::~HaveJackCondition() {}
+HaveJackCondition::~HaveJackCondition() throw() {}
 
-IActionPtr HaveJackCondition::perform(const IAIState &state,
-									  const NetMauMau::Player::IPlayer::CARDS &cards) const {
+IActionPtr
+HaveJackCondition::perform(const IAIState &state,
+						   const NetMauMau::Player::IPlayer::CARDS &cards) const throw() {
+
 	return (state.getPlayerCards().size() == 2 &&
 			NetMauMau::Common::find(NetMauMau::Common::ICard::JACK, cards.begin(), cards.end()))
 		   ? IActionPtr(new JackSuitAction()) : createNextAction(HAVELESSTHANEIGHTCOND);

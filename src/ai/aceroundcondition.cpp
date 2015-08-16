@@ -30,12 +30,12 @@ const NetMauMau::AI::IConditionPtr RANDOMJACKCOND(new NetMauMau::AI::RandomJackC
 
 using namespace NetMauMau::AI;
 
-AceRoundCondition::AceRoundCondition() : AbstractCondition() {}
+AceRoundCondition::AceRoundCondition() throw() : AbstractCondition() {}
 
-AceRoundCondition::~AceRoundCondition() {}
+AceRoundCondition::~AceRoundCondition() throw() {}
 
 IActionPtr AceRoundCondition::perform(const IAIState &state,
-									  const NetMauMau::Player::IPlayer::CARDS &) const {
+									  const NetMauMau::Player::IPlayer::CARDS &) const throw() {
 	return state.tryAceRound() || (!state.getRuleSet()->isAceRound() &&
 								   state.getRuleSet()->isAceRoundPossible()) ?
 		   ACEROUNDACTION : createNextAction(RANDOMJACKCOND);

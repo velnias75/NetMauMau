@@ -60,11 +60,11 @@ private:
 
 using namespace NetMauMau::AI;
 
-AbstractAction::AbstractAction() : IAction(), DecisionBase() {}
+AbstractAction::AbstractAction() throw() : IAction(), DecisionBase() {}
 
-AbstractAction::~AbstractAction() {}
+AbstractAction::~AbstractAction() throw() {}
 
-const IConditionPtr &AbstractAction::operator()(IAIState &state) const {
+const IConditionPtr &AbstractAction::operator()(IAIState &state) const throw() {
 #if defined(TRACE_AI) && !defined(NDEBUG)
 
 	if(!std::getenv("NMM_NO_TRACE")) logDebug("-> " << traceLog());
@@ -79,7 +79,8 @@ const IConditionPtr &AbstractAction::operator()(IAIState &state) const {
 				   state.getPlayerCards());
 }
 
-void AbstractAction::countSuits(SUITCOUNT *suitCount, const IAIState::PLAYEDOUTCARDS &cards) {
+void AbstractAction::countSuits(SUITCOUNT *suitCount,
+								const IAIState::PLAYEDOUTCARDS &cards) throw() {
 
 	std::memset(suitCount, 0, sizeof(SUITCOUNT) * 4);
 
@@ -96,7 +97,7 @@ void AbstractAction::countSuits(SUITCOUNT *suitCount, const IAIState::PLAYEDOUTC
 }
 
 NetMauMau::Common::ICard::SUIT AbstractAction::getMaxPlayedOffSuit(const IAIState &state,
-		NetMauMau::Player::IPlayer::CARDS::difference_type *count) {
+		NetMauMau::Player::IPlayer::CARDS::difference_type *count) throw() {
 
 	AbstractAction::SUITCOUNT poSuitCount[4];
 	AbstractAction::countSuits(poSuitCount, state.getPlayedOutCards());
@@ -106,24 +107,24 @@ NetMauMau::Common::ICard::SUIT AbstractAction::getMaxPlayedOffSuit(const IAIStat
 	return poSuitCount[0].suit;
 }
 
-const NetMauMau::Common::ICard::SUIT *AbstractAction::getSuits() {
+const NetMauMau::Common::ICard::SUIT *AbstractAction::getSuits() throw() {
 	return SUIT;
 }
 
-const IConditionPtr &AbstractAction::getNullCondition() {
+const IConditionPtr &AbstractAction::getNullCondition() throw() {
 	return NULLCONDITION;
 }
 
 NetMauMau::Player::IPlayer::CARDS::iterator
 AbstractAction::pullSpecialRank(NetMauMau::Player::IPlayer::CARDS &cards,
-								NetMauMau::Common::ICard::RANK rank, bool nineIsSuspend) {
+								NetMauMau::Common::ICard::RANK rank, bool nineIsSuspend) throw() {
 	return std::partition(cards.begin(), cards.end(), std::bind2nd(_isSpecialRank(nineIsSuspend),
 						  rank));
 }
 
 NetMauMau::Common::ICardPtr AbstractAction::hasRankPath(const NetMauMau::Common::ICardPtr &uc,
 		NetMauMau::Common::ICard::SUIT suit, NetMauMau::Common::ICard::RANK rank,
-		const NetMauMau::Player::IPlayer::CARDS &c, bool nineIsSuspend) {
+		const NetMauMau::Player::IPlayer::CARDS &c, bool nineIsSuspend) throw() {
 
 	if(c.size() > 1) {
 
@@ -151,7 +152,8 @@ NetMauMau::Common::ICardPtr AbstractAction::hasRankPath(const NetMauMau::Common:
 }
 
 NetMauMau::Common::ICardPtr AbstractAction::findRankTryAvoidSuit(NetMauMau::Common::ICard::RANK r,
-		const NetMauMau::Player::IPlayer::CARDS &c, NetMauMau::Common::ICard::SUIT avoidSuit) {
+		const NetMauMau::Player::IPlayer::CARDS &c,
+		NetMauMau::Common::ICard::SUIT avoidSuit) throw() {
 
 	NetMauMau::Common::ICardPtr ret;
 	NetMauMau::Common::ICard::SUIT rndSuits[4];

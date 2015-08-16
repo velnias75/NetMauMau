@@ -27,12 +27,12 @@ const NetMauMau::AI::IConditionPtr SKIPPLAYERCOND(new NetMauMau::AI::SkipPlayerC
 
 using namespace NetMauMau::AI;
 
-ServeSevenAction::ServeSevenAction() : AbstractAction() {}
+ServeSevenAction::ServeSevenAction() throw() : AbstractAction() {}
 
-ServeSevenAction::~ServeSevenAction() {}
+ServeSevenAction::~ServeSevenAction() throw() {}
 
 const IConditionPtr &ServeSevenAction::perform(IAIState &state,
-		const NetMauMau::Player::IPlayer::CARDS &cards) const {
+		const NetMauMau::Player::IPlayer::CARDS &cards) const throw() {
 
 	const NetMauMau::Player::IPlayer::CARDS::value_type f =
 		AbstractAction::findRankTryAvoidSuit(NetMauMau::Common::ICard::SEVEN, cards,

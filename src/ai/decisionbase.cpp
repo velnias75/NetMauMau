@@ -21,12 +21,12 @@
 
 using namespace NetMauMau::AI;
 
-DecisionBase::DecisionBase() {}
+DecisionBase::DecisionBase() throw() {}
 
-DecisionBase::~DecisionBase() {}
+DecisionBase::~DecisionBase() throw() {}
 
 NetMauMau::Player::IPlayer::CARDS
-DecisionBase::removeJack(const NetMauMau::Player::IPlayer::CARDS &cards) {
+DecisionBase::removeJack(const NetMauMau::Player::IPlayer::CARDS &cards) throw() {
 
 	NetMauMau::Player::IPlayer::CARDS myCards(cards);
 

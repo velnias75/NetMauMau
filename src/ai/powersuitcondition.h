@@ -29,15 +29,16 @@ namespace AI {
 class PowerSuitCondition : public BinaryCondition {
 	DISALLOW_COPY_AND_ASSIGN(PowerSuitCondition)
 public:
-	explicit PowerSuitCondition();
-	explicit PowerSuitCondition(const IActionPtr &actTrue, const IActionPtr &actFalse);
-	virtual ~PowerSuitCondition();
+	explicit PowerSuitCondition() throw();
+	explicit PowerSuitCondition(const IActionPtr &actTrue, const IActionPtr &actFalse) throw();
+	virtual ~PowerSuitCondition() throw();
 
-	virtual IActionPtr perform(const IAIState &state, const Player::IPlayer::CARDS &cards) const;
+	virtual IActionPtr perform(const IAIState &state,
+							   const Player::IPlayer::CARDS &cards) const throw();
 
 #if defined(TRACE_AI) && !defined(NDEBUG)
 protected:
-	inline virtual std::string traceLog() const {
+	inline virtual std::string traceLog() const throw() {
 		return "PowerSuitCondition";
 	}
 #endif

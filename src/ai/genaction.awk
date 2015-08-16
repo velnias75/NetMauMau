@@ -60,11 +60,11 @@ END {
 	print "\tDISALLOW_COPY_AND_ASSIGN(" name ")";
 	print "\ttemplate<class> friend class StaticCondition;";
 	print "public:";
-	print "\t" name "(" param ");";
-	print "\tvirtual ~" name "() _CONST;\n";
+	print "\t" name "(" param ") throw();";
+	print "\tvirtual ~" name "() throw() _CONST;\n";
 
 	print "\tvirtual const IConditionPtr &perform(IAIState &state,";
-	printf "\t\tconst Player::IPlayer::CARDS &cards) const";
+	printf "\t\tconst Player::IPlayer::CARDS &cards) const throw()";
 	
 	if(constPerf == 1) {
 		printf " _CONST";
@@ -74,7 +74,7 @@ END {
 	
 	print "#if defined(TRACE_AI) && !defined(NDEBUG)";
 	print "protected:";
-	print "\tinline virtual std::string traceLog() const {";
+	print "\tinline virtual std::string traceLog() const throw() {";
 	print "\t\treturn \"" name "\";";
 	print "\t}";
 	print "#endif\n";

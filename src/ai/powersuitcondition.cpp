@@ -28,16 +28,17 @@ const NetMauMau::AI::IConditionPtr ACEROUNDCOND(new NetMauMau::AI::AceRoundCondi
 
 using namespace NetMauMau::AI;
 
-PowerSuitCondition::PowerSuitCondition() : BinaryCondition(NetMauMau::AI::IActionPtr
+PowerSuitCondition::PowerSuitCondition() throw() : BinaryCondition(NetMauMau::AI::IActionPtr
 			(new NetMauMau::AI::PowerPlayAction()), createNextAction(ACEROUNDCOND)) {}
 
-PowerSuitCondition::PowerSuitCondition(const IActionPtr &actTrue, const IActionPtr &actFalse) :
-	BinaryCondition(actTrue, actFalse) {}
+PowerSuitCondition::PowerSuitCondition(const IActionPtr &actTrue,
+									   const IActionPtr &actFalse) throw()
+	: BinaryCondition(actTrue, actFalse) {}
 
-PowerSuitCondition::~PowerSuitCondition() {}
+PowerSuitCondition::~PowerSuitCondition() throw() {}
 
 IActionPtr PowerSuitCondition::perform(const IAIState &state,
-									   const NetMauMau::Player::IPlayer::CARDS &) const {
+									   const NetMauMau::Player::IPlayer::CARDS &) const throw() {
 	return state.getPowerSuit() == NetMauMau::Common::ICard::SUIT_ILLEGAL ? getTrueAction() :
 		   getFalseAction();
 }

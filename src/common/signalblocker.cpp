@@ -35,17 +35,17 @@ const int NetMauMau::Common::__SIGNOS[] = { SIGINT, SIGTERM };
 
 using namespace NetMauMau::Common;
 
-SignalBlocker::SignalBlocker() : m_sigSet(), m_oldSet(),
+SignalBlocker::SignalBlocker() throw() : m_sigSet(), m_oldSet(),
 #ifndef __BSD_VISIBLE
 	m_ok(init(0u, 0L)) {}
 #else
 	m_ok(init(2u, __SIGNOS)) {}
 #endif
 
-SignalBlocker::SignalBlocker(std::size_t numsv, const int *ignsv) : m_sigSet(), m_oldSet(),
+SignalBlocker::SignalBlocker(std::size_t numsv, const int *ignsv) throw() : m_sigSet(), m_oldSet(),
 	m_ok(init(numsv, ignsv)) {}
 
-SignalBlocker::~SignalBlocker() {
+SignalBlocker::~SignalBlocker() throw() {
 #if _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _POSIX_SOURCE || __BSD_VISIBLE
 
 	if(m_ok) sigprocmask(SIG_SETMASK, &m_oldSet, NULL);
@@ -53,7 +53,7 @@ SignalBlocker::~SignalBlocker() {
 #endif
 }
 
-bool SignalBlocker::init(std::size_t numsv, const int *ignsv) {
+bool SignalBlocker::init(std::size_t numsv, const int *ignsv) throw() {
 #if _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _POSIX_SOURCE || __BSD_VISIBLE
 
 	if(!sigemptyset(&m_sigSet) && !sigfillset(&m_sigSet)) {

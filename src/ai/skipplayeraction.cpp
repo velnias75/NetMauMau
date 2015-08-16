@@ -29,12 +29,12 @@ const NetMauMau::AI::IConditionPtr BESTJACKCOND(new NetMauMau::AI::BestSuitCondi
 
 using namespace NetMauMau::AI;
 
-SkipPlayerAction::SkipPlayerAction() : AbstractAction() {}
+SkipPlayerAction::SkipPlayerAction() throw() : AbstractAction() {}
 
-SkipPlayerAction::~SkipPlayerAction() {}
+SkipPlayerAction::~SkipPlayerAction() throw() {}
 
 const IConditionPtr &SkipPlayerAction::perform(IAIState &state,
-		const NetMauMau::Player::IPlayer::CARDS &) const {
+		const NetMauMau::Player::IPlayer::CARDS &) const throw() {
 
 	NetMauMau::Player::IPlayer::CARDS myCards(state.getPlayerCards());
 	const NetMauMau::Common::ICard::SUIT avoid = state.getAvoidSuit();

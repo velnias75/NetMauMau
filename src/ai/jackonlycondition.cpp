@@ -34,12 +34,13 @@ const NetMauMau::AI::IConditionPtr JACKPLUSONECOND(new NetMauMau::AI::JackPlusOn
 
 using namespace NetMauMau::AI;
 
-JackOnlyCondition::JackOnlyCondition() : AbstractCondition() {}
+JackOnlyCondition::JackOnlyCondition() throw() : AbstractCondition() {}
 
-JackOnlyCondition::~JackOnlyCondition() {}
+JackOnlyCondition::~JackOnlyCondition() throw() {}
 
-IActionPtr JackOnlyCondition::perform(const IAIState &state,
-									  const NetMauMau::Player::IPlayer::CARDS &cards) const {
+IActionPtr
+JackOnlyCondition::perform(const IAIState &state,
+						   const NetMauMau::Player::IPlayer::CARDS &cards) const throw() {
 
 	const bool oneCard = cards.size() == 1u;
 

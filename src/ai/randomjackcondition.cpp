@@ -23,12 +23,12 @@
 
 using namespace NetMauMau::AI;
 
-RandomJackCondition::RandomJackCondition() : AbstractCondition() {}
+RandomJackCondition::RandomJackCondition() throw() : AbstractCondition() {}
 
-RandomJackCondition::~RandomJackCondition() {}
+RandomJackCondition::~RandomJackCondition() throw() {}
 
 IActionPtr RandomJackCondition::perform(const IAIState &state,
-										const NetMauMau::Player::IPlayer::CARDS &) const {
+										const NetMauMau::Player::IPlayer::CARDS &) const throw() {
 	return !state.isNoJack() && (!state.getCard() ||
 								 state.getPowerSuit() != NetMauMau::Common::ICard::SUIT_ILLEGAL) ?
 		   IActionPtr(new RandomJackAction()) : getNullAction();

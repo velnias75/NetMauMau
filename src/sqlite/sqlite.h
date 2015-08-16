@@ -55,7 +55,7 @@ public:
 	typedef std::vector<SCORE> SCORES;
 	typedef enum { NORM, ABS } SCORE_TYPE;
 
-	virtual ~SQLite();
+	virtual ~SQLite() throw();
 
 	static std::string getDBFilename();
 

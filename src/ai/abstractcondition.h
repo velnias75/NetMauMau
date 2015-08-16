@@ -32,18 +32,18 @@ namespace AI {
 class AbstractCondition : public ICondition, protected DecisionBase {
 	DISALLOW_COPY_AND_ASSIGN(AbstractCondition)
 public:
-	virtual ~AbstractCondition() _CONST;
+	virtual ~AbstractCondition() throw() _CONST;
 
-	virtual IActionPtr operator()(const IAIState &state) const;
+	virtual IActionPtr operator()(const IAIState &state) const throw();
 
 protected:
-	AbstractCondition();
+	AbstractCondition() throw();
 
 	virtual IActionPtr perform(const IAIState &state,
-							   const Player::IPlayer::CARDS &cards) const = 0;
+							   const Player::IPlayer::CARDS &cards) const throw() = 0;
 
-	IActionPtr createNextAction(const IConditionPtr &cond) const;
-	static const IActionPtr &getNullAction() _CONST;
+	IActionPtr createNextAction(const IConditionPtr &cond) const throw();
+	static const IActionPtr &getNullAction() throw() _CONST;
 };
 
 }

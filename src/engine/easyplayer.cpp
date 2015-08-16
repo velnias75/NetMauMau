@@ -39,7 +39,7 @@ using namespace NetMauMau::Player;
 EasyPlayer::EasyPlayer(const std::string &name, const NetMauMau::IPlayedOutCards *poc)
 	: AIPlayerBase<AI::JackOnlyCondition, AI::PowerJackCondition>(name, poc) {}
 
-EasyPlayer::~EasyPlayer() {}
+EasyPlayer::~EasyPlayer() throw() {}
 
 NetMauMau::Common::ICardPtr
 EasyPlayer::requestCard(const NetMauMau::Common::ICardPtr &uncoveredCard,
@@ -107,7 +107,7 @@ bool EasyPlayer::getAceRoundChoice() const {
 	return false;
 }
 
-IPlayer::TYPE EasyPlayer::getType() const {
+IPlayer::TYPE EasyPlayer::getType() const throw() {
 	return EASY;
 }
 

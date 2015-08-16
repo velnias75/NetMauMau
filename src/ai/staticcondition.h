@@ -30,17 +30,17 @@ template<class Action>
 class StaticCondition : public AbstractCondition {
 	DISALLOW_COPY_AND_ASSIGN(StaticCondition)
 public:
-	StaticCondition() : AbstractCondition() {}
+	StaticCondition() throw() : AbstractCondition() {}
 
-	virtual ~StaticCondition() {}
+	virtual ~StaticCondition() throw() {}
 
-	virtual IActionPtr perform(const IAIState &, const Player::IPlayer::CARDS &) const {
+	virtual IActionPtr perform(const IAIState &, const Player::IPlayer::CARDS &) const throw() {
 		return IActionPtr(new Action());
 	}
 
 #if defined(TRACE_AI) && !defined(NDEBUG)
 protected:
-	inline virtual std::string traceLog() const {
+	inline virtual std::string traceLog() const throw() {
 		return std::string("StaticCondition (-> ").append(Action().traceLog()).append(1, ')');
 	}
 #endif

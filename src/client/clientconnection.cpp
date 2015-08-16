@@ -38,6 +38,8 @@
 #include "base64.h"
 #include "errorstring.h"
 #include "ci_string.h"
+#include "tcpopt_cork.h"
+#include "tcpopt_nodelay.h"
 #include "abstractclient.h"             // for AbstractClient
 #include "capabilitiesexception.h"      // for CapabilitiesException
 #include "clientconnectionimpl.h"       // for ConnectionImpl
@@ -133,6 +135,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		if(playerPNG) {
 			hdl->beginReceivePlayerPicture(pl);
+
 			*this >> pic;
 		}
 
@@ -181,6 +184,7 @@ Connection::CAPABILITIES Connection::capabilities()
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	BLOCK_ALL_SIGNALS;
+	TCPOPT_NODELAY(getSocketFD());
 
 	Connection::CAPABILITIES caps;
 
@@ -214,6 +218,7 @@ Connection::SCORES Connection::getScores(SCORE_TYPE::_scoreType type, std::size_
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	BLOCK_ALL_SIGNALS;
+	TCPOPT_NODELAY(getSocketFD());
 
 	try {
 
@@ -321,6 +326,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 				if(base64png.empty()) {
 
+					TCPOPT_NODELAY(getSocketFD());
+
 					send(_pimpl->m_pName.c_str(), _pimpl->m_pName.length(), getSocketFD());
 
 					if(data || len) l->uploadFailed(_pimpl->m_pName);
@@ -328,6 +335,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 				} else {
 
 					try {
+
+						TCPOPT_CORK(getSocketFD());
 
 						std::ostringstream osp;
 
@@ -365,6 +374,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			} else {
 				throw Exception::ProtocolErrorException("Protocol error", getSocketFD());
 			}
+
+			TCPOPT_NODELAY(getSocketFD());
 
 			char status[2];
 

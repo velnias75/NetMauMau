@@ -35,9 +35,9 @@ class EasyPlayer : public AIPlayerBase<AI::JackOnlyCondition, AI::PowerJackCondi
 	DISALLOW_COPY_AND_ASSIGN(EasyPlayer)
 public:
 	explicit EasyPlayer(const std::string &name, const IPlayedOutCards *poc);
-	virtual ~EasyPlayer();
+	virtual ~EasyPlayer() throw();
 
-	virtual TYPE getType() const _CONST;
+	virtual TYPE getType() const throw() _CONST;
 
 	virtual Common::ICardPtr requestCard(const Common::ICardPtr &uncoveredCard,
 										 const Common::ICard::SUIT *jackSuit,

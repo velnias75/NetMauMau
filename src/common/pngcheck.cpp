@@ -21,7 +21,7 @@
 
 #include "mimemagic.h"                  // for MimeMagic
 
-bool NetMauMau::Common::checkPNG(const unsigned char *pngData, std::size_t pngDataLen) {
+bool NetMauMau::Common::checkPNG(const unsigned char *pngData, std::size_t pngDataLen) throw() {
 	return MimeMagic::getInstance()->checkMime(pngData, pngDataLen, "image/png");
 }
 

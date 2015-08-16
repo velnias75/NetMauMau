@@ -26,6 +26,7 @@
 #endif
 
 #include "base64.h"
+#include "tcpopt_nodelay.h"
 #include "abstractclientv05impl.h"      // for AbstractClientV05Impl
 #include "logger.h"                     // for BasicLogger, logDebug
 #include "capabilitiesexception.h"      // for CapabilitiesException
@@ -269,6 +270,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 void AbstractClientV05::play(timeval *timeout)
 throw(NetMauMau::Common::Exception::SocketException) {
+
+	TCPOPT_NODELAY(_pimpl->m_connection.getSocketFD());
 
 	_pimpl->m_connection.setTimeout(timeout);
 	_pimpl->m_connection.connect(this, _pimpl->m_pngData.data(), _pimpl->m_pngData.size());

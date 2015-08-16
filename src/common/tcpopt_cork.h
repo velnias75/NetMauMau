@@ -17,52 +17,29 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_COMMON_SELECT_H
-#define NETMAUMAU_COMMON_SELECT_H
+#ifndef NETMAUMAU_COMMON_TCPOPT_CORK_H
+#define NETMAUMAU_COMMON_TCPOPT_CORK_H
 
-#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"
-#endif
+#include "tcpopt_base.h"
 
-#ifndef _WIN32
-#include <sys/select.h>
-#endif
-
-#include "smartsingleton.h"
-
-#include "socketexception.h"
+#define TCPOPT_CORK(fd) const NetMauMau::Common::TCPOptCork __tcp__opt__cork__(fd); \
+	_UNUSED(__tcp__opt__cork__)
 
 namespace NetMauMau {
 
 namespace Common {
 
-class _EXPORT Select : public SmartSingleton<Select> {
-	DISALLOW_COPY_AND_ASSIGN(Select)
-	friend class SmartSingleton<Select>;
+class _EXPORT TCPOptCork : public TCPOptBase {
+	DISALLOW_COPY_AND_ASSIGN(TCPOptCork)
 public:
-	virtual ~Select() throw();
-
-	// cppcheck-suppress functionStatic
-	int perform(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
-				struct timeval *timeout, bool blockall = false) const throw();
-
-private:
-	Select() throw(Exception::SocketException);
-
-private:
-#ifdef HAVE_PSELECT
-	mutable sigset_t m_sigSet;
-#else
-	int m_sigSet;
-#endif
+	TCPOptCork(SOCKET fd) throw();
+	virtual ~TCPOptCork() throw();
 };
 
 }
 
 }
 
-extern template class NetMauMau::Common::SmartSingleton<NetMauMau::Common::Select>;
-
-#endif /* NETMAUMAU_COMMON_SELECT_H */
+#endif /* NETMAUMAU_COMMON_TCPOPT_CORK_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

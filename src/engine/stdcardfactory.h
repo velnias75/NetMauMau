@@ -28,23 +28,24 @@ namespace NetMauMau {
 
 class StdCardFactory : public ICardFactory {
 public:
-	explicit StdCardFactory();
-	virtual ~StdCardFactory() _CONST;
+	explicit StdCardFactory() throw();
+	virtual ~StdCardFactory() throw() _CONST;
 
-	virtual _NOUNUSED Common::ICard *create(Common::ICard::SUIT s, Common::ICard::RANK r) const;
+	virtual _NOUNUSED Common::ICard *create(Common::ICard::SUIT s,
+											Common::ICard::RANK r) const throw();
 
 private:
 	class StdCard : public Common::ICard {
 		DISALLOW_COPY_AND_ASSIGN(StdCard)
 	public:
-		explicit StdCard(ICard::SUIT f, ICard::RANK r);
-		virtual ~StdCard();
+		explicit StdCard(ICard::SUIT f, ICard::RANK r) throw();
+		virtual ~StdCard() throw();
 
-		virtual SUIT getSuit() const _PURE;
-		virtual RANK getRank() const _PURE;
-		virtual std::size_t getPoints() const _PURE;
+		virtual SUIT getSuit() const throw() _PURE;
+		virtual RANK getRank() const throw() _PURE;
+		virtual std::size_t getPoints() const throw() _PURE;
 
-		virtual const std::string &description(bool ansi) const _CONST;
+		virtual const std::string &description(bool ansi) const throw() _CONST;
 
 	private:
 		const ICard::SUIT m_suit;

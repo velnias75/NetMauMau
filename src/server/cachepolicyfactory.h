@@ -46,7 +46,7 @@ public:
 
 	typedef Common::SmartPtr<ICachePolicy> ICachePolicyPtr;
 
-	virtual ~CachePolicyFactory();
+	virtual ~CachePolicyFactory() throw();
 
 	// cppcheck-suppress functionStatic
 	const ICachePolicyPtr createNoCachePolicy() const;

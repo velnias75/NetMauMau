@@ -23,7 +23,7 @@ using namespace NetMauMau::RuleSet;
 
 NullRuleSet::NullRuleSet() : IRuleSet(), Common::SmartSingleton<NullRuleSet>() {}
 
-NullRuleSet::~NullRuleSet() {}
+NullRuleSet::~NullRuleSet() throw() {}
 
 bool NullRuleSet::isNull() const throw() {
 	return true;

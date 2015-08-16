@@ -147,13 +147,13 @@ Talon::CARDSTACK::container_type Talon::createCards(std::size_t factor) throw() 
 	return cards;
 }
 
-Talon::~Talon() {}
+Talon::~Talon() throw() {}
 
 #ifndef __clang__
 #pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
 #pragma GCC diagnostic push
 #endif
-const IPlayedOutCards::CARDS &Talon::getCards() const {
+const IPlayedOutCards::CARDS &Talon::getCards() const throw() {
 
 	if(m_uncoveredDirty) {
 
@@ -177,7 +177,7 @@ const IPlayedOutCards::CARDS &Talon::getCards() const {
 #pragma GCC diagnostic pop
 #endif
 
-Common::ICardPtr Talon::uncoverCard() {
+Common::ICardPtr Talon::uncoverCard() throw() {
 	m_uncovered.push(top());
 	pop();
 	m_uncoveredDirty = true;
@@ -185,7 +185,7 @@ Common::ICardPtr Talon::uncoverCard() {
 	return m_uncovered.top();
 }
 
-void Talon::playCard(const Common::ICardPtr &card) {
+void Talon::playCard(const Common::ICardPtr &card) throw() {
 
 	assert(!(card == Common::ICard::RANK_ILLEGAL || card == Common::ICard::SUIT_ILLEGAL));
 
@@ -194,7 +194,7 @@ void Talon::playCard(const Common::ICardPtr &card) {
 	m_talonChangeListener->talonEmpty(false);
 }
 
-Common::ICardPtr Talon::takeCard() {
+Common::ICardPtr Talon::takeCard() throw() {
 
 	if(empty()) {
 
@@ -237,7 +237,7 @@ Common::ICardPtr Talon::takeCard() {
 	return CardsAllocator<Common::ICardPtr>::m_nullCard;
 }
 
-void Talon::emitUnderFlow() const {
+void Talon::emitUnderFlow() const throw() {
 	if(m_talonChangeListener && thresholdReached()) m_talonChangeListener->underflow();
 }
 

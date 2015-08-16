@@ -29,12 +29,12 @@ const NetMauMau::AI::IConditionPtr CHECKSEVENCOND(new NetMauMau::AI::CheckSevenC
 
 using namespace NetMauMau::AI;
 
-JackPlusOneCondition::JackPlusOneCondition() : AbstractCondition() {}
+JackPlusOneCondition::JackPlusOneCondition() throw() : AbstractCondition() {}
 
-JackPlusOneCondition::~JackPlusOneCondition() {}
+JackPlusOneCondition::~JackPlusOneCondition() throw() {}
 
 IActionPtr JackPlusOneCondition::perform(const IAIState &/*state*/,
-		const NetMauMau::Player::IPlayer::CARDS &cards) const {
+		const NetMauMau::Player::IPlayer::CARDS &cards) const throw() {
 
 	return (/*state.getPlayerCount() > 2 &&*/ cards.size() == 2u &&
 			!NetMauMau::Common::find(NetMauMau::Common::ICard::SEVEN, cards.begin(), cards.end())

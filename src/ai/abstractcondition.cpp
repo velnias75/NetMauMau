@@ -31,19 +31,19 @@ const NetMauMau::AI::IActionPtr NULLACTION;
 
 using namespace NetMauMau::AI;
 
-AbstractCondition::AbstractCondition() : ICondition(), DecisionBase() {}
+AbstractCondition::AbstractCondition() throw() : ICondition(), DecisionBase() {}
 
-AbstractCondition::~AbstractCondition() {}
+AbstractCondition::~AbstractCondition() throw() {}
 
-IActionPtr AbstractCondition::createNextAction(const IConditionPtr &cond) const {
+IActionPtr AbstractCondition::createNextAction(const IConditionPtr &cond) const throw() {
 	return IActionPtr(new NextAction(cond));
 }
 
-const IActionPtr &AbstractCondition::getNullAction() {
+const IActionPtr &AbstractCondition::getNullAction() throw() {
 	return NULLACTION;
 }
 
-IActionPtr AbstractCondition::operator()(const IAIState &state) const {
+IActionPtr AbstractCondition::operator()(const IAIState &state) const throw() {
 
 #if defined(TRACE_AI) && !defined(NDEBUG)
 

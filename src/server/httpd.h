@@ -45,7 +45,7 @@ public:
 			NetMauMau::Common::IObserver<Connection>::what_type::second_type > IMAGES;
 	typedef std::map<std::string, NetMauMau::Common::ci_string> REQHEADERMAP;
 
-	virtual ~Httpd();
+	virtual ~Httpd() throw();
 
 	virtual void setSource(const Common::IObserver<Connection>::source_type *s);
 	virtual void setSource(const Common::IObserver<Engine>::source_type *s);

@@ -35,9 +35,9 @@ class HardPlayer : public AIPlayerBase<AI::JackOnlyCondition, AI::PowerJackCondi
 	DISALLOW_COPY_AND_ASSIGN(HardPlayer)
 public:
 	explicit HardPlayer(const std::string &name, const IPlayedOutCards *poc);
-	virtual ~HardPlayer();
+	virtual ~HardPlayer() throw();
 
-	virtual TYPE getType() const _CONST;
+	virtual TYPE getType() const throw() _CONST;
 };
 
 }

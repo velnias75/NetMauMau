@@ -29,17 +29,17 @@ namespace AI {
 class BinaryCondition : public AbstractCondition {
 	DISALLOW_COPY_AND_ASSIGN(BinaryCondition)
 public:
-	virtual ~BinaryCondition() {}
+	virtual ~BinaryCondition() throw() {}
 
 protected:
-	BinaryCondition(const IActionPtr &actTrue, const IActionPtr &actFalse) : AbstractCondition(),
-		m_trueAction(actTrue), m_falseAction(actFalse) {}
+	BinaryCondition(const IActionPtr &actTrue, const IActionPtr &actFalse) throw()
+		: AbstractCondition(), m_trueAction(actTrue), m_falseAction(actFalse) {}
 
-	inline IActionPtr getTrueAction() const {
+	inline IActionPtr getTrueAction() const throw() {
 		return m_trueAction;
 	}
 
-	inline IActionPtr getFalseAction() const {
+	inline IActionPtr getFalseAction() const throw() {
 		return m_falseAction;
 	}
 

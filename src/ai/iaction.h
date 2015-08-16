@@ -44,16 +44,16 @@ class IAIState;
 class IAction {
 	DISALLOW_COPY_AND_ASSIGN(IAction)
 public:
-	virtual ~IAction() {}
+	virtual ~IAction() throw() {}
 
-	virtual const Common::SmartPtr<ICondition> &operator()(IAIState &state) const = 0;
+	virtual const Common::SmartPtr<ICondition> &operator()(IAIState &state) const throw() = 0;
 
 #if defined(TRACE_AI) && !defined(NDEBUG)
-	virtual std::string traceLog() const = 0;
+	virtual std::string traceLog() const throw() = 0;
 #endif
 
 protected:
-	IAction() {}
+	IAction() throw() {}
 };
 
 typedef Common::SmartPtr<IAction> IActionPtr;

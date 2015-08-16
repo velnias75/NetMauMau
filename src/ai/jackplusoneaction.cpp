@@ -26,12 +26,12 @@ const NetMauMau::AI::IConditionPtr CHECKSEVENCOND(new NetMauMau::AI::CheckSevenC
 
 using namespace NetMauMau::AI;
 
-JackPlusOneAction::JackPlusOneAction() : AbstractAction() {}
+JackPlusOneAction::JackPlusOneAction() throw() : AbstractAction() {}
 
-JackPlusOneAction::~JackPlusOneAction() {}
+JackPlusOneAction::~JackPlusOneAction() throw() {}
 
 const IConditionPtr &JackPlusOneAction::perform(IAIState &state,
-		const NetMauMau::Player::IPlayer::CARDS &cards) const {
+		const NetMauMau::Player::IPlayer::CARDS &cards) const throw() {
 
 	NetMauMau::Player::IPlayer::CARDS myCards(cards);
 

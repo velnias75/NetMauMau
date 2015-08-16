@@ -17,52 +17,40 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NETMAUMAU_COMMON_SELECT_H
-#define NETMAUMAU_COMMON_SELECT_H
-
 #if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
 #include "config.h"
 #endif
 
-#ifndef _WIN32
-#include <sys/select.h>
+#ifdef HAVE_NETINET_IN_H
+#include <sys/types.h>
+#include <netinet/tcp.h>
 #endif
 
-#include "smartsingleton.h"
+#include "tcpopt_cork.h"
 
-#include "socketexception.h"
-
-namespace NetMauMau {
-
-namespace Common {
-
-class _EXPORT Select : public SmartSingleton<Select> {
-	DISALLOW_COPY_AND_ASSIGN(Select)
-	friend class SmartSingleton<Select>;
-public:
-	virtual ~Select() throw();
-
-	// cppcheck-suppress functionStatic
-	int perform(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
-				struct timeval *timeout, bool blockall = false) const throw();
-
-private:
-	Select() throw(Exception::SocketException);
-
-private:
-#ifdef HAVE_PSELECT
-	mutable sigset_t m_sigSet;
+#if defined(TCP_NOPUSH)
+#define ONAME TCP_NOPUSH
+#define ONSTR "TCP_NOPUSH"
+#elif defined(TCP_CORK)
+#define ONAME TCP_CORK
+#define ONSTR "TCP_CORK"
 #else
-	int m_sigSet;
+#undef ONAME
+#undef ONSTR
 #endif
-};
 
-}
+#if !(defined(ONAME) && defined(ONSTR)) && defined(HAVE_NETINET_IN_H)
+#warning "Neither TCP_NOPUSH nor TCP_CORK is available on this platform"
+#endif
 
-}
+using namespace NetMauMau::Common;
 
-extern template class NetMauMau::Common::SmartSingleton<NetMauMau::Common::Select>;
+#if defined(ONAME) && defined(ONSTR)
+TCPOptCork::TCPOptCork(SOCKET fd) throw() : TCPOptBase(fd, ONAME, ONSTR) {}
+#else
+TCPOptCork::TCPOptCork(SOCKET) throw() : TCPOptBase(INVALID_SOCKET, 0, "") {}
+#endif
 
-#endif /* NETMAUMAU_COMMON_SELECT_H */
+TCPOptCork::~TCPOptCork() throw() {}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

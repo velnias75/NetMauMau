@@ -23,13 +23,13 @@ using namespace NetMauMau::Server;
 
 GameContext::GameContext(NetMauMau::Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange,
 						 NetMauMau::Common::CARDCONFIG &cc, bool aiPlayer, const AINAMES &aiNames,
-						 char aceRound) : m_aiPlayer(aiPlayer), m_aiNames(aiNames),
+						 char aceRound)  throw() : m_aiPlayer(aiPlayer), m_aiNames(aiNames),
 	m_engineCtx(evtHdlr, dirChange, aiDelay, !aiPlayer || !getAINames().empty(), aceRound, cc),
 	m_cardConfig(cc) {}
 
-GameContext::GameContext(const GameContext &o) : m_aiPlayer(o.m_aiPlayer), m_aiNames(o.m_aiNames),
-	m_engineCtx(o.m_engineCtx), m_cardConfig(o.m_cardConfig) {}
+GameContext::GameContext(const GameContext &o)  throw() : m_aiPlayer(o.m_aiPlayer),
+	m_aiNames(o.m_aiNames), m_engineCtx(o.m_engineCtx), m_cardConfig(o.m_cardConfig) {}
 
-GameContext::~GameContext() {}
+GameContext::~GameContext() throw() {}
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

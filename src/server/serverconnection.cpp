@@ -44,6 +44,8 @@
 #include "pngcheck.h"                   // for checkPNG
 #include "select.h"
 #include "signalblocker.h"
+#include "tcpopt_cork.h"
+#include "tcpopt_nodelay.h"
 #include "protocol.h"                   // for BYE, VM_ADDPIC
 
 #ifndef TEMP_FAILURE_RETRY
@@ -176,6 +178,7 @@ Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *s
 Connection::~Connection() {
 
 	BLOCK_ALL_SIGNALS;
+	TCPOPT_NODELAY(getSocketFD());
 
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
@@ -183,7 +186,12 @@ Connection::~Connection() {
 		NetMauMau::DB::SQLite::getInstance()->logOutPlayer(*i);
 
 		try {
+
+			const NetMauMau::Common::TCPOptNodelay nd(i->sockfd);
+			_UNUSED(nd);
+
 			send(NetMauMau::Common::Protocol::V15::BYE.c_str(), 3, i->sockfd);
+
 		} catch(const NetMauMau::Common::Exception::SocketException &) {}
 	}
 
@@ -325,7 +333,12 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 				std::ostringstream os;
 				os << HELLO << ' ' << MIN_MAJOR << '.' << MIN_MINOR;
 
-				send(os.str().c_str(), os.str().length(), cfd);
+				{
+					const NetMauMau::Common::TCPOptNodelay hello_nd(cfd);
+					_UNUSED(hello_nd);
+
+					send(os.str().c_str(), os.str().length(), cfd);
+				}
 
 				const std::string rHello = read(cfd);
 
@@ -359,13 +372,25 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						}
 
 						try {
+
+							const NetMauMau::Common::TCPOptCork np_cork(cver >= 4 ? cfd :
+									INVALID_SOCKET);
+							_UNUSED(np_cork);
+
 							namePic = read(cfd, cver >= 4 ? MAXPICBYTES : 1024);
+
 						} catch(const NetMauMau::Common::Exception::SocketException &e) {
 
 							if(e.error() == ENOMEM) {
 
 								try {
+
+									const NetMauMau::Common::TCPOptCork npnm_cork(cver >= 4 ? cfd :
+											INVALID_SOCKET);
+									_UNUSED(npnm_cork);
+
 									namePic = read(cfd);
+
 								} catch(const NetMauMau::Common::Exception::SocketException &) {
 									throw;
 								}
@@ -406,22 +431,30 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 										std::size_t v = pl - std::min(pl, left);
 										playerPic = namePic.substr(namePic.rfind('\0') + 1);
 
-										while(v) {
+										{
+											const NetMauMau::Common::TCPOptCork nprm_cork(cfd);
+											_UNUSED(nprm_cork);
 
-											const std::string::size_type resPp =
-												playerPic.size() + v;
+											while(v) {
 
-											if(resPp <= playerPic.max_size()) {
-												playerPic.reserve(resPp);
+												const std::string::size_type resPp =
+													playerPic.size() + v;
+
+												if(resPp <= playerPic.max_size()) {
+													playerPic.reserve(resPp);
+												}
+
+												playerPic.append(read(cfd, v));
+												v = pl - playerPic.length();
 											}
-
-											playerPic.append(read(cfd, v));
-											v = pl - playerPic.length();
 										}
 
 										char cc[20] = "0\0";
 
 										if(pl > MAXPICBYTES || !isPNG(playerPic)) {
+
+											const NetMauMau::Common::TCPOptNodelay imgtl_nd(cfd);
+											_UNUSED(imgtl_nd);
 
 											std::string().swap(playerPic);
 
@@ -439,6 +472,9 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 											}
 
 										} else {
+
+											const NetMauMau::Common::TCPOptNodelay imgsucc_nd(cfd);
+											_UNUSED(imgsucc_nd);
 #ifndef _WIN32
 											std::snprintf(cc, 20, "%zu", playerPic.length());
 #else
@@ -466,10 +502,12 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 									} catch(const std::bad_alloc &) {
 
+										const NetMauMau::Common::TCPOptNodelay imgba_nd(cfd);
+										_UNUSED(imgba_nd);
+
 										std::string().swap(playerPic);
 
 										char cc[20] = "0\0";
-
 										send(cc, 20, cfd);
 
 										if(recv(cc, 2, cfd)) {
@@ -483,10 +521,12 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 								} catch(const NetMauMau::Common::Exception::SocketException &e) {
 
+									const NetMauMau::Common::TCPOptNodelay imgfail_nd(cfd);
+									_UNUSED(imgfail_nd);
+
 									std::string().swap(playerPic);
 
 									char cc[20] = "0\0";
-
 									send(cc, 20, cfd);
 
 									if(recv(cc, 2, cfd)) {
@@ -507,6 +547,9 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 							if(isOk) notify(std::make_pair(info.name, playerPic));
 
+							const NetMauMau::Common::TCPOptNodelay okin_nd(cfd);
+							_UNUSED(okin_nd);
+
 							send(isOk ? "OK" : "IN", 2, cfd);
 
 							if(isOk) {
@@ -519,6 +562,9 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 							}
 
 						} else {
+
+							const NetMauMau::Common::TCPOptNodelay stat_nd(cfd);
+							_UNUSED(stat_nd);
 
 							try {
 								send(cver <= maxver ? (gameRunning ? "GR" : "NO") : "VM", 2, cfd);
@@ -534,6 +580,9 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 						}
 
 					} else {
+
+						const NetMauMau::Common::TCPOptNodelay fail_nd(cfd);
+						_UNUSED(fail_nd);
 
 						logDebug(NetMauMau::Common::Logger::time(TIMEFORMAT) << "HELLO failed: "
 								 << rHello.substr(0, std::strlen(PACKAGE_NAME)) << " != " << HELLO);
@@ -628,6 +677,9 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 				} else if(rHello.substr(0, NetMauMau::Common::Protocol::V15::SCORES.length()) ==
 						  NetMauMau::Common::Protocol::V15::SCORES) {
 
+					const NetMauMau::Common::TCPOptNodelay sc_nd(cfd);
+					_UNUSED(sc_nd);
+
 					const NetMauMau::DB::SQLite::SCORE_TYPE st =
 						rHello.substr(7, rHello.find(' ', 7) - 7) == "ABS" ?
 						NetMauMau::DB::SQLite::ABS : NetMauMau::DB::SQLite::NORM;
@@ -655,6 +707,9 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 					accepted = SCORES;
 
 				} else {
+
+					const NetMauMau::Common::TCPOptNodelay cap_nd(cfd);
+					_UNUSED(cap_nd);
 
 					std::ostringstream oscap;
 
@@ -714,8 +769,13 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	BLOCK_ALL_SIGNALS;
 
+	TCPOPT_NODELAY(getSocketFD());
+
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
 			i != getRegisteredPlayers().end(); ++i) {
+
+		const NetMauMau::Common::TCPOptNodelay nd(i->sockfd);
+		_UNUSED(nd);
 
 		const Connection::PLAYERINFOS::const_iterator &f(std::find_if(getPlayers().begin(),
 				getPlayers().end(), std::bind2nd(_isPlayer(), i->name)));
@@ -760,18 +820,23 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 void Connection::clearPlayerPictures() const {
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
-			i != getRegisteredPlayers().end(); ++i) {
-		std::string().swap(i->playerPic);
-	}
+			i != getRegisteredPlayers().end(); ++i) std::string().swap(i->playerPic);
 }
 
 Connection &Connection::operator<<(const std::string &msg)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	BLOCK_ALL_SIGNALS;
+	TCPOPT_NODELAY(getSocketFD());
 
 	for(PLAYERINFOS::const_iterator i(getRegisteredPlayers().begin());
-			i != getRegisteredPlayers().end(); ++i) write(i->sockfd, msg);
+			i != getRegisteredPlayers().end(); ++i) {
+
+		const NetMauMau::Common::TCPOptNodelay nd(i->sockfd);
+		_UNUSED(nd);
+
+		write(i->sockfd, msg);
+	}
 
 	return *this;
 }

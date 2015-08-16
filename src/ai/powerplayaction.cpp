@@ -36,12 +36,12 @@ const NetMauMau::AI::IConditionPtr ACEROUNDCOND(new NetMauMau::AI::AceRoundCondi
 
 using namespace NetMauMau::AI;
 
-PowerPlayAction::PowerPlayAction(bool set) : AbstractAction(), m_set(set) {}
+PowerPlayAction::PowerPlayAction(bool set) throw() : AbstractAction(), m_set(set) {}
 
-PowerPlayAction::~PowerPlayAction() {}
+PowerPlayAction::~PowerPlayAction() throw() {}
 
 const IConditionPtr &PowerPlayAction::perform(IAIState &state,
-		const NetMauMau::Player::IPlayer::CARDS &cards) const {
+		const NetMauMau::Player::IPlayer::CARDS &cards) const throw() {
 
 	if(m_set) {
 

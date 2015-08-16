@@ -22,33 +22,33 @@
 
 using namespace NetMauMau;
 
-StdCardFactory::StdCardFactory() : ICardFactory() {}
+StdCardFactory::StdCardFactory() throw() : ICardFactory() {}
 
-StdCardFactory::~StdCardFactory() {}
+StdCardFactory::~StdCardFactory() throw() {}
 
-Common::ICard *StdCardFactory::create(Common::ICard::SUIT s, Common::ICard::RANK r) const {
-	return new StdCard(s, r);
+Common::ICard *StdCardFactory::create(Common::ICard::SUIT s, Common::ICard::RANK r) const throw() {
+	return new(std::nothrow) StdCard(s, r);
 }
 
-StdCardFactory::StdCard::StdCard(ICard::SUIT s, ICard::RANK r) : ICard(), m_suit(s), m_rank(r),
-	m_desc(Common::createCardDesc(m_suit, m_rank, false)),
+StdCardFactory::StdCard::StdCard(ICard::SUIT s, ICard::RANK r) throw() : ICard(), m_suit(s),
+	m_rank(r), m_desc(Common::createCardDesc(m_suit, m_rank, false)),
 	m_descAnsi(Common::createCardDesc(m_suit, m_rank, true)) {}
 
-StdCardFactory::StdCard::~StdCard() {}
+StdCardFactory::StdCard::~StdCard() throw() {}
 
-Common::ICard::SUIT StdCardFactory::StdCard::getSuit() const {
+Common::ICard::SUIT StdCardFactory::StdCard::getSuit() const throw() {
 	return m_suit;
 }
 
-Common::ICard::RANK StdCardFactory::StdCard::getRank() const {
+Common::ICard::RANK StdCardFactory::StdCard::getRank() const throw() {
 	return m_rank;
 }
 
-std::size_t StdCardFactory::StdCard::getPoints() const {
+std::size_t StdCardFactory::StdCard::getPoints() const throw() {
 	return Common::getCardPoints(m_rank);
 }
 
-const std::string &StdCardFactory::StdCard::description(bool ansi) const {
+const std::string &StdCardFactory::StdCard::description(bool ansi) const throw() {
 	return !ansi ? m_desc : m_descAnsi;
 }
 

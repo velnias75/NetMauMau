@@ -31,13 +31,13 @@ namespace AI {
 class CheckJackSuitAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(CheckJackSuitAction)
 public:
-	CheckJackSuitAction();
-	virtual ~CheckJackSuitAction() _CONST;
+	CheckJackSuitAction() throw();
+	virtual ~CheckJackSuitAction() throw() _CONST;
 
 	virtual const IConditionPtr &perform(IAIState &state,
-										 const Player::IPlayer::CARDS &cards) const;
+										 const Player::IPlayer::CARDS &cards) const throw();
 #if defined(TRACE_AI) && !defined(NDEBUG)
-	inline virtual std::string traceLog() const {
+	inline virtual std::string traceLog() const throw() {
 		return "CheckJackSuitAction";
 	}
 #endif
@@ -47,10 +47,10 @@ private:
 #pragma GCC diagnostic push
 	struct _hasRankPath : std::unary_function<Player::IPlayer::CARDS::value_type, bool> {
 
-		explicit _hasRankPath(const Player::IPlayer::CARDS &c, Common::ICard::RANK r, bool nie) :
-			mCards(c), rank(r), nineIsSuspend(nie) {}
+		explicit _hasRankPath(const Player::IPlayer::CARDS &c, Common::ICard::RANK r,
+							  bool nie)  throw() : mCards(c), rank(r), nineIsSuspend(nie) {}
 
-		result_type operator()(const argument_type &c) const;
+		result_type operator()(const argument_type &c) const throw();
 
 	private:
 		const Player::IPlayer::CARDS &mCards;
@@ -59,7 +59,7 @@ private:
 	};
 #pragma GCC diagnostic pop
 
-	static Common::ICard::SUIT findJackChoice(const IAIState &state);
+	static Common::ICard::SUIT findJackChoice(const IAIState &state) throw();
 };
 
 }

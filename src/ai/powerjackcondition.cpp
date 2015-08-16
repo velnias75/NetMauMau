@@ -29,12 +29,13 @@ const NetMauMau::AI::IActionPtr BESTJACKACTION(new NetMauMau::AI::BestJackAction
 
 using namespace NetMauMau::AI;
 
-PowerJackCondition::PowerJackCondition() : AbstractCondition() {}
+PowerJackCondition::PowerJackCondition() throw() : AbstractCondition() {}
 
-PowerJackCondition::~PowerJackCondition() {}
+PowerJackCondition::~PowerJackCondition() throw() {}
 
-IActionPtr PowerJackCondition::perform(const IAIState &,
-									   const NetMauMau::Player::IPlayer::CARDS &cards) const {
+IActionPtr
+PowerJackCondition::perform(const IAIState &,
+							const NetMauMau::Player::IPlayer::CARDS &cards) const throw() {
 	return cards.size() == 1u ? POWERJACKACTION : BESTJACKACTION;
 }
 

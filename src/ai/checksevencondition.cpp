@@ -29,12 +29,12 @@ const NetMauMau::AI::IConditionPtr SKIPPLAYERACTION(new NetMauMau::AI::SkipPlaye
 
 using namespace NetMauMau::AI;
 
-CheckSevenCondition::CheckSevenCondition() : AbstractCondition() {}
+CheckSevenCondition::CheckSevenCondition() throw() : AbstractCondition() {}
 
-CheckSevenCondition::~CheckSevenCondition() {}
+CheckSevenCondition::~CheckSevenCondition() throw() {}
 
 IActionPtr CheckSevenCondition::perform(const IAIState &state,
-										const NetMauMau::Player::IPlayer::CARDS &) const {
+										const NetMauMau::Player::IPlayer::CARDS &) const throw() {
 	return state.getPlayedOutCards().size() > (4 * state.getTalonFactor()) &&
 		   state.getUncoveredCard() == NetMauMau::Common::ICard::SEVEN ?
 		   SERVESEVENACTION : createNextAction(SKIPPLAYERACTION);

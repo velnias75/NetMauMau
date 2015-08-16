@@ -28,9 +28,9 @@ HardPlayer::HardPlayer(const std::string &name, const NetMauMau::IPlayedOutCards
 	: AIPlayerBase < NetMauMau::AI::JackOnlyCondition,
 	  NetMauMau::AI::PowerJackCondition > (name, poc) {}
 
-HardPlayer::~HardPlayer() {}
+HardPlayer::~HardPlayer() throw() {}
 
-IPlayer::TYPE HardPlayer::getType() const {
+IPlayer::TYPE HardPlayer::getType() const throw() {
 	return HARD;
 }
 

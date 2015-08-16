@@ -29,7 +29,7 @@ using namespace NetMauMau::AI;
 
 CheckJackSuitAction::_hasRankPath::result_type
 CheckJackSuitAction::_hasRankPath::operator()
-(const CheckJackSuitAction::_hasRankPath::argument_type &c) const {
+(const CheckJackSuitAction::_hasRankPath::argument_type &c) const throw() {
 
 	bool hrp = false;
 
@@ -44,12 +44,12 @@ CheckJackSuitAction::_hasRankPath::operator()
 	return hrp;
 }
 
-CheckJackSuitAction::CheckJackSuitAction() : AbstractAction() {}
+CheckJackSuitAction::CheckJackSuitAction() throw() : AbstractAction() {}
 
-CheckJackSuitAction::~CheckJackSuitAction() {}
+CheckJackSuitAction::~CheckJackSuitAction() throw() {}
 
 const IConditionPtr &CheckJackSuitAction::perform(IAIState &state,
-		const NetMauMau::Player::IPlayer::CARDS &) const {
+		const NetMauMau::Player::IPlayer::CARDS &) const throw() {
 
 	NetMauMau::Common::ICard::SUIT s = CheckJackSuitAction::findJackChoice(state);
 
@@ -67,7 +67,7 @@ const IConditionPtr &CheckJackSuitAction::perform(IAIState &state,
 	return AbstractAction::getNullCondition();
 }
 
-NetMauMau::Common::ICard::SUIT CheckJackSuitAction::findJackChoice(const IAIState &state) {
+NetMauMau::Common::ICard::SUIT CheckJackSuitAction::findJackChoice(const IAIState &state) throw() {
 
 	if(state.getCard()) {
 		assert(state.getCard() != NetMauMau::Common::ICard::SUIT_ILLEGAL);

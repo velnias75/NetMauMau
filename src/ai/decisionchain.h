@@ -47,15 +47,16 @@ template<class RootCond, bool Jack = false>
 class DecisionChain {
 	DISALLOW_COPY_AND_ASSIGN(DecisionChain)
 public:
-	DecisionChain(IAIState &state, const IActionPtr &trueAct, const IActionPtr &falseAct) :
+	DecisionChain(IAIState &state, const IActionPtr &trueAct, const IActionPtr &falseAct) throw() :
 		m_rootCondition(IConditionPtr(new RootCond(trueAct, falseAct))), m_state(state) {}
 
-	explicit DecisionChain(IAIState &state) : m_rootCondition(IConditionPtr(new RootCond())),
-		m_state(state) {}
+	explicit DecisionChain(IAIState &state) throw()
+		: m_rootCondition(IConditionPtr(new RootCond())), m_state(state) {}
 
-	~DecisionChain() {}
+	~DecisionChain() throw() {}
 
-	Common::ICardPtr getCard(const Player::IPlayer::CARDS &possCards, bool noJack = false) const;
+	Common::ICardPtr getCard(const Player::IPlayer::CARDS &possCards,
+							 bool noJack = false) const throw();
 
 private:
 	const IConditionPtr m_rootCondition;
@@ -64,7 +65,7 @@ private:
 
 template<class RootCond, bool Jack>
 Common::ICardPtr DecisionChain<RootCond, Jack>::getCard(const Player::IPlayer::CARDS &possCards,
-		bool noJack) const {
+		bool noJack) const throw() {
 
 	IConditionPtr cond(m_rootCondition);
 	IActionPtr act;

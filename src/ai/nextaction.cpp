@@ -21,12 +21,12 @@
 
 using namespace NetMauMau::AI;
 
-NextAction::NextAction(const IConditionPtr &cond) : AbstractAction(), m_condition(cond) {}
+NextAction::NextAction(const IConditionPtr &cond) throw() : AbstractAction(), m_condition(cond) {}
 
-NextAction::~NextAction() {}
+NextAction::~NextAction() throw() {}
 
 const IConditionPtr &NextAction::perform(IAIState &,
-		const NetMauMau::Player::IPlayer::CARDS &) const {
+		const NetMauMau::Player::IPlayer::CARDS &) const throw() {
 	return m_condition;
 }
 

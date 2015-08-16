@@ -22,7 +22,7 @@
 using namespace NetMauMau::Common;
 
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
-MimeMagic::MimeMagic() : Common::SmartSingleton<MimeMagic>(),
+MimeMagic::MimeMagic() throw() : Common::SmartSingleton<MimeMagic>(),
 	m_magic(magic_open(MAGIC_MIME_TYPE | MAGIC_NO_CHECK_ASCII |
 					   MAGIC_NO_CHECK_COMPRESS | MAGIC_NO_CHECK_ELF |
 					   MAGIC_NO_CHECK_FORTRAN | MAGIC_NO_CHECK_TAR |
@@ -31,10 +31,10 @@ MimeMagic::MimeMagic() : Common::SmartSingleton<MimeMagic>(),
 	if(m_magic && magic_load(m_magic, NULL)) m_magic = NULL;
 }
 #else
-MimeMagic::MimeMagic() : Common::SmartSingleton<MimeMagic>() {}
+MimeMagic::MimeMagic() throw() : Common::SmartSingleton<MimeMagic>() {}
 #endif
 
-MimeMagic::~MimeMagic() {
+MimeMagic::~MimeMagic() throw() {
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
 
 	if(m_magic) magic_close(m_magic);
@@ -42,7 +42,7 @@ MimeMagic::~MimeMagic() {
 #endif
 }
 
-std::string MimeMagic::getMime(const unsigned char *data, std::size_t dataLen) const {
+std::string MimeMagic::getMime(const unsigned char *data, std::size_t dataLen) const throw() {
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
 	const char *m = m_magic ? magic_buffer(m_magic, data, dataLen) : 0L;
 	return m ? std::string(m) : std::string();
@@ -52,7 +52,7 @@ std::string MimeMagic::getMime(const unsigned char *data, std::size_t dataLen) c
 }
 
 bool MimeMagic::checkMime(const unsigned char *data, std::size_t dataLen,
-						  const char *mime) const {
+						  const char *mime) const throw() {
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
 	const std::string &m(getMime(data, dataLen));
 	return m.empty() ? true : m == mime;

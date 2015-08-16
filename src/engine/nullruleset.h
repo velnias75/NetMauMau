@@ -31,7 +31,7 @@ class NullRuleSet : public IRuleSet, public Common::SmartSingleton<NullRuleSet> 
 	DISALLOW_COPY_AND_ASSIGN(NullRuleSet)
 	friend class Common::SmartSingleton<NullRuleSet>;
 public:
-	virtual ~NullRuleSet();
+	virtual ~NullRuleSet() throw();
 
 	virtual bool isNull() const throw() _CONST;
 

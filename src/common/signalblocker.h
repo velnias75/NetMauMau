@@ -24,13 +24,13 @@
 
 #include "linkercontrol.h"
 
-#define BLOCK_ALL_SIGNALS NetMauMau::Common::SignalBlocker __signal__blocker; \
+#define BLOCK_ALL_SIGNALS const NetMauMau::Common::SignalBlocker __signal__blocker; \
 	_UNUSED(__signal__blocker)
 
-#define BLOCK_MOST_SIGNALS NetMauMau::Common::SignalBlocker __signal__blocker(2u, \
+#define BLOCK_MOST_SIGNALS const NetMauMau::Common::SignalBlocker __signal__blocker(2u, \
 		NetMauMau::Common::__SIGNOS); _UNUSED(__signal__blocker)
 
-#define BLOCK_SIGNALS(n, p) NetMauMau::Common::SignalBlocker __signal__blocker((n), (p)); \
+#define BLOCK_SIGNALS(n, p) const NetMauMau::Common::SignalBlocker __signal__blocker((n), (p)); \
 	_UNUSED(__signal__blocker)
 
 namespace NetMauMau {
@@ -42,13 +42,13 @@ _EXPORT extern const int __SIGNOS[];
 class _EXPORT SignalBlocker {
 	DISALLOW_COPY_AND_ASSIGN(SignalBlocker)
 public:
-	SignalBlocker();
-	SignalBlocker(std::size_t numsv, const int *ignsv);
-	~SignalBlocker();
+	SignalBlocker() throw();
+	SignalBlocker(std::size_t numsv, const int *ignsv) throw();
+	~SignalBlocker() throw();
 
 private:
 	// cppcheck-suppress functionStatic
-	bool init(std::size_t numsv, const int *ignsv);
+	bool init(std::size_t numsv, const int *ignsv) throw();
 
 private:
 #if _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _POSIX_SOURCE || __BSD_VISIBLE

@@ -561,7 +561,7 @@ Httpd::Httpd() : Common::IObserver<Game>(), Common::IObserver<Engine>(),
 	freeaddrinfo(ai);
 }
 
-Httpd::~Httpd() {
+Httpd::~Httpd() throw() {
 	if(m_daemon) MHD_stop_daemon(m_daemon);
 }
 

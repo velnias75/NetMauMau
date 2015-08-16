@@ -46,11 +46,11 @@ int Player::getSerial() const {
 	return m_sockfd;
 }
 
-bool Player::isAIPlayer() const {
+bool Player::isAIPlayer() const throw() {
 	return false;
 }
 
-Player::IPlayer::TYPE Player::getType() const {
+Player::IPlayer::TYPE Player::getType() const throw() {
 	return HUMAN;
 }
 

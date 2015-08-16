@@ -59,9 +59,9 @@ public:
 
 	virtual std::string getName() const = 0;
 	virtual int  getSerial() const = 0;
-	virtual bool isAIPlayer() const = 0;
+	virtual bool isAIPlayer() const throw() = 0;
 	virtual bool isAlive() const = 0;
-	virtual TYPE getType() const = 0;
+	virtual TYPE getType() const throw() = 0;
 
 	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset) _NONNULL_ALL = 0;
 	virtual void setEngineContext(const EngineContext *engineCtx) = 0;

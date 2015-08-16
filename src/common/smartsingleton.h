@@ -20,6 +20,8 @@
 #ifndef NETMAUMAU_COMMON_SMARTSINGLETON_H
 #define NETMAUMAU_COMMON_SMARTSINGLETON_H
 
+#include <new>
+
 #include "linkercontrol.h"
 #include "smartptr.h"
 
@@ -39,16 +41,16 @@ class SmartSingleton {
 public:
 	typedef Common::SmartPtr<T> smartptr_type;
 
-	virtual ~SmartSingleton() {}
+	virtual ~SmartSingleton() throw() {}
 
-	_EXPORT_SS static const smartptr_type &getInstance();
+	_EXPORT_SS static const smartptr_type &getInstance() throw();
 
-	static inline typename smartptr_type::element_pointer getInstancePtr() {
+	static inline typename smartptr_type::element_pointer getInstancePtr() throw() {
 		return getInstance();
 	}
 
 protected:
-	SmartSingleton() {}
+	SmartSingleton() throw() {}
 
 private:
 	static smartptr_type m_instance;
@@ -58,9 +60,10 @@ template<class T>
 typename SmartSingleton<T>::smartptr_type SmartSingleton<T>::m_instance;
 
 template<class T>
-const typename SmartSingleton<T>::smartptr_type &SmartSingleton<T>::getInstance() {
+const typename SmartSingleton<T>::smartptr_type &SmartSingleton<T>::getInstance() throw() {
 
-	if(!m_instance) m_instance = smartptr_type(new typename smartptr_type::element_type());
+	if(!m_instance) m_instance =
+			smartptr_type(new(std::nothrow) typename smartptr_type::element_type());
 
 	return m_instance;
 }

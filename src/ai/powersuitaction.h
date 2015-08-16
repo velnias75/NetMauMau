@@ -29,15 +29,15 @@ namespace AI {
 class PowerSuitAction : public AbstractAction {
 	DISALLOW_COPY_AND_ASSIGN(PowerSuitAction)
 public:
-	PowerSuitAction();
-	explicit PowerSuitAction(Common::ICard::SUIT suit);
-	virtual ~PowerSuitAction() _CONST;
+	PowerSuitAction() throw();
+	explicit PowerSuitAction(Common::ICard::SUIT suit) throw();
+	virtual ~PowerSuitAction() throw() _CONST;
 
 	virtual const IConditionPtr &perform(IAIState &state,
-										 const Player::IPlayer::CARDS &cards) const;
+										 const Player::IPlayer::CARDS &cards) const throw();
 #if defined(TRACE_AI) && !defined(NDEBUG)
 protected:
-	inline virtual std::string traceLog() const {
+	inline virtual std::string traceLog() const throw() {
 		return "PowerSuitAction";
 	}
 #endif

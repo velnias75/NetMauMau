@@ -50,7 +50,7 @@ Select::Select() throw(Exception::SocketException) : SmartSingleton<Select>(), m
 #endif
 }
 
-Select::~Select() {}
+Select::~Select() throw() {}
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic push

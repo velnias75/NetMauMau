@@ -32,11 +32,11 @@ class IAIState {
 public:
 	typedef IPlayedOutCards::CARDS PLAYEDOUTCARDS;
 
-	virtual ~IAIState() {}
+	virtual ~IAIState() throw() {}
 
 	virtual std::string getName() const = 0;
-	virtual void setCard(const Common::ICardPtr &card = NetMauMau::Common::ICardPtr()) = 0;
-	virtual Common::ICardPtr getCard() const = 0;
+	virtual void setCard(const Common::ICardPtr &card = NetMauMau::Common::ICardPtr()) throw() = 0;
+	virtual Common::ICardPtr getCard() const throw() = 0;
 	virtual std::size_t getCardCount() const = 0;
 	virtual Common::ICardPtr getPlayedCard() const = 0;
 	virtual bool isCardPossible() const = 0;
@@ -68,7 +68,7 @@ public:
 	virtual void setPowerPlay(bool b) = 0;
 
 protected:
-	IAIState() {}
+	IAIState() throw() {}
 };
 
 }

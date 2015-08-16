@@ -41,7 +41,7 @@ TCHAR buffer[1024];
 }
 #endif
 
-const char *NetMauMau::Common::errorString() {
+const char *NetMauMau::Common::errorString() throw() {
 #ifndef _WIN32
 	return errorString(errno);
 #else
@@ -49,7 +49,7 @@ const char *NetMauMau::Common::errorString() {
 #endif
 }
 
-const char *NetMauMau::Common::errorString(int errnum, bool gai) {
+const char *NetMauMau::Common::errorString(int errnum, bool gai) throw() {
 #ifndef _WIN32
 #ifdef HAVE_NETDB_H
 	return !gai ? std::strerror(errnum) : gai_strerror(errnum);

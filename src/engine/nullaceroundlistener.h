@@ -30,7 +30,7 @@ class NullAceRoundListener : public IAceRoundListener,
 	DISALLOW_COPY_AND_ASSIGN(NullAceRoundListener)
 	friend class Common::SmartSingleton<NullAceRoundListener>;
 public:
-	virtual ~NullAceRoundListener();
+	virtual ~NullAceRoundListener() throw();
 
 	virtual bool isNull() const throw() _CONST;
 

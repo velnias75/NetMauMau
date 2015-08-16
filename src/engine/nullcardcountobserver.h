@@ -30,7 +30,7 @@ class NullCardCountObserver : public ICardCountObserver,
 	DISALLOW_COPY_AND_ASSIGN(NullCardCountObserver)
 	friend class Common::SmartSingleton<NullCardCountObserver>;
 public:
-	virtual ~NullCardCountObserver();
+	virtual ~NullCardCountObserver() throw();
 
 	virtual bool isNull() const throw() _CONST;
 

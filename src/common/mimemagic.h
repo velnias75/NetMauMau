@@ -55,17 +55,17 @@ class _EXPORT_MIMEMAGIC MimeMagic : public Common::SmartSingleton<MimeMagic> {
 	DISALLOW_COPY_AND_ASSIGN(MimeMagic)
 	friend class Common::SmartSingleton<MimeMagic>;
 public:
-	virtual ~MimeMagic();
+	virtual ~MimeMagic() throw();
 
 	// cppcheck-suppress functionStatic
-	std::string getMime(const unsigned char *data, std::size_t dataLen) const;
+	std::string getMime(const unsigned char *data, std::size_t dataLen) const throw();
 
 	// cppcheck-suppress functionStatic
 	bool checkMime(const unsigned char *data, std::size_t dataLen,
-				   const char *mime) const _MM_CONST;
+				   const char *mime) const throw() _MM_CONST;
 
 private:
-	explicit MimeMagic();
+	explicit MimeMagic() throw();
 
 private:
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)

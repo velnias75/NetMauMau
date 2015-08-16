@@ -33,7 +33,7 @@ namespace NetMauMau _EXPORT {
 
 namespace Common _EXPORT {
 
-std::string getModulePath(MPATH mpath, const char *name, const char *ext) {
+std::string getModulePath(MPATH mpath, const char *name, const char *ext) throw() {
 
 #ifdef _WIN32
 

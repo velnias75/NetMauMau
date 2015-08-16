@@ -31,18 +31,18 @@ CHECKJACKSUITACTION(new NetMauMau::AI::StaticCondition<NetMauMau::AI::CheckJackS
 
 using namespace NetMauMau::AI;
 
-BestJackAction::BestJackAction() : AbstractAction() {}
+BestJackAction::BestJackAction() throw() : AbstractAction() {}
 
-BestJackAction::~BestJackAction() {}
+BestJackAction::~BestJackAction() throw() {}
 
 const IConditionPtr &BestJackAction::perform(IAIState &state,
-		const NetMauMau::Player::IPlayer::CARDS &) const {
+		const NetMauMau::Player::IPlayer::CARDS &) const throw() {
 
 	state.setCard();
 	const NetMauMau::Common::ICardPtr bc(DecisionChain<CheckSevenCondition, true>(state).
 										 getCard(NetMauMau::Player::IPlayer::CARDS(), true));
-	state.setCard((bc && bc != NetMauMau::Common::ICard::SUIT_ILLEGAL)
-				  ? bc : NetMauMau::Common::ICardPtr());
+	state.setCard((bc && bc != NetMauMau::Common::ICard::SUIT_ILLEGAL) ?
+				  bc : NetMauMau::Common::ICardPtr());
 
 	return CHECKJACKSUITACTION;
 }

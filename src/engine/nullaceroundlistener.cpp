@@ -24,7 +24,7 @@ using namespace NetMauMau;
 NullAceRoundListener::NullAceRoundListener() : IAceRoundListener(),
 	Common::SmartSingleton<NullAceRoundListener>() {}
 
-NullAceRoundListener::~NullAceRoundListener() {}
+NullAceRoundListener::~NullAceRoundListener() throw() {}
 
 bool NullAceRoundListener::isNull() const throw() {
 	return true;

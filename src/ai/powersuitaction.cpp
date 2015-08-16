@@ -29,16 +29,16 @@ const NetMauMau::AI::IConditionPtr POWERSUITCOND(new NetMauMau::AI::PowerSuitCon
 
 using namespace NetMauMau::AI;
 
-PowerSuitAction::PowerSuitAction() : AbstractAction(), m_determineSuit(true),
+PowerSuitAction::PowerSuitAction() throw() : AbstractAction(), m_determineSuit(true),
 	m_suit(NetMauMau::Common::ICard::SUIT_ILLEGAL) {}
 
-PowerSuitAction::PowerSuitAction(NetMauMau::Common::ICard::SUIT suit) : AbstractAction(),
+PowerSuitAction::PowerSuitAction(NetMauMau::Common::ICard::SUIT suit) throw() : AbstractAction(),
 	m_determineSuit(false), m_suit(suit) {}
 
-PowerSuitAction::~PowerSuitAction() {}
+PowerSuitAction::~PowerSuitAction() throw() {}
 
 const IConditionPtr &PowerSuitAction::perform(IAIState &state,
-		const NetMauMau::Player::IPlayer::CARDS &) const {
+		const NetMauMau::Player::IPlayer::CARDS &) const throw() {
 
 	if(m_determineSuit) {
 

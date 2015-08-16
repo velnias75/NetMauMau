@@ -23,7 +23,7 @@ using namespace NetMauMau::DB;
 
 SQLite::SQLite() : Common::SmartSingleton<SQLite>(), _pimpl(new SQLiteImpl()) {}
 
-SQLite::~SQLite() {
+SQLite::~SQLite() throw() {
 	delete _pimpl;
 }
 

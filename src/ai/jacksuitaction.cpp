@@ -33,12 +33,12 @@ HAVELESSTHANEIGHTCOND(new NetMauMau::AI::HaveLessThanCondition<8>(
 
 using namespace NetMauMau::AI;
 
-JackSuitAction::JackSuitAction() : AbstractAction() {}
+JackSuitAction::JackSuitAction() throw() : AbstractAction() {}
 
-JackSuitAction::~JackSuitAction() {}
+JackSuitAction::~JackSuitAction() throw() {}
 
 const IConditionPtr &JackSuitAction::perform(IAIState &state,
-		const NetMauMau::Player::IPlayer::CARDS &) const {
+		const NetMauMau::Player::IPlayer::CARDS &) const throw() {
 
 	const NetMauMau::Player::IPlayer::CARDS::const_iterator
 	&f(std::find_if(state.getPlayerCards().begin(), state.getPlayerCards().end(),

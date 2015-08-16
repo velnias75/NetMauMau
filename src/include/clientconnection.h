@@ -44,6 +44,7 @@ class Connection : public Common::AbstractConnection {
 	friend class ConnectionImpl;
 public:
 	using AbstractConnection::connect;
+	using AbstractSocket::getSocketFD;
 
 	/**
 	 * @brief the score

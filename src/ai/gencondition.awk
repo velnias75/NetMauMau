@@ -54,14 +54,14 @@ END {
 	print "class " name " : public AbstractCondition {";
 	print "\tDISALLOW_COPY_AND_ASSIGN(" name ")";
 	print "public:";
-	print "\t" name "();";
-	print "\tvirtual ~" name "() _CONST;\n";
+	print "\t" name "() throw();";
+	print "\tvirtual ~" name "() throw() _CONST;\n";
 
-	print "\tvirtual IActionPtr perform(const IAIState &state, const Player::IPlayer::CARDS &cards) const;\n";
+	print "\tvirtual IActionPtr perform(const IAIState &state, const Player::IPlayer::CARDS &cards) const throw();\n";
 
 	print "#if defined(TRACE_AI) && !defined(NDEBUG)";
 	print "protected:";
-	print "\tinline virtual std::string traceLog() const {";
+	print "\tinline virtual std::string traceLog() const throw() {";
 	print "\t\treturn \"" name "\";";
 	print "\t}";
 	print "#endif";

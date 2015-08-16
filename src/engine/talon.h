@@ -35,37 +35,37 @@ public:
 	typedef std::stack<CARDS::value_type, CARDS> CARDSTACK;
 
 	explicit Talon(ITalonChange *tchg, std::size_t factor) throw();
-	virtual ~Talon();
+	virtual ~Talon() throw();
 
-	inline bool thresholdReached(std::size_t t = 1) const {
+	inline bool thresholdReached(std::size_t t = 1) const throw() {
 		return empty() && m_uncovered.size() <= t;
 	}
 
-	inline bool empty() const {
+	inline bool empty() const throw() {
 		return m_cardStack.empty();
 	}
 
-	inline Common::ICardPtr top() const {
+	inline Common::ICardPtr top() const throw() {
 		return m_cardStack.top();
 	}
 
-	inline void pop() {
+	inline void pop() throw() {
 		m_cardStack.pop();
 	}
 
-	virtual const CARDS &getCards() const;
+	virtual const CARDS &getCards() const throw();
 
-	Common::ICardPtr uncoverCard();
+	Common::ICardPtr uncoverCard() throw();
 
-	inline Common::ICardPtr getUncoveredCard() const {
+	inline Common::ICardPtr getUncoveredCard() const throw() {
 		return m_uncovered.top();
 	}
 
-	void playCard(const Common::ICardPtr &card);
+	void playCard(const Common::ICardPtr &card) throw();
 
-	Common::ICardPtr takeCard();
+	Common::ICardPtr takeCard() throw();
 
-	inline void pushBackCard(const Common::ICardPtr &c) {
+	inline void pushBackCard(const Common::ICardPtr &c) throw() {
 		m_cardStack.push(c);
 	}
 
@@ -74,7 +74,7 @@ public:
 private:
 	static CARDSTACK::container_type createCards(std::size_t factor) throw();
 
-	void emitUnderFlow() const;
+	void emitUnderFlow() const throw();
 
 private:
 	ITalonChange *m_talonChangeListener;

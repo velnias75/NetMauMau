@@ -23,12 +23,12 @@
 
 using namespace NetMauMau::AI;
 
-PlayJackAction::PlayJackAction() : AbstractAction() {}
+PlayJackAction::PlayJackAction() throw() : AbstractAction() {}
 
-PlayJackAction::~PlayJackAction() {}
+PlayJackAction::~PlayJackAction() throw() {}
 
 const IConditionPtr &PlayJackAction::perform(IAIState &state,
-		const NetMauMau::Player::IPlayer::CARDS &) const {
+		const NetMauMau::Player::IPlayer::CARDS &) const throw() {
 
 	const NetMauMau::Common::ICardPtr firstCard(*state.getPlayerCards().begin());
 

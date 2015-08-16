@@ -178,6 +178,7 @@ AC_CHECK_HEADERS([poll.h])
 AC_CHECK_HEADERS([netdb.h])
 AC_CHECK_HEADERS([syslog.h])
 AC_CHECK_HEADERS([sys/socket.h])
+AC_CHECK_HEADERS([netinet/in.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AX_CXX_GCC_ABI_DEMANGLE

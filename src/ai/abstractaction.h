@@ -32,24 +32,24 @@ namespace AI {
 class AbstractAction : public IAction, protected DecisionBase {
 	DISALLOW_COPY_AND_ASSIGN(AbstractAction)
 public:
-	virtual ~AbstractAction() _CONST;
+	virtual ~AbstractAction() throw() _CONST;
 
-	virtual const IConditionPtr &operator()(IAIState &state) const;
+	virtual const IConditionPtr &operator()(IAIState &state) const throw();
 
 	virtual const IConditionPtr &perform(IAIState &state,
-										 const Player::IPlayer::CARDS &cards) const = 0;
+										 const Player::IPlayer::CARDS &cards) const throw() = 0;
 protected:
 	typedef struct _suitCount {
 
-		inline _suitCount() : suit(Common::ICard::SUIT_ILLEGAL), count(0) {}
-		inline _suitCount(Common::ICard::SUIT s, Player::IPlayer::CARDS::difference_type c)
+		inline _suitCount() throw() : suit(Common::ICard::SUIT_ILLEGAL), count(0) {}
+		inline _suitCount(Common::ICard::SUIT s, Player::IPlayer::CARDS::difference_type c) throw()
 			: suit(s), count(c) {}
 
-		inline bool operator<(const _suitCount &sc) const {
+		inline bool operator<(const _suitCount &sc) const throw() {
 			return !(count < sc.count);
 		}
 
-		inline bool operator==(Common::ICard::SUIT s) const {
+		inline bool operator==(Common::ICard::SUIT s) const throw() {
 			return suit == s;
 		}
 
@@ -58,45 +58,45 @@ protected:
 
 	} SUITCOUNT;
 
-	AbstractAction();
+	AbstractAction() throw();
 
 	static Common::ICardPtr hasRankPath(const Common::ICardPtr &uc, Common::ICard::SUIT s,
 										Common::ICard::RANK r, const Player::IPlayer::CARDS &mCards,
-										bool nineIsSuspend);
+										bool nineIsSuspend) throw();
 
-	static const Common::ICard::SUIT *getSuits() _CONST;
+	static const Common::ICard::SUIT *getSuits() throw() _CONST;
 
-	static void countSuits(SUITCOUNT *suitCount, const IAIState::PLAYEDOUTCARDS &myCards);
+	static void countSuits(SUITCOUNT *suitCount, const IAIState::PLAYEDOUTCARDS &myCards) throw();
 
 	static Common::ICard::SUIT getMaxPlayedOffSuit(const IAIState &state,
-			Player::IPlayer::CARDS::difference_type *count = 0L);
+			Player::IPlayer::CARDS::difference_type *count = 0L) throw();
 
 	static Common::ICardPtr findRankTryAvoidSuit(NetMauMau::Common::ICard::RANK rank,
-			const NetMauMau::Player::IPlayer::CARDS &cards, Common::ICard::SUIT avoidSuit);
+			const NetMauMau::Player::IPlayer::CARDS &cards, Common::ICard::SUIT avoidSuit) throw();
 
-	static const IConditionPtr &getNullCondition() _CONST;
+	static const IConditionPtr &getNullCondition() throw() _CONST;
 
 	template<class Iterator, class Tp>
-	inline static Iterator pull(Iterator first, Iterator last, Tp arg) {
+	inline static Iterator pull(Iterator first, Iterator last, Tp arg) throw() {
 		return std::partition(first, last, std::bind2nd(Common::equalTo
 							  <typename Iterator::value_type, Tp>(), arg));
 	}
 
 	template<class Iterator, class Tp>
-	inline static Iterator stable_pull(Iterator first, Iterator last, Tp arg) {
+	inline static Iterator stable_pull(Iterator first, Iterator last, Tp arg) throw() {
 		return std::stable_partition(first, last, std::bind2nd(Common::equalTo
 									 <typename Iterator::value_type, Tp>(), arg));
 	}
 
 	template<class Iterator, class Tp>
-	inline static Iterator push(Iterator first, Iterator last, Tp arg) {
+	inline static Iterator push(Iterator first, Iterator last, Tp arg) throw() {
 		return std::stable_partition(first, last, std::not1(std::bind2nd(Common::equalTo
 									 <typename Iterator::value_type, Tp>(), arg)));
 	}
 
 private:
 	static Player::IPlayer::CARDS::iterator pullSpecialRank(Player::IPlayer::CARDS &cards,
-			Common::ICard::RANK rank, bool nineIsSuspend);
+			Common::ICard::RANK rank, bool nineIsSuspend) throw();
 };
 
 }

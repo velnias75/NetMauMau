@@ -33,60 +33,60 @@ public:
 	typedef RootCond root_condition_type;
 	typedef RootCondJack jack_root_condition_type;
 
-	virtual ~BaseAIPlayer();
+	virtual ~BaseAIPlayer() throw();
 
 protected:
 	typedef Common::SmartPtr<DecisionChain<root_condition_type> > DecisionChainPtr;
 	typedef Common::SmartPtr<DecisionChain<jack_root_condition_type, true> > JackDecisionChainPtr;
 
-	explicit BaseAIPlayer(const IActionPtr &trueAct, const IActionPtr &falseAct) : IAIState(),
-		m_decisionChain(Common::SmartPtr<DecisionChain<root_condition_type> >
-						(new DecisionChain<root_condition_type>(*this))),
+	explicit BaseAIPlayer(const IActionPtr &trueAct, const IActionPtr &falseAct) throw()
+		: IAIState(), m_decisionChain(Common::SmartPtr<DecisionChain<root_condition_type> >
+									  (new DecisionChain<root_condition_type>(*this))),
 		m_jackDecisionChain(Common::SmartPtr<DecisionChain<jack_root_condition_type, true> >
 							(new DecisionChain<jack_root_condition_type, true>(*this,
 									IActionPtr(trueAct), IActionPtr(falseAct)))), m_card(),
 		m_uncoveredCard(), m_jackSuit(0L), m_playedCard(), m_noJack(false) {}
 
-	explicit BaseAIPlayer() : IAIState(),
+	explicit BaseAIPlayer() throw() : IAIState(),
 		m_decisionChain(Common::SmartPtr<DecisionChain<root_condition_type> >
 						(new DecisionChain<root_condition_type>(*this))),
 		m_jackDecisionChain(Common::SmartPtr<DecisionChain<jack_root_condition_type, true> >
 							(new DecisionChain<jack_root_condition_type, true>(*this))), m_card(),
 		m_uncoveredCard(), m_jackSuit(0L), m_playedCard(), m_noJack(false) {}
 
-	virtual Common::ICardPtr getUncoveredCard() const {
+	virtual Common::ICardPtr getUncoveredCard() const throw() {
 		return m_uncoveredCard;
 	}
 
-	virtual Common::ICardPtr getPlayedCard() const {
+	virtual Common::ICardPtr getPlayedCard() const throw() {
 		return m_playedCard;
 	}
 
-	virtual Common::ICardPtr getCard() const {
+	virtual Common::ICardPtr getCard() const throw() {
 		return m_card;
 	}
 
-	virtual void setCard(const Common::ICardPtr &card) {
+	virtual void setCard(const Common::ICardPtr &card) throw() {
 		m_card = card;
 	}
 
-	virtual bool isNoJack() const {
+	virtual bool isNoJack() const throw() {
 		return m_noJack;
 	}
 
-	virtual void setNoJack(bool b) {
+	virtual void setNoJack(bool b) throw() {
 		m_noJack = b;
 	}
 
-	virtual Common::ICard::SUIT *getJackSuit() const {
+	virtual Common::ICard::SUIT *getJackSuit() const throw() {
 		return m_jackSuit;
 	}
 
-	const DecisionChainPtr &getDecisionChain() const {
+	const DecisionChainPtr &getDecisionChain() const throw() {
 		return m_decisionChain;
 	}
 
-	const JackDecisionChainPtr &getJackDecisionChain() const {
+	const JackDecisionChainPtr &getJackDecisionChain() const throw() {
 		return m_jackDecisionChain;
 	}
 
@@ -109,7 +109,7 @@ protected:
 };
 
 template<class RootCond, class RootCondJack>
-BaseAIPlayer<RootCond, RootCondJack>::~BaseAIPlayer() {}
+BaseAIPlayer<RootCond, RootCondJack>::~BaseAIPlayer() throw() {}
 
 }
 

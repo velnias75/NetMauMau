@@ -26,8 +26,8 @@ namespace NetMauMau {
 
 namespace Common {
 
-_EXPORT const char *errorString();
-_EXPORT const char *errorString(int errnum, bool gai = false);
+_EXPORT const char *errorString() throw();
+_EXPORT const char *errorString(int errnum, bool gai = false) throw();
 
 }
 

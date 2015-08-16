@@ -37,25 +37,25 @@ class GameContext {
 public:
 	typedef std::vector<std::string> AINAMES;
 
-	explicit GameContext(const GameContext &);
+	explicit GameContext(const GameContext &) throw();
 	explicit GameContext(Event::IEventHandler &evtHdlr, long aiDelay, bool dirChange,
 						 Common::CARDCONFIG &cc, bool aiPlayer = false,
-						 const AINAMES &aiNames = AINAMES(), char aceRound = 0);
-	~GameContext();
+						 const AINAMES &aiNames = AINAMES(), char aceRound = 0) throw();
+	~GameContext() throw();
 
-	inline bool hasAIPlayer() const {
+	inline bool hasAIPlayer() const throw() {
 		return m_aiPlayer;
 	}
 
-	inline const AINAMES &getAINames() const {
+	inline const AINAMES &getAINames() const throw() {
 		return m_aiNames;
 	}
 
-	inline EngineContext &getEngineContext() {
+	inline EngineContext &getEngineContext() throw() {
 		return m_engineCtx;
 	}
 
-	inline Common::CARDCONFIG &getCardConfig() const {
+	inline Common::CARDCONFIG &getCardConfig() const throw() {
 		return m_cardConfig;
 	}
 

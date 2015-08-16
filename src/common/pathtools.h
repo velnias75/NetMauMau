@@ -28,7 +28,7 @@ namespace Common {
 
 typedef enum { BINDIR, PKGDATA, USER } MPATH;
 
-std::string getModulePath(MPATH mpath, const char *fname = 0L, const char *fext = 0L);
+std::string getModulePath(MPATH mpath, const char *fname = 0L, const char *fext = 0L) throw();
 
 }
 

@@ -74,7 +74,7 @@ CachePolicyFactory::PrivateCachePolicy::~PrivateCachePolicy() {}
 
 CachePolicyFactory::CachePolicyFactory() : Common::SmartSingleton<CachePolicyFactory>() {}
 
-CachePolicyFactory::~CachePolicyFactory() {}
+CachePolicyFactory::~CachePolicyFactory() throw() {}
 
 const CachePolicyFactory::ICachePolicyPtr CachePolicyFactory::createNoCachePolicy() const {
 	return ICachePolicyPtr(new NoCachePolicy());

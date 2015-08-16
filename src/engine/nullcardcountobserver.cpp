@@ -24,7 +24,7 @@ using namespace NetMauMau;
 NullCardCountObserver::NullCardCountObserver() : ICardCountObserver(),
 	Common::SmartSingleton<NullCardCountObserver>() {}
 
-NullCardCountObserver::~NullCardCountObserver() {}
+NullCardCountObserver::~NullCardCountObserver() throw() {}
 
 bool NullCardCountObserver::isNull() const throw() {
 	return true;

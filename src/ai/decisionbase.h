@@ -30,18 +30,18 @@ namespace AI {
 class DecisionBase {
 	DISALLOW_COPY_AND_ASSIGN(DecisionBase)
 public:
-	virtual ~DecisionBase() _CONST;
+	virtual ~DecisionBase() throw() _CONST;
 
-	static Player::IPlayer::CARDS removeJack(const Player::IPlayer::CARDS &cards);
+	static Player::IPlayer::CARDS removeJack(const Player::IPlayer::CARDS &cards) throw();
 
 	template<class CardType, class Tp>
-	static typename CardType::difference_type count(CardType cards, Tp arg) {
+	static typename CardType::difference_type count(CardType cards, Tp arg) throw() {
 		return std::count_if(cards.begin(), cards.end(), std::bind2nd(NetMauMau::Common::equalTo
 							 <typename CardType::value_type, Tp>(), arg));
 	}
 
 protected:
-	explicit DecisionBase();
+	explicit DecisionBase() throw();
 };
 
 }

@@ -32,18 +32,19 @@ template<std::size_t Bound>
 class HaveLessThanCondition : public BinaryCondition {
 	DISALLOW_COPY_AND_ASSIGN(HaveLessThanCondition)
 public:
-	HaveLessThanCondition(const IActionPtr &actTrue, const IActionPtr &actFalse) :
-		BinaryCondition(actTrue, actFalse) {}
+	HaveLessThanCondition(const IActionPtr &actTrue, const IActionPtr &actFalse) throw()
+		: BinaryCondition(actTrue, actFalse) {}
 
-	virtual ~HaveLessThanCondition() {}
+	virtual ~HaveLessThanCondition() throw() {}
 
-	virtual IActionPtr perform(const IAIState &state, const Player::IPlayer::CARDS &) const {
+	virtual IActionPtr perform(const IAIState &state,
+							   const Player::IPlayer::CARDS &) const throw() {
 		return state.getPlayerCards().size() < Bound ? getTrueAction() : getFalseAction();
 	}
 
 #if defined(TRACE_AI) && !defined(NDEBUG)
 protected:
-	inline virtual std::string traceLog() const {
+	inline virtual std::string traceLog() const throw() {
 		return "HaveLessThanCondition";
 	}
 #endif

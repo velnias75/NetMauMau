@@ -42,12 +42,12 @@ struct cardGreater : std::binary_function < NetMauMau::Player::IPlayer::CARDS::v
 
 using namespace NetMauMau::AI;
 
-MaxSuitAction::MaxSuitAction() : AbstractAction() {}
+MaxSuitAction::MaxSuitAction() throw() : AbstractAction() {}
 
-MaxSuitAction::~MaxSuitAction() {}
+MaxSuitAction::~MaxSuitAction() throw() {}
 
 const IConditionPtr &MaxSuitAction::perform(IAIState &state,
-		const NetMauMau::Player::IPlayer::CARDS &cards) const {
+		const NetMauMau::Player::IPlayer::CARDS &cards) const throw() {
 
 	assert(!state.getCard());
 

@@ -37,11 +37,11 @@ template<class RootCond, class RootCondJack>
 class AIPlayerBase : public AbstractPlayer, public AI::BaseAIPlayer<RootCond, RootCondJack> {
 	DISALLOW_COPY_AND_ASSIGN(AIPlayerBase)
 public:
-	virtual ~AIPlayerBase() {}
+	virtual ~AIPlayerBase() throw() {}
 
 	virtual std::string getName() const;
 	virtual int  getSerial() const;
-	virtual bool isAIPlayer() const;
+	virtual bool isAIPlayer() const throw();
 	virtual bool isAlive() const;
 
 	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset) _NONNULL_ALL;
@@ -155,7 +155,7 @@ inline int AIPlayerBase<RootCond, RootCondJack>::getSerial() const {
 }
 
 template<class RootCond, class RootCondJack>
-inline bool AIPlayerBase<RootCond, RootCondJack>::isAIPlayer() const {
+inline bool AIPlayerBase<RootCond, RootCondJack>::isAIPlayer() const throw() {
 	return true;
 }
 

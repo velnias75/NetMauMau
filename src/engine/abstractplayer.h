@@ -36,7 +36,7 @@ public:
 
 	virtual std::string getName() const;
 	virtual int getSerial() const = 0;
-	virtual bool isAIPlayer() const = 0;
+	virtual bool isAIPlayer() const throw() = 0;
 	virtual bool isAlive() const = 0;
 
 	virtual void setRuleSet(const RuleSet::IRuleSet *ruleset) _NONNULL_ALL;

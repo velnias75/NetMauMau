@@ -21,12 +21,12 @@
 
 using namespace NetMauMau::AI;
 
-PowerJackAction::PowerJackAction() : AbstractAction() {}
+PowerJackAction::PowerJackAction() throw() : AbstractAction() {}
 
-PowerJackAction::~PowerJackAction() {}
+PowerJackAction::~PowerJackAction() throw() {}
 
 const IConditionPtr &PowerJackAction::perform(IAIState &state,
-		const NetMauMau::Player::IPlayer::CARDS &cards) const {
+		const NetMauMau::Player::IPlayer::CARDS &cards) const throw() {
 
 	if(cards.size() == 1u) state.setCard(cards.front());
 

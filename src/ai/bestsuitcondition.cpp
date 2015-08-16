@@ -23,12 +23,13 @@
 
 using namespace NetMauMau::AI;
 
-BestSuitCondition::BestSuitCondition() : AbstractCondition() {}
+BestSuitCondition::BestSuitCondition() throw() : AbstractCondition() {}
 
-BestSuitCondition::~BestSuitCondition() {}
+BestSuitCondition::~BestSuitCondition() throw() {}
 
-IActionPtr BestSuitCondition::perform(const IAIState &state,
-									  const NetMauMau::Player::IPlayer::CARDS &cards) const {
+IActionPtr
+BestSuitCondition::perform(const IAIState &state,
+						   const NetMauMau::Player::IPlayer::CARDS &cards) const throw() {
 
 	if(!state.getCard() && !state.isNoJack() && state.hasPlayerFewCards() &&
 			DecisionBase::count(cards, NetMauMau::Common::ICard::JACK)) {

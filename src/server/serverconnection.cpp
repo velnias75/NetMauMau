@@ -600,6 +600,9 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 				} else if(rHello.substr(0, NetMauMau::Common::Protocol::V15::PLAYERLIST.length())
 						  == NetMauMau::Common::Protocol::V15::PLAYERLIST) {
 
+					const NetMauMau::Common::TCPOptCork sc_pl(cfd);
+					_UNUSED(sc_pl);
+
 					const std::string::size_type spc = rHello.find(' ');
 					const std::string::size_type dot = rHello.find('.');
 
@@ -677,8 +680,8 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 				} else if(rHello.substr(0, NetMauMau::Common::Protocol::V15::SCORES.length()) ==
 						  NetMauMau::Common::Protocol::V15::SCORES) {
 
-					const NetMauMau::Common::TCPOptNodelay sc_nd(cfd);
-					_UNUSED(sc_nd);
+					const NetMauMau::Common::TCPOptCork sc_ck(cfd);
+					_UNUSED(sc_ck);
 
 					const NetMauMau::DB::SQLite::SCORE_TYPE st =
 						rHello.substr(7, rHello.find(' ', 7) - 7) == "ABS" ?
@@ -708,8 +711,8 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 
 				} else {
 
-					const NetMauMau::Common::TCPOptNodelay cap_nd(cfd);
-					_UNUSED(cap_nd);
+					NetMauMau::Common::TCPOptCork cap_ck(cfd);
+					_UNUSED(cap_ck);
 
 					std::ostringstream oscap;
 

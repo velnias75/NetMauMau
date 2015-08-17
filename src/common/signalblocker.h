@@ -24,14 +24,26 @@
 
 #include "linkercontrol.h"
 
+#if 0
 #define BLOCK_ALL_SIGNALS const NetMauMau::Common::SignalBlocker __signal__blocker; \
 	_UNUSED(__signal__blocker)
+#else
+#define BLOCK_ALL_SIGNALS
+#endif
 
+#if 0
 #define BLOCK_MOST_SIGNALS const NetMauMau::Common::SignalBlocker __signal__blocker(2u, \
 		NetMauMau::Common::__SIGNOS); _UNUSED(__signal__blocker)
+#else
+#define BLOCK_MOST_SIGNALS
+#endif
 
+#if 0
 #define BLOCK_SIGNALS(n, p) const NetMauMau::Common::SignalBlocker __signal__blocker((n), (p)); \
 	_UNUSED(__signal__blocker)
+#else
+#define BLOCK_SIGNALS(n, p)
+#endif
 
 namespace NetMauMau {
 

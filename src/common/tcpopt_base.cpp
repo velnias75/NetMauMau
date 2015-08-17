@@ -53,9 +53,12 @@ TCPOptBase::TCPOptBase(SOCKET fd, int optname, const char *optStr) throw() :
 		if(getsockopt(m_fd, IPPROTO_TCP, m_optname, reinterpret_cast<char *>(&m_val),
 					  &slen) != -1) {
 
-			if(!(m_ok = (setOpt(1) != -1)) &&
-					errno != EBADF) {
-				logWarning("Couldn't set " << m_optStr << ": " << errorString(errno));
+			if(m_val != 1) {
+
+				if(!(m_ok = (setOpt(1) != -1)) &&
+						errno != EBADF) {
+					logWarning("Couldn't set " << m_optStr << ": " << errorString(errno));
+				}
 			}
 
 		} else if(errno != EBADF) {

@@ -32,7 +32,7 @@ namespace Common {
 class _EXPORT TCPOptCork : public TCPOptBase {
 	DISALLOW_COPY_AND_ASSIGN(TCPOptCork)
 public:
-	TCPOptCork(SOCKET fd) throw();
+	explicit TCPOptCork(SOCKET fd) throw();
 	virtual ~TCPOptCork() throw();
 };
 

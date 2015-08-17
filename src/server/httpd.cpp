@@ -558,7 +558,7 @@ Httpd::Httpd() : Common::IObserver<Game>(), Common::IObserver<Engine>(),
 		m_url = uos.str();
 	}
 
-	freeaddrinfo(ai);
+	if(ai) freeaddrinfo(ai);
 }
 
 Httpd::~Httpd() throw() {

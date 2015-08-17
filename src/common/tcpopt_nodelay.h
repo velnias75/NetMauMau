@@ -32,7 +32,7 @@ namespace Common {
 class _EXPORT TCPOptNodelay : public TCPOptBase {
 	DISALLOW_COPY_AND_ASSIGN(TCPOptNodelay)
 public:
-	TCPOptNodelay(SOCKET fd) throw();
+	explicit TCPOptNodelay(SOCKET fd) throw();
 	virtual ~TCPOptNodelay() throw();
 };
 

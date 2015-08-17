@@ -99,6 +99,7 @@ public:
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #pragma GCC diagnostic push
+	// cppcheck-suppress noConstructor
 	typedef struct _DEPRECATED _base64RAII {
 	private:
 		DISALLOW_COPY_AND_ASSIGN(_base64RAII)

@@ -34,7 +34,7 @@ namespace Exception {
 class _EXPORT ZLibException : public std::exception {
 	ZLibException &operator=(const ZLibException &);
 public:
-	ZLibException(const std::string &msg);
+	explicit ZLibException(const std::string &msg);
 	virtual ~ZLibException() throw();
 
 	virtual const char *what() const throw() _PURE;

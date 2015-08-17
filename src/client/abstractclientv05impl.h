@@ -219,10 +219,12 @@ template<> class _LOCAL MappedMessageInitializer<AbstractClientV05> {
 	DISALLOW_COPY_AND_ASSIGN(MappedMessageInitializer<AbstractClientV05>)
 	friend class MappedMessageProcessor<AbstractClientV05, MP_CNT_V05>;
 public:
+	// cppcheck-suppress functionStatic
 	MappedMessageInitializer() : m_protoMap(
 			MappedMessageProcessor<AbstractClientV05, MP_CNT_V05>::allocator_type::m_data,
 			MappedMessageProcessor<AbstractClientV05, MP_CNT_V05>::allocator_type::m_data
 			+ MP_CNT_V05) {}
+	// cppcheck-suppress functionStatic
 	~MappedMessageInitializer() {}
 
 private:
@@ -233,10 +235,12 @@ template<> class _LOCAL MappedMessageInitializer<AbstractClientV07> {
 	DISALLOW_COPY_AND_ASSIGN(MappedMessageInitializer<AbstractClientV07>)
 	friend class MappedMessageProcessor<AbstractClientV07, MP_CNT_V07>;
 public:
+	// cppcheck-suppress functionStatic
 	MappedMessageInitializer() : m_protoMap(
 			MappedMessageProcessor<AbstractClientV07, MP_CNT_V07>::allocator_type::m_data,
 			MappedMessageProcessor<AbstractClientV07, MP_CNT_V07>::allocator_type::m_data
 			+ MP_CNT_V07) {}
+	// cppcheck-suppress functionStatic
 	~MappedMessageInitializer() {}
 
 private:
@@ -247,10 +251,12 @@ template<> class _LOCAL MappedMessageInitializer<AbstractClientV08> {
 	DISALLOW_COPY_AND_ASSIGN(MappedMessageInitializer<AbstractClientV08>)
 	friend class MappedMessageProcessor<AbstractClientV08, MP_CNT_V08>;
 public:
+	// cppcheck-suppress functionStatic
 	MappedMessageInitializer() : m_protoMap(
 			MappedMessageProcessor<AbstractClientV08, MP_CNT_V08>::allocator_type::m_data,
 			MappedMessageProcessor<AbstractClientV08, MP_CNT_V08>::allocator_type::m_data
 			+ MP_CNT_V08) {}
+	// cppcheck-suppress functionStatic
 	~MappedMessageInitializer() {}
 
 private:
@@ -261,10 +267,12 @@ template<> class _LOCAL MappedMessageInitializer<AbstractClientV13> {
 	DISALLOW_COPY_AND_ASSIGN(MappedMessageInitializer<AbstractClientV13>)
 	friend class MappedMessageProcessor<AbstractClientV13, MP_CNT_V13>;
 public:
+	// cppcheck-suppress functionStatic
 	MappedMessageInitializer()
 		: m_protoMap(MappedMessageProcessor<AbstractClientV13, MP_CNT_V13>::allocator_type::m_data,
 					 MappedMessageProcessor<AbstractClientV13, MP_CNT_V13>::allocator_type::m_data
 					 + MP_CNT_V13) {}
+	// cppcheck-suppress functionStatic
 	~MappedMessageInitializer() {}
 
 private:

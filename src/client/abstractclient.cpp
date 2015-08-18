@@ -26,6 +26,7 @@
 #endif
 
 #include "base64.h"
+#include "tcpopt_cork.h"
 #include "tcpopt_nodelay.h"
 #include "abstractclientv05impl.h"      // for AbstractClientV05Impl
 #include "logger.h"                     // for BasicLogger, logDebug
@@ -271,10 +272,14 @@ throw(NetMauMau::Common::Exception::SocketException) {
 void AbstractClientV05::play(timeval *timeout)
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	TCPOPT_NODELAY(_pimpl->m_connection.getSocketFD());
+	{
+		TCPOPT_CORK(_pimpl->m_connection.getSocketFD());
 
-	_pimpl->m_connection.setTimeout(timeout);
-	_pimpl->m_connection.connect(this, _pimpl->m_pngData.data(), _pimpl->m_pngData.size());
+		_pimpl->m_connection.setTimeout(timeout);
+		_pimpl->m_connection.connect(this, _pimpl->m_pngData.data(), _pimpl->m_pngData.size());
+	}
+
+	TCPOPT_NODELAY(_pimpl->m_connection.getSocketFD());
 
 	AbstractClientV05Impl::PNGDATA().swap(_pimpl->m_pngData);
 
@@ -822,9 +827,6 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 AbstractClientV09::SCORES AbstractClientV09::getScores(SCORE_TYPE::_scoreType type,
 		std::size_t limit, timeval *timeout) throw(NetMauMau::Common::Exception::SocketException) {
-
-	if(_pimpl->m_playing) throw Exception::ScoresException("Attempt to get scores in running game");
-
 	_pimpl->m_connection.setTimeout(timeout);
 	return _pimpl->m_connection.getScores(type, limit);
 }

@@ -110,6 +110,7 @@ Connection::PLAYERINFOS Connection::playerList(const IPlayerPicListener *hdl, bo
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	BLOCK_MOST_SIGNALS;
+	TCPOPT_CORK(getSocketFD());
 
 	PLAYERINFOS plv;
 
@@ -184,7 +185,7 @@ Connection::CAPABILITIES Connection::capabilities()
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	BLOCK_ALL_SIGNALS;
-	TCPOPT_NODELAY(getSocketFD());
+	TCPOPT_CORK(getSocketFD());
 
 	Connection::CAPABILITIES caps;
 
@@ -218,7 +219,7 @@ Connection::SCORES Connection::getScores(SCORE_TYPE::_scoreType type, std::size_
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	BLOCK_ALL_SIGNALS;
-	TCPOPT_NODELAY(getSocketFD());
+	TCPOPT_CORK(getSocketFD());
 
 	try {
 

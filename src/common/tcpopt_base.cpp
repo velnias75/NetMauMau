@@ -32,6 +32,9 @@
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#elif defined(_WIN32)
+#include <ws2tcpip.h>
+#include <winsock2.h>
 #endif
 
 #include "tcpopt_base.h"
@@ -44,11 +47,11 @@ using namespace NetMauMau::Common;
 TCPOptBase::TCPOptBase(SOCKET fd, int optname, const char *optStr) throw() :
 	m_optStr(strdup(optStr)), m_fd(fd), m_optname(optname), m_val(0), m_ok(false) {
 
-#ifdef HAVE_NETINET_IN_H
+#if defined(HAVE_NETINET_IN_H) || defined(_WIN32)
 
 	if(m_fd != INVALID_SOCKET) {
 
-		socklen_t slen = sizeof(int);
+		socklen_t slen = sizeof(VTYPE);
 
 		if(getsockopt(m_fd, IPPROTO_TCP, m_optname, reinterpret_cast<char *>(&m_val),
 					  &slen) != -1) {
@@ -71,7 +74,7 @@ TCPOptBase::TCPOptBase(SOCKET fd, int optname, const char *optStr) throw() :
 
 TCPOptBase::~TCPOptBase() throw() {
 
-#ifdef HAVE_NETINET_IN_H
+#if defined(HAVE_NETINET_IN_H) || defined(_WIN32)
 
 	if(m_ok && m_fd != INVALID_SOCKET) {
 
@@ -85,9 +88,13 @@ TCPOptBase::~TCPOptBase() throw() {
 	std::free(m_optStr);
 }
 
-int TCPOptBase::setOpt(const int val) const throw() {
+int TCPOptBase::setOpt(const VTYPE val) const throw() {
+#if defined(HAVE_NETINET_IN_H) || defined(_WIN32)
 	return setsockopt(m_fd, IPPROTO_TCP, m_optname, reinterpret_cast<const char *>(&val),
-					  sizeof(int));
+					  sizeof(VTYPE));
+#else
+	return -1;
+#endif
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

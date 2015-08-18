@@ -24,13 +24,15 @@
 #ifdef HAVE_NETINET_IN_H
 #include <sys/types.h>
 #include <netinet/tcp.h>
+#elif defined(_WIN32)
+#include <winsock2.h>
 #endif
 
 #include "tcpopt_nodelay.h"
 
 using namespace NetMauMau::Common;
 
-#ifdef HAVE_NETINET_IN_H
+#if defined(HAVE_NETINET_IN_H) || defined(_WIN32)
 TCPOptNodelay::TCPOptNodelay(SOCKET fd) throw() : TCPOptBase(fd, TCP_NODELAY, "TCP_NODELAY") {}
 #else
 TCPOptNodelay::TCPOptNodelay(SOCKET) throw() : TCPOptBase(INVALID_SOCKET, 0, "TCP_NODELAY") {}

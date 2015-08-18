@@ -20,6 +20,13 @@
 #ifndef NETMAUMAU_COMMON_TCPOPT_BASE_H
 #define NETMAUMAU_COMMON_TCPOPT_BASE_H
 
+#ifdef _WIN32
+#include <windows.h>
+#define VTYPE DWORD
+#else
+#define VTYPE int
+#endif
+
 #include "socketexception.h"
 
 namespace NetMauMau {
@@ -35,13 +42,14 @@ protected:
 	TCPOptBase(SOCKET fd, int optname, const char *optStr) throw();
 
 private:
-	int setOpt(const int val) const throw();
+	// cppcheck-suppress functionStatic
+	int setOpt(const VTYPE val) const throw();
 
 private:
 	char *m_optStr;
 	SOCKET m_fd;
 	int m_optname;
-	int m_val;
+	VTYPE m_val;
 	bool m_ok;
 };
 

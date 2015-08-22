@@ -256,7 +256,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	for(Connection::PLAYERINFOS::const_iterator i(m_connection.getPlayers().begin());
 			i != m_connection.getPlayers().end(); ++i) {
 
-		if(player->getName() == i->name) {
+		if(player->getName().compare(i->name) == 0) {
 			m_connection.write(i->sockfd, NetMauMau::Common::Protocol::V15::CARDREJECTED);
 			m_connection.write(i->sockfd, player->getName());
 			m_connection.write(i->sockfd, playedCard->description());
@@ -280,7 +280,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		m_connection.write(i->sockfd, NetMauMau::Common::Protocol::V15::PLAYERPICKSCARD);
 		m_connection.write(i->sockfd, player->getName());
 
-		if(card && i->name == player->getName()) {
+		if(card && i->name.compare(player->getName()) == 0) {
 			m_connection.write(i->sockfd, NetMauMau::Common::Protocol::V15::CARDTAKEN);
 			m_connection.write(i->sockfd, card->description());
 		} else {

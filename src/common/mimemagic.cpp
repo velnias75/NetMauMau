@@ -55,7 +55,7 @@ bool MimeMagic::checkMime(const unsigned char *data, std::size_t dataLen,
 						  const char *mime) const throw() {
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
 	const std::string &m(getMime(data, dataLen));
-	return m.empty() ? true : m == mime;
+	return m.empty() ? true : (m.compare(mime) == 0);
 #else
 	return true;
 #endif

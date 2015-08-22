@@ -29,7 +29,7 @@ struct cardEqualsDescription : std::binary_function < NetMauMau::Common::ICard *
 		std::string, bool > {
 	inline result_type operator()(const first_argument_type c,
 								  const second_argument_type &d) const {
-		return c->description() == d;
+		return c->description().compare(d) == 0;
 	}
 };
 

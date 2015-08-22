@@ -35,7 +35,6 @@
 #include "clientcardfactory.h"          // for CardFactory
 #include "interceptederrorexception.h"  // for InterceptedErrorException
 #include "pngcheck.h"                   // for checkPNG
-#include "scoresexception.h"            // for ScoresException
 #include "shutdownexception.h"
 #include "remoteplayerexception.h"
 #include "lostconnectionexception.h"
@@ -639,7 +638,7 @@ AbstractClientV05::performPlayerPicksCard(const _playInternalParams &p) const {
 	std::string player, extra;
 	_pimpl->m_connection >> player >> extra;
 
-	if(extra == NetMauMau::Common::Protocol::V15::CARDTAKEN) {
+	if(extra.compare(NetMauMau::Common::Protocol::V15::CARDTAKEN) == 0) {
 		_pimpl->m_connection >> p.msg;
 		const NetMauMau::Common::ICard *c = (NetMauMau::Client::CardFactory(p.msg)).create();
 		playerPicksCard(player, c);
@@ -675,8 +674,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	if(ret == NOT_UNDERSTOOD) {
 
-		if(!_pimpl->m_disconnectNow && p.msg.substr(0, 10) ==
-				NetMauMau::Common::Protocol::V15::PLAYERWINS) {
+		if(!_pimpl->m_disconnectNow &&
+				p.msg.compare(0, 10, NetMauMau::Common::Protocol::V15::PLAYERWINS) == 0) {
 
 			const bool ultimate = p.msg.length() > 10 && p.msg[10] == '+';
 
@@ -685,8 +684,9 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 			if(!ultimate) return performBye(p);
 
-		} else if(!_pimpl->m_disconnectNow && p.msg.substr(0, 10) ==
-				  NetMauMau::Common::Protocol::V15::PLAYERLOST) {
+		} else if(!_pimpl->m_disconnectNow && p.msg.compare(0, 10,
+				  NetMauMau::Common::Protocol::V15::PLAYERLOST) == 0) {
+
 			std::string pl, pc;
 			_pimpl->m_connection >> pl >> pc;
 			playerLost(pl, *p.cturn, std::strtoul(pc.c_str(), NULL, 10));

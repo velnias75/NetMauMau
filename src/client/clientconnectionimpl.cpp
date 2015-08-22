@@ -32,7 +32,6 @@
 
 #include "select.h"
 #include "logger.h"
-#include "signalblocker.h"
 #include "errorstring.h"                // for errorString
 #include "timeoutexception.h"           // for TimeoutException
 
@@ -60,8 +59,6 @@ ConnectionImpl::~ConnectionImpl() {}
 #pragma GCC diagnostic push
 bool ConnectionImpl::hello(uint16_t *maj, uint16_t *min)
 throw(NetMauMau::Common::Exception::SocketException) {
-
-	BLOCK_ALL_SIGNALS;
 
 	_piface->NetMauMau::Common::AbstractConnection::connect();
 

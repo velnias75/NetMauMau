@@ -29,7 +29,7 @@ namespace {
 struct _isInfo : std::binary_function < NetMauMau::Common::AbstractConnection::NAMESOCKFD,
 		NetMauMau::Common::AbstractConnection::INFO, bool > {
 	result_type operator()(const first_argument_type &nsd, const second_argument_type &info) const {
-		return nsd.name == info.name;
+		return nsd.name.compare(info.name) == 0;
 	}
 };
 

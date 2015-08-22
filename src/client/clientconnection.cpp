@@ -51,7 +51,6 @@
 #include "protocolerrorexception.h"     // for ProtocolErrorException
 #include "scoresexception.h"            // for ScoresException
 #include "versionmismatchexception.h"   // for VersionMismatchException
-#include "signalblocker.h"
 #include "protocol.h"                   // for ERROR
 
 #define MAX_PNAME 1024
@@ -109,7 +108,6 @@ void Connection::setTimeout(struct timeval *timeout) {
 Connection::PLAYERINFOS Connection::playerList(const IPlayerPicListener *hdl, bool playerPNG)
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	BLOCK_MOST_SIGNALS;
 	TCPOPT_CORK(getSocketFD());
 
 	PLAYERINFOS plv;
@@ -184,7 +182,6 @@ throw(NetMauMau::Common::Exception::SocketException) {
 Connection::CAPABILITIES Connection::capabilities()
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	BLOCK_ALL_SIGNALS;
 	TCPOPT_CORK(getSocketFD());
 
 	Connection::CAPABILITIES caps;
@@ -218,7 +215,6 @@ throw(NetMauMau::Common::Exception::SocketException) {
 Connection::SCORES Connection::getScores(SCORE_TYPE::_scoreType type, std::size_t limit)
 throw(NetMauMau::Common::Exception::SocketException) {
 
-	BLOCK_ALL_SIGNALS;
 	TCPOPT_CORK(getSocketFD());
 
 	try {
@@ -288,8 +284,6 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 void Connection::connect(const IPlayerPicListener *l, const unsigned char *data, std::size_t len)
 throw(NetMauMau::Common::Exception::SocketException) {
-
-	BLOCK_ALL_SIGNALS;
 
 	uint16_t maj = 0, min = 0;
 
@@ -422,8 +416,6 @@ throw(NetMauMau::Common::Exception::SocketException) {
 #pragma GCC diagnostic push
 bool Connection::wire(SOCKET sockfd, const struct sockaddr *addr, socklen_t addrlen) const {
 
-	BLOCK_ALL_SIGNALS;
-
 	int ret = -1;
 
 	if((ret = TEMP_FAILURE_RETRY(::connect(sockfd, addr, addrlen))) == -1) shutdown(sockfd);
@@ -438,8 +430,6 @@ std::string Connection::wireError(const std::string &err) const {
 
 Connection &Connection::operator>>(std::string &msg)
 throw(NetMauMau::Common::Exception::SocketException) {
-
-	BLOCK_ALL_SIGNALS;
 
 	std::string str;
 	char  buf[1024] = { 0 };
@@ -476,11 +466,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 Connection &Connection::operator<<(const std::string &msg)
 throw(NetMauMau::Common::Exception::SocketException) {
-
-	BLOCK_ALL_SIGNALS;
-
 	send(msg.c_str(), msg.length(), getSocketFD());
-
 	return *this;
 }
 

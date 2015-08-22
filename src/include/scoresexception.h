@@ -36,10 +36,14 @@ namespace Exception {
 /**
  * @ingroup exceptions
  * @brief Failure while retrieving scores
+ * @deprecated
  * @since 0.9
  */
-class _EXPORT ScoresException : public Common::Exception::SocketException {
+class _EXPORT _DEPRECATED ScoresException : public Common::Exception::SocketException {
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic push
 	ScoresException &operator=(const ScoresException &);
+#pragma GCC diagnostic pop
 public:
 	ScoresException(const ScoresException &o) throw();
 	explicit ScoresException(const std::string &msg, SOCKET sockfd = INVALID_SOCKET) throw();

@@ -160,7 +160,7 @@ bool AbstractConnection::isHello(std::string::size_type dot, std::string::size_t
 
 bool AbstractConnection::isValidHello(std::string::size_type dot, std::string::size_type spc,
 									  const std::string &rHello, const std::string &expHello) {
-	return isHello(dot, spc) && rHello.substr(0, std::strlen(PACKAGE_NAME)) == expHello;
+	return isHello(dot, spc) && rHello.compare(0, std::strlen(PACKAGE_NAME), expHello) == 0;
 }
 
 uint16_t AbstractConnection::getMajorFromHello(const std::string &hello,

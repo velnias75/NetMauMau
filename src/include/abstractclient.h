@@ -844,9 +844,6 @@ public:
 	 * @note if no scores are available (currently Windows servers) or the server never served
 	 * a game, the scores vector is empty
 	 *
-	 * @throws Exception::ScoresException if the scores couldn't get received or called within
-	 * a running game
-	 *
 	 * @param type type of scores
 	 * @param limit limit the result, @c 0 disables the limit
 	 * @param timeout throw a @c Exception::TimeoutException on exceeding @c timeout

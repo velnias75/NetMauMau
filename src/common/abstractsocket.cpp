@@ -42,7 +42,6 @@
 
 #include "abstractsocket.h"             // for AbstractSocket
 #include "abstractsocketimpl.h"         // for AbstractSocketImpl
-#include "signalblocker.h"
 #include "errorstring.h"                // for errorString
 #include "logger.h"                     // for logWarning
 #include "select.h"
@@ -408,9 +407,6 @@ SOCKET AbstractSocket::getSocketFD() const {
 }
 
 void AbstractSocket::shutdown(SOCKET cfd) {
-
-	BLOCK_ALL_SIGNALS;
-
 	::shutdown(cfd, SHUT_RDWR);
 #ifndef _WIN32
 	TEMP_FAILURE_RETRY(close(cfd));

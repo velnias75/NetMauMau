@@ -200,6 +200,19 @@ _EXPORT bool cardGreater(const NetMauMau::Common::ICard *lhs,
  * @{
  */
 
+template<class T>
+struct check_pointer;
+
+template<class T>
+struct check_pointer<T *> {
+	typedef T *pointer_type;
+};
+
+template<>
+struct check_pointer<ICardPtr> {
+	typedef ICardPtr pointer_type;
+};
+
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
 /**
@@ -213,9 +226,11 @@ _EXPORT bool cardGreater(const NetMauMau::Common::ICard *lhs,
  * @since 0.21.0
  */
 template<class CardType, class Tp = CardType>
-struct equalTo : std::binary_function<CardType, Tp, bool> {
+struct equalTo : std::binary_function < typename check_pointer<CardType>::pointer_type,
+		typename check_pointer<Tp>::pointer_type, bool > {
 private:
-	typedef std::binary_function<CardType, Tp, bool> bf;
+	typedef std::binary_function < typename check_pointer<CardType>::pointer_type,
+			typename check_pointer<Tp>::pointer_type, bool > bf;
 public:
 	inline typename bf::result_type operator()(const typename bf::first_argument_type &lhs,
 			const typename bf::second_argument_type &rhs) const {
@@ -235,9 +250,11 @@ public:
  * @since 0.20.2
  */
 template<class T>
-struct cardLessThan : std::binary_function<T, T, bool> {
+struct cardLessThan : std::binary_function < typename check_pointer<T>::pointer_type,
+		typename check_pointer<T>::pointer_type, bool > {
 private:
-	typedef std::binary_function<T, T, bool> bf;
+	typedef std::binary_function < typename check_pointer<T>::pointer_type,
+			typename check_pointer<T>::pointer_type, bool > bf;
 public:
 	inline typename bf::result_type operator()(const typename bf::first_argument_type &lhs,
 			const typename bf::second_argument_type &rhs) const {
@@ -257,9 +274,11 @@ public:
  * @since 0.20.2
  */
 template<class T>
-struct cardGreaterThan : std::binary_function<T, T, bool> {
+struct cardGreaterThan : std::binary_function < typename check_pointer<T>::pointer_type,
+		typename check_pointer<T>::pointer_type, bool > {
 private:
-	typedef std::binary_function<T, T, bool> bf;
+	typedef std::binary_function < typename check_pointer<T>::pointer_type,
+			typename check_pointer<T>::pointer_type, bool > bf;
 public:
 	inline typename bf::result_type operator()(const typename bf::first_argument_type &lhs,
 			const typename bf::second_argument_type &rhs) const {

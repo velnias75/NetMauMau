@@ -361,7 +361,6 @@ public:
  * @tparam Tp @c NetMauMau::Common::ICard::SUIT, @c NetMauMau::Common::ICard::RANK or
  * pointer to @c NetMauMau::Common::ICard type
  * @tparam Iterator iterator type to a collection of @c NetMauMau::Common::ICard type pointers
- ** @deprecated use the generic @c NetMauMau::Common::equalTo instead
  * @param arg @c NetMauMau::Common::ICard::SUIT, @c NetMauMau::Common::ICard::RANK or
  * pointer to @c NetMauMau::Common::ICard type
  * @param first @c iterator to begin of the range to search for

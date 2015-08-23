@@ -99,7 +99,7 @@ std::size_t nextLogBuf() {
 #endif
 
 	for(std::size_t tti = 0u; tti < NetMauMau::Common::Logger::BUFCNT;
-			++tti) if(tidMap[tti] == tid) return std::max(1u, tti);
+			++tti) if(tidMap[tti] == tid) return std::max<std::size_t>(1u, tti);
 
 	tidMap[tidPtr] = tid;
 

@@ -43,8 +43,10 @@ bool Logger::m_writeSyslog = false;
 bool Logger::m_writeSyslog = true;
 #endif
 
-Logger::Logger(const LEVEL &lvl) : Commons::IPostLogger<std::ostreambuf_iterator<LOG_CHAR> >(),
-	Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR> >(out, lvl, m_writeSyslog ? this : 0L) {
+Logger::Logger(const LEVEL &lvl) : Commons::IPostLogger < std::ostreambuf_iterator<LOG_CHAR>,
+	LOGBUFS > (), Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR>, LOGBUFS>(out, lvl,
+			m_writeSyslog ? this : 0L) {
+
 #ifdef HAVE_SYSLOG_H
 
 	if(m_writeSyslog) openlog(PACKAGE_NAME, LOG_PID, LOG_DAEMON);

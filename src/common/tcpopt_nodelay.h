@@ -22,7 +22,7 @@
 
 #include "tcpopt_base.h"
 
-#define TCPOPT_NODELAY(fd) const NetMauMau::Common::TCPOptNodelay __tcp__opt__nodelay__(fd); \
+#define TCPOPT_NODELAY(fd) const volatile NetMauMau::Common::TCPOptNodelay __tcp__opt__nodelay__(fd); \
 	_UNUSED(__tcp__opt__nodelay__)
 
 namespace NetMauMau {

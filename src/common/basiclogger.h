@@ -1,7 +1,7 @@
 /**
  * basiclogger.h - template for basic logging functionality
  *
- * $Revision: 4417 $ $Author: heiko $
+ * $Revision: 4456 $ $Author: heiko $
  *
  * (c) 2012-2015 Heiko Schäfer <heiko@rangun.de>
  *
@@ -49,16 +49,39 @@
 #define LOGGER_CLASS Commons::BasicLogger
 #endif
 
+#define logSwitchBuf(n) volatile const Commons::BasicLoggerBufferSwitcher \
+	<LOGGER_CLASS::output_iterator, LOGGER_CLASS::BUFCNT> \
+	__basicLogger__buffer__switcher__##n__(n); _UNUSED(__basicLogger__buffer__switcher__##n__)
+
 #ifndef NDEBUG
-#define logDebug(msg)	{ (LOGGER_CLASS(LOGGER_CLASS::LOG_DEBUG))   << LOGGER_PREFIX << msg; }
+#define logDebug(msg)		{ LOGGER_CLASS::setCurrentBuf(0u); \
+		(LOGGER_CLASS(LOGGER_CLASS::LOG_DEBUG))   << LOGGER_PREFIX << msg; }
+#define logDebugN(n,msg) 	{ logSwitchBuf(n); \
+		(LOGGER_CLASS(LOGGER_CLASS::LOG_DEBUG))   << LOGGER_PREFIX << msg; }
 #else
-#define logDebug(msg)	{}
+#define logDebug(msg)		{}
+#define logDebugN(n,msg)	{}
 #endif
-#define logger(msg)		{ (LOGGER_CLASS(LOGGER_CLASS::LOG_NONE))    << LOGGER_PREFIX << msg; }
-#define logInfo(msg)	{ (LOGGER_CLASS(LOGGER_CLASS::LOG_INFO))    << LOGGER_PREFIX << msg; }
-#define logWarning(msg)	{ (LOGGER_CLASS(LOGGER_CLASS::LOG_WARNING)) << LOGGER_PREFIX << msg; }
-#define logError(msg)	{ (LOGGER_CLASS(LOGGER_CLASS::LOG_ERROR))   << LOGGER_PREFIX << msg; }
-#define logFatal(msg)	{ (LOGGER_CLASS(LOGGER_CLASS::LOG_FATAL))   << LOGGER_PREFIX << msg; }
+#define logger(msg)			{ LOGGER_CLASS::setCurrentBuf(0u); \
+		(LOGGER_CLASS(LOGGER_CLASS::LOG_NONE))    << LOGGER_PREFIX << msg; }
+#define loggerN(n,msg)		{ logSwitchBuf(n); \
+		(LOGGER_CLASS(LOGGER_CLASS::LOG_NONE))    << LOGGER_PREFIX << msg; }
+#define logInfo(msg)		{ LOGGER_CLASS::setCurrentBuf(0u); \
+		(LOGGER_CLASS(LOGGER_CLASS::LOG_INFO))    << LOGGER_PREFIX << msg; }
+#define logInfoN(n,msg)		{ logSwitchBuf(n); \
+		(LOGGER_CLASS(LOGGER_CLASS::LOG_INFO))    << LOGGER_PREFIX << msg; }
+#define logWarning(msg)		{ LOGGER_CLASS::setCurrentBuf(0u); \
+		(LOGGER_CLASS(LOGGER_CLASS::LOG_WARNING)) << LOGGER_PREFIX << msg; }
+#define logWarningN(n,msg)	{ logSwitchBuf(n); \
+		(LOGGER_CLASS(LOGGER_CLASS::LOG_WARNING)) << LOGGER_PREFIX << msg; }
+#define logError(msg)		{ LOGGER_CLASS::setCurrentBuf(0u); \
+		(LOGGER_CLASS(LOGGER_CLASS::LOG_ERROR))   << LOGGER_PREFIX << msg; }
+#define logErrorN(n,msg)	{ logSwitchBuf(n); \
+		(LOGGER_CLASS(LOGGER_CLASS::LOG_ERROR))   << LOGGER_PREFIX << msg; }
+#define logFatal(msg)		{ LOGGER_CLASS::setCurrentBuf(0u); \
+		(LOGGER_CLASS(LOGGER_CLASS::LOG_FATAL))   << LOGGER_PREFIX << msg; }
+#define logFatalN(n,msg)	{ logSwitchBuf(n); \
+		(LOGGER_CLASS(LOGGER_CLASS::LOG_FATAL))   << LOGGER_PREFIX << msg; }
 
 #ifndef BASICLOGGER_NO_PTHREADS
 namespace {
@@ -68,12 +91,14 @@ pthread_mutex_t _basicLoggerLock = PTHREAD_MUTEX_INITIALIZER;
 
 namespace Commons {
 
-template<class> class IPostLogger;
+template<class, std::size_t> class IPostLogger;
 
-template<class OIter>
+template<class OIter, std::size_t BUFFERS = 1>
 class _EXPORT BasicLogger {
 	DISALLOW_COPY_AND_ASSIGN(BasicLogger)
 public:
+	enum { BUFCNT = BUFFERS };
+
 	typedef typename std::basic_ostringstream<typename OIter::char_type>::__string_type logString;
 	typedef OIter output_iterator;
 
@@ -120,7 +145,15 @@ public:
 		return m_silentMask;
 	}
 
-	static size_t getLogCount(const LEVEL &level) _PURE;
+	static std::size_t getLogCount(const LEVEL &level) _PURE;
+
+	inline static std::size_t getCurrentBuf() {
+		return m_bufNo;
+	}
+
+	inline static void setCurrentBuf(std::size_t n) {
+		m_bufNo = (!(n && m_bufNo == n) ? n : (n >= (BUFFERS - 1u) ? 1u : n + 1u));
+	}
 
 	virtual BasicLogger &operator<<(const std::ios_base::fmtflags &f);
 	virtual BasicLogger &operator<<(const BasicLogger::nonl &nonl);
@@ -151,23 +184,26 @@ public:
 	virtual BasicLogger &operator<<(const wchar_t *s);
 
 protected:
-	BasicLogger(const OIter &out, const LEVEL &level, const IPostLogger<OIter> *post = 0L);
+	BasicLogger(const OIter &out, const LEVEL &level,
+				const IPostLogger<OIter, BUFFERS> *post = 0L);
 
 	_INTERNAL LEVEL getLevel() const {
 		return m_level;
 	}
 
 	_INTERNAL std::basic_ostringstream<typename OIter::char_type> &getMessageStream() {
-		return m_msg;
+		return m_buf[m_bufNo];
 	}
 
 private:
+	_INTERNAL void init(const LEVEL &level);
 	_INTERNAL void initMessageString();
 	_INTERNAL const char *getLevelString(LEVEL lvl) const;
 	_INTERNAL static const std::string demangle(const char *name);
 
 private:
-	std::basic_ostringstream<typename OIter::char_type> m_msg;
+	static std::basic_ostringstream<typename OIter::char_type> m_buf[BUFFERS];
+	static volatile std::size_t m_bufNo;
 
 #if GCC_VERSION < 40300
 	const OIter m_out;
@@ -192,42 +228,108 @@ private:
 	bool m_noNewline;
 	bool m_silent;
 
-	const IPostLogger<OIter> *m_postLogger;
+	const IPostLogger<OIter, BUFFERS> *m_postLogger;
 };
 
-template<class OIter>
+template<class OIter, std::size_t BUFFERS = 1>
+class BasicLoggerBufferSwitcher {
+	DISALLOW_COPY_AND_ASSIGN(BasicLoggerBufferSwitcher)
+public:
+	explicit BasicLoggerBufferSwitcher(std::size_t n) :
+		m_curBuf(BasicLogger<OIter, BUFFERS>::getCurrentBuf()) {
+		BasicLogger<OIter, BUFFERS>::setCurrentBuf(n);
+	}
+
+	~BasicLoggerBufferSwitcher() {
+		BasicLogger<OIter, BUFFERS>::setCurrentBuf(m_curBuf);
+	}
+
+private:
+	std::size_t m_curBuf;
+};
+
+template<class OIter, std::size_t BUFFERS>
 class IPostLogger {
 	DISALLOW_COPY_AND_ASSIGN(IPostLogger)
 public:
 	inline virtual ~IPostLogger() {}
 
-	virtual void postAction(const typename BasicLogger<OIter>::logString &ls) const throw() = 0;
+	virtual void postAction(const typename BasicLogger < OIter,
+							BUFFERS >::logString &ls) const throw() = 0;
 
 protected:
 	inline IPostLogger() {}
 };
 
-template<class OIter>
-unsigned char BasicLogger<OIter>::m_silentMask = 0x00;
+#if !defined(__clang__)
+#pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
+#pragma GCC diagnostic push
+#endif
+template<class OIter, std::size_t BUFFERS>
+std::basic_ostringstream<typename OIter::char_type> BasicLogger<OIter, BUFFERS>::m_buf[BUFFERS];
+#if !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
-template<class OIter>
-bool BasicLogger<OIter>::_time::enabled = true;
+template<class OIter, std::size_t BUFFERS>
+volatile std::size_t BasicLogger<OIter, BUFFERS>::m_bufNo = 0u;
 
-template<class OIter>
-struct BasicLogger<OIter>::_logcount BasicLogger<OIter>::m_logCount = { 0, 0, 0, 0, 0, 0 };
+template<class OIter, std::size_t BUFFERS>
+unsigned char BasicLogger<OIter, BUFFERS>::m_silentMask = 0x00;
 
-template<class OIter>
-const std::ios_base::fmtflags BasicLogger<OIter>::hex = std::ios_base::hex;
+template<class OIter, std::size_t BUFFERS>
+bool BasicLogger<OIter, BUFFERS>::_time::enabled = true;
 
-template<class OIter>
-const std::ios_base::fmtflags BasicLogger<OIter>::dec = std::ios_base::dec;
+template<class OIter, std::size_t BUFFERS>
+struct BasicLogger<OIter, BUFFERS>::_logcount
+		BasicLogger<OIter, BUFFERS>::m_logCount = { 0, 0, 0, 0, 0, 0 };
 
-template<class OIter>
-BasicLogger<OIter>::BasicLogger(const OIter &out, const BasicLogger<OIter>::LEVEL &level,
-								const IPostLogger<OIter> *post) : m_msg(), m_out(out),
-	m_level(level), m_noNewline(false), m_silent(false),
-	m_postLogger(post) {
+template<class OIter, std::size_t BUFFERS>
+const std::ios_base::fmtflags BasicLogger<OIter, BUFFERS>::hex = std::ios_base::hex;
 
+template<class OIter, std::size_t BUFFERS>
+const std::ios_base::fmtflags BasicLogger<OIter, BUFFERS>::dec = std::ios_base::dec;
+
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS>::BasicLogger(const OIter &out,
+		const BasicLogger<OIter, BUFFERS>::LEVEL &level,
+		const IPostLogger<OIter, BUFFERS> *post) : m_out(out), m_level(level), m_noNewline(false),
+	m_silent(false), m_postLogger(post) {
+	init(level);
+}
+
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS>::~BasicLogger() {
+
+#ifndef BASICLOGGER_NO_PTHREADS
+	pthread_mutex_lock(&_basicLoggerLock);
+#endif
+
+	const logString ps(m_buf[m_bufNo].str());
+
+	for(std::size_t i = 0u; i < BUFFERS; ++i) {
+
+		if(!m_buf[i].str().empty()) {
+
+			if(!m_noNewline) m_buf[i] << std::endl;
+
+			const logString &s(m_buf[i].str());
+
+			if(!m_silent) std::copy(s.begin(), s.end(), m_out);
+
+			m_buf[i].str(logString());
+		}
+	}
+
+	if(m_postLogger) m_postLogger->postAction(ps);
+
+#ifndef BASICLOGGER_NO_PTHREADS
+	pthread_mutex_unlock(&_basicLoggerLock);
+#endif
+}
+
+template<class OIter, std::size_t BUFFERS>
+void BasicLogger<OIter, BUFFERS>::init(const BasicLogger<OIter, BUFFERS>::LEVEL &level) {
 #ifndef BASICLOGGER_NO_PTHREADS
 	pthread_mutex_lock(&_basicLoggerLock);
 #endif
@@ -236,7 +338,7 @@ BasicLogger<OIter>::BasicLogger(const OIter &out, const BasicLogger<OIter>::LEVE
 
 	std::new_handler hdl = std::set_new_handler(0L);
 
-	m_msg.precision(0);
+	m_buf[m_bufNo].precision(0);
 
 #ifdef __EXCEPTIONS
 
@@ -256,31 +358,10 @@ BasicLogger<OIter>::BasicLogger(const OIter &out, const BasicLogger<OIter>::LEVE
 #ifndef BASICLOGGER_NO_PTHREADS
 	pthread_mutex_unlock(&_basicLoggerLock);
 #endif
-
 }
 
-template<class OIter>
-BasicLogger<OIter>::~BasicLogger() {
-
-#ifndef BASICLOGGER_NO_PTHREADS
-	pthread_mutex_lock(&_basicLoggerLock);
-#endif
-
-	if(!m_noNewline) m_msg << std::endl;
-
-	logString s = m_msg.str();
-
-	if(!m_silent) std::copy(s.begin(), s.end(), m_out);
-
-	if(m_postLogger) m_postLogger->postAction(s);
-
-#ifndef BASICLOGGER_NO_PTHREADS
-	pthread_mutex_unlock(&_basicLoggerLock);
-#endif
-}
-
-template<class OIter>
-const char *BasicLogger<OIter>::getLevelString(LEVEL lvl) const {
+template<class OIter, std::size_t BUFFERS>
+const char *BasicLogger<OIter, BUFFERS>::getLevelString(LEVEL lvl) const {
 	switch(lvl) {
 	case LOG_INFO:
 		return "INFO: ";
@@ -303,8 +384,8 @@ const char *BasicLogger<OIter>::getLevelString(LEVEL lvl) const {
 	}
 }
 
-template<class OIter>
-void BasicLogger<OIter>::initMessageString() {
+template<class OIter, std::size_t BUFFERS>
+void BasicLogger<OIter, BUFFERS>::initMessageString() {
 
 	LEVEL lvl = getLevel();
 
@@ -338,8 +419,8 @@ void BasicLogger<OIter>::initMessageString() {
 	}
 }
 
-template<class OIter>
-const std::string BasicLogger<OIter>::demangle(const char *name) {
+template<class OIter, std::size_t BUFFERS>
+const std::string BasicLogger<OIter, BUFFERS>::demangle(const char *name) {
 #ifdef HAVE_GCC_ABI_DEMANGLE
 	int status = -4;
 	char *res = abi::__cxa_demangle(name, NULL, NULL, &status);
@@ -352,8 +433,8 @@ const std::string BasicLogger<OIter>::demangle(const char *name) {
 #endif
 }
 
-template<class OIter>
-size_t BasicLogger<OIter>::getLogCount(const LEVEL &level) {
+template<class OIter, std::size_t BUFFERS>
+std::size_t BasicLogger<OIter, BUFFERS>::getLogCount(const LEVEL &level) {
 
 	switch(level) {
 	case LOG_INFO:
@@ -379,27 +460,31 @@ size_t BasicLogger<OIter>::getLogCount(const LEVEL &level) {
 	return 0;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const std::ios_base::fmtflags &f) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &
+BasicLogger<OIter, BUFFERS>::operator<<(const std::ios_base::fmtflags &f) {
 	getMessageStream().flags(f);
 	getMessageStream() << "0x";
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const BasicLogger<OIter>::nonl &) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &
+BasicLogger<OIter, BUFFERS>::operator<<(const BasicLogger<OIter, BUFFERS>::nonl &) {
 	m_noNewline = true;
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const BasicLogger<OIter>::width &w) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &
+BasicLogger<OIter, BUFFERS>::operator<<(const BasicLogger<OIter, BUFFERS>::width &w) {
 	getMessageStream().width(w.m_width);
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const BasicLogger<OIter>::time &t) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &
+BasicLogger<OIter, BUFFERS>::operator<<(const BasicLogger<OIter, BUFFERS>::time &t) {
 
 	if(t.enabled) {
 
@@ -416,60 +501,60 @@ BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const BasicLogger<OIter>::tim
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const std::exception &e) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(const std::exception &e) {
 	getMessageStream() << static_cast<const char *>(e.what());
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const logString &msg) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(const logString &msg) {
 	getMessageStream() << msg;
 	return *this;
 }
 
 #ifndef LOG_CHAR
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const std::string &msg) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(const std::string &msg) {
 	getMessageStream() << logString(msg.begin(), msg.end());
 	return *this;
 }
 #endif
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const std::type_info &ti) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(const std::type_info &ti) {
 	getMessageStream() << demangle(ti.name()).c_str();
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const std::string *msg) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(const std::string *msg) {
 	std::string s(msg ? (*msg) : std::string(LOGGER_NULL));
 	getMessageStream() << logString(s.begin(), s.end());
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const char *s) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(const char *s) {
 	std::string sc(s ? s : LOGGER_NULL);
 	getMessageStream() << logString(sc.begin(), sc.end());
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const wchar_t *s) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(const wchar_t *s) {
 	getMessageStream() << (s ? s : LLOGGER_NULL);
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(const abool &b) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(const abool &b) {
 	getMessageStream() << std::boolalpha << static_cast<bool>(b.b);
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(float f) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(float f) {
 
 	float i;
 
@@ -481,50 +566,50 @@ BasicLogger<OIter> &BasicLogger<OIter>::operator<<(float f) {
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(short s) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(short s) {
 	getMessageStream() << static_cast<short>(s);
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(int i) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(int i) {
 	getMessageStream() << static_cast<int>(i);
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(long l) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(long l) {
 	getMessageStream() << static_cast<long>(l);
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(long long ll) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(long long ll) {
 	getMessageStream() << static_cast<long long>(ll);
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(unsigned short s) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(unsigned short s) {
 	getMessageStream() << static_cast<unsigned short>(s);
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(unsigned int i) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(unsigned int i) {
 	getMessageStream() << static_cast<unsigned int>(i);
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(unsigned long l) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(unsigned long l) {
 	getMessageStream() << static_cast<unsigned long>(l);
 	return *this;
 }
 
-template<class OIter>
-BasicLogger<OIter> &BasicLogger<OIter>::operator<<(unsigned long long ll) {
+template<class OIter, std::size_t BUFFERS>
+BasicLogger<OIter, BUFFERS> &BasicLogger<OIter, BUFFERS>::operator<<(unsigned long long ll) {
 	getMessageStream() << static_cast<unsigned long long>(ll);
 	return *this;
 }

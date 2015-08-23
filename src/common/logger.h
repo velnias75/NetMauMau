@@ -33,12 +33,18 @@
 #define TIMEFORMAT "%H:%M:%S - "
 #endif
 
+#ifdef HAVE_LIBMICROHTTPD
+#define LOGBUFS 51u
+#else
+#define LOGBUFS 2u
+#endif
+
 namespace NetMauMau {
 
 namespace Common {
 
-class _EXPORT Logger : public Commons::IPostLogger<std::ostreambuf_iterator<LOG_CHAR> >,
-	public Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR> > {
+class _EXPORT Logger : public Commons::IPostLogger<std::ostreambuf_iterator<LOG_CHAR>, LOGBUFS>,
+	public Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR>, LOGBUFS> {
 	DISALLOW_COPY_AND_ASSIGN(Logger)
 public:
 	explicit Logger(const LEVEL &lvl);

@@ -22,7 +22,7 @@
 
 #include "tcpopt_base.h"
 
-#define TCPOPT_CORK(fd) const NetMauMau::Common::TCPOptCork __tcp__opt__cork__(fd); \
+#define TCPOPT_CORK(fd) const volatile NetMauMau::Common::TCPOptCork __tcp__opt__cork__(fd); \
 	_UNUSED(__tcp__opt__cork__)
 
 namespace NetMauMau {

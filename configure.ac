@@ -177,6 +177,7 @@ AC_CHECK_HEADERS([magic.h])
 AC_CHECK_HEADERS([poll.h])
 AC_CHECK_HEADERS([netdb.h])
 AC_CHECK_HEADERS([syslog.h])
+AC_CHECK_HEADERS([sys/syscall.h])
 AC_CHECK_HEADERS([sys/socket.h])
 AC_CHECK_HEADERS([netinet/in.h])
 

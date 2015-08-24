@@ -23,6 +23,8 @@ Build-Depends: bash-completion,
                vim-common,
                zlib1g-dev
 Standards-Version: 3.9.4
+Vcs-Browser: https://github.com/velnias75/NetMauMau
+Vcs-Git: https://github.com/velnias75/NetMauMau.git
 Homepage: http://sourceforge.net/projects/netmaumau/
 
 Package: netmaumau-client

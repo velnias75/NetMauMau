@@ -77,4 +77,8 @@ void Logger::writeSyslog(bool b) {
 	m_writeSyslog = b;
 }
 
+template class Commons::IPostLogger<std::ostreambuf_iterator<LOG_CHAR>, LOGBUFS>;
+template class Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR>, LOGBUFS>;
+template class Commons::BasicLoggerBufferSwitcher<std::ostreambuf_iterator<LOG_CHAR>, LOGBUFS>;
+
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

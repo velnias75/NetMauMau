@@ -28,6 +28,7 @@
 #include "ieventhandler.h"
 #include "enginecontext.h"
 #include "iruleset.h"
+#include "logger.h"
 #include "talon.h"
 
 #include "protocol.h"

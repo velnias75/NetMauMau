@@ -1,7 +1,7 @@
 /**
  * basiclogger.h - template for basic logging functionality
  *
- * $Revision: 4456 $ $Author: heiko $
+ * $Revision: 4460 $ $Author: heiko $
  *
  * (c) 2012-2015 Heiko Schäfer <heiko@rangun.de>
  *
@@ -198,7 +198,7 @@ protected:
 private:
 	_INTERNAL void init(const LEVEL &level);
 	_INTERNAL void initMessageString();
-	_INTERNAL const char *getLevelString(LEVEL lvl) const;
+	_INTERNAL const char *getLevelString(LEVEL lvl) const _CONST;
 	_INTERNAL static const std::string demangle(const char *name);
 
 private:

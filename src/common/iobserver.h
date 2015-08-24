@@ -20,7 +20,7 @@
 #ifndef NETMAUMAU_COMMON_IOBSERVER_H
 #define NETMAUMAU_COMMON_IOBSERVER_H
 
-#include "logger.h"
+#include "linkercontrol.h"
 
 namespace NetMauMau {
 

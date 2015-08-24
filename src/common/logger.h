@@ -62,6 +62,11 @@ private:
 
 }
 
+extern template class Commons::IPostLogger<std::ostreambuf_iterator<LOG_CHAR>, LOGBUFS>;
+extern template class Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR>, LOGBUFS>;
+extern template
+class _EXPORT Commons::BasicLoggerBufferSwitcher<std::ostreambuf_iterator<LOG_CHAR>, LOGBUFS>;
+
 #endif /* NETMAUMAU_LOGGER_H */
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

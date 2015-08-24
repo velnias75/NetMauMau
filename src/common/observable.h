@@ -21,7 +21,6 @@
 #define NETMAUMAU_COMMON_OBSERVERABLE_H
 
 #include <algorithm>
-
 #include <vector>
 
 #include "iobserver.h"

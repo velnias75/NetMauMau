@@ -101,9 +101,13 @@ std::size_t nextLogBuf() {
 	for(std::size_t tti = 0u; tti < NetMauMau::Common::Logger::BUFCNT;
 			++tti) if(tidMap[tti] == tid) return std::max<std::size_t>(1u, tti);
 
-	tidMap[tidPtr] = tid;
+	tidPtr = tidPtr < NetMauMau::Common::Logger::BUFCNT ? tidPtr : 0u;
 
-	return ++tidPtr;
+	tidMap[tidPtr++] = tid;
+
+	const std::size_t aux(tidPtr);
+
+	return std::min<std::size_t>(aux, NetMauMau::Common::Logger::BUFCNT - 1u);
 
 #else
 	return __sync_bool_compare_and_swap(&rotatingLogBufSelect,

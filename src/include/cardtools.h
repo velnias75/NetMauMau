@@ -371,7 +371,8 @@ public:
  * @since 0.21.0
  */
 template<typename Tp, typename Iterator>
-typename std::iterator_traits<Iterator>::value_type find(Tp arg, Iterator first, Iterator last) {
+typename check_pointer<typename std::iterator_traits<Iterator>::value_type>::pointer_type
+find(Tp arg, Iterator first, Iterator last) {
 
 	const Iterator &f(std::find_if(first, last, std::bind2nd(equalTo < typename
 								   std::iterator_traits<Iterator>::value_type, Tp > (), arg)));

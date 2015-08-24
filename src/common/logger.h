@@ -29,8 +29,10 @@
 
 #ifndef _WIN32
 #define TIMEFORMAT "%T - "
+#define DATEFORMAT "%F " TIMEFORMAT
 #else
 #define TIMEFORMAT "%H:%M:%S - "
+#define DATEFORMAT "%Y-%m-%d " TIMEFORMAT
 #endif
 
 #ifdef HAVE_LIBMICROHTTPD

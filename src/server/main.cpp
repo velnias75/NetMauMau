@@ -329,7 +329,7 @@ int main(int argc, const char **argv) {
 
 #endif
 
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Welcome to " << PACKAGE_STRING);
+	logInfo(NetMauMau::Common::Logger::time(DATEFORMAT) << "Welcome to " << PACKAGE_STRING);
 
 #ifndef _WIN32
 	static struct sigaction sa_pipe;

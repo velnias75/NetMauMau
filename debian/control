@@ -13,6 +13,7 @@ Build-Depends: bash-completion,
                help2man,
                libcloog-ppl0,
                libgsl0-dev,
+               libjs-jquery,
                liblua5.1-0-dev (>= 5.1.2),
                libmagic-dev,
                libmicrohttpd-dev,
@@ -30,14 +31,15 @@ Homepage: http://sourceforge.net/projects/netmaumau/
 Package: netmaumau-client
 Architecture: any
 Pre-Depends: dpkg (>= 1.15.6~)
-Depends: libnetmaumauclient5 (>= 0.23.5~),
-         libnetmaumaucommon6 (>= 0.23.4~),
+Depends: libnetmaumauclient5 (>= 0.23.7~),
+         libnetmaumaucommon6 (>= 0.23.7~),
          ${misc:Depends},
          ${shlibs:Depends}
 Suggests: nmm-qt-client
 Description: Server for the popular card game Mau Mau - console client
  A simple console client for the NetMauMau server.
- It is originally intended for testing and not for efficient and joyful game play.
+ It is originally intended for testing and not for efficient and joyful game
+ play.
 
 Package: netmaumau-server-common
 Architecture: all
@@ -45,8 +47,8 @@ Recommends: xinetd
 Pre-Depends: dpkg (>= 1.15.6~)
 Depends: ${misc:Depends}
 Description: Server for the popular card game Mau Mau - common server files
- Play the popular card game Mau Mau (similar to UNO®) against the computer or over the network
- with your friends.
+ Play the popular card game Mau Mau (similar to UNO®) against the computer or
+ over the network with your friends. - Common architecture independent files
  .
  Features:
  .
@@ -55,8 +57,8 @@ Description: Server for the popular card game Mau Mau - common server files
   * Play ace/queen/king rounds (optional)
   * Support for player images
   * Server side scores
-  * Away from home, but PC is running? On Linux/BSD you can run the server on demand
-    by using (x)inetd
+  * Away from home, but PC is running? On Linux/BSD you can run the server on
+    demand by using (x)inetd
   * Highly customizeable rules, even tweak them to your needs with Lua
 
 Package: netmaumau-server
@@ -69,8 +71,8 @@ Depends: libnetmaumaucommon6 (>= ${binary:Version}),
          ${misc:Depends},
          ${shlibs:Depends}
 Description: Server for the popular card game Mau Mau - server
- Play the popular card game Mau Mau (similar to UNO®) against the computer or over the network
- with your friends.
+ Play the popular card game Mau Mau (similar to UNO®) against the computer
+ or over the network with your friends.
  .
  Features:
  .
@@ -79,8 +81,8 @@ Description: Server for the popular card game Mau Mau - server
   * Play ace/queen/king rounds (optional)
   * Support for player images
   * Server side scores
-  * Away from home, but PC is running? On Linux/BSD you can run the server on demand
-    by using (x)inetd
+  * Away from home, but PC is running? On Linux/BSD you can run the server on
+    demand by using (x)inetd
   * Highly customizeable rules, even tweak them to your needs with Lua
 
 Package: libnetmaumaucommon6
@@ -94,7 +96,7 @@ Replaces: libnetmaumaucommon0,
           libnetmaumaucommon2,
           libnetmaumaucommon3,
           libnetmaumaucommon4,
-		  libnetmaumaucommon5
+          libnetmaumaucommon5
 Section: libs
 
 Package: libnetmaumauclient5
@@ -108,7 +110,7 @@ Replaces: libnetmaumauclient0,
           libnetmaumauclient1,
           libnetmaumauclient2,
           libnetmaumauclient3,
-		  libnetmaumauclient4
+          libnetmaumauclient4
 Provides: netmaumau-client-api-15
 Description: Server for the popular card game Mau Mau - client library
  Functions for establishing a connection and playing with a NetMauMau server.
@@ -116,7 +118,8 @@ Description: Server for the popular card game Mau Mau - client library
 Package: netmaumau-dev
 Architecture: any
 Pre-Depends: dpkg (>= 1.15.6~)
-Depends: libnetmaumauclient5 (= ${binary:Version}),
+Depends: libjs-jquery,
+         libnetmaumauclient5 (= ${binary:Version}),
          libnetmaumaucommon6 (= ${binary:Version}),
          ${misc:Depends}
 Suggests: netmaumau-server

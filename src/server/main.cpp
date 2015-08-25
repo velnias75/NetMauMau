@@ -537,8 +537,7 @@ int main(int argc, const char **argv) {
 
 							if(cs == Server::Game::ACCEPTED || cs == Server::Game::ACCEPTED_READY) {
 
-								if(cl) logger(NetMauMau::Common::Logger::time(TIMEFORMAT)
-												  << "accepted");
+								if(cl) logger("accepted");
 
 								updatePlayerCap(caps, game.getPlayerCount(), con);
 

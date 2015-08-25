@@ -45,7 +45,7 @@ public:
 		}
 	}
 
-	void notify(const what_type what);
+	void notify(typename Commons::RParam<what_type>::Type what);
 
 protected:
 	Observable() : m_observers() {}
@@ -58,14 +58,12 @@ template<class SourceType, class WhatType>
 Observable<SourceType, WhatType>::~Observable() {}
 
 template<class SourceType, class WhatType>
-void Observable<SourceType, WhatType>::notify(const what_type what) {
+void Observable<SourceType, WhatType>::notify(typename Commons::RParam<what_type>::Type what) {
 
 #if GCC_VERSION < 40300
 
 	for(typename std::vector<IObserver<SourceType> *>::const_iterator iter(m_observers.begin());
-			iter != m_observers.end(); ++iter) {
-		(*iter)->update(what);
-	}
+			iter != m_observers.end(); ++iter)(*iter)->update(what);
 
 #else
 	std::for_each(m_observers.begin(), m_observers.end(),

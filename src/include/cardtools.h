@@ -28,7 +28,26 @@
 
 #include <algorithm>
 
+#include "tmp.h"
 #include "icard.h"
+
+#define ENSURE_PTR_VTYPE(Iterator) \
+	typename Commons::check_pointer<typename \
+	std::iterator_traits<Iterator>::value_type>::pointer_type
+
+namespace Commons {
+
+template<> struct check_pointer<NetMauMau::Common::ICardPtr> {
+	typedef NetMauMau::Common::ICardPtr pointer_type;
+};
+
+}
+
+namespace {
+template<typename Tp, typename Iterator>
+ENSURE_PTR_VTYPE(Iterator) __find(typename Commons::RParam<Tp>::Type arg, Iterator first,
+								  Iterator last);
+}
 
 /// @brief Main namespace of %NetMauMau
 namespace NetMauMau {
@@ -200,19 +219,6 @@ _EXPORT bool cardGreater(const NetMauMau::Common::ICard *lhs,
  * @{
  */
 
-template<class T>
-struct check_pointer;
-
-template<class T>
-struct check_pointer<T *> {
-	typedef T *pointer_type;
-};
-
-template<>
-struct check_pointer<ICardPtr> {
-	typedef ICardPtr pointer_type;
-};
-
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
 /**
@@ -226,11 +232,11 @@ struct check_pointer<ICardPtr> {
  * @since 0.21.0
  */
 template<class CardType, class Tp = CardType>
-struct equalTo : std::binary_function < typename check_pointer<CardType>::pointer_type,
-		typename check_pointer<Tp>::pointer_type, bool > {
+struct equalTo : std::binary_function < typename Commons::check_pointer<CardType>::pointer_type,
+		typename Commons::check_pointer<Tp>::pointer_type, bool > {
 private:
-	typedef std::binary_function < typename check_pointer<CardType>::pointer_type,
-			typename check_pointer<Tp>::pointer_type, bool > bf;
+	typedef std::binary_function < typename Commons::check_pointer<CardType>::pointer_type,
+			typename Commons::check_pointer<Tp>::pointer_type, bool > bf;
 public:
 	inline typename bf::result_type operator()(const typename bf::first_argument_type &lhs,
 			const typename bf::second_argument_type &rhs) const {
@@ -250,11 +256,11 @@ public:
  * @since 0.20.2
  */
 template<class T>
-struct cardLessThan : std::binary_function < typename check_pointer<T>::pointer_type,
-		typename check_pointer<T>::pointer_type, bool > {
+struct cardLessThan : std::binary_function < typename Commons::check_pointer<T>::pointer_type,
+		typename Commons::check_pointer<T>::pointer_type, bool > {
 private:
-	typedef std::binary_function < typename check_pointer<T>::pointer_type,
-			typename check_pointer<T>::pointer_type, bool > bf;
+	typedef std::binary_function < typename Commons::check_pointer<T>::pointer_type,
+			typename Commons::check_pointer<T>::pointer_type, bool > bf;
 public:
 	inline typename bf::result_type operator()(const typename bf::first_argument_type &lhs,
 			const typename bf::second_argument_type &rhs) const {
@@ -274,11 +280,11 @@ public:
  * @since 0.20.2
  */
 template<class T>
-struct cardGreaterThan : std::binary_function < typename check_pointer<T>::pointer_type,
-		typename check_pointer<T>::pointer_type, bool > {
+struct cardGreaterThan : std::binary_function < typename Commons::check_pointer<T>::pointer_type,
+		typename Commons::check_pointer<T>::pointer_type, bool > {
 private:
-	typedef std::binary_function < typename check_pointer<T>::pointer_type,
-			typename check_pointer<T>::pointer_type, bool > bf;
+	typedef std::binary_function < typename Commons::check_pointer<T>::pointer_type,
+			typename Commons::check_pointer<T>::pointer_type, bool > bf;
 public:
 	inline typename bf::result_type operator()(const typename bf::first_argument_type &lhs,
 			const typename bf::second_argument_type &rhs) const {
@@ -370,14 +376,9 @@ public:
  *
  * @since 0.21.0
  */
-template<typename Tp, typename Iterator>
-typename check_pointer<typename std::iterator_traits<Iterator>::value_type>::pointer_type
-find(Tp arg, Iterator first, Iterator last) {
-
-	const Iterator &f(std::find_if(first, last, std::bind2nd(equalTo < typename
-								   std::iterator_traits<Iterator>::value_type, Tp > (), arg)));
-
-	return f != last ? *f : typename std::iterator_traits<Iterator>::value_type();
+template<typename Tp, typename Iterator> inline
+ENSURE_PTR_VTYPE(Iterator) find(const Tp &arg, Iterator first, Iterator last) {
+	return __find<Tp, Iterator>(arg, first, last);
 }
 
 /**
@@ -394,8 +395,8 @@ find(Tp arg, Iterator first, Iterator last) {
  * @return the card if found @c 0L otherwise
  */
 template<typename Iterator> _DEPRECATED
-inline typename std::iterator_traits<Iterator>::value_type
-findSuit(NetMauMau::Common::ICard::SUIT suit, Iterator first, Iterator last) {
+ENSURE_PTR_VTYPE(Iterator) findSuit(NetMauMau::Common::ICard::SUIT suit, Iterator first,
+									Iterator last) {
 	return NetMauMau::Common::find(suit, first, last);
 }
 
@@ -413,8 +414,8 @@ findSuit(NetMauMau::Common::ICard::SUIT suit, Iterator first, Iterator last) {
  * @return the card if found @c 0L otherwise
  */
 template<typename Iterator> _DEPRECATED
-inline typename std::iterator_traits<Iterator>::value_type
-findRank(NetMauMau::Common::ICard::RANK rank, Iterator first, Iterator last) {
+ENSURE_PTR_VTYPE(Iterator) findRank(NetMauMau::Common::ICard::RANK rank, Iterator first,
+									Iterator last) {
 	return NetMauMau::Common::find(rank, first, last);
 }
 
@@ -433,8 +434,8 @@ findRank(NetMauMau::Common::ICard::RANK rank, Iterator first, Iterator last) {
  * @return the card if found @c 0L otherwise
  */
 template<typename Iterator> _DEPRECATED
-inline typename std::iterator_traits<Iterator>::value_type
-findCard(typename Iterator::value_type card, Iterator first, Iterator last) {
+ENSURE_PTR_VTYPE(Iterator) findCard(typename Iterator::value_type card, Iterator first,
+									Iterator last) {
 	return NetMauMau::Common::find(card, first, last);
 }
 
@@ -525,6 +526,18 @@ _EXPORT const char *getServerExe() _PURE;
 
 }
 
+}
+
+namespace {
+template<typename Tp, typename Iterator>
+ENSURE_PTR_VTYPE(Iterator) __find(typename Commons::RParam<Tp>::Type arg, Iterator first,
+								  Iterator last) {
+
+	const Iterator &f(std::find_if(first, last, std::bind2nd(NetMauMau::Common::equalTo < typename
+								   std::iterator_traits<Iterator>::value_type, Tp > (), arg)));
+
+	return f != last ? *f : typename std::iterator_traits<Iterator>::value_type();
+}
 }
 
 /**

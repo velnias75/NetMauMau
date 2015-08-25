@@ -3,7 +3,7 @@ NETMAUMAU_HDRS = abstractclient.h abstractconnection.h abstractsocket.h capabili
 	gamerunningexception.h ibase64.h icard.h iconnection.h inullable.h iplayerpiclistener.h \
 	linkercontrol.h lostconnectionexception.h nonetmaumauserverexception.h \
 	playerlistexception.h protocolerrorexception.h remoteplayerexception.h scoresexception.h \
-	shutdownexception.h socketexception.h timeoutexception.h versionmismatchexception.h 
+	shutdownexception.h socketexception.h timeoutexception.h tmp.h versionmismatchexception.h 
 
 if ENABLE_CLIENT
 pkginclude_HEADERS = $(NETMAUMAU_HDRS)

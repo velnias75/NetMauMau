@@ -638,7 +638,7 @@ void Httpd::update(const NetMauMau::Common::IObserver<NetMauMau::Engine>::what_t
 	m_players = what;
 }
 
-void Httpd::update(const NetMauMau::Common::IObserver<Game>::what_type &what) {
+void Httpd::update(NetMauMau::Common::IObserver<Game>::what_type what) {
 
 	switch(what) {
 	case PLAYERADDED:

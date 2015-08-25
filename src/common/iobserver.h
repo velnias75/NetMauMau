@@ -21,6 +21,7 @@
 #define NETMAUMAU_COMMON_IOBSERVER_H
 
 #include "linkercontrol.h"
+#include "tmp.h"
 
 namespace NetMauMau {
 
@@ -36,7 +37,7 @@ public:
 	virtual ~IObserver() {}
 
 	virtual void setSource(const source_type *s) = 0;
-	virtual void update(const what_type &what) = 0;
+	virtual void update(typename Commons::RParam<what_type>::Type what) = 0;
 
 protected:
 	IObserver() {}

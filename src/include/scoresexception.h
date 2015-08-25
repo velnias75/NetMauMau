@@ -36,8 +36,8 @@ namespace Exception {
 /**
  * @ingroup exceptions
  * @brief Failure while retrieving scores
- * @deprecated
  * @since 0.9
+ * @deprecated This exception is no more thrown nowhere
  */
 class _EXPORT _DEPRECATED ScoresException : public Common::Exception::SocketException {
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"

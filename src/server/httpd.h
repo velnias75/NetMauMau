@@ -53,7 +53,7 @@ public:
 
 	virtual void update(const Common::IObserver<Connection>::what_type &what);
 	virtual void update(const Common::IObserver<Engine>::what_type &what);
-	virtual void update(const Common::IObserver<Game>::what_type &what);
+	virtual void update(Common::IObserver<Game>::what_type what);
 
 	inline std::string getWebServerURL() const {
 		return m_url;

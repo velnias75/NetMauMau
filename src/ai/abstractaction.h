@@ -76,22 +76,42 @@ protected:
 
 	static const IConditionPtr &getNullCondition() throw() _CONST;
 
+private:
 	template<class Iterator, class Tp>
-	inline static Iterator pull(Iterator first, Iterator last, Tp arg) throw() {
+	inline static Iterator pull_internal(Iterator first, Iterator last,
+										 typename Commons::RParam<Tp>::Type arg) throw() {
 		return std::partition(first, last, std::bind2nd(Common::equalTo
 							  <typename Iterator::value_type, Tp>(), arg));
 	}
 
 	template<class Iterator, class Tp>
-	inline static Iterator stable_pull(Iterator first, Iterator last, Tp arg) throw() {
+	inline static Iterator stable_pull_internal(Iterator first, Iterator last,
+			typename Commons::RParam<Tp>::Type arg) throw() {
 		return std::stable_partition(first, last, std::bind2nd(Common::equalTo
 									 <typename Iterator::value_type, Tp>(), arg));
 	}
 
 	template<class Iterator, class Tp>
-	inline static Iterator push(Iterator first, Iterator last, Tp arg) throw() {
+	inline static Iterator push_internal(Iterator first, Iterator last,
+										 typename Commons::RParam<Tp>::Type arg) throw() {
 		return std::stable_partition(first, last, std::not1(std::bind2nd(Common::equalTo
 									 <typename Iterator::value_type, Tp>(), arg)));
+	}
+
+protected:
+	template<class Iterator, class Tp>
+	inline static Iterator pull(Iterator first, Iterator last, const Tp &arg) throw() {
+		return pull_internal<Iterator, Tp>(first, last, arg);
+	}
+
+	template<class Iterator, class Tp>
+	inline static Iterator stable_pull(Iterator first, Iterator last, const Tp &arg) throw() {
+		return stable_pull_internal<Iterator, Tp>(first, last, arg);
+	}
+
+	template<class Iterator, class Tp>
+	inline static Iterator push(Iterator first, Iterator last, const Tp &arg) throw() {
+		return push_internal<Iterator, Tp>(first, last, arg);
 	}
 
 private:

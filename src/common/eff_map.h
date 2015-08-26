@@ -28,13 +28,13 @@
 
 #include <map>
 
-namespace NetMauMau {
+#include "tmp.h"
 
-namespace Common {
-
+namespace {
 template<typename MapType, typename KeyArgType, typename ValueArgType>
-typename MapType::iterator efficientAddOrUpdate(MapType &m, const KeyArgType &k,
-		const ValueArgType &v, const typename MapType::iterator &lb) {
+typename MapType::iterator __efficientAddOrUpdate(MapType &m,
+		typename Commons::RParam<KeyArgType>::Type k,
+		typename Commons::RParam<ValueArgType>::Type v, const typename MapType::iterator &lb) {
 
 	if(lb != m.end() && !(m.key_comp()(k, lb->first))) {
 		lb->second = v;
@@ -44,12 +44,11 @@ typename MapType::iterator efficientAddOrUpdate(MapType &m, const KeyArgType &k,
 		return m.insert(lb, MVT(k, v));
 	}
 }
-
-template<typename MapType, typename KeyArgType, typename ValueArgType>
-typename MapType::iterator efficientAddOrUpdate(MapType &m, const KeyArgType &k,
-		const ValueArgType &v) {
-	return efficientAddOrUpdate(m, k, v, m.lower_bound(k));
 }
+
+namespace NetMauMau {
+
+namespace Common {
 
 template<typename MapType>
 struct key {
@@ -66,6 +65,18 @@ struct value {
 		return v.second;
 	}
 };
+
+template<typename MapType, typename KeyArgType, typename ValueArgType> inline
+typename MapType::iterator efficientAddOrUpdate(MapType &m, const KeyArgType &k,
+		const ValueArgType &v, const typename MapType::iterator &lb) {
+	return __efficientAddOrUpdate<MapType, KeyArgType, ValueArgType>(m, k, v, lb);
+}
+
+template<typename MapType, typename KeyArgType, typename ValueArgType>
+typename MapType::iterator efficientAddOrUpdate(MapType &m, const KeyArgType &k,
+		const ValueArgType &v) {
+	return efficientAddOrUpdate(m, k, v, m.lower_bound(k));
+}
 
 }
 

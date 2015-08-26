@@ -68,6 +68,12 @@ public:
 	typedef typename IfThenElse<IsClassT<T>::No, T, T const &>::ResultT Type;
 };
 
+template<typename T, std::size_t N>
+class RParam<T[N]> {
+public:
+	typedef T const *Type;
+};
+
 }
 
 #endif /* COMMONS_TMP_H */

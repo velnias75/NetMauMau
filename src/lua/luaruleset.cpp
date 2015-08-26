@@ -35,7 +35,8 @@
 
 namespace {
 
-const std::string WRONGTYPE("Wrong return type; expecting ");
+const std::string WRONGTYPE("Wrong return type: ");
+const std::string EXPECTING("; expecting ");
 
 const NetMauMau::Lua::LuaState &l = NetMauMau::Lua::LuaState::getInstance();
 
@@ -120,15 +121,18 @@ private:
 #pragma GCC diagnostic pop
 
 template < typename T, typename LuaType = lua_Integer,
-		 LuaType(*CONV)(lua_State *, int) = lua_tointeger >
+		 LuaType(&CONV)(lua_State *, int) = lua_tointeger >
 struct LuaTypeCheckerBase {
 
 	inline static LuaType getType(lua_State *ls, int t, const char *n, const char *fname)
 	throw(NetMauMau::Lua::Exception::LuaFatalException) {
 
-		if(lua_type(ls, -1) != t || lua_type(ls, -1) == LUA_TNONE) {
+		int type = 0;
+
+		if((type = lua_type(ls, -1)) != t || (type = lua_type(ls, -1)) == LUA_TNONE) {
 			lua_pop(ls, -1);
-			throw NetMauMau::Lua::Exception::LuaFatalException(WRONGTYPE + n, fname);
+			throw NetMauMau::Lua::Exception::LuaFatalException(WRONGTYPE + lua_typename(ls, type) +
+					EXPECTING + n, fname);
 		}
 
 		return CONV(ls, -1);

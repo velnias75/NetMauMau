@@ -92,7 +92,8 @@ Engine::Engine(EngineContext &ctx) throw(Common::Exception::SocketException) : I
 	try {
 
 		if(getRuleSet()->isNull()) {
-			throw Common::Exception::SocketException("Can't create engine due to missing ruleset");
+			throw Common::Exception::SocketException("Can't create engine due to " \
+					"missing or invalid ruleset");
 		}
 
 		ctx.getEventHandler().acceptingPlayers();

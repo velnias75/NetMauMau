@@ -109,10 +109,13 @@ std::size_t nextLogBuf() {
 
 	return std::min<std::size_t>(aux, NetMauMau::Common::Logger::BUFCNT - 1u);
 
-#else
+#elif GCC_VERSION >= 41000
 	return __sync_bool_compare_and_swap(&rotatingLogBufSelect,
 										(NetMauMau::Common::Logger::BUFCNT - 1u), 1u) ?
 		   rotatingLogBufSelect : __sync_add_and_fetch(&rotatingLogBufSelect, 1u);
+#else
+	return rotatingLogBufSelect == (NetMauMau::Common::Logger::BUFCNT - 1u) ? 1u :
+		   ++rotatingLogBufSelect;
 #endif
 }
 

@@ -42,7 +42,7 @@ private:
 	template<typename C> static One test(int C:: *);
 	template<typename C> static Two test(...);
 public:
-	enum { Yes = sizeof(IsClassT<T>::test<T>(0L)) == 1 };
+	enum { Yes = sizeof(IsClassT<T>::template test<T>(0L)) == 1 };
 	enum { No = !Yes };
 };
 #pragma GCC diagnostic pop

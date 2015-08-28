@@ -27,6 +27,10 @@
 #include <cstddef>                      // for NULL
 #include <functional>                   // for greater
 
+#ifdef ENABLE_THREADS
+#include <pthread.h>
+#endif
+
 #include "abstractconnection.h"         // for AbstractConnection, etc
 #include "observable.h"
 
@@ -48,6 +52,43 @@ public:
 	using Common::AbstractConnection::wait;
 	using Common::AbstractConnection::getPlayerInfo;
 
+#ifdef ENABLE_THREADS
+	typedef struct _playerThreadData {
+
+		inline _playerThreadData(const _playerThreadData &o) : cnd(o.cnd), mux(o.mux), nfd(o.nfd),
+			tid(o.tid), msg(o.msg), stp(o.stp), con(o.con) {}
+
+		inline _playerThreadData(const NAMESOCKFD &n, Connection &c) : cnd(), mux(), nfd(n), tid(),
+			msg(), stp(false), con(c) {
+			pthread_cond_init(&cnd, NULL);
+			pthread_mutex_init(&mux, NULL);
+		}
+
+		~_playerThreadData();
+
+		inline _playerThreadData &operator=(const _playerThreadData &o) _PURE {
+
+			if(this != &o) {
+				_playerThreadData tmp(o);
+				std::swap(tmp, *this);
+			}
+
+			return *this;
+		}
+
+		pthread_cond_t    cnd;
+		pthread_mutex_t   mux;
+		const NAMESOCKFD &nfd;
+		pthread_t         tid;
+		std::string       msg;
+		volatile bool     stp;
+		Connection       &con;
+
+	} PLAYERTHREADDATA;
+
+	typedef std::vector<NetMauMau::Server::Connection::PLAYERTHREADDATA *> PTD;
+#endif
+
 	typedef enum { NONE, PLAY, CAP, REFUSED, PLAYERLIST, SCORES } ACCEPT_STATE;
 	typedef std::map<uint32_t, std::string, std::greater<uint32_t> > VERSIONEDMESSAGE;
 
@@ -67,6 +108,11 @@ public:
 	}
 
 	NAMESOCKFD getPlayerInfo(const std::string &name) const;
+
+#ifdef ENABLE_THREADS
+	void createThreads();
+	void waitPlayerThreads() const;
+#endif
 
 	void sendVersionedMessage(const VERSIONEDMESSAGE &vm) const
 	throw(Common::Exception::SocketException);
@@ -97,14 +143,26 @@ protected:
 	virtual std::string wireError(const std::string &err) const;
 	virtual void intercept() throw(Common::Exception::SocketException);
 
+#ifdef ENABLE_THREADS
+	void signalMessage(SOCKET fd, const std::string &msg);
+#endif
+
 private:
 	static bool isPNG(const std::string &pic);
+
+#ifdef ENABLE_THREADS
+	void shutdownThreads();
+#endif
 
 private:
 	CAPABILITIES m_caps;
 	const uint32_t m_clientMinVer;
 	const bool m_inetd;
 	const std::string **const m_aiPlayerImages;
+
+#ifdef ENABLE_THREADS
+	PTD m_data;
+#endif
 };
 
 }

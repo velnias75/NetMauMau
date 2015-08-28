@@ -69,6 +69,9 @@ private:
 	_NOUNUSED Common::ICardPtr findCard(const std::string &offeredCard) const;
 	uint32_t getClientVersion() const;
 
+	std::string playerRead(SOCKET fd, std::size_t len = 1024) const
+	throw(NetMauMau::Common::Exception::SocketException);
+
 private:
 	Connection &m_connection;
 	const int m_sockfd;

@@ -549,6 +549,9 @@ int main(int argc, const char **argv) {
 									try {
 
 										refuse = true;
+#ifdef ENABLE_THREADS
+										con.createThreads();
+#endif
 										game.start(ultimate);
 										updatePlayerCap(caps, game.getPlayerCount(), con);
 #ifdef HAVE_LIBRT

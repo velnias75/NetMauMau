@@ -48,6 +48,98 @@
 #endif
 
 namespace {
+#ifdef ENABLE_THREADS
+
+pthread_mutex_t consumedMux = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t  consumedCnd = PTHREAD_COND_INITIALIZER;
+
+void *playerThread(void *arg) throw() {
+
+	NetMauMau::Server::Connection::PLAYERTHREADDATA *ptd =
+		static_cast<NetMauMau::Server::Connection::PLAYERTHREADDATA *>(arg);
+
+	do {
+
+		pthread_mutex_lock(&ptd->mux);
+
+		while(!(ptd->stp || !ptd->msg.empty())) pthread_cond_wait(&ptd->cnd, &ptd->mux);
+
+		if(!ptd->stp) {
+
+			pthread_mutex_lock(&consumedMux);
+
+			try {
+				ptd->con.write(ptd->nfd.sockfd, ptd->msg);
+			} catch(const NetMauMau::Common::Exception::SocketException &e) {
+				logWarning("Exception in thread of " << ptd->nfd.name << ": " << e);
+			}
+
+			std::string().swap(ptd->msg);
+
+			pthread_cond_signal(&consumedCnd);
+			pthread_mutex_unlock(&consumedMux);
+		}
+
+		pthread_mutex_unlock(&ptd->mux);
+
+	} while(!ptd->stp);
+
+	return NULL;
+}
+
+struct _socketCmp : std::unary_function<NetMauMau::Server::Connection::PLAYERTHREADDATA *, bool> {
+	inline _socketCmp(SOCKET s) : fd(s) {}
+	inline result_type operator()(Commons::RParam<argument_type>::Type ptd) const {
+		return ptd->nfd.sockfd == fd;
+	}
+private:
+	SOCKET fd;
+};
+
+struct _playerThreadShutter :
+		std::unary_function<NetMauMau::Server::Connection::PLAYERTHREADDATA *, void> {
+	inline result_type operator()(Commons::RParam<argument_type>::Type ptd) const {
+
+		int r;
+
+		pthread_mutex_lock(&ptd->mux);
+		ptd->stp = true;
+		pthread_cond_signal(&ptd->cnd);
+		pthread_mutex_unlock(&ptd->mux);
+
+		if((r = pthread_join(ptd->tid, NULL))) {
+			logDebug("pthread_join:" << NetMauMau::Common::errorString(r));
+		}
+
+		delete ptd;
+	}
+};
+
+struct _playerThreadCreator : std::unary_function<NetMauMau::Server::Connection::NAMESOCKFD, void> {
+
+	inline _playerThreadCreator(NetMauMau::Server::Connection &c,
+								NetMauMau::Server::Connection::PTD &d) : con(c), data(d) {}
+
+	inline result_type operator()(Commons::RParam<argument_type>::Type nfd) const {
+
+		pthread_t tid;
+
+		NetMauMau::Server::Connection::PLAYERTHREADDATA *ptd =
+			new NetMauMau::Server::Connection::PLAYERTHREADDATA(nfd, con);
+
+		if(!pthread_create(&tid, NULL, playerThread, static_cast<void *>(ptd))) {
+			ptd->tid = tid;
+			data.push_back(ptd);
+		} else {
+			delete ptd;
+		}
+	}
+
+private:
+	NetMauMau::Server::Connection &con;
+	NetMauMau::Server::Connection::PTD &data;
+};
+#endif
 
 _NORETURN void throwPlayerDisconnect(const NetMauMau::Common::IConnection::INFO &info)
 throw(NetMauMau::Common::Exception::SocketException) {
@@ -94,6 +186,13 @@ struct _logOutPlayer : std::unary_function<NetMauMau::Common::IConnection::NAMES
 }
 
 using namespace NetMauMau::Server;
+
+#ifdef ENABLE_THREADS
+Connection::_playerThreadData::~_playerThreadData() {
+	pthread_mutex_destroy(&mux);
+	pthread_cond_destroy(&cnd);
+}
+#endif
 
 Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *server)
 	: AbstractConnection(server, port, true), m_caps(), m_clientMinVer(minVer), m_inetd(inetd),
@@ -187,10 +286,18 @@ Connection::~Connection() {
 			const NetMauMau::Common::TCPOptNodelay nd(i->sockfd);
 			_UNUSED(nd);
 
+#ifdef ENABLE_THREADS
+			signalMessage(i->sockfd, NetMauMau::Common::Protocol::V15::BYE);
+#else
 			send(NetMauMau::Common::Protocol::V15::BYE.c_str(), 3, i->sockfd);
+#endif
 
 		} catch(const NetMauMau::Common::Exception::SocketException &) {}
 	}
+
+#ifdef ENABLE_THREADS
+	shutdownThreads();
+#endif
 
 	for(int i = 0; i < 4; ++i) delete m_aiPlayerImages[i];
 
@@ -792,10 +899,22 @@ throw(NetMauMau::Common::Exception::SocketException) {
 						getPlayers().end());
 
 					if(wantPic && pp != getPlayers().end()) {
-						write(i->sockfd, msg.replace(j->second.length() - 9, std::string::npos,
-													 pp->playerPic.empty() ? "-" : pp->playerPic));
+
+						const std::string &smsg(msg.replace(j->second.length() - 9,
+															std::string::npos,
+															pp->playerPic.empty() ? "-" :
+															pp->playerPic));
+#ifdef ENABLE_THREADS
+						const_cast<Connection *>(this)->signalMessage(i->sockfd, smsg);
+#else
+						write(i->sockfd, smsg);
+#endif
 					} else {
+#ifdef ENABLE_THREADS
+						const_cast<Connection *>(this)->signalMessage(i->sockfd, msg);
+#else
 						write(i->sockfd, msg);
+#endif
 					}
 
 					vMsg = true;
@@ -805,7 +924,13 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 			const VERSIONEDMESSAGE::const_iterator &nullV(vm.find(0));
 
-			if(!vMsg && nullV != vm.end()) write(i->sockfd, nullV->second);
+			if(!vMsg && nullV != vm.end()) {
+#ifdef ENABLE_THREADS
+				const_cast<Connection *>(this)->signalMessage(i->sockfd, nullV->second);
+#else
+				write(i->sockfd, nullV->second);
+#endif
+			}
 		}
 	}
 }
@@ -826,7 +951,11 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		const NetMauMau::Common::TCPOptNodelay nd(i->sockfd);
 		_UNUSED(nd);
 
+#ifdef ENABLE_THREADS
+		signalMessage(i->sockfd, msg);
+#else
 		write(i->sockfd, msg);
+#endif
 	}
 
 	return *this;
@@ -896,7 +1025,57 @@ bool Connection::isPNG(const std::string &pic) {
 
 void Connection::reset() throw() {
 	std::for_each(getRegisteredPlayers().begin(), getRegisteredPlayers().end(), _logOutPlayer());
+
+#ifdef ENABLE_THREADS
+	shutdownThreads();
+#endif
+
 	AbstractConnection::reset();
+
 }
+
+#ifdef ENABLE_THREADS
+void Connection::shutdownThreads() {
+	waitPlayerThreads();
+	std::for_each(m_data.begin(), m_data.end(), _playerThreadShutter());
+	PTD().swap(m_data);
+}
+
+void Connection::createThreads() {
+	std::for_each(getRegisteredPlayers().begin(), getRegisteredPlayers().end(),
+				  _playerThreadCreator(*this, m_data));
+}
+
+void Connection::waitPlayerThreads() const {
+
+	for(PTD::const_iterator i(m_data.begin()); i != m_data.end(); ++i) {
+
+		if(!(*i)->msg.empty()) {
+
+			pthread_mutex_lock(&consumedMux);
+
+			while(!(*i)->msg.empty()) pthread_cond_wait(&consumedCnd, &consumedMux);
+
+			pthread_mutex_unlock(&consumedMux);
+		}
+	}
+}
+
+void Connection::signalMessage(SOCKET fd, const std::string &msg) {
+
+	const PTD::iterator &f(std::find_if(m_data.begin(), m_data.end(), _socketCmp(fd)));
+
+	if(f != m_data.end()) {
+
+		pthread_mutex_lock(&(*f)->mux);
+		(*f)->msg = msg;
+		pthread_cond_signal(&(*f)->cnd);
+		pthread_mutex_unlock(&(*f)->mux);
+
+	} else {
+		write(fd, msg);
+	}
+}
+#endif
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

@@ -34,6 +34,7 @@
 #include "abstractconnectionimpl.h"     // for AbstractConnectionImpl
 #include "errorstring.h"                // for errorString
 #include "select.h"
+#include "tmp.h"
 
 #ifndef TEMP_FAILURE_RETRY
 #define TEMP_FAILURE_RETRY
@@ -118,7 +119,7 @@ void AbstractConnection::wait(long ms) throw(Exception::SocketException) {
 
 	fd_set rfds;
 	int sret = 1;
-	struct timeval tv = { ms / 0xF4240L, ms % 0xF4240L };
+	struct timeval tv = { ms / 0xF4240L, Commons::effModulo<long, 0xF4240L>(ms) };
 
 	while(sret > 0) {
 

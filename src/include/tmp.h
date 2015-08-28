@@ -20,6 +20,13 @@
 #ifndef COMMONS_TMP_H
 #define COMMONS_TMP_H
 
+#include <functional>
+
+namespace {
+template<typename T, T> class __bitModulo;
+template<typename T, T> class __opModulo;
+}
+
 namespace Commons {
 
 template<class T>
@@ -46,6 +53,13 @@ public:
 	enum { No = !Yes };
 };
 #pragma GCC diagnostic pop
+
+template<typename T>
+class IsUnsignedT {
+public:
+	enum { Yes = (T(0) - T(1) >= T(0)) };
+	enum { No = !Yes };
+};
 
 template<bool C, typename Ta, typename Tb>
 class IfThenElse;
@@ -74,6 +88,60 @@ public:
 	typedef T const *Type;
 };
 
+template<typename T, T N>
+class IsNotEqualZero {
+public:
+	enum { Result = (N != T(0)) };
+};
+
+template<typename T, T N>
+class IsGreaterThanZero {
+public:
+	enum { Result = (N > T(0)) };
+};
+
+template<typename T, T N>
+class IsPowerOfTwo {
+public:
+	enum { Yes = (IfThenElse < IsUnsignedT<T>::Yes,
+				  IsNotEqualZero<T, N>,
+				  IsGreaterThanZero<T, N> >::ResultT::Result && ((N & (~N + T(1))) == N))
+		 };
+	enum { No = !Yes };
+};
+
+template<typename T, T N>
+inline T effModulo(typename RParam<T>::Type x) {
+	return typename IfThenElse < IsPowerOfTwo<T, N>::Yes,  __bitModulo<T, N>,
+		   __opModulo<T, N> >::ResultT()(x);
+}
+
+}
+
+namespace {
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+template<typename T, T N>
+class __bitModulo : std::unary_function<T, T> {
+public:
+	inline typename std::unary_function<T, T>::result_type operator()(typename
+			Commons::RParam<typename std::unary_function<T, T>::argument_type>::Type x) const {
+		return x & (N - 1);
+	}
+};
+#pragma GCC diagnostic pop
+
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic push
+template<typename T, T N>
+class __opModulo : std::unary_function<T, T> {
+public:
+	inline typename std::unary_function<T, T>::result_type operator()(typename
+			Commons::RParam<typename std::unary_function<T, T>::argument_type>::Type x) const {
+		return x % N;
+	}
+};
+#pragma GCC diagnostic pop
 }
 
 #endif /* COMMONS_TMP_H */

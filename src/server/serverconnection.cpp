@@ -17,10 +17,6 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
-#include "config.h"                     // for MAXPICBYTES, etc
-#endif
-
 #include "serverconnection.h"
 
 #ifdef HAVE_NETDB_H

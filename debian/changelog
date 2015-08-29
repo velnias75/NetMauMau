@@ -1,6 +1,6 @@
 netmaumau (0.24.1) UNRELEASED; urgency=low
 
-  * 
+  * fixed player image download notification
 
  -- Heiko Schäfer <heiko@rangun.de>  Sun, 23 Aug 2015 06:41:51 +0200
 

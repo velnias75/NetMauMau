@@ -147,6 +147,8 @@ protected:
 
 private:
 	void init();
+	bool nextPlayer(std::string &player, bool playerPic)
+	throw(NetMauMau::Common::Exception::SocketException);
 
 private:
 	ConnectionImpl *const _pimpl;

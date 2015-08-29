@@ -587,7 +587,8 @@ private:
 	PIRET performTurn(const _playInternalParams &) const;
 	PIRET performNextPlayer(const _playInternalParams &) const;
 	PIRET performStats(const _playInternalParams &) const;
-	PIRET performPlayerJoined(const _playInternalParams &) const;
+	PIRET performPlayerJoined(const _playInternalParams &) const
+	throw(NetMauMau::Common::Exception::SocketException);
 	PIRET performPlayerRejected(const _playInternalParams &) const;
 	PIRET performGetCards(const _playInternalParams &) const;
 	PIRET performInitialCard(const _playInternalParams &) const;

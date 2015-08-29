@@ -60,6 +60,26 @@
 #endif
 
 namespace {
+
+class _picListenerHelper {
+	DISALLOW_COPY_AND_ASSIGN(_picListenerHelper)
+public:
+	inline _picListenerHelper(const NetMauMau::Client::IPlayerPicListener &l,
+							  const std::string &pl, bool arm) : m_listnener(l), m_player(pl),
+		m_armed(arm) {
+		if(m_armed) m_listnener.beginReceivePlayerPicture(m_player);
+	}
+
+	inline ~_picListenerHelper() {
+		if(m_armed) m_listnener.endReceivePlayerPicture(m_player);
+	}
+
+private:
+	const NetMauMau::Client::IPlayerPicListener &m_listnener;
+	const std::string &m_player;
+	const bool m_armed;
+};
+
 #if defined(ESHUTDOWN)
 const std::string SRVCLOSE(NetMauMau::Common::errorString(ESHUTDOWN));
 #else
@@ -130,19 +150,14 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		std::string pl, pic;
 
-		*this >> pl;
+		while(nextPlayer(pl, playerPNG)) {
 
-		if(playerPNG) {
-			hdl->beginReceivePlayerPicture(pl);
+			_picListenerHelper plh(*hdl, pl, playerPNG);
+			_UNUSED(plh);
 
 			*this >> pic;
-		}
-
-		while(pl != NetMauMau::Common::Protocol::V15::PLAYERLISTEND) {
 
 			const std::vector<unsigned char> &pp(NetMauMau::Common::base64_decode(pic));
-
-			if(playerPNG) hdl->endReceivePlayerPicture(pl);
 
 			unsigned char *ppd = 0L;
 
@@ -160,16 +175,6 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			PLAYERINFO pInfo = { pl, ppd, (pic.empty() || pic != "-") ? pp.size() : 0 };
 
 			plv.push_back(pInfo);
-
-			*this >> pl;
-
-			const bool ple = (pl == NetMauMau::Common::Protocol::V15::PLAYERLISTEND);
-
-			if(playerPNG) {
-				if(!ple) hdl->beginReceivePlayerPicture(pl);
-
-				*this >> pic;
-			}
 		}
 
 	} else {
@@ -177,6 +182,22 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	}
 
 	return plv;
+}
+
+bool Connection::nextPlayer(std::string &player, bool playerPic)
+throw(NetMauMau::Common::Exception::SocketException) {
+
+	*this >> player;
+
+	const bool end = (player.compare(0, NetMauMau::Common::Protocol::V15::PLAYERLISTEND.length(),
+									 NetMauMau::Common::Protocol::V15::PLAYERLISTEND) == 0);
+
+	if(playerPic && end) {
+		std::string endJunk;
+		*this >> endJunk;
+	}
+
+	return !end;
 }
 
 Connection::CAPABILITIES Connection::capabilities()

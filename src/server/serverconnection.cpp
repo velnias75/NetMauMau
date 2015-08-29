@@ -652,17 +652,17 @@ Connection::ACCEPT_STATE Connection::accept(INFO &info,
 					}
 
 					std::vector<std::string::traits_type::char_type>
-					hdbvs(NetMauMau::Common::Protocol::V15::PLAYERLISTEND.begin(),
+					plEnd(NetMauMau::Common::Protocol::V15::PLAYERLISTEND.begin(),
 						  NetMauMau::Common::Protocol::V15::PLAYERLISTEND.end());
 
-					hdbvs.push_back('\0');
+					plEnd.push_back('\0');
 
 					if(cver >= 4) {
-						hdbvs.push_back('-');
-						hdbvs.push_back('\0');
+						plEnd.push_back('-');
+						plEnd.push_back('\0');
 					}
 
-					send(hdbvs.data(), hdbvs.size(), cfd);
+					send(plEnd.data(), plEnd.size(), cfd);
 
 					if(!gameRunning) shutdown(cfd);
 

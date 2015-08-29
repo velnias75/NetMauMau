@@ -432,7 +432,8 @@ AbstractClientV05::PIRET AbstractClientV05::performStats(const _playInternalPara
 }
 
 AbstractClientV05::PIRET
-AbstractClientV05::performPlayerJoined(const _playInternalParams &p) const {
+AbstractClientV05::performPlayerJoined(const _playInternalParams &p) const
+throw(NetMauMau::Common::Exception::SocketException) {
 
 	std::string plPic;
 
@@ -440,7 +441,12 @@ AbstractClientV05::performPlayerJoined(const _playInternalParams &p) const {
 
 	beginReceivePlayerPicture(p.msg);
 
-	_pimpl->m_connection >> plPic;
+	try {
+		_pimpl->m_connection >> plPic;
+	} catch(const NetMauMau::Common::Exception::SocketException &) {
+		endReceivePlayerPicture(p.msg);
+		throw;
+	}
 
 	const std::vector<unsigned char> &plPicPng(NetMauMau::Common::base64_decode(plPic));
 

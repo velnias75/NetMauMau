@@ -37,7 +37,7 @@ netmaumau.pc: $(top_srcdir)/netmaumau.pc.in
 endif
 
 AM_DISTCHECK_CONFIGURE_FLAGS = --disable-client --enable-console-client --enable-pidfile \
-	--with-bashcompletiondir=no
+	--with-bashcompletiondir=no --enable-threads
 
 if XINETD
 if MICROHTTPD

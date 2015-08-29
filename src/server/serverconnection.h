@@ -55,15 +55,10 @@ public:
 #ifdef ENABLE_THREADS
 	typedef struct _playerThreadData {
 
-		inline _playerThreadData(const _playerThreadData &o) : cnd(o.cnd), mux(o.mux), nfd(o.nfd),
+		inline _playerThreadData(const _playerThreadData &o) : get(o.get), gmx(o.gmx), nfd(o.nfd),
 			tid(o.tid), msg(o.msg), stp(o.stp), con(o.con) {}
 
-		inline _playerThreadData(const NAMESOCKFD &n, Connection &c) : cnd(), mux(), nfd(n), tid(),
-			msg(), stp(false), con(c) {
-			pthread_cond_init(&cnd, NULL);
-			pthread_mutex_init(&mux, NULL);
-		}
-
+		_playerThreadData(const NAMESOCKFD &n, Connection &c);
 		~_playerThreadData();
 
 		inline _playerThreadData &operator=(const _playerThreadData &o) _PURE {
@@ -76,8 +71,8 @@ public:
 			return *this;
 		}
 
-		pthread_cond_t    cnd;
-		pthread_mutex_t   mux;
+		pthread_cond_t    get;
+		pthread_mutex_t   gmx;
 		const NAMESOCKFD &nfd;
 		pthread_t         tid;
 		std::string       msg;
@@ -112,6 +107,7 @@ public:
 #ifdef ENABLE_THREADS
 	void createThreads();
 	void waitPlayerThreads() const;
+	void removeThread(SOCKET fd);
 #endif
 
 	void sendVersionedMessage(const VERSIONEDMESSAGE &vm) const

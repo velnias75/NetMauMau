@@ -35,6 +35,10 @@
 #include <unistd.h>                     // for close, socklen_t, ssize_t
 #endif
 
+#ifdef ENABLE_THREADS
+#include <pthread.h>
+#endif
+
 #include <cerrno>                       // for errno, ENOMEM
 #include <cstdio>                       // for NULL, fileno, snprintf, etc
 #include <vector>                       // for vector
@@ -46,15 +50,23 @@
 #include "logger.h"                     // for logWarning
 #include "select.h"
 
+#ifdef ENABLE_THREADS
+#include "mutexlocker.h"
+#endif
+
 #ifndef TEMP_FAILURE_RETRY
 #define TEMP_FAILURE_RETRY
+#endif
+
+namespace {
+
+#ifdef ENABLE_THREADS
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 #ifdef _WIN32
 #define MSG_NOSIGNAL 0x0000000
 #define MSG_DONTWAIT 0x0000000
-
-namespace {
 
 int wsaErr;
 
@@ -70,9 +82,8 @@ void initialize() {
 void shut_down() {
 	WSACleanup();
 }
-
-}
 #endif
+}
 
 using namespace NetMauMau::Common;
 
@@ -326,8 +337,11 @@ void AbstractSocket::send(const void *buf, std::size_t len,
 		}
 	}
 
+#ifdef ENABLE_THREADS
+	MUTEXLOCKER(&mutex);
 	m_sentTotal += origLen;
 	m_sent += origLen;
+#endif
 }
 
 void AbstractSocket::write(SOCKET *fds, std::size_t numfd,

@@ -7,6 +7,7 @@ Prerequisites
 * [GNU GCC compiler](https://gcc.gnu.org/) (currently NetMauMau uses a certain amount of features exclusive to GCC)
 * [POPT library](http://rpm5.org/files/popt/) >= 1.10
 * xxd (from the vim package [on **Debian** based distributions *vim-common*; on **Gentoo** *vim-core*])
+* **gawk** (`mawk` will cause the build to fail)
 * libmagic (*optional, but recommended*)
 * [GNU Scientific Library](http://www.gnu.org/software/gsl/) >= 1.9 (*optional*, for better random number generator)
 * [libmicrohttpd](http://www.gnu.org/software/libmicrohttpd) (*optional, for the integrated webserver*)

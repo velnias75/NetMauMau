@@ -29,6 +29,8 @@ using namespace NetMauMau::Common;
 MutexLocker::MutexLocker(pthread_mutex_t *mux) throw() : m_mux(mux), m_locked(false) {
 
 	int r = 0;
+
+	// cppcheck-suppress unreadVariable
 	m_locked = (r = pthread_mutex_lock(m_mux)) == 0;
 
 #ifndef NDEBUG

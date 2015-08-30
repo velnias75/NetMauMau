@@ -50,14 +50,15 @@ EasyPlayer::requestCard(const NetMauMau::Common::ICardPtr &uncoveredCard,
 
 	if(!takeCount) {
 
-		IPlayer::CARDS c(getPossibleCards(uncoveredCard, jackSuit));
+		// we need to make a copy here, because std::random_shuffle is a mutating algorithm
+		IPlayer::CARDS shuffledCards(getPossibleCards(uncoveredCard, jackSuit));
 
-		if(!c.empty() && (std::time(0L) & 3)) {
+		if(!shuffledCards.empty() && Commons::effModulo<long, 4L>(std::time(0L))) {
 
-			std::random_shuffle(c.begin(), c.end(),
+			std::random_shuffle(shuffledCards.begin(), shuffledCards.end(),
 								NetMauMau::Common::genRandom<CARDS::difference_type>);
 
-			rrc = NetMauMau::Common::find(*c.begin(), getPlayerCards().begin(),
+			rrc = NetMauMau::Common::find(*shuffledCards.begin(), getPlayerCards().begin(),
 										  getPlayerCards().end());
 		}
 

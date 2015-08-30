@@ -39,10 +39,6 @@ libnetmaumaucommon_private_la_LIBADD = $(MAGIC_LIBS)
 libnetmaumaucommon_la_CPPFLAGS = $(GSL) -DEXPORT_SMARTSINGLETON
 libnetmaumaucommon_la_CXXFLAGS = -I$(top_srcdir)/src/include
 
-if THREADS_ENABLED
-libnetmaumaucommon_la_CXXFLAGS += -pthread
-endif
-
 libnetmaumaucommon_la_SOURCES = abstractconnection.cpp abstractconnectionimpl.cpp \
 	abstractsocket.cpp abstractsocketimpl.cpp base64.cpp logger.cpp select.cpp \
 	socketexception.cpp
@@ -52,5 +48,12 @@ libnetmaumaucommon_la_SOURCES += zlibexception.cpp zstreambuf.cpp
 endif
 
 libnetmaumaucommon_la_LIBADD = libnetmaumaucommon_private.la $(ZLIB_LIBS)
+
+if THREADS_ENABLED
+# libnetmaumaucommon_la_CXXFLAGS += pthread is dangerous here:
+# https://sourceware.org/bugzilla/show_bug.cgi?id=16417
+libnetmaumaucommon_la_LIBADD += -lpthread
+endif
+
 libnetmaumaucommon_la_LDFLAGS = -nodefaultlibs -nostartfiles \
 	-version-info 6:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)

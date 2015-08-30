@@ -55,8 +55,8 @@ public:
 #ifdef ENABLE_THREADS
 	typedef struct _playerThreadData {
 
-		inline _playerThreadData(const _playerThreadData &o) : get(o.get), gmx(o.gmx), nfd(o.nfd),
-			tid(o.tid), msg(o.msg), stp(o.stp), con(o.con) {}
+		inline _playerThreadData(const _playerThreadData &o) : get(o.get), gmx(o.gmx), eat(o.eat),
+			emx(o.emx), nfd(o.nfd), tid(o.tid), msg(o.msg), stp(o.stp), con(o.con), exc(o.exc) {}
 
 		_playerThreadData(const NAMESOCKFD &n, Connection &c);
 		~_playerThreadData();
@@ -73,11 +73,15 @@ public:
 
 		pthread_cond_t    get;
 		pthread_mutex_t   gmx;
+		pthread_cond_t    eat;
+		pthread_mutex_t   emx;
 		const NAMESOCKFD &nfd;
 		pthread_t         tid;
 		std::string       msg;
 		volatile bool     stp;
 		Connection       &con;
+
+		Common::Exception::SocketException *exc;
 
 	} PLAYERTHREADDATA;
 
@@ -106,8 +110,6 @@ public:
 
 #ifdef ENABLE_THREADS
 	void createThreads();
-	void waitPlayerThreads() const;
-	void removeThread(SOCKET fd);
 #endif
 
 	void sendVersionedMessage(const VERSIONEDMESSAGE &vm) const
@@ -140,14 +142,22 @@ protected:
 	virtual void intercept() throw(Common::Exception::SocketException);
 
 #ifdef ENABLE_THREADS
-	void signalMessage(SOCKET fd, const std::string &msg);
+	friend class EventHandler;
+	static void signalMessage(PTD &data, SOCKET fd, const std::string &msg);
+	void waitPlayerThreads() const throw(Common::Exception::SocketException);
+	void removeThread(SOCKET fd);
+
+	inline PTD &getData() const {
+		return m_data;
+	}
+
 #endif
 
 private:
 	static bool isPNG(const std::string &pic);
 
 #ifdef ENABLE_THREADS
-	void shutdownThreads();
+	void shutdownThreads() throw();
 #endif
 
 private:
@@ -157,7 +167,7 @@ private:
 	const std::string **const m_aiPlayerImages;
 
 #ifdef ENABLE_THREADS
-	PTD m_data;
+	mutable PTD m_data;
 #endif
 };
 

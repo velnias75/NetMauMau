@@ -31,7 +31,9 @@
 #endif
 
 namespace {
-const std::ostreambuf_iterator<LOG_CHAR> out = std::ostreambuf_iterator<LOG_CHAR>(std::cerr);
+const std::ios_base::Init _INIT_PRIO(101) __avoid_seg_fault;
+const std::ostreambuf_iterator<LOG_CHAR> out _INIT_PRIO(102) =
+	std::ostreambuf_iterator<LOG_CHAR>(std::cerr);
 }
 
 using namespace NetMauMau::Common;

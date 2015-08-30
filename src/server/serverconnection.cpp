@@ -54,41 +54,41 @@
 namespace {
 #ifdef ENABLE_THREADS
 pthread_mutex_t initMux = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t consumedMux = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t  consumedCnd = PTHREAD_COND_INITIALIZER;
-
-pthread_mutexattr_t muxAttr;
 
 void *playerThread(void *arg) throw() {
 
 	NetMauMau::Server::Connection::PLAYERTHREADDATA *ptd =
 		static_cast<NetMauMau::Server::Connection::PLAYERTHREADDATA *>(arg);
 
-	do {
+	try {
 
-		NetMauMau::Common::MutexLocker mlp(&ptd->gmx);
-		_UNUSED(mlp);
+		do {
 
-		while(!(ptd->stp || !ptd->msg.empty())) pthread_cond_wait(&ptd->get, &ptd->gmx);
+			NetMauMau::Common::MutexLocker mlp(&ptd->gmx);
+			_UNUSED(mlp);
 
-		if(!ptd->stp) {
+			while(!(ptd->stp || !ptd->msg.empty())) pthread_cond_wait(&ptd->get, &ptd->gmx);
 
-			try {
-				logDebug(ptd->nfd.name << ": START write");
-				ptd->con.write(ptd->nfd.sockfd, ptd->msg);
-				logDebug(ptd->nfd.name << ": SLEEP");
-				sleep(10);
-				logDebug(ptd->nfd.name << ": END write");
-			} catch(const NetMauMau::Common::Exception::SocketException &e) {
-				logWarning("Exception in thread of " << ptd->nfd.name << ": " << e);
+			if(!ptd->stp) {
+
+				try {
+					ptd->con.write(ptd->nfd.sockfd, ptd->msg);
+				} catch(const NetMauMau::Common::Exception::SocketException &e) {
+					delete ptd->exc;
+					ptd->exc = new(std::nothrow) NetMauMau::Common::Exception::SocketException(e);
+				}
+
+				MUTEXLOCKER(&ptd->emx);
+				std::string().swap(ptd->msg);
+				pthread_cond_signal(&ptd->eat);
 			}
 
-			MUTEXLOCKER(&consumedMux);
-			std::string().swap(ptd->msg);
-			pthread_cond_signal(&consumedCnd);
-		}
+		} while(!ptd->stp);
 
-	} while(!ptd->stp);
+	} catch(const std::exception &e) {
+		delete ptd->exc;
+		ptd->exc = new(std::nothrow) NetMauMau::Common::Exception::SocketException(e.what());
+	}
 
 	return NULL;
 }
@@ -118,6 +118,7 @@ struct _playerThreadShutter :
 			logDebug("pthread_join:" << NetMauMau::Common::errorString(r));
 		}
 
+		delete ptd->exc;
 		delete ptd;
 	}
 };
@@ -196,18 +197,22 @@ using namespace NetMauMau::Server;
 
 #ifdef ENABLE_THREADS
 Connection::_playerThreadData::_playerThreadData(const NAMESOCKFD &n, Connection &c) : get(), gmx(),
-	nfd(n), tid(), msg(), stp(false), con(c) {
+	eat(), emx(), nfd(n), tid(), msg(), stp(false), con(c), exc(0L) {
 
 	MUTEXLOCKER(&initMux);
 
 	pthread_cond_init(&get, NULL);
-	pthread_mutex_init(&gmx, &muxAttr);
+	pthread_mutex_init(&gmx, NULL);
+	pthread_cond_init(&eat, NULL);
+	pthread_mutex_init(&emx, NULL);
 }
 
 Connection::_playerThreadData::~_playerThreadData() {
 
 	MUTEXLOCKER(&initMux);
 
+	pthread_mutex_destroy(&emx);
+	pthread_cond_destroy(&eat);
 	pthread_mutex_destroy(&gmx);
 	pthread_cond_destroy(&get);
 }
@@ -216,11 +221,6 @@ Connection::_playerThreadData::~_playerThreadData() {
 Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *server)
 	: AbstractConnection(server, port, true), m_caps(), m_clientMinVer(minVer), m_inetd(inetd),
 	  m_aiPlayerImages(new(std::nothrow) const std::string*[4]()) {
-
-#ifdef ENABLE_THREADS
-	pthread_mutexattr_init(&muxAttr);
-	pthread_mutexattr_settype(&muxAttr, PTHREAD_MUTEX_ERRORCHECK);
-#endif
 
 #if !defined(_WIN32) && (defined(HAVE_SYS_STAT_H) && defined(HAVE_SYS_TYPES_H))
 
@@ -311,7 +311,7 @@ Connection::~Connection() {
 			_UNUSED(nd);
 
 #ifdef ENABLE_THREADS
-			signalMessage(i->sockfd, NetMauMau::Common::Protocol::V15::BYE);
+			signalMessage(m_data, i->sockfd, NetMauMau::Common::Protocol::V15::BYE);
 #else
 			send(NetMauMau::Common::Protocol::V15::BYE.c_str(), 3, i->sockfd);
 #endif
@@ -321,7 +321,6 @@ Connection::~Connection() {
 
 #ifdef ENABLE_THREADS
 	shutdownThreads();
-	pthread_mutexattr_destroy(&muxAttr);
 #endif
 
 	for(int i = 0; i < 4; ++i) delete m_aiPlayerImages[i];
@@ -938,13 +937,13 @@ throw(NetMauMau::Common::Exception::SocketException) {
 															pp->playerPic.empty() ? "-" :
 															pp->playerPic));
 #ifdef ENABLE_THREADS
-						const_cast<Connection *>(this)->signalMessage(i->sockfd, smsg);
+						signalMessage(m_data, i->sockfd, smsg);
 #else
 						write(i->sockfd, smsg);
 #endif
 					} else {
 #ifdef ENABLE_THREADS
-						const_cast<Connection *>(this)->signalMessage(i->sockfd, msg);
+						signalMessage(m_data, i->sockfd, msg);
 #else
 						write(i->sockfd, msg);
 #endif
@@ -959,13 +958,17 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 			if(!vMsg && nullV != vm.end()) {
 #ifdef ENABLE_THREADS
-				const_cast<Connection *>(this)->signalMessage(i->sockfd, nullV->second);
+				signalMessage(m_data, i->sockfd, nullV->second);
 #else
 				write(i->sockfd, nullV->second);
 #endif
 			}
 		}
 	}
+
+#ifdef ENABLE_THREADS
+	waitPlayerThreads();
+#endif
 }
 
 void Connection::clearPlayerPictures() const {
@@ -985,11 +988,15 @@ throw(NetMauMau::Common::Exception::SocketException) {
 		_UNUSED(nd);
 
 #ifdef ENABLE_THREADS
-		signalMessage(i->sockfd, msg);
+		signalMessage(m_data, i->sockfd, msg);
 #else
 		write(i->sockfd, msg);
 #endif
 	}
+
+#ifdef ENABLE_THREADS
+	waitPlayerThreads();
+#endif
 
 	return *this;
 }
@@ -1068,8 +1075,12 @@ void Connection::reset() throw() {
 }
 
 #ifdef ENABLE_THREADS
-void Connection::shutdownThreads() {
-	waitPlayerThreads();
+void Connection::shutdownThreads() throw() {
+
+	try {
+		waitPlayerThreads();
+	} catch(const NetMauMau::Common::Exception::SocketException &) {}
+
 	std::for_each(m_data.begin(), m_data.end(), _playerThreadShutter());
 	PTD().swap(m_data);
 }
@@ -1089,22 +1100,24 @@ void Connection::removeThread(SOCKET fd) {
 	}
 }
 
-void Connection::waitPlayerThreads() const {
+void Connection::waitPlayerThreads() const throw(NetMauMau::Common::Exception::SocketException) {
 
 	for(PTD::const_iterator i(m_data.begin()); i != m_data.end(); ++i) {
 
-		MUTEXLOCKER(&consumedMux);
+		MUTEXLOCKER(&(*i)->emx);
 
-		if(!(*i)->msg.empty()) while(!(*i)->msg.empty()) pthread_cond_wait(&consumedCnd,
-						&consumedMux);
+		while(!(*i)->msg.empty()) pthread_cond_wait(&(*i)->eat, &(*i)->emx);
+
+		if((*i)->exc) throw NetMauMau::Common::Exception::SocketException((*i)->nfd.name + ": " +
+					(*i)->exc->what());
 	}
 }
 
-void Connection::signalMessage(SOCKET fd, const std::string &msg) {
+void Connection::signalMessage(PTD &data, SOCKET fd, const std::string &msg) {
 
-	const PTD::iterator &f(std::find_if(m_data.begin(), m_data.end(), _socketCmp(fd)));
+	const PTD::iterator &f(std::find_if(data.begin(), data.end(), _socketCmp(fd)));
 
-	if(f != m_data.end()) {
+	if(f != data.end()) {
 
 		MUTEXLOCKER(&(*f)->gmx);
 		(*f)->msg = msg;

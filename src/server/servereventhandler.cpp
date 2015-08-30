@@ -77,14 +77,31 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 		if(std::find(except.begin(), except.end(), i->name) == except.end()) {
 			try {
+
+// #ifdef ENABLE_THREADS
+// 				m_connection.signalMessage(m_connection.getData(), i->sockfd, type);
+// 				m_connection.signalMessage(m_connection.getData(), i->sockfd, msg);
+// #else
 				m_connection.write(i->sockfd, type);
 				m_connection.write(i->sockfd, msg);
+// #endif
 			} catch(const NetMauMau::Common::Exception::SocketException &) {
 				logError(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Couldn't send \""
 						 << type << "\" to \"" << i->name << "\"");
 			}
 		}
 	}
+
+// #ifdef ENABLE_THREADS
+//
+// 	try {
+// 		m_connection.waitPlayerThreads();
+// 	} catch(const NetMauMau::Common::Exception::SocketException &e) {
+// 		logError(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Couldn't send \""
+// 				 << type << "\" to " << e);
+// 	}
+//
+// #endif
 }
 
 void EventHandler::message(const std::string &msg, const EXCEPTIONS &except) const
@@ -150,8 +167,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 void EventHandler::talonEmpty(bool empty) const
 throw(NetMauMau::Common::Exception::SocketException) {
 	m_connection << std::string(NetMauMau::Common::Protocol::V15::SUSPEND)
-				 .append(1, ' ').append(empty ?
-										NetMauMau::Common::Protocol::V15::OFF :
+				 .append(1, ' ').append(empty ? NetMauMau::Common::Protocol::V15::OFF :
 										NetMauMau::Common::Protocol::V15::ON);
 }
 
@@ -174,7 +190,13 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			i != m_connection.getPlayers().end(); ++i) {
 
 		try {
+
+// #ifdef ENABLE_THREADS
+// 			m_connection.signalMessage(m_connection.getData(), i->sockfd,
+// 									   NetMauMau::Common::Protocol::V15::STATS);
+// #else
 			m_connection.write(i->sockfd, NetMauMau::Common::Protocol::V15::STATS);
+// #endif
 		} catch(const NetMauMau::Common::Exception::SocketException &) {
 			logError(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Could send stats to \""
 					 << i->name << "\"");
@@ -196,18 +218,42 @@ throw(NetMauMau::Common::Exception::SocketException) {
 #endif
 
 				try {
+// #ifdef ENABLE_THREADS
+// 					m_connection.signalMessage(m_connection.getData(), i->sockfd, p->getName());
+// 					m_connection.signalMessage(m_connection.getData(), i->sockfd, cc);
+// #else
 					m_connection.write(i->sockfd, p->getName());
 					m_connection.write(i->sockfd, cc);
+// #endif
 				} catch(const NetMauMau::Common::Exception::SocketException &) {
 					try {
+// #ifdef ENABLE_THREADS
+// 						m_connection.signalMessage(m_connection.getData(), i->sockfd, "0");
+// #else
 						m_connection.write(i->sockfd, "0");
+// #endif
 					} catch(const NetMauMau::Common::Exception::SocketException &) {}
 				}
 			}
 		}
 
+// #ifdef ENABLE_THREADS
+// 		m_connection.signalMessage(m_connection.getData(), i->sockfd,
+// 								   NetMauMau::Common::Protocol::V15::ENDSTATS);
+// #else
 		m_connection.write(i->sockfd, NetMauMau::Common::Protocol::V15::ENDSTATS);
+// #endif
 	}
+
+// #ifdef ENABLE_THREADS
+//
+// 	try {
+// 		m_connection.waitPlayerThreads();
+// 	} catch(const NetMauMau::Common::Exception::SocketException &e) {
+// 		logError(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Could send stats to " << e);
+// 	}
+//
+// #endif
 }
 
 void EventHandler::playerWins(const NetMauMau::Player::IPlayer *player, std::size_t,
@@ -257,11 +303,24 @@ throw(NetMauMau::Common::Exception::SocketException) {
 			i != m_connection.getPlayers().end(); ++i) {
 
 		if(player->getName().compare(i->name) == 0) {
+
+// #ifdef ENABLE_THREADS
+// 			m_connection.signalMessage(m_connection.getData(), i->sockfd,
+// 									   NetMauMau::Common::Protocol::V15::CARDREJECTED);
+// 			m_connection.signalMessage(m_connection.getData(), i->sockfd, player->getName());
+// 			m_connection.signalMessage(m_connection.getData(), i->sockfd,
+// 									   playedCard->description());
+// #else
 			m_connection.write(i->sockfd, NetMauMau::Common::Protocol::V15::CARDREJECTED);
 			m_connection.write(i->sockfd, player->getName());
 			m_connection.write(i->sockfd, playedCard->description());
+// #endif
 		}
 	}
+
+// #ifdef ENABLE_THREADS
+// 	m_connection.waitPlayerThreads();
+// #endif
 }
 
 void EventHandler::playerSuspends(const NetMauMau::Player::IPlayer *player,
@@ -277,16 +336,37 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	for(Connection::PLAYERINFOS::const_iterator i(m_connection.getPlayers().begin());
 			i != m_connection.getPlayers().end(); ++i) {
 
+// #ifdef ENABLE_THREADS
+// 		m_connection.signalMessage(m_connection.getData(), i->sockfd,
+// 								   NetMauMau::Common::Protocol::V15::PLAYERPICKSCARD);
+// 		m_connection.signalMessage(m_connection.getData(), i->sockfd, player->getName());
+// #else
 		m_connection.write(i->sockfd, NetMauMau::Common::Protocol::V15::PLAYERPICKSCARD);
 		m_connection.write(i->sockfd, player->getName());
+// #endif
 
 		if(card && i->name.compare(player->getName()) == 0) {
+// #ifdef ENABLE_THREADS
+// 			m_connection.signalMessage(m_connection.getData(), i->sockfd,
+// 									   NetMauMau::Common::Protocol::V15::CARDTAKEN);
+// 			m_connection.signalMessage(m_connection.getData(), i->sockfd, card->description());
+// #else
 			m_connection.write(i->sockfd, NetMauMau::Common::Protocol::V15::CARDTAKEN);
 			m_connection.write(i->sockfd, card->description());
+// #endif
 		} else {
+// #ifdef ENABLE_THREADS
+// 			m_connection.signalMessage(m_connection.getData(), i->sockfd,
+// 									   NetMauMau::Common::Protocol::V15::HIDDENCARDTAKEN);
+// #else
 			m_connection.write(i->sockfd, NetMauMau::Common::Protocol::V15::HIDDENCARDTAKEN);
+// #endif
 		}
 	}
+
+// #ifdef ENABLE_THREADS
+// 	m_connection.waitPlayerThreads();
+// #endif
 }
 
 void EventHandler::playerPicksCards(const NetMauMau::Player::IPlayer *player,
@@ -334,13 +414,24 @@ void EventHandler::setJackModeOff() const throw(NetMauMau::Common::Exception::So
 
 void EventHandler::nextPlayer(const NetMauMau::Player::IPlayer *player) const
 throw(NetMauMau::Common::Exception::SocketException) {
+
 	for(Connection::PLAYERINFOS::const_iterator i(m_connection.getPlayers().begin());
 			i != m_connection.getPlayers().end(); ++i) {
 		if(player->getName() != i->name) {
+// #ifdef ENABLE_THREADS
+// 			m_connection.signalMessage(m_connection.getData(),
+// 									   i->sockfd, NetMauMau::Common::Protocol::V15::NEXTPLAYER);
+// 			m_connection.signalMessage(m_connection.getData(), i->sockfd, player->getName());
+// #else
 			m_connection.write(i->sockfd, NetMauMau::Common::Protocol::V15::NEXTPLAYER);
 			m_connection.write(i->sockfd, player->getName());
+// #endif
 		}
 	}
+
+// #ifdef ENABLE_THREADS
+// 	m_connection.waitPlayerThreads();
+// #endif
 }
 
 void EventHandler::aceRoundStarted(const NetMauMau::Player::IPlayer *player)

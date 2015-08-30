@@ -126,7 +126,7 @@ NetMauMau::Common::ICardPtr Player::requestCard(const NetMauMau::Common::ICardPt
 			m_connection.write(m_sockfd, cc);
 		}
 
-		const std::string offeredCard = playerRead(m_sockfd);
+		const std::string offeredCard = m_connection.read(m_sockfd);
 
 		if(offeredCard == NetMauMau::Common::Protocol::V15::SUSPEND) {
 			return NetMauMau::Common::ICardPtr();
@@ -200,7 +200,7 @@ std::size_t Player::getCardCount() const throw(NetMauMau::Common::Exception::Soc
 
 	try {
 		m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::CARDCOUNT);
-		cc = std::strtoul(playerRead(m_sockfd).c_str(), NULL, 10);
+		cc = std::strtoul(m_connection.read(m_sockfd).c_str(), NULL, 10);
 	} catch(const NetMauMau::Common::Exception::SocketException &e) {
 		throw Exception::ServerPlayerException(getName(),
 											   std::string("Error in getting card count: ").
@@ -216,7 +216,7 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 	try {
 		m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::JACKCHOICE);
-		return NetMauMau::Common::symbolToSuit(playerRead(m_sockfd));
+		return NetMauMau::Common::symbolToSuit(m_connection.read(m_sockfd));
 	} catch(const NetMauMau::Common::Exception::SocketException &e) {
 		throw Exception::ServerPlayerException(getName(), std::string(__FUNCTION__).append(": ").
 											   append(e.what()));
@@ -229,7 +229,7 @@ bool Player::getAceRoundChoice() const throw(NetMauMau::Common::Exception::Socke
 
 		try {
 			m_connection.write(m_sockfd, NetMauMau::Common::Protocol::V15::ACEROUND);
-			return playerRead(m_sockfd) == NetMauMau::Common::Protocol::V15::TRUE;
+			return m_connection.read(m_sockfd) == NetMauMau::Common::Protocol::V15::TRUE;
 		} catch(const NetMauMau::Common::Exception::SocketException &e) {
 			throw Exception::ServerPlayerException(getName(), std::string(__FUNCTION__).
 												   append(": ").append(e.what()));
@@ -241,16 +241,6 @@ bool Player::getAceRoundChoice() const throw(NetMauMau::Common::Exception::Socke
 
 uint32_t Player::getClientVersion() const {
 	return m_connection.getPlayerInfo(getName()).clientVersion;
-}
-
-std::string Player::playerRead(SOCKET fd, std::size_t len) const
-throw(NetMauMau::Common::Exception::SocketException) {
-
-#ifdef ENABLE_THREADS
-	m_connection.waitPlayerThreads();
-#endif
-
-	return m_connection.read(fd, len);
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

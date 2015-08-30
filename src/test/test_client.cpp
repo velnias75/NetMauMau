@@ -54,12 +54,12 @@ poptOption poptOptions[] = {
 	{ "player-image", 'i', POPT_ARG_NONE, NULL, 'i', "Send a test player image", NULL },
 	{
 		"autoplay", 'a', POPT_ARG_NONE, NULL,
-		'A', "Automatically plays the first possible choice", NULL
+		'A', "Automatically plays a random possible card", NULL
 	},
 #ifdef HAVE_UNISTD_H
 	{
 		"delay", 'D', POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &delay,
-		0, "In auoplay mode delay before turn", "SECONDS"
+		0, "In autoplay mode delay SECONDS before turn", "SECONDS"
 	},
 #endif
 	{ "caps", 'c', POPT_ARG_NONE, NULL, 'c', "Display the server capabilities", NULL },

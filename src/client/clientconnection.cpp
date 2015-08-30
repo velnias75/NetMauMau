@@ -446,7 +446,7 @@ bool Connection::wire(SOCKET sockfd, const struct sockaddr *addr, socklen_t addr
 #pragma GCC diagnostic pop
 
 std::string Connection::wireError(const std::string &err) const {
-	return std::string(!err.empty() ? err : "could not connect");
+	return !err.empty() ? err : "could not connect";
 }
 
 Connection &Connection::operator>>(std::string &msg)

@@ -46,8 +46,7 @@
  *
  * @since 0.8
  */
-#define MAKE_VERSION(maj, min) static_cast<uint32_t>((static_cast<uint16_t>(maj) << 16u) | \
-		static_cast<uint16_t>(min))
+#define MAKE_VERSION(maj, min) static_cast<uint32_t>(((maj) << 16u) | (min))
 
 /**
  * @def MAKE_VERSION_REL(maj, min, rel)

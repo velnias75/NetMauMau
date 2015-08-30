@@ -28,7 +28,7 @@ namespace NetMauMau {
 class NextTurn {
 	DISALLOW_COPY_AND_ASSIGN(NextTurn)
 public:
-	NextTurn(Engine *const engine) throw(Common::Exception::SocketException);
+	explicit NextTurn(Engine *const engine) throw(Common::Exception::SocketException);
 	~NextTurn();
 
 	bool compute() throw(Common::Exception::SocketException);

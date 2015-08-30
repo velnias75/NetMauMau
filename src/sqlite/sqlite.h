@@ -26,7 +26,7 @@
 #include "iconnection.h"                // for IConnection, etc
 #include "smartsingleton.h"
 
-#define NOGAME_IDX static_cast<NetMauMau::DB::GAMEIDX>(-1LL)
+#define NOGAME_IDX -1LL
 
 namespace NetMauMau {
 

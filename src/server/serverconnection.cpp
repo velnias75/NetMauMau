@@ -28,9 +28,11 @@
 #endif
 
 #include <sys/stat.h>                   // for stat
+
 #include <cerrno>                       // for errno, ENOENT, ENOMEM
 #include <cstdio>                       // for NULL, fclose, feof, fopen, etc
 #include <cstring>                      // for strerror, strdup, strlen
+#include <climits>
 
 #ifdef ENABLE_THREADS
 #include "mutexlocker.h"
@@ -67,7 +69,15 @@ void *playerThread(void *arg) throw() {
 			NetMauMau::Common::MutexLocker mlp(&ptd->gmx);
 			_UNUSED(mlp);
 
-			while(!(ptd->stp || !ptd->msg.empty())) pthread_cond_wait(&ptd->get, &ptd->gmx);
+			int pr;
+
+			while(!(ptd->stp || !ptd->msg.empty())) {
+				if((pr = pthread_cond_wait(&ptd->get, &ptd->gmx))) {
+					throw NetMauMau::Common::Exception::SocketException
+					(std::string("Condition wait error: ") + NetMauMau::Common::errorString(pr),
+					 pr);
+				}
+			}
 
 			if(!ptd->stp) {
 
@@ -80,7 +90,12 @@ void *playerThread(void *arg) throw() {
 
 				MUTEXLOCKER(&ptd->emx);
 				std::string().swap(ptd->msg);
-				pthread_cond_signal(&ptd->eat);
+
+				if((pr = pthread_cond_signal(&ptd->eat))) {
+					throw NetMauMau::Common::Exception::SocketException
+					(std::string("Condition wait error: ") + NetMauMau::Common::errorString(pr),
+					 pr);
+				}
 			}
 
 		} while(!ptd->stp);
@@ -106,16 +121,19 @@ struct _playerThreadShutter :
 		std::unary_function<NetMauMau::Server::Connection::PLAYERTHREADDATA *, void> {
 	inline result_type operator()(Commons::RParam<argument_type>::Type ptd) const {
 
-		int r;
+		int pr;
 
 		{
 			MUTEXLOCKER(&ptd->gmx);
 			ptd->stp = true;
-			pthread_cond_signal(&ptd->get);
+
+			if((pr = pthread_cond_signal(&ptd->get))) {
+				logDebug("Condition signal fail: " << NetMauMau::Common::errorString(pr));
+			}
 		}
 
-		if((r = pthread_join(ptd->tid, NULL))) {
-			logDebug("pthread_join:" << NetMauMau::Common::errorString(r));
+		if((pr = pthread_join(ptd->tid, NULL))) {
+			logDebug("pthread_join: " << NetMauMau::Common::errorString(pr));
 		}
 
 		delete ptd->exc;
@@ -126,7 +144,8 @@ struct _playerThreadShutter :
 struct _playerThreadCreator : std::unary_function<NetMauMau::Server::Connection::NAMESOCKFD, void> {
 
 	inline _playerThreadCreator(NetMauMau::Server::Connection &c,
-								NetMauMau::Server::Connection::PTD &d) : con(c), data(d) {}
+								NetMauMau::Server::Connection::PTD &d, pthread_attr_t *a)
+		: con(c), data(d), attr(a) {}
 
 	inline result_type operator()(Commons::RParam<argument_type>::Type nfd) const {
 
@@ -135,7 +154,7 @@ struct _playerThreadCreator : std::unary_function<NetMauMau::Server::Connection:
 		NetMauMau::Server::Connection::PLAYERTHREADDATA *ptd =
 			new NetMauMau::Server::Connection::PLAYERTHREADDATA(nfd, con);
 
-		if(!pthread_create(&tid, NULL, playerThread, static_cast<void *>(ptd))) {
+		if(!pthread_create(&tid, attr, playerThread, static_cast<void *>(ptd))) {
 			ptd->tid = tid;
 			data.push_back(ptd);
 		} else {
@@ -146,6 +165,7 @@ struct _playerThreadCreator : std::unary_function<NetMauMau::Server::Connection:
 private:
 	NetMauMau::Server::Connection &con;
 	NetMauMau::Server::Connection::PTD &data;
+	pthread_attr_t *const attr;
 };
 #endif
 
@@ -220,7 +240,40 @@ Connection::_playerThreadData::~_playerThreadData() {
 
 Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *server)
 	: AbstractConnection(server, port, true), m_caps(), m_clientMinVer(minVer), m_inetd(inetd),
-	  m_aiPlayerImages(new(std::nothrow) const std::string*[4]()) {
+	  m_aiPlayerImages(new(std::nothrow) const std::string*[4]())
+#ifdef ENABLE_THREADS
+	  , m_data(), m_attr()
+#endif
+{
+
+#ifdef ENABLE_THREADS
+
+	int pr;
+
+	if(!(pr = pthread_attr_init(&m_attr))) {
+
+		if((pr = pthread_attr_setdetachstate(&m_attr, PTHREAD_CREATE_JOINABLE))) {
+			logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
+					   << "Couldn't set thread joinable: " << NetMauMau::Common::errorString(pr));
+		}
+
+		if((pr = pthread_attr_setguardsize(&m_attr, 0))) {
+			logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
+					   << "Couldn't set thread guard size: " << NetMauMau::Common::errorString(pr));
+		}
+
+		if((pr = pthread_attr_setstacksize(&m_attr, PTHREAD_STACK_MIN + 0x4000))) {
+			logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
+					   << "Couldn't set thread stack size: " << NetMauMau::Common::errorString(pr));
+		}
+
+	} else {
+		logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
+				   << "Couldn't initialize thread attributes:"
+				   << NetMauMau::Common::errorString(pr));
+	}
+
+#endif
 
 #if !defined(_WIN32) && (defined(HAVE_SYS_STAT_H) && defined(HAVE_SYS_TYPES_H))
 
@@ -326,6 +379,10 @@ Connection::~Connection() {
 	for(int i = 0; i < 4; ++i) delete m_aiPlayerImages[i];
 
 	delete [] m_aiPlayerImages;
+
+#ifdef ENABLE_THREADS
+	pthread_attr_destroy(&m_attr);
+#endif
 }
 
 bool Connection::wire(SOCKET sockfd, const struct sockaddr *addr, socklen_t addrlen) const {
@@ -1087,7 +1144,7 @@ void Connection::shutdownThreads() throw() {
 
 void Connection::createThreads() {
 	std::for_each(getRegisteredPlayers().begin(), getRegisteredPlayers().end(),
-				  _playerThreadCreator(*this, m_data));
+				  _playerThreadCreator(*this, m_data, &m_attr));
 }
 
 void Connection::removeThread(SOCKET fd) {
@@ -1106,7 +1163,12 @@ void Connection::waitPlayerThreads() const throw(NetMauMau::Common::Exception::S
 
 		MUTEXLOCKER(&(*i)->emx);
 
-		while(!(*i)->msg.empty()) pthread_cond_wait(&(*i)->eat, &(*i)->emx);
+		while(!(*i)->msg.empty()) {
+			int pr = pthread_cond_wait(&(*i)->eat, &(*i)->emx);
+
+			if(pr) throw NetMauMau::Common::Exception::SocketException
+				(std::string("Condition wait error: ") + NetMauMau::Common::errorString(pr), pr);
+		}
 
 		if((*i)->exc) throw NetMauMau::Common::Exception::SocketException((*i)->nfd.name + ": " +
 					(*i)->exc->what());
@@ -1120,8 +1182,10 @@ void Connection::signalMessage(PTD &data, SOCKET fd, const std::string &msg) {
 	if(f != data.end()) {
 
 		MUTEXLOCKER(&(*f)->gmx);
+
 		(*f)->msg = msg;
-		pthread_cond_signal(&(*f)->get);
+
+		if(pthread_cond_signal(&(*f)->get)) write(fd, msg);
 
 	} else {
 		write(fd, msg);

@@ -333,7 +333,7 @@ void AbstractSocket::send(const void *buf, std::size_t len,
 			if(len > origLen) throw Exception::SocketException("BUG: internal send overflow", fd,
 						errno);
 		} else {
-			logDebug("::send return 0, check behaviour!");
+			logDebugN(NetMauMau::Common::nextLogBuf(), "::send return 0, check behaviour!");
 		}
 	}
 

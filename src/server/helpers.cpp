@@ -448,8 +448,26 @@ void dump(std::ostream &out) {
 	out << "Initial card count: " << initialCardCount << "\n";
 	out << "Players: " << minPlayers << "\n";
 	out << "Ultimate: " << ultimate << "\n";
+	out << "Thread model: ";
 
 	char sr[128];
+
+#ifdef ENABLE_THREADS
+	out << "per remote player";
+
+#if defined(HAVE_CONFSTR) && defined(_CS_GNU_LIBPTHREAD_VERSION)
+
+	confstr(_CS_GNU_LIBPTHREAD_VERSION, sr, 127);
+	out <<  " (using " << sr << ")\n";
+
+#else
+	out << '\n';
+#endif
+
+#else
+	out << "single\n";
+#endif
+
 	std::snprintf(sr, 127, "Total received %.2f kBytes; total sent %.2f kBytes",
 				  static_cast<double>(Common::AbstractSocket::getTotalReceivedBytes()) / 1024.0,
 				  static_cast<double>(Common::AbstractSocket::getTotalSentBytes()) / 1024.0);

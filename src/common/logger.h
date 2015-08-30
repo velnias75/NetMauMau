@@ -45,6 +45,8 @@ namespace NetMauMau {
 
 namespace Common {
 
+_EXPORT std::size_t nextLogBuf();
+
 class _EXPORT Logger : public Commons::IPostLogger<std::ostreambuf_iterator<LOG_CHAR>, LOGBUFS>,
 	public Commons::BasicLogger<std::ostreambuf_iterator<LOG_CHAR>, LOGBUFS> {
 	DISALLOW_COPY_AND_ASSIGN(Logger)

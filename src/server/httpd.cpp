@@ -35,14 +35,8 @@
 #include <sys/socket.h>
 #endif
 
-#ifdef HAVE_SYS_SYSCALL_H
-#include <sys/syscall.h>
-#endif
-
 #ifndef _WIN32
 #define MHD_PLATFORM_H 1
-#else
-#include <windows.h>
 #endif
 
 #include <microhttpd.h>
@@ -67,57 +61,10 @@
 #include "zlibexception.h"
 #endif
 
-#ifndef _WIN32
-#define TIMEFORMAT "%T - "
-#define TIDTYPE long int
-#else
-#define TIMEFORMAT "%H:%M:%S - "
-#define TIDTYPE DWORD
-#endif
-
 namespace {
-
-#if !((defined(HAVE_SYS_SYSCALL_H) && defined(SYS_gettid)) || defined(_WIN32))
-volatile std::size_t rotatingLogBufSelect = 1u;
-#else
-volatile TIDTYPE tidMap[NetMauMau::Common::Logger::BUFCNT];
-volatile std::size_t tidPtr = 0u;
-#endif
 
 std::string LKFIM;
 const char *B2TOP = "<a href=\"#top\">Back to top</a>";
-
-inline std::size_t nextLogBuf() __attribute__((always_inline));
-
-std::size_t nextLogBuf() {
-#if (defined(HAVE_SYS_SYSCALL_H) && defined(SYS_gettid)) || defined(_WIN32)
-
-#ifndef _WIN32
-	const TIDTYPE tid = syscall(SYS_gettid);
-#else
-	const TIDTYPE tid = GetCurrentThreadId();
-#endif
-
-	for(std::size_t tti = 0u; tti < NetMauMau::Common::Logger::BUFCNT;
-			++tti) if(tidMap[tti] == tid) return std::max<std::size_t>(1u, tti);
-
-	tidPtr = tidPtr < NetMauMau::Common::Logger::BUFCNT ? tidPtr : 0u;
-
-	tidMap[tidPtr++] = tid;
-
-	const std::size_t aux(tidPtr);
-
-	return std::min<std::size_t>(aux, NetMauMau::Common::Logger::BUFCNT - 1u);
-
-#elif GCC_VERSION >= 41000
-	return __sync_bool_compare_and_swap(&rotatingLogBufSelect,
-										(NetMauMau::Common::Logger::BUFCNT - 1u), 1u) ?
-		   rotatingLogBufSelect : __sync_add_and_fetch(&rotatingLogBufSelect, 1u);
-#else
-	return rotatingLogBufSelect == (NetMauMau::Common::Logger::BUFCNT - 1u) ? 1u :
-		   ++rotatingLogBufSelect;
-#endif
-}
 
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic push
@@ -196,8 +143,9 @@ char *unquoteUrl(const char *url) {
 #if MHD_VERSION > 0x00000200
 void panic(void */*cls*/, const char *file, unsigned int line, const char *reason) {
 
-	logFatalN(nextLogBuf(), NetMauMau::Common::Logger::time(TIMEFORMAT) << "webserver: PANIC: "
-			  << file << ":" << line << (reason ? ": " : "") << (reason ? reason : ""));
+	logFatalN(NetMauMau::Common::nextLogBuf(), NetMauMau::Common::Logger::time(TIMEFORMAT)
+			  << "webserver: PANIC: " << file << ":" << line << (reason ? ": " : "")
+			  << (reason ? reason : ""));
 
 #ifdef HAVE_RAISE
 	std::raise(SIGTERM);
@@ -239,8 +187,8 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 	if(getnameinfo(reinterpret_cast<sockaddr *>(info->client_addr), sizeof(sockaddr_in), hbuf,
 				   sizeof(hbuf), NULL, 0, NI_NUMERICSERV)) std::strncpy(hbuf, "<unknown>", 9);
 
-	logInfoN(nextLogBuf(), NetMauMau::Common::Logger::time(TIMEFORMAT) << "webserver: request from \'"
-			 << hbuf << "\' to resource \'" << url << "\'");
+	logInfoN(NetMauMau::Common::nextLogBuf(), NetMauMau::Common::Logger::time(TIMEFORMAT)
+			 << "webserver: request from \'" << hbuf << "\' to resource \'" << url << "\'");
 #endif
 
 	NetMauMau::Server::CachePolicyFactory::ICachePolicyPtr cp;
@@ -386,10 +334,11 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 				}
 
 			} else {
-				logWarningN(nextLogBuf(), NetMauMau::Common::Logger::time(TIMEFORMAT)
+				logWarningN(NetMauMau::Common::nextLogBuf(),
+							NetMauMau::Common::Logger::time(TIMEFORMAT)
 							<< "Failed to open favicon file: \"" <<
-							NetMauMau::Common::getModulePath(NetMauMau::Common::PKGDATA, "netmaumau",
-									"ico") << "\"");
+							NetMauMau::Common::getModulePath(NetMauMau::Common::PKGDATA,
+									"netmaumau", "ico") << "\"");
 			}
 
 		} else {
@@ -574,7 +523,7 @@ Httpd::Httpd() : Common::IObserver<Game>(), Common::IObserver<Engine>(),
 #endif
 										MHD_OPTION_END))) {
 
-		logWarningN(nextLogBuf(), NetMauMau::Common::Logger::time(TIMEFORMAT)
+		logWarningN(NetMauMau::Common::nextLogBuf(), NetMauMau::Common::Logger::time(TIMEFORMAT)
 					<< "Failed to start webserver at http://"
 #if MHD_VERSION > 0x00000200
 					<< (ai && ai->ai_canonname ? ai->ai_canonname : "localhost")
@@ -584,7 +533,8 @@ Httpd::Httpd() : Common::IObserver<Game>(), Common::IObserver<Engine>(),
 					<< ":" << NetMauMau::hport);
 
 	} else if(NetMauMau::httpd && ai && m_daemon) {
-		logInfoN(nextLogBuf(), NetMauMau::Common::Logger::time(TIMEFORMAT) << "Started webserver at http://"
+		logInfoN(NetMauMau::Common::nextLogBuf(), NetMauMau::Common::Logger::time(TIMEFORMAT)
+				 << "Started webserver at http://"
 #if MHD_VERSION > 0x00000200
 				 << (ai && ai->ai_canonname ? ai->ai_canonname : "localhost")
 #else

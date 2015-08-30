@@ -168,6 +168,7 @@ private:
 
 #ifdef ENABLE_THREADS
 	mutable PTD m_data;
+	pthread_attr_t m_attr;
 #endif
 };
 

@@ -232,6 +232,7 @@ AC_CHECK_FUNCS([atexit])
 AC_CHECK_FUNCS([strerror])
 AC_CHECK_FUNCS([strrchr])
 AC_CHECK_FUNCS([strtol])
+AC_CHECK_FUNCS([confstr])
 AC_CHECK_FUNC([arc4random_uniform],
   [ AC_DEFINE([HAVE_ARC4RANDOM_UNIFORM], [1], [we have arc4random_uniform])
 ])

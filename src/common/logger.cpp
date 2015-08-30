@@ -25,6 +25,10 @@
 #include <iostream>                     // for ostreambuf_iterator, cerr
 #include <stdbool.h>
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #ifdef HAVE_SYS_SYSCALL_H
 #include <sys/syscall.h>
 #endif
@@ -45,7 +49,8 @@ const std::ios_base::Init _INIT_PRIO(101) __avoid_seg_fault;
 const std::ostreambuf_iterator<LOG_CHAR> out _INIT_PRIO(102) =
 	std::ostreambuf_iterator<LOG_CHAR>(std::cerr);
 
-#if !((defined(HAVE_SYS_SYSCALL_H) && defined(SYS_gettid)) || defined(_WIN32))
+#if !((defined(HAVE_UNISTD_H) && defined(HAVE_SYS_SYSCALL_H) && defined(SYS_gettid)) \
+	|| defined(_WIN32))
 volatile std::size_t rotatingLogBufSelect = 1u;
 #else
 volatile TIDTYPE tidMap[NetMauMau::Common::Logger::BUFCNT];
@@ -56,7 +61,8 @@ volatile std::size_t tidPtr = 0u;
 using namespace NetMauMau::Common;
 
 std::size_t NetMauMau::Common::nextLogBuf() {
-#if (defined(HAVE_SYS_SYSCALL_H) && defined(SYS_gettid)) || defined(_WIN32)
+#if (defined(HAVE_UNISTD_H) && defined(HAVE_SYS_SYSCALL_H) && defined(SYS_gettid)) \
+	|| defined(_WIN32)
 
 #ifndef _WIN32
 	const TIDTYPE tid = syscall(SYS_gettid);

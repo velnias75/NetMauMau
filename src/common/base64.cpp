@@ -99,9 +99,9 @@ std::string NetMauMau::Common::base64_encode(BYTE const *buf, unsigned int bufLe
 std::vector<NetMauMau::Common::BYTE>
 NetMauMau::Common::base64_decode(std::string const &encoded_string) {
 
-	int in_len = encoded_string.size();
+	std::size_t in_len = encoded_string.size();
 	int i = 0;
-	int in_ = 0;
+	std::size_t in_ = 0;
 	BYTE char_array_4[4], char_array_3[3];
 
 	std::vector<BYTE> ret;
@@ -109,7 +109,7 @@ NetMauMau::Common::base64_decode(std::string const &encoded_string) {
 	if(!in_len) return ret;
 
 	const std::string::size_type resBuf =
-		static_cast<std::string::size_type>(std::max(12, (2 * in_len - 23) / 3));
+		static_cast<std::string::size_type>(std::max<std::size_t>(12, (2 * in_len - 23) / 3));
 
 	if(resBuf <= ret.max_size()) {
 
@@ -121,14 +121,16 @@ NetMauMau::Common::base64_decode(std::string const &encoded_string) {
 		}
 	}
 
-	while(in_len-- && (encoded_string[in_] != '=') && is_base64(encoded_string[in_])) {
+	while(in_len-- && (encoded_string[in_] != '=') &&
+			is_base64(static_cast<NetMauMau::Common::BYTE>(encoded_string[in_]))) {
 
-		char_array_4[i++] = encoded_string[in_];
+		char_array_4[i++] = static_cast<NetMauMau::Common::BYTE>(encoded_string[in_]);
 		++in_;
 
 		if(i == 4) {
 
-			for(i = 0; i < 4; ++i) char_array_4[i] = base64_chars.find(char_array_4[i]);
+			for(i = 0; i < 4; ++i) char_array_4[i] =
+					base64_chars.find(static_cast<std::string::value_type>(char_array_4[i]));
 
 			char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
 			char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
@@ -146,7 +148,8 @@ NetMauMau::Common::base64_decode(std::string const &encoded_string) {
 
 		for(j = i; j < 4; ++j) char_array_4[j] = 0;
 
-		for(j = 0; j < 4; ++j) char_array_4[j] = base64_chars.find(char_array_4[j]);
+		for(j = 0; j < 4; ++j) char_array_4[j] =
+				base64_chars.find(static_cast<std::string::value_type>(char_array_4[j]));
 
 		char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
 		char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);

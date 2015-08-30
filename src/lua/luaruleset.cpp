@@ -112,7 +112,7 @@ private:
 
 		lua_pushstring(l, fn);
 		lua_rawget(l, LUA_GLOBALSINDEX);
-		const bool ex = static_cast<bool>(lua_isfunction(l, -1));
+		const bool ex = lua_isfunction(l, -1);
 		lua_pop(l, 1);
 
 		return ex;

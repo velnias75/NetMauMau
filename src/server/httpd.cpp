@@ -512,10 +512,9 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 #endif
 	} else {
 #ifdef HAVE_STRNDUP
-		data = static_cast<void *>(const_cast<char *>(strndup(oss.str().c_str(),
-								   oss.str().length())));
+		data = static_cast<void *>(strndup(oss.str().c_str(), oss.str().length()));
 #else
-		data = static_cast<void *>(const_cast<char *>(strdup(oss.str().c_str())));
+		data = static_cast<void *>(strdup(oss.str().c_str()));
 #endif
 	}
 

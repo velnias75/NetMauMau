@@ -214,7 +214,7 @@ void Game::start(bool ultimate) throw(NetMauMau::Common::Exception::SocketExcept
 		logFatal(NetMauMau::Common::Logger::time(TIMEFORMAT) << e);
 		m_running = false;
 		m_engine.error(NetMauMau::Common::Protocol::V15::ERR_TO_EXC_PLAYER +
-					   std::string(e.player()) + ": " + e.what());
+					   e.player() + ": " + e.what());
 		m_engine.gameOver();
 	} catch(const NetMauMau::Lua::Exception::LuaFatalException &e) {
 		logFatal(NetMauMau::Common::Logger::time(TIMEFORMAT) << e);

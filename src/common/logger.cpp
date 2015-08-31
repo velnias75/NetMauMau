@@ -38,6 +38,10 @@
 #include <syslog.h>                     // for closelog, openlog, syslog, etc
 #endif
 
+#ifdef ENABLE_THREADS
+#include "mutexlocker.h"
+#endif
+
 #ifndef _WIN32
 #define TIDTYPE long int
 #else
@@ -57,11 +61,20 @@ volatile std::size_t rotatingLogBufSelect = 1u;
 volatile TIDTYPE tidMap[NetMauMau::Common::Logger::BUFCNT];
 volatile std::size_t tidPtr = 0u;
 #endif
+
+#ifdef ENABLE_THREADS
+pthread_mutex_t logBufMutex;
+#endif
 }
 
 using namespace NetMauMau::Common;
 
 std::size_t NetMauMau::Common::nextLogBuf() {
+
+#ifdef ENABLE_THREADS
+	MUTEXLOCKER(&logBufMutex);
+#endif
+
 #if (defined(HAVE_UNISTD_H) && defined(HAVE_SYS_SYSCALL_H) && defined(SYS_gettid)) \
 	|| defined(_WIN32)
 

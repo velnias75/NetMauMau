@@ -42,6 +42,7 @@
 #define TIDTYPE long int
 #else
 #include <windows.h>
+#define TIDTYPE DWORD
 #endif
 
 namespace {

@@ -38,7 +38,7 @@ include /usr/share/cdbs/1/rules/autoreconf.mk
 DEB_CONFIGURE_EXTRA_FLAGS = --bindir=\$${prefix}/games --enable-console-client \
 	--disable-static --enable-ai-image=/usr/share/pixmaps/debian-logo.png \
 	--enable-ai-name="`lsb_release -sc | sed 's/.*/\u&/'`" --localstatedir=/var/games \
-	--with-bashcompletiondir="\$${datarootdir}/bash-completion/completions"
+	--with-bashcompletiondir="\$${datarootdir}/bash-completion/completions" --enable-threads
 DEB_MAKE_CHECK_TARGET = check
 INT_INSTALL_TARGET = install-strip
 DEB_DH_BUILDDEB_ARGS_DEFAULT := -- -z9 -Zxz

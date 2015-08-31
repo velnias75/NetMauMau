@@ -292,7 +292,12 @@ AC_DEFINE_UNQUOTED([SERVER_VERSION_RELEASE], [${SERVER_VERSION_RELEASE}], [serve
 LDFLAGS="${NOEXECSTACK_LD} ${FASTMATH_LD} -Wl,--as-needed ${LDFLAGS}"
 CFLAGS="${CFLAGS} ${NOEXECSTACK_AS} -std=gnu99 -ffast-math -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
 CXXFLAGS="${CXXFLAGS} ${NOEXECSTACK_AS} -std=gnu++98 -ffast-math -fvisibility=${VISIBILITY} -fvisibility-inlines-hidden -fstrict-aliasing"
-CPPFLAGS="${CPPFLAGS} -DBASICLOGGER_NO_PTHREADS -D_GLIBCXX_VISIBILITY=0"
+CPPFLAGS="${CPPFLAGS} -D_GLIBCXX_VISIBILITY=0"
+
+if test x$enable_threads = x -o x$enable_threads != xyes; then
+  CPPFLAGS="${CPPFLAGS} -DBASICLOGGER_NO_PTHREADS"
+fi
+
 NO_EXCEPTIONS="-fno-exceptions"
 
 if test x$CLANG = xyes; then CXXFLAGS="-fexceptions -frtti ${CXXFLAGS}" ; fi

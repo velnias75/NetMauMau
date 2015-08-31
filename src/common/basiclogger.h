@@ -1,7 +1,7 @@
 /**
  * basiclogger.h - template for basic logging functionality
  *
- * $Revision: 4460 $ $Author: heiko $
+ * $Revision: 4498 $ $Author: heiko $
  *
  * (c) 2012-2015 Heiko Schäfer <heiko@rangun.de>
  *
@@ -83,12 +83,6 @@
 #define logFatalN(n,msg)	{ logSwitchBuf(n); \
 		(LOGGER_CLASS(LOGGER_CLASS::LOG_FATAL))   << LOGGER_PREFIX << msg; }
 
-#ifndef BASICLOGGER_NO_PTHREADS
-namespace {
-pthread_mutex_t _basicLoggerLock = PTHREAD_MUTEX_INITIALIZER;
-}
-#endif
-
 namespace Commons {
 
 template<class, std::size_t> class IPostLogger;
@@ -96,6 +90,35 @@ template<class, std::size_t> class IPostLogger;
 template<class OIter, std::size_t BUFFERS = 1>
 class _EXPORT BasicLogger {
 	DISALLOW_COPY_AND_ASSIGN(BasicLogger)
+
+	struct readLock {
+		inline readLock() throw() {
+#ifndef BASICLOGGER_NO_PTHREADS
+			pthread_rwlock_rdlock(&m_bufMutex);
+#endif
+		}
+
+		inline ~readLock() throw() {
+#ifndef BASICLOGGER_NO_PTHREADS
+			pthread_rwlock_unlock(&m_bufMutex);
+#endif
+		}
+	};
+
+	struct writeLock {
+		inline writeLock() throw() {
+#ifndef BASICLOGGER_NO_PTHREADS
+			pthread_rwlock_wrlock(&m_bufMutex);
+#endif
+		}
+
+		inline ~writeLock() throw() {
+#ifndef BASICLOGGER_NO_PTHREADS
+			pthread_rwlock_unlock(&m_bufMutex);
+#endif
+		}
+	};
+
 public:
 	enum { BUFCNT = BUFFERS };
 
@@ -147,13 +170,12 @@ public:
 
 	static std::size_t getLogCount(const LEVEL &level) _PURE;
 
-	inline static std::size_t getCurrentBuf() {
+	inline static std::size_t getCurrentBuf() throw() {
+		readLock l;
 		return m_bufNo;
 	}
 
-	inline static void setCurrentBuf(std::size_t n) {
-		m_bufNo = (!(n && m_bufNo == n) ? n : (n >= (BUFFERS - 1u) ? 1u : n + 1u));
-	}
+	static void setCurrentBuf(std::size_t n) throw();
 
 	virtual BasicLogger &operator<<(const std::ios_base::fmtflags &f);
 	virtual BasicLogger &operator<<(const BasicLogger::nonl &nonl);
@@ -192,7 +214,7 @@ protected:
 	}
 
 	_INTERNAL std::basic_ostringstream<typename OIter::char_type> &getMessageStream() {
-		return m_buf[m_bufNo];
+		return m_buf[getCurrentBuf()];
 	}
 
 private:
@@ -229,6 +251,11 @@ private:
 	bool m_silent;
 
 	const IPostLogger<OIter, BUFFERS> *m_postLogger;
+
+#ifndef BASICLOGGER_NO_PTHREADS
+	static pthread_mutex_t m_msgMutex;
+	static pthread_rwlock_t m_bufMutex;
+#endif
 };
 
 template<class OIter, std::size_t BUFFERS = 1>
@@ -274,6 +301,14 @@ std::basic_ostringstream<typename OIter::char_type> BasicLogger<OIter, BUFFERS>:
 template<class OIter, std::size_t BUFFERS>
 volatile std::size_t BasicLogger<OIter, BUFFERS>::m_bufNo = 0u;
 
+#ifndef BASICLOGGER_NO_PTHREADS
+template<class OIter, std::size_t BUFFERS>
+pthread_mutex_t BasicLogger<OIter, BUFFERS>::m_msgMutex = PTHREAD_MUTEX_INITIALIZER;
+
+template<class OIter, std::size_t BUFFERS>
+pthread_rwlock_t BasicLogger<OIter, BUFFERS>::m_bufMutex = PTHREAD_RWLOCK_INITIALIZER;
+#endif
+
 template<class OIter, std::size_t BUFFERS>
 unsigned char BasicLogger<OIter, BUFFERS>::m_silentMask = 0x00;
 
@@ -295,17 +330,18 @@ BasicLogger<OIter, BUFFERS>::BasicLogger(const OIter &out,
 		const BasicLogger<OIter, BUFFERS>::LEVEL &level,
 		const IPostLogger<OIter, BUFFERS> *post) : m_out(out), m_level(level), m_noNewline(false),
 	m_silent(false), m_postLogger(post) {
+
+#ifndef BASICLOGGER_NO_PTHREADS
+	pthread_mutex_lock(&m_msgMutex);
+#endif
+
 	init(level);
 }
 
 template<class OIter, std::size_t BUFFERS>
 BasicLogger<OIter, BUFFERS>::~BasicLogger() {
 
-#ifndef BASICLOGGER_NO_PTHREADS
-	pthread_mutex_lock(&_basicLoggerLock);
-#endif
-
-	const logString ps(m_buf[m_bufNo].str());
+	const logString ps(m_buf[getCurrentBuf()].str());
 
 	for(std::size_t i = 0u; i < BUFFERS; ++i) {
 
@@ -324,21 +360,18 @@ BasicLogger<OIter, BUFFERS>::~BasicLogger() {
 	if(m_postLogger) m_postLogger->postAction(ps);
 
 #ifndef BASICLOGGER_NO_PTHREADS
-	pthread_mutex_unlock(&_basicLoggerLock);
+	pthread_mutex_unlock(&m_msgMutex);
 #endif
 }
 
 template<class OIter, std::size_t BUFFERS>
 void BasicLogger<OIter, BUFFERS>::init(const BasicLogger<OIter, BUFFERS>::LEVEL &level) {
-#ifndef BASICLOGGER_NO_PTHREADS
-	pthread_mutex_lock(&_basicLoggerLock);
-#endif
 
 	m_silent = !((m_silentMask & static_cast<unsigned char>(level)) == 0);
 
 	std::new_handler hdl = std::set_new_handler(0L);
 
-	m_buf[m_bufNo].precision(0);
+	m_buf[getCurrentBuf()].precision(0);
 
 #ifdef __EXCEPTIONS
 
@@ -354,10 +387,12 @@ void BasicLogger<OIter, BUFFERS>::init(const BasicLogger<OIter, BUFFERS>::LEVEL 
 #endif
 
 	std::set_new_handler(hdl);
+}
 
-#ifndef BASICLOGGER_NO_PTHREADS
-	pthread_mutex_unlock(&_basicLoggerLock);
-#endif
+template<class OIter, std::size_t BUFFERS>
+void BasicLogger<OIter, BUFFERS>::setCurrentBuf(std::size_t n) throw() {
+	writeLock l;
+	m_bufNo = (!(n && m_bufNo == n) ? n : (n >= (BUFFERS - 1u) ? 1u : n + 1u));
 }
 
 template<class OIter, std::size_t BUFFERS>

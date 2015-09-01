@@ -61,7 +61,17 @@
 #include "zlibexception.h"
 #endif
 
+#ifdef ENABLE_THREADS
+#include "mutexlocker.h"
+#endif
+
 namespace {
+
+#ifdef ENABLE_THREADS
+pthread_rwlock_t capsRWLock  = PTHREAD_RWLOCK_INITIALIZER;
+pthread_mutex_t  httpdMutex  = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t  updateMutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
 
 std::string LKFIM;
 const char *B2TOP = "<a href=\"#top\">Back to top</a>";
@@ -170,6 +180,11 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 						 unsigned int */*upload_data_size*/,
 #endif
 						 void **/*con_cls*/) {
+
+#ifdef ENABLE_THREADS
+	MUTEXLOCKER(&httpdMutex);
+	NetMauMau::Common::MutexLocker ul(&updateMutex);
+#endif
 
 	NetMauMau::Server::Httpd *httpd = reinterpret_cast<NetMauMau::Server::Httpd *>(cls);
 	const bool havePlayers = !httpd->getPlayers().empty();
@@ -413,8 +428,11 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 			os << "<a name=\"capa\"><center><h2>Server capabilities</h2><table width=\"50%\">"
 			   << "<tr><th>NAME</th><th>VALUE</th></tr>";
 
-			std::for_each(httpd->getCapabilities().begin(), httpd->getCapabilities().end(),
-						  capaTable(os));
+			{
+				NetMauMau::Common::ReadLock l(&capsRWLock);
+				std::for_each(httpd->getCapabilities().begin(), httpd->getCapabilities().end(),
+							  capaTable(os));
+			}
 
 			os << "</table></center></a>" << B2TOP << "<hr /><a name=\"dump\">"
 			   << "<h2 align=\"center\">Server dump</h2><tt><pre>";
@@ -575,6 +593,10 @@ void Httpd::setSource(const NetMauMau::Common::IObserver<Game>::source_type *s) 
 
 void Httpd::update(const NetMauMau::Common::IObserver<Connection>::what_type &what) {
 
+#ifdef ENABLE_THREADS
+	MUTEXLOCKER(&updateMutex);
+#endif
+
 	const std::vector<NetMauMau::Common::BYTE> &b64(NetMauMau::Common::base64_decode(what.second));
 
 	if(b64.empty()) {
@@ -587,10 +609,17 @@ void Httpd::update(const NetMauMau::Common::IObserver<Connection>::what_type &wh
 }
 
 void Httpd::update(const NetMauMau::Common::IObserver<NetMauMau::Engine>::what_type &what) {
+#ifdef ENABLE_THREADS
+	MUTEXLOCKER(&updateMutex);
+#endif
+
 	m_players = what;
 }
 
 void Httpd::update(NetMauMau::Common::IObserver<Game>::what_type what) {
+#ifdef ENABLE_THREADS
+	MUTEXLOCKER(&updateMutex);
+#endif
 
 	switch(what) {
 	case PLAYERADDED:
@@ -613,6 +642,22 @@ void Httpd::update(NetMauMau::Common::IObserver<Game>::what_type what) {
 		m_gameRunning = false;
 		break;
 	}
+}
+
+void Httpd::setCapabilities(const NetMauMau::Common::AbstractConnection::CAPABILITIES &caps) {
+#ifdef ENABLE_THREADS
+	NetMauMau::Common::WriteLock l(&capsRWLock);
+#endif
+
+	m_caps = caps;
+}
+
+const NetMauMau::Common::AbstractConnection::CAPABILITIES &Httpd::getCapabilities() const {
+#ifdef ENABLE_THREADS
+	NetMauMau::Common::ReadLock l(&capsRWLock);
+#endif
+
+	return m_caps;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

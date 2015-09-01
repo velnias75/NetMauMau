@@ -44,6 +44,32 @@ private:
 	bool m_locked;
 };
 
+class _EXPORT ReadLock {
+	DISALLOW_COPY_AND_ASSIGN(ReadLock)
+public:
+	explicit ReadLock(pthread_rwlock_t *mux) throw();
+	~ReadLock() throw();
+
+	int unlock() const throw();
+
+private:
+	pthread_rwlock_t *const m_mux;
+	bool m_locked;
+};
+
+class _EXPORT WriteLock {
+	DISALLOW_COPY_AND_ASSIGN(WriteLock)
+public:
+	explicit WriteLock(pthread_rwlock_t *mux) throw();
+	~WriteLock() throw();
+
+	int unlock() const throw();
+
+private:
+	pthread_rwlock_t *const m_mux;
+	bool m_locked;
+};
+
 }
 
 }

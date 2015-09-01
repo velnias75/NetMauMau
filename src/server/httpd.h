@@ -71,13 +71,8 @@ public:
 		return m_images;
 	}
 
-	inline void setCapabilities(const Common::AbstractConnection::CAPABILITIES &caps) {
-		m_caps = caps;
-	}
-
-	inline const Common::AbstractConnection::CAPABILITIES &getCapabilities() const {
-		return m_caps;
-	}
+	void setCapabilities(const Common::AbstractConnection::CAPABILITIES &caps);
+	const Common::AbstractConnection::CAPABILITIES &getCapabilities() const;
 
 	inline const REQHEADERMAP &getReqHdrMap() const {
 		return m_reqHdrMap;

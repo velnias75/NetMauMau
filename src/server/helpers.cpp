@@ -60,6 +60,10 @@
 #include "game.h"
 #endif
 
+#ifdef ENABLE_THREADS
+#include "mutexlocker.h"
+#endif
+
 #ifndef DP_USER
 #define DP_USER "nobody"
 #endif
@@ -77,6 +81,9 @@
 #endif
 
 namespace {
+#ifdef ENABLE_THREADS
+pthread_mutex_t capsLock = PTHREAD_MUTEX_INITIALIZER;
+#endif
 
 void unknownSignal(int sig) {
 #if _XOPEN_SOURCE >= 700 || _POSIX_C_SOURCE >= 200809L || GNU_SOURCE
@@ -123,6 +130,10 @@ int hport = HTTPD_PORT;
 
 void updatePlayerCap(Server::Connection::CAPABILITIES &caps, std::size_t count,
 					 Server::Connection &con) {
+
+#ifdef ENABLE_THREADS
+	MUTEXLOCKER(&capsLock);
+#endif
 
 	std::ostringstream os;
 

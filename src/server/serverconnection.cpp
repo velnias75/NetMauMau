@@ -257,10 +257,12 @@ Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *s
 					   << "Couldn't set thread joinable: " << NetMauMau::Common::errorString(pr));
 		}
 
+#ifndef _WIN32
 		if((pr = pthread_attr_setguardsize(&m_attr, 0))) {
 			logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
 					   << "Couldn't set thread guard size: " << NetMauMau::Common::errorString(pr));
 		}
+#endif
 
 		if((pr = pthread_attr_setstacksize(&m_attr, PTHREAD_STACK_MIN + 0x4000))) {
 			logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)

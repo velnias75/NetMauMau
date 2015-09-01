@@ -1,6 +1,6 @@
 diff -uNr netmaumau-0.24.1.orig/configure.ac netmaumau-0.24.1/configure.ac
---- netmaumau-0.24.1.orig/configure.ac	2015-08-30 08:59:15.000000000 +0200
-+++ netmaumau-0.24.1/configure.ac	2015-08-31 05:07:35.271102505 +0200
+--- netmaumau-0.24.1.orig/configure.ac	2015-08-31 17:59:54.000000000 +0200
++++ netmaumau-0.24.1/configure.ac	2015-09-01 07:47:50.786488666 +0200
 @@ -7,7 +7,7 @@
  AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip tar-pax no-installinfo no-texinfo.tex])
  AM_MAINTAINER_MODE
@@ -29,7 +29,7 @@ diff -uNr netmaumau-0.24.1.orig/configure.ac netmaumau-0.24.1/configure.ac
  AC_DEFINE_UNQUOTED([SERVER_VERSION_MINOR], [${SERVER_VERSION_MINOR}], [server version minor])
 diff -uNr netmaumau-0.24.1.orig/src/client/Makefile.am netmaumau-0.24.1/src/client/Makefile.am
 --- netmaumau-0.24.1.orig/src/client/Makefile.am	2015-08-06 06:33:25.000000000 +0200
-+++ netmaumau-0.24.1/src/client/Makefile.am	2015-08-31 05:07:35.281102497 +0200
++++ netmaumau-0.24.1/src/client/Makefile.am	2015-09-01 07:47:50.786488666 +0200
 @@ -17,7 +17,7 @@
  	lostconnectionexception.cpp nonetmaumauserverexception.cpp playerlistexception.cpp \
  	protocolerrorexception.cpp remoteplayerexception.cpp scoresexception.cpp \
@@ -41,8 +41,8 @@ diff -uNr netmaumau-0.24.1.orig/src/client/Makefile.am netmaumau-0.24.1/src/clie
  
 diff -uNr netmaumau-0.24.1.orig/src/common/Makefile.am netmaumau-0.24.1/src/common/Makefile.am
 --- netmaumau-0.24.1.orig/src/common/Makefile.am	2015-08-29 20:33:18.000000000 +0200
-+++ netmaumau-0.24.1/src/common/Makefile.am	2015-08-31 05:09:30.761030772 +0200
-@@ -47,7 +47,7 @@
++++ netmaumau-0.24.1/src/common/Makefile.am	2015-09-01 07:48:24.886424941 +0200
+@@ -47,13 +47,13 @@
  libnetmaumaucommon_la_SOURCES += zlibexception.cpp zstreambuf.cpp
  endif
  
@@ -51,8 +51,9 @@ diff -uNr netmaumau-0.24.1.orig/src/common/Makefile.am netmaumau-0.24.1/src/comm
  
  if THREADS_ENABLED
  # libnetmaumaucommon_la_CXXFLAGS += pthread is dangerous here:
-@@ -55,5 +55,5 @@
- libnetmaumaucommon_la_LIBADD += -lpthread
+ # https://sourceware.org/bugzilla/show_bug.cgi?id=16417
+-libnetmaumaucommon_la_LIBADD += -lpthread
++libnetmaumaucommon_la_LIBADD += -L/usr/i686-pc-mingw32/usr/lib -lpthreadGC2
  endif
  
 -libnetmaumaucommon_la_LDFLAGS = -nodefaultlibs -nostartfiles \
@@ -61,7 +62,7 @@ diff -uNr netmaumau-0.24.1.orig/src/common/Makefile.am netmaumau-0.24.1/src/comm
 +        -version-info 6:$(SERVER_VERSION_MINOR):$(SERVER_VERSION_MAJOR)
 diff -uNr netmaumau-0.24.1.orig/src/lua/Makefile.am netmaumau-0.24.1/src/lua/Makefile.am
 --- netmaumau-0.24.1.orig/src/lua/Makefile.am	2015-08-06 04:02:53.000000000 +0200
-+++ netmaumau-0.24.1/src/lua/Makefile.am	2015-08-31 05:07:35.281102497 +0200
++++ netmaumau-0.24.1/src/lua/Makefile.am	2015-09-01 07:47:50.786488666 +0200
 @@ -16,4 +16,5 @@
  libluaruleset_la_CXXFLAGS = -I$(top_srcdir)/src/include -I$(top_srcdir)/src/common \
  	-I$(top_srcdir)/src/engine $(LIBLUA_CFLAGS)
@@ -70,7 +71,7 @@ diff -uNr netmaumau-0.24.1.orig/src/lua/Makefile.am netmaumau-0.24.1/src/lua/Mak
  libluaruleset_la_LIBADD = $(LIBLUA_LIBS)
 diff -uNr netmaumau-0.24.1.orig/src/server/Makefile.am netmaumau-0.24.1/src/server/Makefile.am
 --- netmaumau-0.24.1.orig/src/server/Makefile.am	2015-08-29 16:55:57.000000000 +0200
-+++ netmaumau-0.24.1/src/server/Makefile.am	2015-08-31 05:07:35.281102497 +0200
++++ netmaumau-0.24.1/src/server/Makefile.am	2015-09-01 07:48:35.346406492 +0200
 @@ -53,7 +53,8 @@
  endif
  
@@ -81,7 +82,16 @@ diff -uNr netmaumau-0.24.1.orig/src/server/Makefile.am netmaumau-0.24.1/src/serv
  endif
  
  nmm_server_CPPFLAGS += -DPKGDATADIR="\"$(pkgdatadir)\""
-@@ -67,8 +68,10 @@
+@@ -61,14 +62,16 @@
+ 	-I$(top_srcdir)/src/sqlite -I$(top_srcdir)/src/common -I$(top_srcdir)/src/ai \
+ 	-I$(top_srcdir)/src/lua $(POPT_CFLAGS)
+ 	
+-if THREADS_ENABLED
+-nmm_server_CXXFLAGS += -pthread
+-endif
++#if THREADS_ENABLED
++#nmm_server_CXXFLAGS += -pthread
++#endif
  	
  nmm_server_SOURCES = game.cpp main.cpp serverconnection.cpp servereventhandler.cpp \
  	serverplayer.cpp
@@ -89,13 +99,13 @@ diff -uNr netmaumau-0.24.1.orig/src/server/Makefile.am netmaumau-0.24.1/src/serv
  nmm_server_LDADD = ../common/libnetmaumaucommon.la libnmm_server_private.la \
 -	../engine/libengine.la $(LMHL) $(POPT_LIBS) 
 +	../engine/libengine.la $(LMHL) $(LIBMICROHTTPD_LIBS) -lws2_32 $(POPT_LIBS) \
-+	$(ZLIB_LIBS)
++	$(ZLIB_LIBS) /usr/i686-pc-mingw32/usr/lib/libpthreadGC2.a
  # $(RT_LIBS)
  
  if RC
 diff -uNr netmaumau-0.24.1.orig/src/sqlite/Makefile.am netmaumau-0.24.1/src/sqlite/Makefile.am
 --- netmaumau-0.24.1.orig/src/sqlite/Makefile.am	2015-08-13 15:57:06.000000000 +0200
-+++ netmaumau-0.24.1/src/sqlite/Makefile.am	2015-08-31 05:07:35.281102497 +0200
++++ netmaumau-0.24.1/src/sqlite/Makefile.am	2015-09-01 07:47:50.796488647 +0200
 @@ -7,6 +7,7 @@
  	-DBUILDDIR=\"$(abs_top_builddir)\"
  libsqlite_la_CXXFLAGS = $(LIBSQLITE_CFLAGS) $(NO_EXCEPTIONS)
@@ -106,7 +116,7 @@ diff -uNr netmaumau-0.24.1.orig/src/sqlite/Makefile.am netmaumau-0.24.1/src/sqli
  install-data-local:
 diff -uNr netmaumau-0.24.1.orig/src/test/Makefile.am netmaumau-0.24.1/src/test/Makefile.am
 --- netmaumau-0.24.1.orig/src/test/Makefile.am	2015-07-24 18:57:55.000000000 +0200
-+++ netmaumau-0.24.1/src/test/Makefile.am	2015-08-31 05:07:35.281102497 +0200
++++ netmaumau-0.24.1/src/test/Makefile.am	2015-09-01 07:47:50.796488647 +0200
 @@ -33,7 +33,7 @@
  	-I$(top_srcdir)/src/sqlite
  test_netmaumau_SOURCES = test_netmaumau.cpp testeventhandler.cpp

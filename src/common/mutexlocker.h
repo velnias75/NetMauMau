@@ -31,44 +31,46 @@ namespace NetMauMau {
 
 namespace Common {
 
-class _EXPORT MutexLocker {
-	DISALLOW_COPY_AND_ASSIGN(MutexLocker)
+template<typename Mutex, int (&Locker)(Mutex *), int (&Unlocker)(Mutex *)>
+class MutexLockerBase {
+	DISALLOW_COPY_AND_ASSIGN(MutexLockerBase)
 public:
-	explicit MutexLocker(pthread_mutex_t *mux) throw();
-	~MutexLocker() throw();
+	typedef Mutex mutex_type;
 
-	int unlock() const throw();
+	MutexLockerBase(Mutex *mux) throw() : m_mux(mux), m_locked(false) {
+		m_locked = (Locker(m_mux) == 0);
+	}
+
+	~MutexLockerBase() throw();
+
+	int unlock() throw() {
+		return m_locked ? (m_locked = (Unlocker(m_mux) == 0)) : 0;
+	}
+
+	bool isLocked() const throw() {
+		return m_locked;
+	}
 
 private:
-	pthread_mutex_t *const m_mux;
+	Mutex *m_mux;
 	bool m_locked;
 };
 
-class _EXPORT ReadLock {
-	DISALLOW_COPY_AND_ASSIGN(ReadLock)
-public:
-	explicit ReadLock(pthread_rwlock_t *mux) throw();
-	~ReadLock() throw();
+template<typename Mutex, int (&Locker)(Mutex *), int (&Unlocker)(Mutex *)>
+MutexLockerBase<Mutex, Locker, Unlocker>::~MutexLockerBase() throw() {
+	unlock();
+}
 
-	int unlock() const throw();
+typedef MutexLockerBase<pthread_mutex_t,  pthread_mutex_lock,    pthread_mutex_unlock>  MutexLocker;
+typedef MutexLockerBase<pthread_rwlock_t, pthread_rwlock_rdlock, pthread_rwlock_unlock> ReadLock;
+typedef MutexLockerBase<pthread_rwlock_t, pthread_rwlock_wrlock, pthread_rwlock_unlock> WriteLock;
 
-private:
-	pthread_rwlock_t *const m_mux;
-	bool m_locked;
-};
-
-class _EXPORT WriteLock {
-	DISALLOW_COPY_AND_ASSIGN(WriteLock)
-public:
-	explicit WriteLock(pthread_rwlock_t *mux) throw();
-	~WriteLock() throw();
-
-	int unlock() const throw();
-
-private:
-	pthread_rwlock_t *const m_mux;
-	bool m_locked;
-};
+extern template
+class _EXPORT MutexLockerBase<pthread_mutex_t,  pthread_mutex_lock,    pthread_mutex_unlock>;
+extern template
+class _EXPORT MutexLockerBase<pthread_rwlock_t, pthread_rwlock_rdlock, pthread_rwlock_unlock>;
+extern template
+class _EXPORT MutexLockerBase<pthread_rwlock_t, pthread_rwlock_wrlock, pthread_rwlock_unlock>;
 
 }
 

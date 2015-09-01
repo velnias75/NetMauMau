@@ -19,104 +19,16 @@
 
 #include "mutexlocker.h"
 
-#ifndef NDEBUG
-#include "errorstring.h"
-#include "logger.h"
-#endif
+namespace NetMauMau {
 
-using namespace NetMauMau::Common;
+namespace Common {
 
-MutexLocker::MutexLocker(pthread_mutex_t *mux) throw() : m_mux(mux), m_locked(false) {
+template class MutexLockerBase<pthread_mutex_t,  pthread_mutex_lock,    pthread_mutex_unlock>;
+template class MutexLockerBase<pthread_rwlock_t, pthread_rwlock_rdlock, pthread_rwlock_unlock>;
+template class MutexLockerBase<pthread_rwlock_t, pthread_rwlock_wrlock, pthread_rwlock_unlock>;
 
-	int r = 0;
-
-	// cppcheck-suppress unreadVariable
-	m_locked = (r = pthread_mutex_lock(m_mux)) == 0;
-
-#ifndef NDEBUG
-
-	if(!m_locked) logDebug(__PRETTY_FUNCTION__ << ": " << errorString(r));
-
-#endif
 }
 
-MutexLocker::~MutexLocker() throw() {
-	unlock();
-}
-
-int MutexLocker::unlock() const throw() {
-
-	int r = m_locked ? pthread_mutex_unlock(m_mux) : 0;
-
-#ifndef NDEBUG
-
-	if(r) logDebug(__PRETTY_FUNCTION__ << ": " << errorString(r));
-
-#endif
-
-	return r;
-}
-
-ReadLock::ReadLock(pthread_rwlock_t *mux) throw() : m_mux(mux), m_locked(false) {
-
-	int r = 0;
-
-	// cppcheck-suppress unreadVariable
-	m_locked = (r = pthread_rwlock_rdlock(m_mux)) == 0;
-
-#ifndef NDEBUG
-
-	if(!m_locked) logDebug(__PRETTY_FUNCTION__ << ": " << errorString(r));
-
-#endif
-}
-
-ReadLock::~ReadLock() throw() {
-	unlock();
-}
-
-int ReadLock::unlock() const throw() {
-
-	int r = m_locked ? pthread_rwlock_unlock(m_mux) : 0;
-
-#ifndef NDEBUG
-
-	if(r) logDebug(__PRETTY_FUNCTION__ << ": " << errorString(r));
-
-#endif
-
-	return r;
-}
-
-WriteLock::WriteLock(pthread_rwlock_t *mux) throw() : m_mux(mux), m_locked(false) {
-
-	int r = 0;
-
-	// cppcheck-suppress unreadVariable
-	m_locked = (r = pthread_rwlock_wrlock(m_mux)) == 0;
-
-#ifndef NDEBUG
-
-	if(!m_locked) logDebug(__PRETTY_FUNCTION__ << ": " << errorString(r));
-
-#endif
-}
-
-WriteLock::~WriteLock() throw() {
-	unlock();
-}
-
-int WriteLock::unlock() const throw() {
-
-	int r = m_locked ? pthread_rwlock_unlock(m_mux) : 0;
-
-#ifndef NDEBUG
-
-	if(r) logDebug(__PRETTY_FUNCTION__ << ": " << errorString(r));
-
-#endif
-
-	return r;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 

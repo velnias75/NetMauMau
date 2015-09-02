@@ -23,7 +23,7 @@ namespace NetMauMau {
 
 namespace Common {
 
-#if GCC_VERSION >= 47000
+#if GCC_NO_LTOBUG
 // on g++ before v4.7 this causes a compiler bug with LTO enabled
 template class MutexLockerBase<pthread_mutex_t,  pthread_mutex_lock,    pthread_mutex_unlock>;
 template class MutexLockerBase<pthread_rwlock_t, pthread_rwlock_rdlock, pthread_rwlock_unlock>;

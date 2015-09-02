@@ -27,6 +27,14 @@
 #define MUTEXLOCKER(mux) NetMauMau::Common::MutexLocker __mutex__locker__(mux); \
 	_UNUSED(__mutex__locker__)
 
+#ifndef GCC_NO_LTOBUG
+#if GCC_VERSION >= 40500
+#define GCC_NO_LTOBUG GCC_VERSION >= 40700
+#else
+#define GCC_NO_LTOBUG 1
+#endif
+#endif
+
 namespace NetMauMau {
 
 namespace Common {
@@ -65,7 +73,7 @@ typedef MutexLockerBase<pthread_mutex_t,  pthread_mutex_lock,    pthread_mutex_u
 typedef MutexLockerBase<pthread_rwlock_t, pthread_rwlock_rdlock, pthread_rwlock_unlock> ReadLock;
 typedef MutexLockerBase<pthread_rwlock_t, pthread_rwlock_wrlock, pthread_rwlock_unlock> WriteLock;
 
-#if GCC_VERSION >= 47000
+#if GCC_NO_LTOBUG
 // on g++ before v4.7 this causes a compiler bug with LTO enabled
 extern template
 class _EXPORT MutexLockerBase<pthread_mutex_t,  pthread_mutex_lock,    pthread_mutex_unlock>;

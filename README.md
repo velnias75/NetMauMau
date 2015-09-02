@@ -4,13 +4,17 @@ Build instructions, binaries and rules
 Prerequisites
 -------------
 
-* [GNU GCC compiler](https://gcc.gnu.org/) (currently NetMauMau uses a certain amount of features exclusive to GCC)
+* [GNU GCC compiler](https://gcc.gnu.org/) (currently NetMauMau uses a certain amount of features
+  exclusive to GCC)
 * [POPT library](http://rpm5.org/files/popt/) >= 1.10
-* xxd (from the vim package [on **Debian** based distributions *vim-common*; on **Gentoo** *vim-core*])
+* xxd (from the vim package [on **Debian** based distributions *vim-common*; on **Gentoo** 
+  *vim-core*])
 * **gawk** (`mawk` will cause the build to fail)
 * libmagic (*optional, but recommended*)
-* [GNU Scientific Library](http://www.gnu.org/software/gsl/) >= 1.9 (*optional*, for better random number generator)
-* [libmicrohttpd](http://www.gnu.org/software/libmicrohttpd) (*optional, for the integrated webserver*)
+* [GNU Scientific Library](http://www.gnu.org/software/gsl/) >= 1.9 (*optional*, for better 
+  random number generator)
+* [libmicrohttpd](http://www.gnu.org/software/libmicrohttpd) (*optional, for the integrated 
+  webserver*)
 * [zlib](http://www.zlib.net/) (*optional, for compressed webserver responses*)
 * [sqlite3](https://www.sqlite.org/)
 * [libtool](http://www.gnu.org/software/libtool/)
@@ -42,13 +46,15 @@ A *sample* **xinetd** *service configuration* can look as following:
 Windows service
 ---------------
 
-If you want to start the *NetMauMau server* at system start, you can install the *NetMauMau server* as service. I recommend following workflow:
+If you want to start the *NetMauMau server* at system start, you can install the *NetMauMau server* 
+as service. I recommend following workflow:
 
  * Download [NSSM](http://nssm.cc/)
  * In the console (`cmd.exe`) run `nssm install`
  * Choose `nmm-server.exe` and add the arguments as you like :)
 
-Before updating *NetMauMau* you'll need to stop the service if running: `sc stop <ServiceName>` or `services.msc`
+Before updating *NetMauMau* you'll need to stop the service if running: `sc stop <ServiceName>` 
+or `services.msc`
 
 
 Setting up the build environment
@@ -59,6 +65,9 @@ After checkout run `autoreconf -ifv` to set up the build environment.
 `./configure && make` builds the projects and `make install` installs it.
 See `configure --help` for more options to customize and general help.
 
+**Note:** if you compile *without* `LTO` enabled, you may want to turn off the workarounds for
+some bugs in `g++`: add `-DGCC_NO_LTOBUG=1` to your `CXXFLAGS`
+
 Client
 ------
 
@@ -68,7 +77,8 @@ A Qt client can be found at
 
 Binary releases
 ===============
-[![Download NetMauMau](https://img.shields.io/sourceforge/dm/netmaumau.svg)](https://sourceforge.net/projects/netmaumau/files/latest/download)
+[![Download NetMauMau](https://img.shields.io/sourceforge/dm/netmaumau.svg)]
+(https://sourceforge.net/projects/netmaumau/files/latest/download)
 
 Gentoo
 ------
@@ -79,17 +89,18 @@ The GitHub repository of **games-overlay** is here:
 
 **Adding the overlay**
 
-With paludis: see [Paludis repository configuration](http://paludis.exherbo.org/configuration/repositories/index.html)
+With paludis: see 
+[Paludis repository configuration](http://paludis.exherbo.org/configuration/repositories/index.html)
 
 With layman:
-```layman -f -o https://raw.github.com/hasufell/games-overlay/master/repository.xml -a games-overlay``` or ```layman -a games-overlay```
+```layman -f -o https://raw.github.com/hasufell/games-overlay/master/repository.xml -a games-overlay```
+or ```layman -a games-overlay```
 
 Install NetMauMau with `emerge games-server/netmaumau`
 
 Ubuntu
 ------
-Binary packages are available for Precise, Trusty, Utopic and Vivid
-in my Launchpad PPA at
+Binary packages are available for Precise, Trusty, Utopic and Vivid in my Launchpad PPA at
 [https://launchpad.net/~velnias/+archive/ubuntu/velnias](https://launchpad.net/~velnias/+archive/ubuntu/velnias)
 
 Add the repository to your system:
@@ -122,7 +133,8 @@ openSUSE
 
 Windows
 -------
-[![Download NetMauMau](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/netmaumau/files/latest/download)
+[![Download NetMauMau](https://a.fsdn.com/con/app/sf-download-button)]
+(https://sourceforge.net/projects/netmaumau/files/latest/download)
 
 Rules
 =====

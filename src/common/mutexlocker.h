@@ -65,12 +65,15 @@ typedef MutexLockerBase<pthread_mutex_t,  pthread_mutex_lock,    pthread_mutex_u
 typedef MutexLockerBase<pthread_rwlock_t, pthread_rwlock_rdlock, pthread_rwlock_unlock> ReadLock;
 typedef MutexLockerBase<pthread_rwlock_t, pthread_rwlock_wrlock, pthread_rwlock_unlock> WriteLock;
 
+#if GCC_VERSION >= 47000
+// on g++ before v4.7 this causes a compiler bug with LTO enabled
 extern template
 class _EXPORT MutexLockerBase<pthread_mutex_t,  pthread_mutex_lock,    pthread_mutex_unlock>;
 extern template
 class _EXPORT MutexLockerBase<pthread_rwlock_t, pthread_rwlock_rdlock, pthread_rwlock_unlock>;
 extern template
 class _EXPORT MutexLockerBase<pthread_rwlock_t, pthread_rwlock_wrlock, pthread_rwlock_unlock>;
+#endif
 
 }
 

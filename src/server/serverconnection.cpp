@@ -258,10 +258,12 @@ Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *s
 		}
 
 #ifndef _WIN32
+
 		if((pr = pthread_attr_setguardsize(&m_attr, 0))) {
 			logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT)
 					   << "Couldn't set thread guard size: " << NetMauMau::Common::errorString(pr));
 		}
+
 #endif
 
 		if((pr = pthread_attr_setstacksize(&m_attr, PTHREAD_STACK_MIN + 0x4000))) {
@@ -1140,13 +1142,24 @@ void Connection::shutdownThreads() throw() {
 		waitPlayerThreads();
 	} catch(const NetMauMau::Common::Exception::SocketException &) {}
 
-	std::for_each(m_data.begin(), m_data.end(), _playerThreadShutter());
+	try {
+		std::for_each(m_data.begin(), m_data.end(), _playerThreadShutter());
+	} catch(const NetMauMau::Common::MutexLockerException &e) {
+		logWarning(e);
+	}
+
 	PTD().swap(m_data);
 }
 
 void Connection::createThreads() {
-	std::for_each(getRegisteredPlayers().begin(), getRegisteredPlayers().end(),
-				  _playerThreadCreator(*this, m_data, &m_attr));
+
+	try {
+		std::for_each(getRegisteredPlayers().begin(), getRegisteredPlayers().end(),
+					  _playerThreadCreator(*this, m_data, &m_attr));
+	} catch(NetMauMau::Common::MutexLockerException &e) {
+		PTD().swap(m_data);
+		logWarning("Couldn't create remote player threads: " << e.what());
+	}
 }
 
 void Connection::removeThread(SOCKET fd) {
@@ -1163,17 +1176,24 @@ void Connection::waitPlayerThreads() const throw(NetMauMau::Common::Exception::S
 
 	for(PTD::const_iterator i(m_data.begin()); i != m_data.end(); ++i) {
 
-		MUTEXLOCKER(&(*i)->emx);
+		try {
 
-		while(!(*i)->msg.empty()) {
-			int pr = pthread_cond_wait(&(*i)->eat, &(*i)->emx);
+			MUTEXLOCKER(&(*i)->emx);
 
-			if(pr) throw NetMauMau::Common::Exception::SocketException
-				(std::string("Condition wait error: ") + NetMauMau::Common::errorString(pr), pr);
+			while(!(*i)->msg.empty()) {
+				int pr = pthread_cond_wait(&(*i)->eat, &(*i)->emx);
+
+				if(pr) throw NetMauMau::Common::Exception::SocketException
+					(std::string("Condition wait error: ") + NetMauMau::Common::errorString(pr),
+					 pr);
+			}
+
+			if((*i)->exc) throw NetMauMau::Common::Exception::SocketException((*i)->nfd.name + ": "
+						+ (*i)->exc->what());
+
+		} catch(NetMauMau::Common::MutexLockerException &e) {
+			throw NetMauMau::Common::Exception::SocketException((*i)->nfd.name + ": " + e.what());
 		}
-
-		if((*i)->exc) throw NetMauMau::Common::Exception::SocketException((*i)->nfd.name + ": " +
-					(*i)->exc->what());
 	}
 }
 
@@ -1183,11 +1203,17 @@ void Connection::signalMessage(PTD &data, SOCKET fd, const std::string &msg) {
 
 	if(f != data.end()) {
 
-		MUTEXLOCKER(&(*f)->gmx);
+		try {
 
-		(*f)->msg = msg;
+			MUTEXLOCKER(&(*f)->gmx);
 
-		if(pthread_cond_signal(&(*f)->get)) write(fd, msg);
+			(*f)->msg = msg;
+
+			if(pthread_cond_signal(&(*f)->get)) write(fd, msg);
+
+		} catch(NetMauMau::Common::MutexLockerException &) {
+			write(fd, msg);
+		}
 
 	} else {
 		write(fd, msg);

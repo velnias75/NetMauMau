@@ -30,10 +30,6 @@ libnetmaumaucommon_private_la_SOURCES = cardtools.cpp ci_string.cpp defaultplaye
 	errorstring.cpp mimemagic.cpp pathtools.cpp pngcheck.cpp protocol.cpp tcpopt_base.cpp \
 	tcpopt_cork.cpp tcpopt_nodelay.cpp
 	
-if THREADS_ENABLED
-libnetmaumaucommon_private_la_SOURCES += mutexlocker.cpp
-endif
-	
 libnetmaumaucommon_private_la_LIBADD = $(MAGIC_LIBS)
 
 libnetmaumaucommon_la_CPPFLAGS = $(GSL) -DEXPORT_SMARTSINGLETON
@@ -42,6 +38,10 @@ libnetmaumaucommon_la_CXXFLAGS = -I$(top_srcdir)/src/include
 libnetmaumaucommon_la_SOURCES = abstractconnection.cpp abstractconnectionimpl.cpp \
 	abstractsocket.cpp abstractsocketimpl.cpp base64.cpp logger.cpp select.cpp \
 	socketexception.cpp
+	
+if THREADS_ENABLED
+libnetmaumaucommon_la_SOURCES += mutexlocker.cpp
+endif
 
 if WITHZLIB
 libnetmaumaucommon_la_SOURCES += zlibexception.cpp zstreambuf.cpp

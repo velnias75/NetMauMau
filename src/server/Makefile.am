@@ -29,7 +29,7 @@ libnmm_server_private_la_CPPFLAGS = -UDISABLE_ANSI -DDISABLE_ANSI=1
 libnmm_server_private_la_CXXFLAGS = -I$(top_srcdir)/src/engine -I$(top_srcdir)/src/include \
 	-I$(top_srcdir)/src/lua -I$(top_srcdir)/src/sqlite -I$(top_srcdir)/src/common \
 	$(NO_EXCEPTIONS)
-libnmm_server_private_la_SOURCES = gamecontext.cpp helpers.cpp ttynamecheckdir.cpp
+libnmm_server_private_la_SOURCES = gamecontext.cpp ttynamecheckdir.cpp
 
 nmm_server_CPPFLAGS = $(GSL) -UDISABLE_ANSI -DDISABLE_ANSI=1
 
@@ -65,7 +65,7 @@ if THREADS_ENABLED
 nmm_server_CXXFLAGS += -pthread
 endif
 	
-nmm_server_SOURCES = game.cpp main.cpp serverconnection.cpp servereventhandler.cpp \
+nmm_server_SOURCES = game.cpp helpers.cpp main.cpp serverconnection.cpp servereventhandler.cpp \
 	serverplayer.cpp
 nmm_server_LDADD = ../common/libnetmaumaucommon.la libnmm_server_private.la \
 	../engine/libengine.la $(LMHL) $(POPT_LIBS) 

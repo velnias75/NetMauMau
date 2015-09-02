@@ -1,8 +1,9 @@
-netmaumau (0.24.1) UNRELEASED; urgency=low
+netmaumau (0.24.2) UNRELEASED; urgency=low
 
   * fixed player image download notification
+  * enabled threading support
 
- -- Heiko Schäfer <heiko@rangun.de>  Sun, 23 Aug 2015 06:41:51 +0200
+ -- Heiko Schäfer <heiko@rangun.de>  Wed, 02 Sep 2015 15:03:09 +0200
 
 netmaumau (0.24.0) UNRELEASED; urgency=low
 

@@ -261,11 +261,18 @@ again:
 	}
 
 #ifdef ENABLE_THREADS
-	NetMauMau::Common::WriteLock l(&recvBytesLock);
-#endif
-	m_recvTotal += total;
-	m_recv += total;
 
+	try {
+		NetMauMau::Common::WriteLock l(&recvBytesLock);
+#endif
+		m_recvTotal += total;
+		m_recv += total;
+#ifdef ENABLE_THREADS
+	} catch(const NetMauMau::Common::MutexLockerException &e) {
+		throw NetMauMau::Common::Exception::SocketException(e.what());
+	}
+
+#endif
 	return total;
 }
 #pragma GCC diagnostic pop
@@ -342,9 +349,15 @@ void AbstractSocket::send(const void *buf, std::size_t len,
 	}
 
 #ifdef ENABLE_THREADS
-	NetMauMau::Common::WriteLock l(&sentBytesLock);
-	m_sentTotal += origLen;
-	m_sent += origLen;
+
+	try {
+		NetMauMau::Common::WriteLock l(&sentBytesLock);
+		m_sentTotal += origLen;
+		m_sent += origLen;
+	} catch(const NetMauMau::Common::MutexLockerException &e) {
+		throw NetMauMau::Common::Exception::SocketException(e.what());
+	}
+
 #endif
 }
 

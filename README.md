@@ -65,9 +65,6 @@ After checkout run `autoreconf -ifv` to set up the build environment.
 `./configure && make` builds the projects and `make install` installs it.
 See `configure --help` for more options to customize and general help.
 
-**Note:** if you compile *without* `LTO` enabled, you may want to turn off the workarounds for
-some bugs in `g++`: add `-DGCC_NO_LTOBUG=1` to your `CXXFLAGS`
-
 Client
 ------
 

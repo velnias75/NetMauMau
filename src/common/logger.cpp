@@ -72,36 +72,45 @@ using namespace NetMauMau::Common;
 std::size_t NetMauMau::Common::nextLogBuf() {
 
 #ifdef ENABLE_THREADS
-	MUTEXLOCKER(&logBufMutex);
+
+	try {
+		MUTEXLOCKER(&logBufMutex);
 #endif
 
 #if (defined(HAVE_UNISTD_H) && defined(HAVE_SYS_SYSCALL_H) && defined(SYS_gettid)) \
 	|| defined(_WIN32)
 
 #ifndef _WIN32
-	const TIDTYPE tid = syscall(SYS_gettid);
+		const TIDTYPE tid = syscall(SYS_gettid);
 #else
-	const TIDTYPE tid = GetCurrentThreadId();
+		const TIDTYPE tid = GetCurrentThreadId();
 #endif
 
-	for(std::size_t tti = 0u; tti < NetMauMau::Common::Logger::BUFCNT;
-			++tti) if(tidMap[tti] == tid) return std::max<std::size_t>(1u, tti);
+		for(std::size_t tti = 0u; tti < NetMauMau::Common::Logger::BUFCNT;
+				++tti) if(tidMap[tti] == tid) return std::max<std::size_t>(1u, tti);
 
-	tidPtr = tidPtr < NetMauMau::Common::Logger::BUFCNT ? tidPtr : 0u;
+		tidPtr = tidPtr < NetMauMau::Common::Logger::BUFCNT ? tidPtr : 0u;
 
-	tidMap[tidPtr++] = tid;
+		tidMap[tidPtr++] = tid;
 
-	const std::size_t aux(tidPtr);
+		const std::size_t aux(tidPtr);
 
-	return std::min<std::size_t>(aux, NetMauMau::Common::Logger::BUFCNT - 1u);
+		return std::min<std::size_t>(aux, NetMauMau::Common::Logger::BUFCNT - 1u);
 
-#elif GCC_VERSION >= 41000
-	return __sync_bool_compare_and_swap(&rotatingLogBufSelect,
-										(NetMauMau::Common::Logger::BUFCNT - 1u), 1u) ?
-		   rotatingLogBufSelect : __sync_add_and_fetch(&rotatingLogBufSelect, 1u);
+#ifdef ENABLE_THREADS
+	} catch(NetMauMau::Common::MutexLockerException &) {
+		return 0u;
+	}
+
+#endif
+
+#elif GCC_VERSION >= 40100
+		return __sync_bool_compare_and_swap(&rotatingLogBufSelect,
+											(NetMauMau::Common::Logger::BUFCNT - 1u), 1u) ?
+			   rotatingLogBufSelect : __sync_add_and_fetch(&rotatingLogBufSelect, 1u);
 #else
-	return rotatingLogBufSelect == (NetMauMau::Common::Logger::BUFCNT - 1u) ? 1u :
-		   ++rotatingLogBufSelect;
+		return rotatingLogBufSelect == (NetMauMau::Common::Logger::BUFCNT - 1u) ? 1u :
+			   ++rotatingLogBufSelect;
 #endif
 }
 

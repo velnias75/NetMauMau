@@ -20,24 +20,31 @@
 #ifndef NETMAUMAU_COMMON_MUTEXLOCKER_H
 #define NETMAUMAU_COMMON_MUTEXLOCKER_H
 
+#include <string>
+#include <exception>
+
 #include <pthread.h>
 
-#include "linkercontrol.h"
+#include "errorstring.h"
 
 #define MUTEXLOCKER(mux) NetMauMau::Common::MutexLocker __mutex__locker__(mux); \
 	_UNUSED(__mutex__locker__)
 
-#ifndef GCC_NO_LTOBUG
-#if GCC_VERSION >= 40500
-#define GCC_NO_LTOBUG GCC_VERSION >= 40700
-#else
-#define GCC_NO_LTOBUG 1
-#endif
-#endif
-
 namespace NetMauMau {
 
 namespace Common {
+
+class _EXPORT MutexLockerException : public std::exception {
+	MutexLockerException &operator=(const MutexLockerException &);
+public:
+	MutexLockerException(const std::string &msg) throw();
+	virtual ~MutexLockerException() throw();
+
+	virtual const char *what() const throw() _PURE;
+
+private:
+	const std::string m_msg;
+};
 
 template<typename Mutex, int (&Locker)(Mutex *), int (&Unlocker)(Mutex *)>
 class MutexLockerBase {
@@ -45,19 +52,11 @@ class MutexLockerBase {
 public:
 	typedef Mutex mutex_type;
 
-	MutexLockerBase(Mutex *mux) throw() : m_mux(mux), m_locked(false) {
-		m_locked = (Locker(m_mux) == 0);
-	}
-
+	MutexLockerBase(Mutex *mux);
 	~MutexLockerBase() throw();
 
-	int unlock() throw() {
-		return m_locked ? (m_locked = (Unlocker(m_mux) == 0)) : 0;
-	}
-
-	bool isLocked() const throw() {
-		return m_locked;
-	}
+	int unlock() throw();
+	bool isLocked() const throw();
 
 private:
 	Mutex *m_mux;
@@ -65,23 +64,38 @@ private:
 };
 
 template<typename Mutex, int (&Locker)(Mutex *), int (&Unlocker)(Mutex *)>
+MutexLockerBase<Mutex, Locker, Unlocker>::MutexLockerBase(Mutex *mux) : m_mux(mux), m_locked(true) {
+
+	const int r = Locker(m_mux);
+
+	if(r) throw MutexLockerException(errorString(r));
+}
+
+template<typename Mutex, int (&Locker)(Mutex *), int (&Unlocker)(Mutex *)>
 MutexLockerBase<Mutex, Locker, Unlocker>::~MutexLockerBase() throw() {
 	unlock();
+}
+
+template<typename Mutex, int (&Locker)(Mutex *), int (&Unlocker)(Mutex *)>
+int MutexLockerBase<Mutex, Locker, Unlocker>::unlock() throw() {
+	return m_locked ? (m_locked = (Unlocker(m_mux) == 0)) : 0;
+}
+
+template<typename Mutex, int (&Locker)(Mutex *), int (&Unlocker)(Mutex *)>
+bool MutexLockerBase<Mutex, Locker, Unlocker>::isLocked() const throw() {
+	return m_locked;
 }
 
 typedef MutexLockerBase<pthread_mutex_t,  pthread_mutex_lock,    pthread_mutex_unlock>  MutexLocker;
 typedef MutexLockerBase<pthread_rwlock_t, pthread_rwlock_rdlock, pthread_rwlock_unlock> ReadLock;
 typedef MutexLockerBase<pthread_rwlock_t, pthread_rwlock_wrlock, pthread_rwlock_unlock> WriteLock;
 
-#if GCC_NO_LTOBUG
-// on g++ before v4.7 this causes a compiler bug with LTO enabled
 extern template
 class _EXPORT MutexLockerBase<pthread_mutex_t,  pthread_mutex_lock,    pthread_mutex_unlock>;
 extern template
 class _EXPORT MutexLockerBase<pthread_rwlock_t, pthread_rwlock_rdlock, pthread_rwlock_unlock>;
 extern template
 class _EXPORT MutexLockerBase<pthread_rwlock_t, pthread_rwlock_wrlock, pthread_rwlock_unlock>;
-#endif
 
 }
 

@@ -17,9 +17,17 @@
  * along with NetMauMau.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if defined(HAVE_CONFIG_H) || defined(IN_IDE_PARSER)
+#include "config.h"
+#endif
+
 #include <cstdio>
 
 #include "game.h"
+
+#ifdef ENABLE_THREADS
+#include "mutexlocker.h"
+#endif
 
 #include "abstractsocket.h"             // for AbstractSocket
 #include "easyplayer.h"                 // for EasyPlayer
@@ -269,14 +277,23 @@ void Game::reset(bool playerLost) throw() {
 
 	char sr[128];
 
-	std::snprintf(sr, 127, "Received %.2f kBytes; sent %.2f kBytes", static_cast<double>
-				  (NetMauMau::Common::AbstractSocket::getReceivedBytes()) / 1024.0,
-				  static_cast<double>(NetMauMau::Common::AbstractSocket::getSentBytes()) / 1024.0);
+#ifdef ENABLE_THREADS
 
-	logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << sr);
+	try {
+#endif
+		std::snprintf(sr, 127, "Received %.2f kBytes; sent %.2f kBytes", static_cast<double>
+					  (NetMauMau::Common::AbstractSocket::getReceivedBytes()) / 1024.0,
+					  static_cast<double>(NetMauMau::Common::AbstractSocket::getSentBytes()) /
+					  1024.0);
 
-	NetMauMau::Common::AbstractSocket::resetReceivedBytes();
-	NetMauMau::Common::AbstractSocket::resetSentBytes();
+		logInfo(NetMauMau::Common::Logger::time(TIMEFORMAT) << sr);
+
+		NetMauMau::Common::AbstractSocket::resetReceivedBytes();
+		NetMauMau::Common::AbstractSocket::resetSentBytes();
+#ifdef ENABLE_THREADS
+	} catch(NetMauMau::Common::MutexLockerException &) {}
+
+#endif
 
 	m_interrupted = false;
 

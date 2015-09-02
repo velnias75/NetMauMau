@@ -63,6 +63,10 @@
 #include "serverplayer.h"               // for Player
 #include "iruleset.h"
 
+#ifdef ENABLE_THREADS
+#include "mutexlocker.h"
+#endif
+
 #ifdef HAVE_LIBMICROHTTPD
 #include "httpd.h"
 #else
@@ -504,7 +508,15 @@ int main(int argc, const char **argv) {
 			cpos << game.getPlayerCount();
 			NetMauMau::Common::efficientAddOrUpdate(caps, "CUR_PLAYERS", cpos.str());
 
-			updatePlayerCap(caps, game.getPlayerCount(), con);
+#ifdef ENABLE_THREADS
+
+			try {
+#endif
+				updatePlayerCap(caps, game.getPlayerCount(), con);
+#ifdef ENABLE_THREADS
+			} catch(NetMauMau::Common::MutexLockerException &) {}
+
+#endif
 
 			while(!interrupt) {
 
@@ -539,7 +551,15 @@ int main(int argc, const char **argv) {
 
 								if(cl) logger("accepted");
 
-								updatePlayerCap(caps, game.getPlayerCount(), con);
+#ifdef ENABLE_THREADS
+
+								try {
+#endif
+									updatePlayerCap(caps, game.getPlayerCount(), con);
+#ifdef ENABLE_THREADS
+								} catch(NetMauMau::Common::MutexLockerException &) {}
+
+#endif
 
 								if(cs == Server::Game::ACCEPTED_READY) {
 #ifdef HAVE_LIBRT
@@ -553,7 +573,17 @@ int main(int argc, const char **argv) {
 										con.createThreads();
 #endif
 										game.start(ultimate);
-										updatePlayerCap(caps, game.getPlayerCount(), con);
+
+#ifdef ENABLE_THREADS
+
+										try {
+#endif
+											updatePlayerCap(caps, game.getPlayerCount(), con);
+#ifdef ENABLE_THREADS
+										} catch(NetMauMau::Common::MutexLockerException &) {}
+
+#endif
+
 #ifdef HAVE_LIBRT
 // 										if(inetd) NetMauMau::armIdleTimer(timerid, its);
 #endif
@@ -586,7 +616,15 @@ int main(int argc, const char **argv) {
 					game.reset(true);
 				}
 
-				updatePlayerCap(caps, game.getPlayerCount(), con);
+#ifdef ENABLE_THREADS
+
+				try {
+#endif
+					updatePlayerCap(caps, game.getPlayerCount(), con);
+#ifdef ENABLE_THREADS
+				} catch(NetMauMau::Common::MutexLockerException &) {}
+
+#endif
 			}
 
 			NetMauMau::DB::SQLite::getInstance()->gameEnded(NOGAME_IDX);

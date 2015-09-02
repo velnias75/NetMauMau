@@ -479,9 +479,17 @@ void dump(std::ostream &out) {
 	out << "single\n";
 #endif
 
-	std::snprintf(sr, 127, "Total received %.2f kBytes; total sent %.2f kBytes",
-				  static_cast<double>(Common::AbstractSocket::getTotalReceivedBytes()) / 1024.0,
-				  static_cast<double>(Common::AbstractSocket::getTotalSentBytes()) / 1024.0);
+#ifdef ENABLE_TREADS
+
+	try {
+#endif
+		std::snprintf(sr, 127, "Total received %.2f kBytes; total sent %.2f kBytes",
+					  static_cast<double>(Common::AbstractSocket::getTotalReceivedBytes()) / 1024.0,
+					  static_cast<double>(Common::AbstractSocket::getTotalSentBytes()) / 1024.0);
+#ifdef ENABLE_TREADS
+	} catch(NetMauMau::Common::MutexException &) {}
+
+#endif
 
 	out << "== Network ==\n";
 	out << "Host: " << (host && *host ? host : "localhost") << "\n";

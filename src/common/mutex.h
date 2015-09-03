@@ -43,61 +43,50 @@ private:
 	const std::string m_msg;
 };
 
-template<typename T, typename A, int (*Init)(T *, const A *), int (*Destroy)(T *)>
-struct MutexTraits;
-
-template<>
-struct MutexTraits < pthread_mutex_t, pthread_mutexattr_t, pthread_mutex_init,
-		pthread_mutex_destroy > {
-	typedef pthread_mutex_t mutex_type;
-	typedef pthread_mutexattr_t attr_type;
+template<typename M, typename A>
+struct MutexTraits {
+	typedef M mutex_type;
+	typedef A attr_type;
 };
 
-template<>
-struct MutexTraits < pthread_rwlock_t, pthread_rwlockattr_t, pthread_rwlock_init,
-		pthread_rwlock_destroy > {
-	typedef pthread_rwlock_t mutex_type;
-	typedef pthread_rwlockattr_t attr_type;
-};
-
-template<typename T, typename A, int (*Init)(T *, const A *), int (*Destroy)(T *)>
-class MutexBase : public MutexTraits<T, A, Init, Destroy> {
+template<typename M, typename A, int (*Init)(M *, const A *), int (*Destroy)(M *)>
+class MutexBase : public MutexTraits<M, A> {
 	MutexBase &operator=(const MutexBase &);
 public:
 	MutexBase();
 	MutexBase(const MutexBase &o) throw();
-	MutexBase(typename Commons::RParam<T>::Type o) throw();
+	MutexBase(typename Commons::RParam<typename MutexTraits<M, A>::mutex_type>::Type o) throw();
 	~MutexBase() throw();
 
-	operator T *() const throw() _CONST;
+	operator M *() const throw() _CONST;
 
 private:
-	T m_mutex;
+	typename MutexTraits<M, A>::mutex_type m_mutex;
 };
 
-template<typename T, typename A, int (*Init)(T *, const A *), int (*Destroy)(T *)>
-MutexBase<T, A, Init, Destroy>::MutexBase() : m_mutex() {
+template<typename M, typename A, int (*Init)(M *, const A *), int (*Destroy)(M *)>
+MutexBase<M, A, Init, Destroy>::MutexBase() : m_mutex() {
 
 	const int r = Init(&m_mutex, NULL);
 
 	if(r) throw MutexException(NetMauMau::Common::errorString(r));
 }
 
-template<typename T, typename A, int (*Init)(T *, const A *), int (*Destroy)(T *)>
-MutexBase<T, A, Init, Destroy>::MutexBase(typename Commons::RParam<T>::Type o) throw()
-	: m_mutex(o) {}
+template<typename M, typename A, int (*Init)(M *, const A *), int (*Destroy)(M *)>
+MutexBase<M, A, Init, Destroy>::MutexBase(typename
+		Commons::RParam<typename MutexTraits<M, A>::mutex_type>::Type o) throw() : m_mutex(o) {}
 
-template<typename T, typename A, int (*Init)(T *, const A *), int (*Destroy)(T *)>
-MutexBase<T, A, Init, Destroy>::MutexBase(const MutexBase &o) throw() : m_mutex(o.m_mutex) {}
+template<typename M, typename A, int (*Init)(M *, const A *), int (*Destroy)(M *)>
+MutexBase<M, A, Init, Destroy>::MutexBase(const MutexBase &o) throw() : m_mutex(o.m_mutex) {}
 
-template<typename T, typename A, int (*Init)(T *, const A *), int (*Destroy)(T *)>
-MutexBase<T, A, Init, Destroy>::~MutexBase() throw() {
+template<typename M, typename A, int (*Init)(M *, const A *), int (*Destroy)(M *)>
+MutexBase<M, A, Init, Destroy>::~MutexBase() throw() {
 	Destroy(&m_mutex);
 }
 
-template<typename T, typename A, int (*Init)(T *, const A *), int (*Destroy)(T *)>
-MutexBase<T, A, Init, Destroy>::operator T *() const throw() {
-	return const_cast<T *>(&m_mutex);
+template<typename M, typename A, int (*Init)(M *, const A *), int (*Destroy)(M *)>
+MutexBase<M, A, Init, Destroy>::operator M *() const throw() {
+	return const_cast<typename MutexTraits<M, A>::mutex_type *>(&m_mutex);
 }
 
 typedef MutexBase < pthread_mutex_t, pthread_mutexattr_t, pthread_mutex_init,

@@ -63,7 +63,7 @@ volatile std::size_t tidPtr = 0u;
 #endif
 
 #ifdef ENABLE_THREADS
-pthread_mutex_t logBufMutex;
+pthread_mutex_t logBufMutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
 }
 

@@ -20,12 +20,7 @@
 #ifndef NETMAUMAU_COMMON_MUTEXLOCKER_H
 #define NETMAUMAU_COMMON_MUTEXLOCKER_H
 
-#include <string>
-#include <exception>
-
-#include <pthread.h>
-
-#include "errorstring.h"
+#include "mutex.h"
 
 #define MUTEXLOCKER(mux) NetMauMau::Common::MutexLocker __mutex__locker__(mux); \
 	_UNUSED(__mutex__locker__)
@@ -34,68 +29,59 @@ namespace NetMauMau {
 
 namespace Common {
 
-class _EXPORT MutexLockerException : public std::exception {
-	MutexLockerException &operator=(const MutexLockerException &);
-public:
-	MutexLockerException(const std::string &msg) throw();
-	virtual ~MutexLockerException() throw();
-
-	virtual const char *what() const throw() _PURE;
-
-private:
-	const std::string m_msg;
-};
-
-template<typename Mutex, int (&Locker)(Mutex *), int (&Unlocker)(Mutex *)>
+template < typename M, int (&Locker)(typename M::mutex_type *),
+		 int (&Unlocker)(typename M::mutex_type *) >
 class MutexLockerBase {
 	DISALLOW_COPY_AND_ASSIGN(MutexLockerBase)
 public:
-	typedef Mutex mutex_type;
+	typedef M mutex_type;
 
-	MutexLockerBase(Mutex *mux);
+	explicit MutexLockerBase(typename Commons::RParam<mutex_type>::Type mux);
 	~MutexLockerBase() throw();
 
 	int unlock() throw();
-	bool isLocked() const throw();
+	bool isLocked() const throw() _PURE;
 
 private:
-	Mutex *m_mux;
+	typename mutex_type::mutex_type *const m_mux;
 	bool m_locked;
 };
 
-template<typename Mutex, int (&Locker)(Mutex *), int (&Unlocker)(Mutex *)>
-MutexLockerBase<Mutex, Locker, Unlocker>::MutexLockerBase(Mutex *mux) : m_mux(mux), m_locked(true) {
+template < typename M, int (&Locker)(typename M::mutex_type *),
+		 int (&Unlocker)(typename M::mutex_type *) >
+MutexLockerBase<M, Locker, Unlocker>::MutexLockerBase(typename
+		Commons::RParam<mutex_type>::Type mux) : m_mux(mux), m_locked(true) {
 
 	const int r = Locker(m_mux);
 
-	if(r) throw MutexLockerException(errorString(r));
+	if(r) throw MutexException(errorString(r));
 }
 
-template<typename Mutex, int (&Locker)(Mutex *), int (&Unlocker)(Mutex *)>
-MutexLockerBase<Mutex, Locker, Unlocker>::~MutexLockerBase() throw() {
+template < typename M, int (&Locker)(typename M::mutex_type *),
+		 int (&Unlocker)(typename M::mutex_type *) >
+MutexLockerBase<M, Locker, Unlocker>::~MutexLockerBase() throw() {
 	unlock();
 }
 
-template<typename Mutex, int (&Locker)(Mutex *), int (&Unlocker)(Mutex *)>
-int MutexLockerBase<Mutex, Locker, Unlocker>::unlock() throw() {
+template < typename M, int (&Locker)(typename M::mutex_type *),
+		 int (&Unlocker)(typename M::mutex_type *) >
+int MutexLockerBase<M, Locker, Unlocker>::unlock() throw() {
 	return m_locked ? (m_locked = (Unlocker(m_mux) == 0)) : 0;
 }
 
-template<typename Mutex, int (&Locker)(Mutex *), int (&Unlocker)(Mutex *)>
-bool MutexLockerBase<Mutex, Locker, Unlocker>::isLocked() const throw() {
+template < typename M, int (&Locker)(typename M::mutex_type *),
+		 int (&Unlocker)(typename M::mutex_type *) >
+bool MutexLockerBase<M, Locker, Unlocker>::isLocked() const throw() {
 	return m_locked;
 }
 
-typedef MutexLockerBase<pthread_mutex_t,  pthread_mutex_lock,    pthread_mutex_unlock>  MutexLocker;
-typedef MutexLockerBase<pthread_rwlock_t, pthread_rwlock_rdlock, pthread_rwlock_unlock> ReadLock;
-typedef MutexLockerBase<pthread_rwlock_t, pthread_rwlock_wrlock, pthread_rwlock_unlock> WriteLock;
+typedef MutexLockerBase<Mutex,  pthread_mutex_lock,    pthread_mutex_unlock>  MutexLocker;
+typedef MutexLockerBase<RWLock, pthread_rwlock_rdlock, pthread_rwlock_unlock> ReadLock;
+typedef MutexLockerBase<RWLock, pthread_rwlock_wrlock, pthread_rwlock_unlock> WriteLock;
 
-extern template
-class _EXPORT MutexLockerBase<pthread_mutex_t,  pthread_mutex_lock,    pthread_mutex_unlock>;
-extern template
-class _EXPORT MutexLockerBase<pthread_rwlock_t, pthread_rwlock_rdlock, pthread_rwlock_unlock>;
-extern template
-class _EXPORT MutexLockerBase<pthread_rwlock_t, pthread_rwlock_wrlock, pthread_rwlock_unlock>;
+extern template class _EXPORT MutexLockerBase<Mutex,  pthread_mutex_lock,    pthread_mutex_unlock>;
+extern template class _EXPORT MutexLockerBase<RWLock, pthread_rwlock_rdlock, pthread_rwlock_unlock>;
+extern template class _EXPORT MutexLockerBase<RWLock, pthread_rwlock_wrlock, pthread_rwlock_unlock>;
 
 }
 

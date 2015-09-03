@@ -36,13 +36,14 @@
 
 #ifdef ENABLE_THREADS
 #include "mutexlocker.h"
+#else
+#include "errorstring.h"
 #endif
 
 #include "sqlite.h"
 #include "base64.h"                     // for BYTE, base64_encode, etc
 #include "logger.h"                     // for BasicLogger, logWarning, etc
 #include "defaultplayerimage.h"         // for DefaultPlayerImage
-#include "errorstring.h"                // for errorString
 #include "pngcheck.h"                   // for checkPNG
 #include "select.h"
 #include "tcpopt_cork.h"
@@ -55,7 +56,7 @@
 
 namespace {
 #ifdef ENABLE_THREADS
-pthread_mutex_t initMux = PTHREAD_MUTEX_INITIALIZER;
+NetMauMau::Common::Mutex initMux;
 
 void *playerThread(void *arg) throw() {
 
@@ -66,13 +67,13 @@ void *playerThread(void *arg) throw() {
 
 		do {
 
-			NetMauMau::Common::MutexLocker mlp(&ptd->gmx);
+			NetMauMau::Common::MutexLocker mlp(ptd->gmx);
 			_UNUSED(mlp);
 
 			int pr;
 
 			while(!(ptd->stp || !ptd->msg.empty())) {
-				if((pr = pthread_cond_wait(&ptd->get, &ptd->gmx))) {
+				if((pr = pthread_cond_wait(&ptd->get, ptd->gmx))) {
 					throw NetMauMau::Common::Exception::SocketException
 					(std::string("Condition wait error: ") + NetMauMau::Common::errorString(pr),
 					 pr);
@@ -88,7 +89,7 @@ void *playerThread(void *arg) throw() {
 					ptd->exc = new(std::nothrow) NetMauMau::Common::Exception::SocketException(e);
 				}
 
-				MUTEXLOCKER(&ptd->emx);
+				MUTEXLOCKER(ptd->emx);
 				std::string().swap(ptd->msg);
 
 				if((pr = pthread_cond_signal(&ptd->eat))) {
@@ -124,7 +125,7 @@ struct _playerThreadShutter :
 		int pr;
 
 		{
-			MUTEXLOCKER(&ptd->gmx);
+			MUTEXLOCKER(ptd->gmx);
 			ptd->stp = true;
 
 			if((pr = pthread_cond_signal(&ptd->get))) {
@@ -219,21 +220,17 @@ using namespace NetMauMau::Server;
 Connection::_playerThreadData::_playerThreadData(const NAMESOCKFD &n, Connection &c) : get(), gmx(),
 	eat(), emx(), nfd(n), tid(), msg(), stp(false), con(c), exc(0L) {
 
-	MUTEXLOCKER(&initMux);
+	MUTEXLOCKER(initMux);
 
 	pthread_cond_init(&get, NULL);
-	pthread_mutex_init(&gmx, NULL);
 	pthread_cond_init(&eat, NULL);
-	pthread_mutex_init(&emx, NULL);
 }
 
 Connection::_playerThreadData::~_playerThreadData() {
 
-	MUTEXLOCKER(&initMux);
+	MUTEXLOCKER(initMux);
 
-	pthread_mutex_destroy(&emx);
 	pthread_cond_destroy(&eat);
-	pthread_mutex_destroy(&gmx);
 	pthread_cond_destroy(&get);
 }
 #endif
@@ -1144,7 +1141,7 @@ void Connection::shutdownThreads() throw() {
 
 	try {
 		std::for_each(m_data.begin(), m_data.end(), _playerThreadShutter());
-	} catch(const NetMauMau::Common::MutexLockerException &e) {
+	} catch(const NetMauMau::Common::MutexException &e) {
 		logWarning(e);
 	}
 
@@ -1156,7 +1153,7 @@ void Connection::createThreads() {
 	try {
 		std::for_each(getRegisteredPlayers().begin(), getRegisteredPlayers().end(),
 					  _playerThreadCreator(*this, m_data, &m_attr));
-	} catch(NetMauMau::Common::MutexLockerException &e) {
+	} catch(NetMauMau::Common::MutexException &e) {
 		PTD().swap(m_data);
 		logWarning("Couldn't create remote player threads: " << e.what());
 	}
@@ -1178,10 +1175,10 @@ void Connection::waitPlayerThreads() const throw(NetMauMau::Common::Exception::S
 
 		try {
 
-			MUTEXLOCKER(&(*i)->emx);
+			MUTEXLOCKER((*i)->emx);
 
 			while(!(*i)->msg.empty()) {
-				int pr = pthread_cond_wait(&(*i)->eat, &(*i)->emx);
+				int pr = pthread_cond_wait(&(*i)->eat, (*i)->emx);
 
 				if(pr) throw NetMauMau::Common::Exception::SocketException
 					(std::string("Condition wait error: ") + NetMauMau::Common::errorString(pr),
@@ -1191,7 +1188,7 @@ void Connection::waitPlayerThreads() const throw(NetMauMau::Common::Exception::S
 			if((*i)->exc) throw NetMauMau::Common::Exception::SocketException((*i)->nfd.name + ": "
 						+ (*i)->exc->what());
 
-		} catch(NetMauMau::Common::MutexLockerException &e) {
+		} catch(NetMauMau::Common::MutexException &e) {
 			throw NetMauMau::Common::Exception::SocketException((*i)->nfd.name + ": " + e.what());
 		}
 	}
@@ -1205,13 +1202,13 @@ void Connection::signalMessage(PTD &data, SOCKET fd, const std::string &msg) {
 
 		try {
 
-			MUTEXLOCKER(&(*f)->gmx);
+			MUTEXLOCKER((*f)->gmx);
 
 			(*f)->msg = msg;
 
 			if(pthread_cond_signal(&(*f)->get)) write(fd, msg);
 
-		} catch(NetMauMau::Common::MutexLockerException &) {
+		} catch(NetMauMau::Common::MutexException &) {
 			write(fd, msg);
 		}
 

@@ -23,17 +23,22 @@ namespace NetMauMau {
 
 namespace Common {
 
-MutexLockerException::MutexLockerException(const std::string &msg) throw() : m_msg(msg) {}
+MutexException::MutexException(const std::string &msg) throw() : m_msg(msg) {}
 
-MutexLockerException::~MutexLockerException() throw() {}
+MutexException::~MutexException() throw() {}
 
-const char *MutexLockerException::what() const throw() {
+const char *MutexException::what() const throw() {
 	return m_msg.c_str();
 }
 
-template class MutexLockerBase<pthread_mutex_t,  pthread_mutex_lock,    pthread_mutex_unlock>;
-template class MutexLockerBase<pthread_rwlock_t, pthread_rwlock_rdlock, pthread_rwlock_unlock>;
-template class MutexLockerBase<pthread_rwlock_t, pthread_rwlock_wrlock, pthread_rwlock_unlock>;
+template class MutexBase < pthread_mutex_t, pthread_mutexattr_t, pthread_mutex_init,
+		 pthread_mutex_destroy >;
+template class MutexBase < pthread_rwlock_t, pthread_rwlockattr_t, pthread_rwlock_init,
+		 pthread_rwlock_destroy >;
+
+template class MutexLockerBase<Mutex,  pthread_mutex_lock,    pthread_mutex_unlock>;
+template class MutexLockerBase<RWLock, pthread_rwlock_rdlock, pthread_rwlock_unlock>;
+template class MutexLockerBase<RWLock, pthread_rwlock_wrlock, pthread_rwlock_unlock>;
 
 }
 

@@ -28,7 +28,7 @@
 #include <functional>                   // for greater
 
 #ifdef ENABLE_THREADS
-#include <pthread.h>
+#include "mutex.h"
 #endif
 
 #include "abstractconnection.h"         // for AbstractConnection, etc
@@ -72,9 +72,9 @@ public:
 		}
 
 		pthread_cond_t    get;
-		pthread_mutex_t   gmx;
+		NetMauMau::Common::Mutex gmx;
 		pthread_cond_t    eat;
-		pthread_mutex_t   emx;
+		NetMauMau::Common::Mutex emx;
 		const NAMESOCKFD &nfd;
 		pthread_t         tid;
 		std::string       msg;

@@ -63,7 +63,7 @@ volatile std::size_t tidPtr = 0u;
 #endif
 
 #ifdef ENABLE_THREADS
-pthread_mutex_t logBufMutex = PTHREAD_MUTEX_INITIALIZER;
+NetMauMau::Common::Mutex logBufMutex;
 #endif
 }
 
@@ -74,7 +74,7 @@ std::size_t NetMauMau::Common::nextLogBuf() {
 #ifdef ENABLE_THREADS
 
 	try {
-		MUTEXLOCKER(&logBufMutex);
+		MUTEXLOCKER(logBufMutex);
 #endif
 
 #if (defined(HAVE_UNISTD_H) && defined(HAVE_SYS_SYSCALL_H) && defined(SYS_gettid)) \
@@ -98,7 +98,7 @@ std::size_t NetMauMau::Common::nextLogBuf() {
 		return std::min<std::size_t>(aux, NetMauMau::Common::Logger::BUFCNT - 1u);
 
 #ifdef ENABLE_THREADS
-	} catch(NetMauMau::Common::MutexLockerException &) {
+	} catch(NetMauMau::Common::MutexException &) {
 		return 0u;
 	}
 

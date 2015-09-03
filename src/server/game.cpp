@@ -291,7 +291,7 @@ void Game::reset(bool playerLost) throw() {
 		NetMauMau::Common::AbstractSocket::resetReceivedBytes();
 		NetMauMau::Common::AbstractSocket::resetSentBytes();
 #ifdef ENABLE_THREADS
-	} catch(NetMauMau::Common::MutexLockerException &) {}
+	} catch(NetMauMau::Common::MutexException &) {}
 
 #endif
 

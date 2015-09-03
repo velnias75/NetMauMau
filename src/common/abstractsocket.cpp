@@ -36,7 +36,9 @@
 #endif
 
 #ifdef ENABLE_THREADS
-#include <pthread.h>
+#include "mutex.h"
+#else
+#include "errorstring.h"
 #endif
 
 #include <cerrno>                       // for errno, ENOMEM
@@ -46,7 +48,6 @@
 
 #include "abstractsocket.h"             // for AbstractSocket
 #include "abstractsocketimpl.h"         // for AbstractSocketImpl
-#include "errorstring.h"                // for errorString
 #include "logger.h"                     // for logWarning
 #include "select.h"
 
@@ -61,8 +62,8 @@
 namespace {
 
 #ifdef ENABLE_THREADS
-pthread_rwlock_t recvBytesLock = PTHREAD_RWLOCK_INITIALIZER;
-pthread_rwlock_t sentBytesLock = PTHREAD_RWLOCK_INITIALIZER;
+NetMauMau::Common::RWLock recvBytesLock;
+NetMauMau::Common::RWLock sentBytesLock;
 #endif
 
 #ifdef _WIN32
@@ -263,12 +264,12 @@ again:
 #ifdef ENABLE_THREADS
 
 	try {
-		NetMauMau::Common::WriteLock l(&recvBytesLock);
+		NetMauMau::Common::WriteLock l(recvBytesLock);
 #endif
 		m_recvTotal += total;
 		m_recv += total;
 #ifdef ENABLE_THREADS
-	} catch(const NetMauMau::Common::MutexLockerException &e) {
+	} catch(const NetMauMau::Common::MutexException &e) {
 		throw NetMauMau::Common::Exception::SocketException(e.what());
 	}
 
@@ -351,10 +352,10 @@ void AbstractSocket::send(const void *buf, std::size_t len,
 #ifdef ENABLE_THREADS
 
 	try {
-		NetMauMau::Common::WriteLock l(&sentBytesLock);
+		NetMauMau::Common::WriteLock l(sentBytesLock);
 		m_sentTotal += origLen;
 		m_sent += origLen;
-	} catch(const NetMauMau::Common::MutexLockerException &e) {
+	} catch(const NetMauMau::Common::MutexException &e) {
 		throw NetMauMau::Common::Exception::SocketException(e.what());
 	}
 
@@ -448,7 +449,7 @@ void AbstractSocket::shutdown(SOCKET cfd) {
 
 unsigned long AbstractSocket::getReceivedBytes() {
 #ifdef ENABLE_THREADS
-	NetMauMau::Common::ReadLock l(&recvBytesLock);
+	NetMauMau::Common::ReadLock l(recvBytesLock);
 #endif
 
 	return m_recv;
@@ -456,7 +457,7 @@ unsigned long AbstractSocket::getReceivedBytes() {
 
 void AbstractSocket::resetReceivedBytes() {
 #ifdef ENABLE_THREADS
-	NetMauMau::Common::WriteLock l(&recvBytesLock);
+	NetMauMau::Common::WriteLock l(recvBytesLock);
 #endif
 
 	m_recv = 0L;
@@ -464,14 +465,14 @@ void AbstractSocket::resetReceivedBytes() {
 
 unsigned long AbstractSocket::getSentBytes() {
 #ifdef ENABLE_THREADS
-	NetMauMau::Common::ReadLock l(&sentBytesLock);
+	NetMauMau::Common::ReadLock l(sentBytesLock);
 #endif
 	return m_sent;
 }
 
 void AbstractSocket::resetSentBytes() {
 #ifdef ENABLE_THREADS
-	NetMauMau::Common::WriteLock l(&sentBytesLock);
+	NetMauMau::Common::WriteLock l(sentBytesLock);
 #endif
 
 	m_sent = 0L;
@@ -479,7 +480,7 @@ void AbstractSocket::resetSentBytes() {
 
 unsigned long AbstractSocket::getTotalReceivedBytes() {
 #ifdef ENABLE_THREADS
-	NetMauMau::Common::ReadLock l(&recvBytesLock);
+	NetMauMau::Common::ReadLock l(recvBytesLock);
 #endif
 
 	return m_recvTotal;
@@ -487,7 +488,7 @@ unsigned long AbstractSocket::getTotalReceivedBytes() {
 
 unsigned long AbstractSocket::getTotalSentBytes() {
 #ifdef ENABLE_THREADS
-	NetMauMau::Common::ReadLock l(&sentBytesLock);
+	NetMauMau::Common::ReadLock l(sentBytesLock);
 #endif
 
 	return m_sentTotal;

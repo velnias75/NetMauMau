@@ -514,7 +514,7 @@ int main(int argc, const char **argv) {
 #endif
 				updatePlayerCap(caps, game.getPlayerCount(), con);
 #ifdef ENABLE_THREADS
-			} catch(NetMauMau::Common::MutexLockerException &) {}
+			} catch(NetMauMau::Common::MutexException &) {}
 
 #endif
 
@@ -557,7 +557,7 @@ int main(int argc, const char **argv) {
 #endif
 									updatePlayerCap(caps, game.getPlayerCount(), con);
 #ifdef ENABLE_THREADS
-								} catch(NetMauMau::Common::MutexLockerException &) {}
+								} catch(NetMauMau::Common::MutexException &) {}
 
 #endif
 
@@ -580,7 +580,7 @@ int main(int argc, const char **argv) {
 #endif
 											updatePlayerCap(caps, game.getPlayerCount(), con);
 #ifdef ENABLE_THREADS
-										} catch(NetMauMau::Common::MutexLockerException &) {}
+										} catch(NetMauMau::Common::MutexException &) {}
 
 #endif
 
@@ -622,7 +622,7 @@ int main(int argc, const char **argv) {
 #endif
 					updatePlayerCap(caps, game.getPlayerCount(), con);
 #ifdef ENABLE_THREADS
-				} catch(NetMauMau::Common::MutexLockerException &) {}
+				} catch(NetMauMau::Common::MutexException &) {}
 
 #endif
 			}

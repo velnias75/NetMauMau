@@ -82,7 +82,7 @@
 
 namespace {
 #ifdef ENABLE_THREADS
-pthread_mutex_t capsLock = PTHREAD_MUTEX_INITIALIZER;
+NetMauMau::Common::Mutex capsLock;
 #endif
 
 void unknownSignal(int sig) {
@@ -132,7 +132,7 @@ void updatePlayerCap(Server::Connection::CAPABILITIES &caps, std::size_t count,
 					 Server::Connection &con) {
 
 #ifdef ENABLE_THREADS
-	MUTEXLOCKER(&capsLock);
+	MUTEXLOCKER(capsLock);
 #endif
 
 	std::ostringstream os;

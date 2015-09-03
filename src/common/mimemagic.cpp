@@ -19,6 +19,16 @@
 
 #include "mimemagic.h"
 
+#ifdef ENABLE_THREADS
+#include "mutexlocker.h"
+#endif
+
+#ifdef ENABLE_THREADS
+namespace {
+NetMauMau::Common::Mutex mimeMutex;
+}
+#endif
+
 using namespace NetMauMau::Common;
 
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
@@ -43,11 +53,25 @@ MimeMagic::~MimeMagic() throw() {
 }
 
 std::string MimeMagic::getMime(const unsigned char *data, std::size_t dataLen) const throw() {
+#ifdef ENABLE_THREADS
+
+	try {
+
+		MUTEXLOCKER(mimeMutex);
+#endif
+
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
-	const char *m = m_magic ? magic_buffer(m_magic, data, dataLen) : 0L;
-	return m ? std::string(m) : std::string();
+		const char *m = m_magic ? magic_buffer(m_magic, data, dataLen) : 0L;
+		return m ? std::string(m) : std::string();
 #else
-	return std::string();
+		return std::string();
+#endif
+
+#ifdef ENABLE_THREADS
+	} catch(NetMauMau::Common::MutexException &) {
+		return std::string();
+	}
+
 #endif
 }
 

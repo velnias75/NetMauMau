@@ -28,7 +28,7 @@
 #include <functional>                   // for greater
 
 #ifdef ENABLE_THREADS
-#include "mutex.h"
+#include "condition.h"
 #endif
 
 #include "abstractconnection.h"         // for AbstractConnection, etc
@@ -55,11 +55,14 @@ public:
 #ifdef ENABLE_THREADS
 	typedef struct _playerThreadData {
 
-		inline _playerThreadData(const _playerThreadData &o) : get(o.get), gmx(o.gmx), eat(o.eat),
-			emx(o.emx), nfd(o.nfd), tid(o.tid), msg(o.msg), stp(o.stp), con(o.con), exc(o.exc) {}
+		inline _playerThreadData(const _playerThreadData &o) throw() : msg(o.msg), stp(o.stp),
+			get(o.get), gmx(o.gmx), eat(o.eat), emx(o.emx), nfd(o.nfd), tid(o.tid), con(o.con),
+			exc(o.exc) {}
 
-		_playerThreadData(const NAMESOCKFD &n, Connection &c);
-		~_playerThreadData();
+		_playerThreadData(const NAMESOCKFD &n, Connection &c) throw() : msg(), stp(false), get(),
+			gmx(), eat(), emx(), nfd(n), tid(), con(c), exc(0L) {}
+
+		~_playerThreadData() throw() {}
 
 		inline _playerThreadData &operator=(const _playerThreadData &o) _PURE {
 
@@ -71,14 +74,34 @@ public:
 			return *this;
 		}
 
-		pthread_cond_t    get;
-		NetMauMau::Common::Mutex gmx;
-		pthread_cond_t    eat;
-		NetMauMau::Common::Mutex emx;
+		std::string   msg;
+		volatile bool stp;
+
+		typedef struct _get {
+			inline _get(const _playerThreadData *p) throw() : ptd(p) {}
+			inline bool operator()() const throw() {
+				return ptd->stp || !ptd->msg.empty();
+			}
+		private:
+			const _playerThreadData *const ptd;
+		} GET;
+
+		typedef struct _eat {
+			inline _eat(const _playerThreadData *p) throw() : ptd(p) {}
+			inline bool operator()() const {
+				return ptd->msg.empty();
+			}
+		private:
+			const _playerThreadData *const ptd;
+		} EAT;
+
+		NetMauMau::Common::Condition get;
+		NetMauMau::Common::Mutex     gmx;
+		NetMauMau::Common::Condition eat;
+		NetMauMau::Common::Mutex     emx;
+
 		const NAMESOCKFD &nfd;
 		pthread_t         tid;
-		std::string       msg;
-		volatile bool     stp;
 		Connection       &con;
 
 		Common::Exception::SocketException *exc;

@@ -4,10 +4,10 @@ noinst_LTLIBRARIES = libnetmaumaucommon_private.la
 BUILT_SOURCES = ai-icon.h
 
 noinst_HEADERS = abstractconnectionimpl.h abstractsocketimpl.h base64.h basiclogger.h \
-	ci_string.h eff_map.h errorstring.h icardfactory.h iobserver.h iplayer.h logger.h \
-	mimemagic.h mutex.h mutexlocker.h observable.h pathtools.h pngcheck.h protocol.h select.h \
-	smartptr.h smartsingleton.h tcpopt_base.h tcpopt_cork.h tcpopt_nodelay.h zlibexception.h \
-	zstreambuf.h
+	ci_string.h condition.h eff_map.h errorstring.h icardfactory.h iobserver.h iplayer.h \
+	logger.h mimemagic.h mutex.h mutexlocker.h observable.h pathtools.h pngcheck.h protocol.h \
+	select.h smartptr.h smartsingleton.h tcpopt_base.h tcpopt_cork.h tcpopt_nodelay.h \
+	zlibexception.h zstreambuf.h
 
 DISTCLEANFILES = ai-icon.h
 
@@ -40,7 +40,7 @@ libnetmaumaucommon_la_SOURCES = abstractconnection.cpp abstractconnectionimpl.cp
 	socketexception.cpp
 	
 if THREADS_ENABLED
-libnetmaumaucommon_la_SOURCES += mutexlocker.cpp
+libnetmaumaucommon_la_SOURCES += condition.cpp mutexlocker.cpp
 endif
 
 if WITHZLIB

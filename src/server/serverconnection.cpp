@@ -56,12 +56,13 @@
 
 namespace {
 #ifdef ENABLE_THREADS
-NetMauMau::Common::Mutex initMux;
 
 void *playerThread(void *arg) throw() {
 
 	NetMauMau::Server::Connection::PLAYERTHREADDATA *ptd =
 		static_cast<NetMauMau::Server::Connection::PLAYERTHREADDATA *>(arg);
+
+	logDebug("Thread for \"" << ptd->nfd.name << "\" started …");
 
 	try {
 
@@ -70,14 +71,11 @@ void *playerThread(void *arg) throw() {
 			NetMauMau::Common::MutexLocker mlp(ptd->gmx);
 			_UNUSED(mlp);
 
-			int pr;
-
-			while(!(ptd->stp || !ptd->msg.empty())) {
-				if((pr = pthread_cond_wait(&ptd->get, ptd->gmx))) {
-					throw NetMauMau::Common::Exception::SocketException
-					(std::string("Condition wait error: ") + NetMauMau::Common::errorString(pr),
-					 pr);
-				}
+			try {
+				ptd->get.wait(ptd->gmx, NetMauMau::Server::Connection::PLAYERTHREADDATA::GET(ptd));
+			} catch(const NetMauMau::Common::MutexException &e) {
+				throw NetMauMau::Common::Exception::SocketException
+				(std::string("Condition wait error: ") + e.what());
 			}
 
 			if(!ptd->stp) {
@@ -92,7 +90,9 @@ void *playerThread(void *arg) throw() {
 				MUTEXLOCKER(ptd->emx);
 				std::string().swap(ptd->msg);
 
-				if((pr = pthread_cond_signal(&ptd->eat))) {
+				int pr;
+
+				if((pr = ptd->eat.signal())) {
 					throw NetMauMau::Common::Exception::SocketException
 					(std::string("Condition wait error: ") + NetMauMau::Common::errorString(pr),
 					 pr);
@@ -128,7 +128,7 @@ struct _playerThreadShutter :
 			MUTEXLOCKER(ptd->gmx);
 			ptd->stp = true;
 
-			if((pr = pthread_cond_signal(&ptd->get))) {
+			if((pr = ptd->get.signal())) {
 				logDebug("Condition signal fail: " << NetMauMau::Common::errorString(pr));
 			}
 		}
@@ -215,25 +215,6 @@ struct _logOutPlayer : std::unary_function<NetMauMau::Common::IConnection::NAMES
 }
 
 using namespace NetMauMau::Server;
-
-#ifdef ENABLE_THREADS
-Connection::_playerThreadData::_playerThreadData(const NAMESOCKFD &n, Connection &c) : get(), gmx(),
-	eat(), emx(), nfd(n), tid(), msg(), stp(false), con(c), exc(0L) {
-
-	MUTEXLOCKER(initMux);
-
-	pthread_cond_init(&get, NULL);
-	pthread_cond_init(&eat, NULL);
-}
-
-Connection::_playerThreadData::~_playerThreadData() {
-
-	MUTEXLOCKER(initMux);
-
-	pthread_cond_destroy(&eat);
-	pthread_cond_destroy(&get);
-}
-#endif
 
 Connection::Connection(uint32_t minVer, bool inetd, uint16_t port, const char *server)
 	: AbstractConnection(server, port, true), m_caps(), m_clientMinVer(minVer), m_inetd(inetd),
@@ -1177,12 +1158,11 @@ void Connection::waitPlayerThreads() const throw(NetMauMau::Common::Exception::S
 
 			MUTEXLOCKER((*i)->emx);
 
-			while(!(*i)->msg.empty()) {
-				int pr = pthread_cond_wait(&(*i)->eat, (*i)->emx);
-
-				if(pr) throw NetMauMau::Common::Exception::SocketException
-					(std::string("Condition wait error: ") + NetMauMau::Common::errorString(pr),
-					 pr);
+			try {
+				(*i)->eat.wait((*i)->emx, PLAYERTHREADDATA::EAT(*i));
+			} catch(const NetMauMau::Common::MutexException &e) {
+				throw NetMauMau::Common::Exception::SocketException
+				(std::string("Condition wait error: ") + e.what());
 			}
 
 			if((*i)->exc) throw NetMauMau::Common::Exception::SocketException((*i)->nfd.name + ": "
@@ -1206,7 +1186,7 @@ void Connection::signalMessage(PTD &data, SOCKET fd, const std::string &msg) {
 
 			(*f)->msg = msg;
 
-			if(pthread_cond_signal(&(*f)->get)) write(fd, msg);
+			if((*f)->get.signal()) write(fd, msg);
 
 		} catch(NetMauMau::Common::MutexException &) {
 			write(fd, msg);

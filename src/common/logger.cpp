@@ -71,14 +71,14 @@ using namespace NetMauMau::Common;
 
 std::size_t NetMauMau::Common::nextLogBuf() {
 
+#if (defined(HAVE_UNISTD_H) && defined(HAVE_SYS_SYSCALL_H) && defined(SYS_gettid)) \
+        || defined(_WIN32)
+
 #ifdef ENABLE_THREADS
 
 	try {
 		MUTEXLOCKER(logBufMutex);
 #endif
-
-#if (defined(HAVE_UNISTD_H) && defined(HAVE_SYS_SYSCALL_H) && defined(SYS_gettid)) \
-	|| defined(_WIN32)
 
 #ifndef _WIN32
 		const TIDTYPE tid = syscall(SYS_gettid);
@@ -105,12 +105,12 @@ std::size_t NetMauMau::Common::nextLogBuf() {
 #endif
 
 #elif GCC_VERSION >= 40100
-		return __sync_bool_compare_and_swap(&rotatingLogBufSelect,
-											(NetMauMau::Common::Logger::BUFCNT - 1u), 1u) ?
-			   rotatingLogBufSelect : __sync_add_and_fetch(&rotatingLogBufSelect, 1u);
+	return __sync_bool_compare_and_swap(&rotatingLogBufSelect,
+										(NetMauMau::Common::Logger::BUFCNT - 1u), 1u) ?
+		   rotatingLogBufSelect : __sync_add_and_fetch(&rotatingLogBufSelect, 1u);
 #else
-		return rotatingLogBufSelect == (NetMauMau::Common::Logger::BUFCNT - 1u) ? 1u :
-			   ++rotatingLogBufSelect;
+	return rotatingLogBufSelect == (NetMauMau::Common::Logger::BUFCNT - 1u) ? 1u :
+		   ++rotatingLogBufSelect;
 #endif
 }
 

@@ -84,14 +84,19 @@ AC_ARG_ENABLE([xinetd], [AS_HELP_STRING([--disable-xinetd], [disables creation a
 AC_ARG_ENABLE([webserver], [AS_HELP_STRING([--disable-webserver], [disables the integrated webserver])],
   [ if test x$enable_webserver = xyes; then NOHTTPD=0; else NOHTTPD=1; fi ], [ NOHTTPD=0 ])
 
-AM_CONDITIONAL([THREADS_ENABLED], [ false ])
-
-AC_ARG_ENABLE([threads], [AS_HELP_STRING([--enable-threads], [enables threading support])],
-  [ if test x$enable_threads != xno; then
-      AM_CONDITIONAL([THREADS_ENABLED], [ true ])
-	  AC_DEFINE([ENABLE_THREADS], [1], [enable threading support])
+AC_ARG_ENABLE([threads], [AS_HELP_STRING([--disable-threads], [disables threading support])],
+  [ if test x$enable_threads = xno; then
+      AM_CONDITIONAL([THREADS_ENABLED], [ false ])
+	  if test $NOHTTPD -eq 0 ; then
+		AC_MSG_WARN([disabling threads with enabled webserver is *NOT* recommended])
+	  fi
     fi
   ])
+
+if test x$enable_threads = x -o x$enable_threads = xyes; then
+  AM_CONDITIONAL([THREADS_ENABLED], [ true ])
+  AC_DEFINE([ENABLE_THREADS], [1], [Define to 1 to enable threading support])
+fi
 
 PKG_PROG_PKG_CONFIG([0.22])
 

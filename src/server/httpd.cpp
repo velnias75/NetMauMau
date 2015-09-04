@@ -362,8 +362,9 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 
 			contentType = strdup("text/html; charset=utf-8");
 
+#ifdef ENABLE_THREADS
 			NetMauMau::Common::ReadLock crl(capsRWLock);
-
+#endif
 			const NetMauMau::DB::SQLite::SCORES &sc(httpd->getCapabilities().find("HAVE_SCORES") !=
 													httpd->getCapabilities().end() ?
 													NetMauMau::DB::SQLite::getInstance()->
@@ -430,12 +431,15 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 			os << "<a name=\"capa\"><center><h2>Server capabilities</h2><table width=\"50%\">"
 			   << "<tr><th>NAME</th><th>VALUE</th></tr>";
 
+#ifdef ENABLE_THREADS
 			{
 				NetMauMau::Common::ReadLock l(capsRWLock);
+#endif
 				std::for_each(httpd->getCapabilities().begin(), httpd->getCapabilities().end(),
 							  capaTable(os));
+#ifdef ENABLE_THREADS
 			}
-
+#endif
 			os << "</table></center></a>" << B2TOP << "<hr /><a name=\"dump\">"
 			   << "<h2 align=\"center\">Server dump</h2><tt><pre>";
 

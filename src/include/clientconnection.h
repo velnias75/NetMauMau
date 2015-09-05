@@ -147,6 +147,7 @@ protected:
 
 private:
 	void init();
+	bool isPLEnd(const std::string &p) const;
 	bool nextPlayer(std::string &player, bool playerPic)
 	throw(NetMauMau::Common::Exception::SocketException);
 

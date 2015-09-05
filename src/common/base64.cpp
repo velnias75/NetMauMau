@@ -109,9 +109,10 @@ NetMauMau::Common::base64_decode(std::string const &encoded_string) {
 	if(!in_len) return ret;
 
 	const std::string::size_type resBuf =
+		(2 * in_len) < 23 ? ret.max_size() :
 		static_cast<std::string::size_type>(std::max<std::size_t>(12, (2 * in_len - 23) / 3));
 
-	if(resBuf <= ret.max_size()) {
+	if(resBuf < ret.max_size()) {
 
 		try {
 			ret.reserve(resBuf);

@@ -157,6 +157,8 @@ throw(NetMauMau::Common::Exception::SocketException) {
 
 			*this >> pic;
 
+			if(isPLEnd(pic)) break;
+
 			const std::vector<unsigned char> &pp(NetMauMau::Common::base64_decode(pic));
 
 			unsigned char *ppd = 0L;
@@ -184,13 +186,17 @@ throw(NetMauMau::Common::Exception::SocketException) {
 	return plv;
 }
 
+bool Connection::isPLEnd(const std::string &p) const {
+	return p.compare(0, NetMauMau::Common::Protocol::V15::PLAYERLISTEND.length(),
+					 NetMauMau::Common::Protocol::V15::PLAYERLISTEND) == 0;
+}
+
 bool Connection::nextPlayer(std::string &player, bool playerPic)
 throw(NetMauMau::Common::Exception::SocketException) {
 
 	*this >> player;
 
-	const bool end = (player.compare(0, NetMauMau::Common::Protocol::V15::PLAYERLISTEND.length(),
-									 NetMauMau::Common::Protocol::V15::PLAYERLISTEND) == 0);
+	const bool end = isPLEnd(player);
 
 	if(playerPic && end) {
 		std::string endJunk;

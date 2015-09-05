@@ -1131,12 +1131,16 @@ void Connection::shutdownThreads() throw() {
 
 void Connection::createThreads() {
 
-	try {
-		std::for_each(getRegisteredPlayers().begin(), getRegisteredPlayers().end(),
-					  _playerThreadCreator(*this, m_data, &m_attr));
-	} catch(NetMauMau::Common::MutexException &e) {
+	if(getRegisteredPlayers().size() > 1) {
+		try {
+			std::for_each(getRegisteredPlayers().begin(), getRegisteredPlayers().end(),
+						  _playerThreadCreator(*this, m_data, &m_attr));
+		} catch(NetMauMau::Common::MutexException &e) {
+			PTD().swap(m_data);
+			logWarning("Couldn't create remote player threads: " << e.what());
+		}
+	} else {
 		PTD().swap(m_data);
-		logWarning("Couldn't create remote player threads: " << e.what());
 	}
 }
 

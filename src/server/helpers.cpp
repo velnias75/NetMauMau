@@ -469,8 +469,10 @@ void dump(std::ostream &out) {
 #if defined(HAVE_CONFSTR) && defined(_CS_GNU_LIBPTHREAD_VERSION)
 
 	confstr(_CS_GNU_LIBPTHREAD_VERSION, sr, 127);
-	out <<  " (using " << sr << ")\n";
+	out << " (using " << sr << ")\n";
 
+#elif defined(PTW32_VERSION_STRING)
+	out << " (using Pthreads-win32 " << PTW32_VERSION_STRING << ")\n";
 #else
 	out << '\n';
 #endif

@@ -494,7 +494,12 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 	const std::size_t len = binary ? (data ? bin.size() : 0u) : gzipReq ? oss.str().size() :
 								oss.str().length();
 
+#if MHD_VERSION < 0x00091400
 	MHD_Response *response = MHD_create_response_from_data(len, data, true, false);
+#else
+	MHD_Response *response = MHD_create_response_from_buffer(len, data, MHD_RESPMEM_MUST_FREE);
+#endif
+
 	MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, contentType);
 
 #ifdef HAVE_ZLIB_H

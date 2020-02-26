@@ -52,7 +52,7 @@ MimeMagic::~MimeMagic() throw() {
 #endif
 }
 
-std::string MimeMagic::getMime(const unsigned char *, std::size_t) const throw() {
+std::string MimeMagic::getMime(const unsigned char *data, std::size_t dataLen) const throw() {
 #ifdef ENABLE_THREADS
 
 	try {
@@ -75,8 +75,8 @@ std::string MimeMagic::getMime(const unsigned char *, std::size_t) const throw()
 #endif
 }
 
-bool MimeMagic::checkMime(const unsigned char *, std::size_t,
-						  const char *) const throw() {
+bool MimeMagic::checkMime(const unsigned char *data, std::size_t dataLen,
+						  const char *mime) const throw() {
 #if defined(HAVE_MAGIC_H) && defined(HAVE_LIBMAGIC)
 	const std::string &m(getMime(data, dataLen));
 	return m.empty() ? true : (m.compare(mime) == 0);

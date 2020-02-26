@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2015-2020 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -110,8 +110,7 @@ struct _checkMissing : public std::unary_function<const char *, void> {
 private:
 	inline bool exists(const char *fn) const {
 
-		lua_pushstring(l, fn);
-		lua_rawget(l, LUA_GLOBALSINDEX);
+		lua_getglobal(l, fn);
 		const bool ex = lua_isfunction(l, -1);
 		lua_pop(l, 1);
 
@@ -120,8 +119,12 @@ private:
 };
 #pragma GCC diagnostic pop
 
+inline lua_Integer lua_tointeger_wrapper(lua_State *l, int i) {
+	return lua_tointeger(l, i);
+}
+
 template < typename T, typename LuaType = lua_Integer,
-		 LuaType(&CONV)(lua_State *, int) = lua_tointeger >
+		 LuaType(&CONV)(lua_State *, int) = lua_tointeger_wrapper >
 struct LuaTypeCheckerBase {
 
 	inline static LuaType getType(lua_State *ls, int t, const char *n, const char *fname)

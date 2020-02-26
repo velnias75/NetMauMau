@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.61])
-AC_INIT([NetMauMau], [0.24.2], [heiko@rangun.de], [netmaumau], [https://github.com/velnias75/NetMauMau])
+AC_INIT([NetMauMau], [0.24.3], [heiko@rangun.de], [netmaumau], [https://github.com/velnias75/NetMauMau])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
 AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip tar-pax no-installinfo no-texinfo.tex])
 AM_MAINTAINER_MODE
@@ -172,9 +172,9 @@ See the
 .URL \"http://www.gnu.org/software/gsl/manual/html_node/Random-number-environment-variables.html\" \"GSL Manual\" \" for more information\"" > gsl.h2m ],
   [ AM_CONDITIONAL([GSL], [ false ])] )
 PKG_CHECK_MODULES([LIBSQLITE], [sqlite3 >= 3.4.2])
-PKG_CHECK_MODULES([LIBLUA], [lua5.1 >= 5.1.2], [ AC_SUBST([PKGC_LUA], [lua5.1]) ],
-  [ PKG_CHECK_MODULES([LIBLUA], [lua51 >= 5.1.2], [ AC_SUBST([PKGC_LUA], [lua51]) ],
-  [ PKG_CHECK_MODULES([LIBLUA], [lua >= 5.1.2 lua < 5.2], [AC_SUBST([PKGC_LUA], [lua])] ) ] ) ])
+PKG_CHECK_MODULES([LIBLUA], [lua5.3 >= 5.3.3], [ AC_SUBST([PKGC_LUA], [lua5.3]) ],
+  [ PKG_CHECK_MODULES([LIBLUA], [lua53 >= 5.3.3], [ AC_SUBST([PKGC_LUA], [lua53]) ],
+  [ PKG_CHECK_MODULES([LIBLUA], [lua >= 5.3.3], [AC_SUBST([PKGC_LUA], [lua])] ) ] ) ])
 PKG_CHECK_MODULES([LIBMICROHTTPD], [libmicrohttpd >= 0.4.6],
 				  [ if test $NOHTTPD -eq 0; then
 				      AM_CONDITIONAL([MICROHTTPD], [ true ])

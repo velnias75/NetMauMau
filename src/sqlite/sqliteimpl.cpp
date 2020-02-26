@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2015-2020 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -205,7 +205,7 @@ std::string SQLiteImpl::getDBFilename() {
 	}
 
 #else
-	return(BUILDDIR"/"PACKAGE_NAME"-dbg.db");
+	return(BUILDDIR "/" PACKAGE_NAME "-dbg.db");
 #endif
 #endif
 

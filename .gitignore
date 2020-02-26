@@ -108,3 +108,5 @@ V*.xml
 win32
 basiclogger.supp
 doc/Doxyfile
+*.kdev4
+compile

@@ -3,7 +3,7 @@
  *
  * $Revision: 4377 $ $Author: heiko $
  *
- * (c) 2012-2015 Heiko Schäfer <heiko@hgl.rangun.de>
+ * (c) 2012-2020 Heiko Schäfer <heiko@hgl.rangun.de>
  *
  * LICENCE is inherited by project using this file
  *
@@ -25,7 +25,7 @@ namespace Commons {
 #define _IMPORT   __attribute__ ((visibility ("default")))
 #define _EXPORT   __attribute__ ((visibility ("default")))
 #define _LOCAL    __attribute__ ((visibility ("hidden")))
-#define _INTERNAL __attribute__ ((visibility ("internal")))
+#define _INTERNAL /*__attribute__ ((visibility ("internal"))) */
 #else
 #define _IMPORT
 #define _EXPORT

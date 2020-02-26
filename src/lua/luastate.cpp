@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2015-2020 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of NetMauMau.
  *
@@ -60,7 +60,7 @@ LuaState::LuaState() throw(Exception::LuaException) : m_state(luaL_newstate()) {
 		lua_setfield(m_state, -2, "CLUBS");
 		lua_pushinteger(m_state, NetMauMau::Common::ICard::SUIT_ILLEGAL);
 		lua_setfield(m_state, -2, "SUIT_ILLEGAL");
-		lua_setfield(m_state, LUA_GLOBALSINDEX, "SUIT");
+		lua_setglobal(m_state, "SUIT");
 
 		lua_newtable(m_state);
 		lua_pushinteger(m_state, NetMauMau::Common::ICard::SEVEN);
@@ -81,7 +81,7 @@ LuaState::LuaState() throw(Exception::LuaException) : m_state(luaL_newstate()) {
 		lua_setfield(m_state, -2, "ACE");
 		lua_pushinteger(m_state, NetMauMau::Common::ICard::RANK_ILLEGAL);
 		lua_setfield(m_state, -2, "RANK_ILLEGAL");
-		lua_setfield(m_state, LUA_GLOBALSINDEX, "RANK");
+		lua_setglobal(m_state, "RANK");
 
 		lua_register(m_state, "print", print);
 		lua_register(m_state, "write", print);
@@ -133,11 +133,14 @@ void LuaState::load(const std::string &luafile, bool dirChangePossible,
 	lua_pushboolean(m_state, !m_arl->isNull());
 	lua_setfield(m_state, -2, "ENABLED");
 
+#pragma GCC diagnostic ignored "-Wnonnull-compare"
+#pragma GCC diagnostic push
 	if(arl) {
 		lua_pushinteger(m_state, static_cast<lua_Integer>(arl->getAceRoundRank()));
 	} else {
 		lua_pushnil(m_state);
 	}
+#pragma GCC diagnostic pop
 
 	lua_setfield(m_state, -2, "RANK");
 	lua_setglobal(m_state, "nmm_aceRound");

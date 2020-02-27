@@ -67,7 +67,7 @@ void sh_interrupt(int);
 #ifndef _WIN32
 void sh_dump(int, siginfo_t *info, void *);
 int getGroup(gid_t *gid, const char *group);
-int getIPForIF(char *addr = NULL, size_t len = 0, const char *iface = NULL);
+int getIPForIF(bool ipv4, char *addr = NULL, size_t len = 0, const char *iface = NULL);
 int getUser(uid_t *uid, const char *usr);
 int dropPrivileges(const char *usr, const char *group);
 #endif

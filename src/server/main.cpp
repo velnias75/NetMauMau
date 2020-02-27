@@ -47,6 +47,13 @@
 #include <sys/socket.h>
 #endif
 
+#ifdef HAVE_NETDB_H
+#include <netdb.h>                      // for getnameinfo, NI_NUMERICHOST
+#define HOST_MAX NI_MAXHOST
+#else
+#define HOST_MAX HOST_NAME_MAX
+#endif
+
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif
@@ -140,7 +147,9 @@ poptOption poptOptions[] = {
 #endif
 	{ "bind", 'b', POPT_ARG_STRING, &NetMauMau::host, 0, "Bind to HOST", "HOST" },
 #ifndef _WIN32
-	{ "iface", 'I', POPT_ARG_STRING, &NetMauMau::interface, 'I', "Bind to INTERFACE", "INTERFACE" },
+	{ NULL, '6', POPT_ARG_NONE, NULL, '6', "Bind to IPv6 address (default, must be set before -I)", NULL },
+	{ NULL, '4', POPT_ARG_NONE, NULL, '4', "Bind to IPv4 address (must be set before -I)", NULL },
+	{ "iface", 'I', POPT_ARG_STRING, &NetMauMau::interface, 'I', "Bind to INTERFACE, listen on any address of omitted", "INTERFACE" },
 #endif
 	{
 		"port", 0, POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &NetMauMau::port, 0,
@@ -175,6 +184,8 @@ int main(int argc, const char **argv) {
 
 	poptContext pctx = poptGetContext(NULL, argc, argv, poptOptions, 0);
 	int c;
+	
+	bool proto4 = false;
 
 	while((c = poptGetNextOpt(pctx)) >= 0) {
 		switch(c) {
@@ -236,6 +247,13 @@ int main(int argc, const char **argv) {
 		case 'u':
 			ultimate = true;
 			break;
+			
+		case '4':
+			proto4 = true;
+			break;
+			
+		case '6':
+			break;
 
 		case 'd':
 			dirChange = true;
@@ -267,10 +285,10 @@ int main(int argc, const char **argv) {
 				int r;
 
 				if(interface[0] == '?') {
-					getIPForIF();
+					getIPForIF(false);
 					poptFreeContext(pctx);
 					return EXIT_SUCCESS;
-				} else if((r = getIPForIF(host, HOST_NAME_MAX, interface))) {
+				} else if((r = getIPForIF(proto4, host, HOST_MAX, interface))) {
 
 					if(r) {
 						logError(NetMauMau::Common::Logger::time(TIMEFORMAT)

@@ -92,6 +92,29 @@ void unknownSignal(int sig) {
 #endif
 }
 
+int addr4proto(struct ifaddrs *const ifas, std::set<std::string> &ifaces, 
+		bool listOnly, const char *iface, char *addr, std::size_t len,
+		int family, std::size_t familyLen, const char *v) {
+	
+	for(struct ifaddrs *ifa = ifas; ifa != NULL; ifa = ifa->ifa_next) {
+
+		if(ifa->ifa_addr && ifa->ifa_addr->sa_family == family) {
+
+			ifaces.insert(ifa->ifa_name);
+
+			if(!listOnly && !::strcmp(ifa->ifa_name, iface)) {
+				::getnameinfo(ifa->ifa_addr, familyLen, 
+								addr, len, NULL, 0, NI_NUMERICHOST);
+				logDebug(v << " of " << iface << ": " << addr);
+				::freeifaddrs(ifas);
+				return 0;
+			}
+		}
+	}
+	
+	return 1;
+}
+
 }
 
 namespace NetMauMau {
@@ -276,8 +299,7 @@ int getGroup(gid_t *gid, const char *group) {
 	return -1;
 }
 
-
-int getIPForIF(char *addr, size_t len, const char *iface) {
+int getIPForIF(bool ipv4, char *addr, size_t len, const char *iface) {
 
 	bool listOnly = !addr && !len && !iface;
 
@@ -286,22 +308,11 @@ int getIPForIF(char *addr, size_t len, const char *iface) {
 	struct ifaddrs *ifas;
 
 	if(!::getifaddrs(&ifas)) {
-
-		for(struct ifaddrs *ifa = ifas; ifa != NULL; ifa = ifa->ifa_next) {
-
-			if(ifa->ifa_addr && (ifa->ifa_addr->sa_family == AF_INET ||
-								 ifa->ifa_addr->sa_family == AF_INET6)) {
-
-				ifaces.insert(ifa->ifa_name);
-
-				if(!listOnly && !::strcmp(ifa->ifa_name, iface)) {
-					::getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in), addr, len, NULL, 0,
-								  NI_NUMERICHOST);
-					::freeifaddrs(ifas);
-					return 0;
-				}
-			}
-		}
+		
+ 		if(addr4proto(ifas, ifaces, listOnly, iface, addr, len, 
+ 			!ipv4 ? AF_INET6 : AF_INET, 
+ 			!ipv4 ? sizeof(struct sockaddr_in6) : sizeof(struct sockaddr_in),
+ 			!ipv4 ? "IPv6" : "IPv4") == 0) return 0;
 
 		if(listOnly) {
 			for(std::set<std::string>::const_iterator iter(ifaces.begin());

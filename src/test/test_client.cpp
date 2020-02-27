@@ -29,6 +29,8 @@
 #include <ctime>
 #include <stdbool.h>
 
+#include <algorithm>
+
 #include "testclient.h"                 // for TestClient
 #include "testimg.h"                    // for test_client_img
 #include "logger.h"
@@ -107,16 +109,38 @@ int main(int argc, const char **argv) {
 	poptFreeContext(pctx);
 
 	uint16_t port = TestClient::getDefaultPort();
-	const std::string::size_type p = server.find(':');
+	std::string server_s, port_s;
 
-	if(p != std::string::npos) {
-		(std::istringstream(server.substr(p + 1))) >> port;
-		server = server.substr(0, p);
-
-		if(server.empty()) server = "localhost";
+	if(server[0] == '[') {
+		
+		std::string::iterator splitEnd =
+			std::find(server.begin() + 1, server.end(), ']');
+		
+		server_s.assign(server.begin() + 1, splitEnd);
+		
+		if(splitEnd != server.end()) splitEnd++;
+		
+		if(splitEnd != server.end() && *splitEnd == ':') {
+			port_s.assign(splitEnd + 1, server.end());
+		}
+		
+	} else {
+		
+		std::string::iterator splitPoint =
+			std::find(server.rbegin(), server.rend(), ':').base();
+		
+		if(splitPoint == server.begin()) {
+			server_s = server;
+		} else {
+			server_s.assign(server.begin(), splitPoint - 1);
+			port_s.assign(splitPoint, server.end());
+		}
 	}
+	
+	if(!port_s.empty()) std::istringstream(port_s) >> port;
+	if(server_s.empty()) server_s = "localhost";
 
-	TestClient client(pName, server, port, noImg ? 0L : test_client_img, noImg ? 0 :
+	TestClient client(pName, server_s, port, noImg ? 0L : test_client_img, noImg ? 0 :
 					  sizeof(test_client_img), autoPlay, delay);
 
 	try {

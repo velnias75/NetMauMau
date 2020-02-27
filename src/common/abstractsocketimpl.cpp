@@ -76,13 +76,12 @@ int AbstractSocketImpl::getAddrInfo(const char *server, uint16_t port, struct ad
 #ifdef _WIN32
 	hints.ai_family = AF_INET;
 #else
-	hints.ai_family = ipv4 ? AF_INET : AF_UNSPEC;
+	hints.ai_family = ipv4 ? AF_INET : (server ? AF_UNSPEC : AF_INET6);
 #endif
 	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_PASSIVE;
 
 #if !defined(_WIN32) && defined(AI_V4MAPPED) && defined(AI_ADDRCONFIG)
-	hints.ai_flags |= AI_V4MAPPED | AI_ADDRCONFIG;
+	hints.ai_flags |= AI_V4MAPPED | AI_ADDRCONFIG | AI_ALL;
 #endif
 
 	if(server) {
@@ -90,12 +89,9 @@ int AbstractSocketImpl::getAddrInfo(const char *server, uint16_t port, struct ad
 #if !defined(_WIN32) && defined(AI_CANONIDN)
 		hints.ai_flags |= AI_CANONIDN;
 #endif
-	}
+	} else hints.ai_flags |= AI_PASSIVE;
 
-	hints.ai_protocol = 0;
-	hints.ai_canonname = NULL;
-	hints.ai_addr = NULL;
-	hints.ai_next = NULL;
+	hints.ai_protocol = IPPROTO_TCP;
 
 	return getaddrinfo(server, portS, &hints, result);
 }

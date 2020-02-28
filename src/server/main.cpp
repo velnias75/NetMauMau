@@ -82,6 +82,14 @@
 #include "ci_string.h"
 #endif
 
+#if HAVE_ARPA_INET_H
+#define IF_IP_OPT "INTERFACE|IP"
+#define IF_IP_HLP "INTERFACE/IP"
+#else
+#define IF_IP_OPT "INTERFACE"
+#define IF_IP_HLP  IF_IP_OPT
+#endif
+
 namespace {
 
 const char *REFUSED = "refused";
@@ -145,11 +153,12 @@ poptOption poptOptions[] = {
 		"Put the server in a mode suitable for (x)inetd", NULL
 	},
 #endif
-	{ "bind", 'b', POPT_ARG_STRING, &NetMauMau::host, 0, "Bind to HOST", "HOST" },
+	{ "bind", 'b', POPT_ARG_STRING, &NetMauMau::host, 0, "Bind webserver to HOST", "HOST" },
 #ifndef _WIN32
-	{ NULL, '6', POPT_ARG_NONE, NULL, '6', "Bind to IPv6 address (default, must be set before -I)", NULL },
-	{ NULL, '4', POPT_ARG_NONE, NULL, '4', "Bind to IPv4 address (must be set before -I)", NULL },
-	{ "iface", 'I', POPT_ARG_STRING, &NetMauMau::interface, 'I', "Bind to INTERFACE, listen on any address of omitted", "INTERFACE" },
+	{ NULL, '6', POPT_ARG_NONE, NULL, '6', "Bind to IPv6 address (default, must be set before -I, ignored if IP is given)", NULL },
+	{ NULL, '4', POPT_ARG_NONE, NULL, '4', "Bind to IPv4 address (must be set before -I, ignored if IP is given)", NULL },
+	{ "iface", 'I', POPT_ARG_STRING, &NetMauMau::interface, 'I',
+	  "Bind to " IF_IP_HLP ", listen on any IPv4/IPv6 address if omitted", IF_IP_OPT },
 #endif
 	{
 		"port", 0, POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &NetMauMau::port, 0,
@@ -685,4 +694,4 @@ int main(int argc, const char **argv) {
 	return EXIT_SUCCESS;
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; remove-trailing-space: true;

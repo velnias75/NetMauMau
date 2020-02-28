@@ -25,7 +25,9 @@
 #include <netdb.h>                      // for addrinfo, freeaddrinfo, etc
 #endif
 
+#if defined(HAVE_ARPA_INET_H) && !defined(NDEBUG)
 #include <arpa/inet.h>
+#endif
 
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
@@ -47,8 +49,6 @@
 #include <cstdio>                       // for NULL, fileno, snprintf, etc
 #include <vector>                       // for vector
 #include <stdbool.h>
-
-#include <list>
 
 #include "abstractsocket.h"             // for AbstractSocket
 #include "abstractsocketimpl.h"         // for AbstractSocketImpl
@@ -157,15 +157,10 @@ void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 											_pimpl->m_sfd, errno);
 		}
 
-		std::list<struct addrinfo *> al;
 
-		for(rp = result; rp != NULL; rp = rp->ai_next) al.push_front(rp);
-
-		for(std::list<struct addrinfo *>::iterator i = al.begin();
-			i != al.end(); ++i) {
+		for(rp = result; rp != NULL; rp = rp->ai_next) {
 			
-			rp = *i;
-
+#if defined(HAVE_ARPA_INET_H) && !defined(NDEBUG)
 			if(rp->ai_family == AF_INET6) {
 
 				char dst[INET6_ADDRSTRLEN + 1];
@@ -185,7 +180,7 @@ void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 				inet_ntop(AF_INET, addr, dst, INET_ADDRSTRLEN);
 				logDebug("trying addr: " << dst);
 			}
-
+#endif
 			_pimpl->m_sfd = socket(rp->ai_family, rp->ai_socktype,
 								   rp->ai_protocol);
 

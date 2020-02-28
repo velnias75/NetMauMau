@@ -66,4 +66,4 @@ public:
 
 #endif /* NETMAUMAU_ABSTRACTSOCKETIMPL_H */
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; remove-trailing-space: true;

@@ -35,6 +35,10 @@
 #include <netdb.h>                      // for getnameinfo, NI_NUMERICHOST
 #endif
 
+#if HAVE_ARPA_INET_H
+#include <arpa/inet.h>
+#endif
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>                     // for getuid, setegid, seteuid
 #endif
@@ -90,6 +94,20 @@ void unknownSignal(int sig) {
 	logWarning(NetMauMau::Common::Logger::time(TIMEFORMAT) << "Received unhandled signal \""
 			   << strsignal(sig) << "\" (" << sig << ")");
 #endif
+}
+
+bool isValidIP(const char *candidate) {
+
+#if HAVE_ARPA_INET_H
+   char buf[INET6_ADDRSTRLEN];
+
+   if(::inet_pton(AF_INET, candidate, buf) || 
+	   ::inet_pton(AF_INET6, candidate, buf)) {
+        return true;
+    }
+#endif
+
+   return false;
 }
 
 int addr4proto(struct ifaddrs *const ifas, std::set<std::string> &ifaces, 
@@ -301,14 +319,19 @@ int getGroup(gid_t *gid, const char *group) {
 
 int getIPForIF(bool ipv4, char *addr, size_t len, const char *iface) {
 
-	bool listOnly = !addr && !len && !iface;
+	const bool listOnly = !addr && !len && !iface;
+	
+	if(!listOnly && isValidIP(iface)) {
+		::strcpy(addr, iface);
+		return 0;
+	}
 
 	std::set<std::string> ifaces;
 
 	struct ifaddrs *ifas;
 
 	if(!::getifaddrs(&ifas)) {
-		
+
  		if(addr4proto(ifas, ifaces, listOnly, iface, addr, len, 
  			!ipv4 ? AF_INET6 : AF_INET, 
  			!ipv4 ? sizeof(struct sockaddr_in6) : sizeof(struct sockaddr_in),
@@ -575,4 +598,4 @@ void disarmIdleTimer(timer_t timerid, struct itimerspec &its) {
 
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; remove-trailing-space: true;

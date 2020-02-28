@@ -194,6 +194,7 @@ AC_CHECK_HEADERS([syslog.h])
 AC_CHECK_HEADERS([sys/syscall.h])
 AC_CHECK_HEADERS([sys/socket.h])
 AC_CHECK_HEADERS([netinet/in.h])
+AC_CHECK_HEADERS([arpa/inet.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AX_CXX_GCC_ABI_DEMANGLE

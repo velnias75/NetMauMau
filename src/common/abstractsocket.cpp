@@ -48,6 +48,8 @@
 #include <vector>                       // for vector
 #include <stdbool.h>
 
+#include <list>
+
 #include "abstractsocket.h"             // for AbstractSocket
 #include "abstractsocketimpl.h"         // for AbstractSocketImpl
 #include "logger.h"                     // for logWarning
@@ -155,7 +157,14 @@ void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 											_pimpl->m_sfd, errno);
 		}
 
-		for(rp = result; rp != NULL; rp = rp->ai_next) {
+		std::list<struct addrinfo *> al;
+
+		for(rp = result; rp != NULL; rp = rp->ai_next) al.push_front(rp);
+
+		for(std::list<struct addrinfo *>::iterator i = al.begin();
+			i != al.end(); ++i) {
+			
+			rp = *i;
 
 			if(rp->ai_family == AF_INET6) {
 
@@ -177,7 +186,8 @@ void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 				logDebug("trying addr: " << dst);
 			}
 
-			_pimpl->m_sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+			_pimpl->m_sfd = socket(rp->ai_family, rp->ai_socktype,
+								   rp->ai_protocol);
 
 			if(_pimpl->m_sfd == INVALID_SOCKET) continue;
 
@@ -207,7 +217,6 @@ void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 		unsigned char soErr = 0u;
 
 		if(rp == NULL) {
-
 			_pimpl->m_sfd = INVALID_SOCKET;
 			throw Exception::SocketException(wireError(_pimpl->m_wireError));
 
@@ -524,4 +533,4 @@ unsigned long AbstractSocket::getTotalSentBytes() {
 	return m_sentTotal;
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs off; tab-width 4; remove-trailing-space: true;

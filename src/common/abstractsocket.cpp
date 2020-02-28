@@ -149,7 +149,6 @@ void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 		struct addrinfo *result, *rp = NULL;
 		int s;
 
-		
 		if((s = _pimpl->getAddrInfo(_pimpl->m_server.empty() ? 0L : _pimpl->m_server.c_str(),
 									_pimpl->m_port, &result)) != 0) {
 			throw Exception::SocketException(NetMauMau::Common::errorString(s, true),
@@ -158,35 +157,34 @@ void AbstractSocket::connect(bool inetd) throw(Exception::SocketException) {
 
 		for(rp = result; rp != NULL; rp = rp->ai_next) {
 
-			
 			if(rp->ai_family == AF_INET6) {
-				
+
 				char dst[INET6_ADDRSTRLEN + 1];
-				
+
 				struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)rp->ai_addr;
 				void *addr = &(ipv6->sin6_addr);
-			
+
 				inet_ntop(AF_INET6, addr, dst, INET6_ADDRSTRLEN);
 				logDebug("trying addr: " << dst);
-				
+
 			} else {
 				char dst[INET_ADDRSTRLEN + 1];
-			
+
 				struct sockaddr_in *ipv4 = (struct sockaddr_in *)rp->ai_addr;
 				void *addr = &(ipv4->sin_addr);
-			
+
 				inet_ntop(AF_INET, addr, dst, INET_ADDRSTRLEN);
 				logDebug("trying addr: " << dst);
 			}
-			
+
 			_pimpl->m_sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
 
 			if(_pimpl->m_sfd == INVALID_SOCKET) continue;
-			
+
 			// listen on any IPv6/IPv4
 			if(_pimpl->m_server.empty() && rp->ai_family == AF_INET6) {
-				int no = 0;     
-				::setsockopt(_pimpl->m_sfd, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&no, sizeof(no)); 
+				int no = 0;
+				::setsockopt(_pimpl->m_sfd, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&no, sizeof(no));
 				sockaddr_in6 *sad = (sockaddr_in6 *)rp->ai_addr;
 				sad->sin6_addr = in6addr_any;
 			}

@@ -14,8 +14,7 @@ export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 
 GRAPHITE = -floop-interchange -ftree-loop-distribution -floop-strip-mine -floop-block \
 	-ftree-vectorize -frename-registers
-LTO = -flto -fwhole-program -fuse-linker-plugin -flto-compression-level=9 -flto-partition=1to1 \
-	-Wl,--strip-lto-sections
+LTO = -flto -fwhole-program -fuse-linker-plugin -flto-compression-level=9 -flto-partition=1to1
 
 # uncomment following line for non-Precise/non-Wheezy builds
 # LTO += -ffat-lto-objects -Wl,-fuse-ld=gold

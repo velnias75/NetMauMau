@@ -110,3 +110,4 @@ basiclogger.supp
 doc/Doxyfile
 *.kdev4
 compile
+debian/files

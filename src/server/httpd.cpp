@@ -284,7 +284,7 @@ int answer_to_connection(void *cls, struct MHD_Connection *connection, const cha
 			contentType = strdup("text/plain");
 			os << "User-agent: *\nDisallow: /\n";
 
-		} else if(!std::strncmp("/favicon.ico", url, 8)) {
+		} else if(!std::strncmp("/favicon.ico", url, 12)) {
 
 			cp = NetMauMau::Server::CachePolicyFactory::getInstance()->createPublicCachePolicy();
 
